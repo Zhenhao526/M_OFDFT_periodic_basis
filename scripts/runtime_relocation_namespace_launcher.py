@@ -28,6 +28,11 @@ COUNTERPART_HEADER = (
     "byte_equal",
     "verification_rule",
 )
+ABSOLUTE_WATCHDOG_SECONDS = 7260.0
+
+
+class AbsoluteWatchdogExpired(BaseException):
+    """Uncatchable by broad operational-error handlers inside the audit."""
 
 
 def _atomic_json(path: Path, payload: dict) -> None:
@@ -439,11 +444,13 @@ def _terminate_group(process: subprocess.Popen) -> dict:
     }
 
 
-def _main_impl() -> int:
-    started = time.time()
-    started_monotonic = time.monotonic()
-    started_at_utc = datetime.now(timezone.utc).isoformat()
-    total_deadline = started_monotonic + 7260
+def _main_impl(
+    started: float,
+    started_monotonic: float,
+    started_at_utc: str,
+    total_deadline: float,
+    watchdog_state: dict[str, object],
+) -> int:
     audit_directory = Path(os.environ["M_OFDFT_MPI_AUDIT_DIR"])
     try:
         audit_directory.mkdir(parents=True, exist_ok=False)
@@ -567,6 +574,7 @@ def _main_impl() -> int:
             stdin=subprocess.DEVNULL,
             start_new_session=True,
         )
+        watchdog_state["process"] = process
         try:
             exit_code = int(
                 process.wait(timeout=max(0.001, total_deadline - time.monotonic()))
@@ -675,37 +683,87 @@ def _main_impl() -> int:
 
 
 def _deadline_alarm(_signum, _frame) -> None:
-    raise TimeoutError("namespace absolute watchdog expired")
+    raise AbsoluteWatchdogExpired("namespace absolute watchdog expired")
 
 
 def main() -> int:
+    started_monotonic = time.monotonic()
+    started = time.time()
+    started_at_utc = datetime.now(timezone.utc).isoformat()
+    total_deadline = started_monotonic + ABSOLUTE_WATCHDOG_SECONDS
+    watchdog_state: dict[str, object] = {}
     previous_handler = signal.getsignal(signal.SIGALRM)
     signal.signal(signal.SIGALRM, _deadline_alarm)
-    signal.setitimer(signal.ITIMER_REAL, 7260.0)
     try:
-        return _main_impl()
-    except TimeoutError as error:
+        remaining = total_deadline - time.monotonic()
+        if remaining <= 0:
+            raise AbsoluteWatchdogExpired(
+                "namespace deadline elapsed before watchdog activation"
+            )
+        signal.setitimer(signal.ITIMER_REAL, remaining)
+        return _main_impl(
+            started,
+            started_monotonic,
+            started_at_utc,
+            total_deadline,
+            watchdog_state,
+        )
+    except AbsoluteWatchdogExpired as error:
+        signal.setitimer(signal.ITIMER_REAL, 0.0)
+        cleanup_evidence = {
+            "members_before_cleanup": [],
+            "members_after_cleanup": [],
+            "tracee_pids_before_cleanup": [],
+            "tracee_pids_after_cleanup": [],
+            "all_group_members_gone": False,
+        }
+        cleanup_failures: list[str] = []
+        process = watchdog_state.get("process")
+        if process is not None:
+            try:
+                cleanup_evidence = _terminate_group(process)
+            except Exception as cleanup_error:
+                cleanup_failures.append(f"watchdog_cleanup_failed:{cleanup_error}")
         audit_directory = Path(os.environ.get("M_OFDFT_MPI_AUDIT_DIR", "."))
         namespace_directory = audit_directory / "namespace"
         namespace_directory.mkdir(parents=True, exist_ok=True)
+        namespace_inode = None
+        try:
+            state = json.loads(
+                (namespace_directory / "state.before_mount.json").read_text(
+                    encoding="utf-8"
+                )
+            )
+            namespace_inode = state.get("pid_namespace_inode")
+        except (FileNotFoundError, json.JSONDecodeError, OSError) as identity_error:
+            cleanup_failures.append(
+                f"watchdog_pid_namespace_identity_unavailable:{identity_error}"
+            )
+        pid_namespace_cleanup = _prove_pid_namespace_empty(
+            namespace_inode, time.monotonic() + 5.0
+        )
+        ended_monotonic = time.monotonic()
+        ended = time.time()
         _atomic_json(
             namespace_directory / "host_status.json",
             {
                 "schema_version": 1,
                 "status": "rejected",
-                "failure_reasons": [f"namespace_absolute_watchdog:{error}"],
+                "failure_reasons": [
+                    f"namespace_absolute_watchdog:{error}",
+                    *cleanup_failures,
+                ],
                 "namespace_payload_exit_code": 124,
                 "total_wall_timeout_seconds": 7260,
                 "absolute_deadline_watchdog_seconds": 7260,
+                "started_at_utc": started_at_utc,
+                "ended_at_utc": datetime.now(timezone.utc).isoformat(),
+                "started_epoch_seconds": started,
+                "ended_epoch_seconds": ended,
+                "elapsed_seconds": ended_monotonic - started_monotonic,
                 "timeout_triggered": True,
-                "process_group_cleanup": {"all_group_members_gone": False},
-                "pid_namespace_cleanup": {
-                    "pid_namespace_inode": None,
-                    "observations": [],
-                    "members_after_namespace_exit": [],
-                    "scan_errors": ["watchdog_expired"],
-                    "all_namespace_members_gone": False,
-                },
+                "process_group_cleanup": cleanup_evidence,
+                "pid_namespace_cleanup": pid_namespace_cleanup,
             },
         )
         return 124

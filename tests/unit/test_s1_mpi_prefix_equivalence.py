@@ -393,6 +393,52 @@ class S1MpiPrefixEquivalenceTest(unittest.TestCase):
             )
         self.assertFalse(namespace_unknown["all_namespace_members_gone"])
 
+    def test_watchdog_origin_is_unique_and_alarm_cannot_be_swallowed(self) -> None:
+        self.assertFalse(issubclass(AUDIT.AbsoluteWatchdogExpired, OSError))
+        self.assertFalse(issubclass(AUDIT.AbsoluteWatchdogExpired, Exception))
+        self.assertFalse(issubclass(NAMESPACE.AbsoluteWatchdogExpired, OSError))
+
+        def broad_operational_handler(callback):
+            try:
+                callback()
+            except OSError:
+                return "swallowed"
+            return "returned"
+
+        with self.assertRaises(AUDIT.AbsoluteWatchdogExpired):
+            broad_operational_handler(lambda: AUDIT._deadline_alarm(None, None))
+        with self.assertRaises(NAMESPACE.AbsoluteWatchdogExpired):
+            broad_operational_handler(lambda: NAMESPACE._deadline_alarm(None, None))
+
+        with tempfile.TemporaryDirectory() as temporary:
+            audit_directory = Path(temporary) / "audit"
+            implementation = mock.Mock(
+                side_effect=AUDIT.AbsoluteWatchdogExpired("injected deadline")
+            )
+            with mock.patch.dict(
+                os.environ,
+                {"M_OFDFT_MPI_AUDIT_DIR": str(audit_directory)},
+            ), mock.patch.object(
+                AUDIT, "_main_impl", implementation
+            ), mock.patch.object(
+                AUDIT.signal, "getsignal", return_value=object()
+            ), mock.patch.object(
+                AUDIT.signal, "signal"
+            ), mock.patch.object(
+                AUDIT.signal, "setitimer"
+            ):
+                self.assertEqual(AUDIT.main(), 124)
+            arguments = implementation.call_args.args
+            self.assertEqual(len(arguments), 5)
+            self.assertAlmostEqual(
+                arguments[3] - arguments[1], AUDIT.ABSOLUTE_WATCHDOG_SECONDS
+            )
+            rejected = json.loads((audit_directory / "audit.json").read_text())
+            self.assertEqual(rejected["status"], "rejected")
+            self.assertTrue(rejected["timeout_triggered"])
+            self.assertEqual(rejected["started_epoch_seconds"], arguments[0])
+            self.assertGreaterEqual(rejected["elapsed_seconds"], 0.0)
+
     def test_version_probe_timeout_is_part_of_absolute_deadline(self) -> None:
         identity = {
             "path": "/synthetic/tool",
@@ -790,6 +836,116 @@ class S1MpiPrefixEquivalenceTest(unittest.TestCase):
                 "",
             )
 
+    def test_failed_smoke_retry_precommit_commit_and_formal_chain(self) -> None:
+        with tempfile.TemporaryDirectory() as temporary:
+            repository = Path(temporary)
+            self._git(repository, "init")
+            self._git(repository, "config", "user.name", "Unit Test")
+            self._git(repository, "config", "user.email", "unit@example.invalid")
+            (repository / "base.txt").write_text("base\n")
+            self._git(repository, "add", ".")
+            self._git(repository, "commit", "-m", "base")
+
+            smoke_root = repository / COMMON.RUNTIME_SMOKE_ROOT
+            failed_run = smoke_root / "run"
+            failed_run.mkdir(parents=True)
+            (failed_run / "experiment_metadata.json").write_text("{}\n")
+            (failed_run / "replay_status.json").write_text(
+                json.dumps({"status": "rejected"}) + "\n"
+            )
+            (failed_run / "failure.json").write_text("{}\n")
+            self._git(repository, "add", ".")
+            self._git(repository, "commit", "-m", "record failed managed smoke")
+            failure_commit = subprocess.check_output(
+                ["git", "rev-parse", "HEAD"], cwd=repository, text=True
+            ).strip()
+
+            SMOKE_RUNNER._archive_existing_failed_smoke(repository, smoke_root)
+            archive_commit = subprocess.check_output(
+                ["git", "rev-parse", "HEAD"], cwd=repository, text=True
+            ).strip()
+            self.assertNotEqual(failure_commit, archive_commit)
+
+            accepted_run = smoke_root / "run"
+            accepted_run.mkdir(parents=True)
+            summary = smoke_root / "summary.json"
+            manifest = smoke_root / "evidence_manifest.tsv"
+            metadata = accepted_run / "experiment_metadata.json"
+            evidence = accepted_run / "evidence.bin"
+            summary.write_text(json.dumps({"status": "accepted"}) + "\n")
+            manifest.write_text("synthetic manifest\n")
+            metadata.write_text(json.dumps({"code_commit": archive_commit}) + "\n")
+            evidence.write_bytes(b"accepted smoke evidence\n")
+            canonical_paths = [summary, manifest, metadata, evidence]
+            precommit = {
+                "status": "accepted",
+                "code_commit": archive_commit,
+                "tracked_paths": canonical_paths,
+            }
+            with mock.patch.object(
+                SMOKE_RUNNER,
+                "validate_smoke_precommit",
+                return_value=dict(precommit),
+            ):
+                pending = SMOKE_RUNNER.run_smoke(repository, {}, {})
+            self.assertEqual(pending["status"], "pending_commit")
+            self.assertIn("git add", pending["next_command"])
+            archives, archive_paths = SMOKE.validate_failed_smoke_archives(repository)
+            pending_formal = {
+                **precommit,
+                "failed_smoke_archives": archives,
+                "tracked_paths": canonical_paths + archive_paths,
+            }
+            with mock.patch.object(
+                SMOKE,
+                "validate_smoke_precommit",
+                return_value=dict(pending_formal),
+            ), self.assertRaisesRegex(ValueError, "not committed at HEAD"):
+                SMOKE.validate_smoke(
+                    repository, {}, {}, summary, require_committed=True
+                )
+
+            self._git(repository, "add", COMMON.RUNTIME_SMOKE_ROOT.as_posix())
+            self._git(repository, "commit", "-m", "record accepted managed smoke")
+            accepted_commit = subprocess.check_output(
+                ["git", "rev-parse", "HEAD"], cwd=repository, text=True
+            ).strip()
+            archives, archive_paths = SMOKE.validate_failed_smoke_archives(repository)
+            self.assertEqual(archives[0]["failure_commit"], failure_commit)
+            formal_precommit = {
+                **precommit,
+                "failed_smoke_archives": archives,
+                "tracked_paths": canonical_paths + archive_paths,
+            }
+            with mock.patch.object(
+                SMOKE,
+                "validate_smoke_precommit",
+                return_value=dict(formal_precommit),
+            ):
+                formal = SMOKE.validate_smoke(
+                    repository, {}, {}, summary, require_committed=True
+                )
+                committed = SMOKE_RUNNER.run_smoke(repository, {}, {})
+            self.assertEqual(formal["smoke_commit"], accepted_commit)
+            self.assertEqual(committed["status"], "accepted_committed")
+
+            archived_failure = archive_paths[0]
+            original = archived_failure.read_bytes()
+            original_mode = archived_failure.stat().st_mode
+            archived_failure.write_bytes(original + b"tamper")
+            with self.assertRaisesRegex(ValueError, "worktree differs"):
+                SMOKE.validate_failed_smoke_archives(repository)
+            archived_failure.write_bytes(original)
+            archived_failure.chmod(0o755)
+            with self.assertRaisesRegex(ValueError, "worktree differs"):
+                SMOKE.validate_failed_smoke_archives(repository)
+            archived_failure.chmod(original_mode & 0o777)
+            archived_failure.unlink()
+            self._git(repository, "add", "-u")
+            self._git(repository, "commit", "-m", "delete historical evidence")
+            with self.assertRaisesRegex(ValueError, "full Git tree|deleted"):
+                SMOKE.validate_failed_smoke_archives(repository)
+
     def test_smoke_evidence_manifest_covers_complete_regular_file_tree(self) -> None:
         with tempfile.TemporaryDirectory() as temporary:
             root = Path(temporary)
@@ -901,7 +1057,7 @@ class S1MpiPrefixEquivalenceTest(unittest.TestCase):
                 GENERATOR,
                 "validate_smoke",
                 return_value=dict(smoke_payload),
-            ), mock.patch.object(
+            ) as generator_smoke, mock.patch.object(
                 VALIDATOR,
                 "versioned_tool_identity",
                 side_effect=self._fake_tool_identity,
@@ -925,6 +1081,7 @@ class S1MpiPrefixEquivalenceTest(unittest.TestCase):
                     smoke_summary_path=fixture["r8_summary"],
                 )
             self.assertEqual(payload["experiment_count"], 6)
+            self.assertIs(generator_smoke.call_args.kwargs["require_committed"], True)
             frozen_config = json.loads(config_path.read_text())
             replay_runtime = frozen_config["runtime"]["replay"]
             reference_runtime = frozen_config["runtime"]["reference"]
@@ -955,9 +1112,10 @@ class S1MpiPrefixEquivalenceTest(unittest.TestCase):
                 VALIDATOR,
                 "validate_smoke",
                 return_value=dict(smoke_payload),
-            ):
+            ) as validator_smoke:
                 validation = VALIDATOR.validate(repository, config_path, manifest_path)
             self.assertEqual(validation["first_experiment_id"], "S1-20260805-113")
+            self.assertIs(validator_smoke.call_args.kwargs["require_committed"], True)
             self._git(repository, "add", "config")
             self._git(repository, "commit", "-m", "preregister MPI replay")
             with mock.patch.object(

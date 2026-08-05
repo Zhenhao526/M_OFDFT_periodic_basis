@@ -2430,7 +2430,11 @@ def validate(
                 project_root, str(registered_smoke["summary_path"])
             )
             current_smoke = validate_smoke(
-                project_root, config, smoke_row, smoke_summary_path
+                project_root,
+                config,
+                smoke_row,
+                smoke_summary_path,
+                require_committed=True,
             )
             smoke_tracked_paths = current_smoke.pop("tracked_paths")
             frozen_paths.extend(smoke_tracked_paths)

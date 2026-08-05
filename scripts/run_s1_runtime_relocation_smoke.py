@@ -24,8 +24,13 @@ from s1_mpi_prefix_equivalence_common import (
     RUNTIME_SMOKE_REFERENCE_ID,
     RUNTIME_SMOKE_RUN_DIRECTORY,
     RUNTIME_SMOKE_ROOT,
+    git_clean,
 )
-from s1_runtime_relocation_smoke import finalize_smoke, validate_smoke
+from s1_runtime_relocation_smoke import (
+    finalize_smoke,
+    validate_smoke,
+    validate_smoke_precommit,
+)
 from write_s1_runtime_relocation_status import write_status
 
 
@@ -147,6 +152,7 @@ def _archive_existing_failed_smoke(project_root: Path, smoke_root: Path) -> None
             str(project_root),
             "log",
             "-1",
+            "--no-renames",
             "--diff-filter=A",
             "--format=%H",
             "--",
@@ -184,11 +190,83 @@ def _archive_existing_failed_smoke(project_root: Path, smoke_root: Path) -> None
     )
 
 
+def _only_smoke_worktree_changes(project_root: Path) -> bool:
+    completed = subprocess.run(
+        [
+            "git",
+            "-C",
+            str(project_root),
+            "status",
+            "--porcelain",
+            "--untracked-files=all",
+            "--",
+            ".",
+            f":(exclude){RUNTIME_SMOKE_ROOT.as_posix()}",
+        ],
+        stdout=subprocess.PIPE,
+        stderr=subprocess.PIPE,
+        text=True,
+        check=False,
+    )
+    if completed.returncode != 0:
+        raise ValueError(completed.stderr.strip() or "cannot inspect smoke worktree")
+    return not completed.stdout.strip()
+
+
+def _summary_exists_at_head(project_root: Path) -> bool:
+    relative = RUNTIME_SMOKE_ROOT.joinpath("summary.json").as_posix()
+    completed = subprocess.run(
+        ["git", "-C", str(project_root), "cat-file", "-e", f"HEAD:{relative}"],
+        stdout=subprocess.DEVNULL,
+        stderr=subprocess.DEVNULL,
+        check=False,
+    )
+    return completed.returncode == 0
+
+
+def _pending_commit_result(validation: dict) -> dict:
+    payload = dict(validation)
+    payload.pop("tracked_paths", None)
+    return {
+        "status": "pending_commit",
+        "message": "managed 074 smoke evidence passed precommit validation; commit the complete canonical smoke root",
+        "next_command": (
+            "git add analysis/s1/runtime_relocation_smoke_20260805 && "
+            "git commit -m 'record managed 074 runtime-relocation smoke'"
+        ),
+        "validation": payload,
+    }
+
+
 def run_smoke(project_root: Path, config: dict, row: dict[str, str]) -> dict:
     smoke_root = project_root / RUNTIME_SMOKE_ROOT
     run_directory = project_root / RUNTIME_SMOKE_RUN_DIRECTORY
     if smoke_root.exists() or smoke_root.is_symlink():
+        summary_path = smoke_root / "summary.json"
+        try:
+            existing_summary = json.loads(summary_path.read_text(encoding="utf-8"))
+        except (FileNotFoundError, json.JSONDecodeError):
+            existing_summary = None
+        if isinstance(existing_summary, dict) and existing_summary.get("status") == "accepted":
+            if not _only_smoke_worktree_changes(project_root):
+                raise ValueError("accepted smoke may be resumed only with no unrelated worktree changes")
+            if _summary_exists_at_head(project_root):
+                validation = validate_smoke(
+                    project_root, config, row, summary_path, require_committed=True
+                )
+                validation.pop("tracked_paths", None)
+                return {
+                    "status": "accepted_committed",
+                    "message": "managed 074 smoke is already committed and fully validated",
+                    "validation": validation,
+                }
+            validation = validate_smoke_precommit(
+                project_root, config, row, summary_path
+            )
+            return _pending_commit_result(validation)
         _archive_existing_failed_smoke(project_root, smoke_root)
+    elif not git_clean(project_root):
+        raise ValueError("managed smoke must start from a clean worktree")
     source_directory = project_root / row["input_directory"]
     completed = subprocess.run(
         [
@@ -228,9 +306,9 @@ def run_smoke(project_root: Path, config: dict, row: dict[str, str]) -> dict:
             f"managed 074 smoke rejected with workflow exit {completed.returncode}"
         )
     summary_path = smoke_root / "summary.json"
-    summary = finalize_smoke(project_root, config, row, summary_path)
-    validate_smoke(project_root, config, row, summary_path)
-    return summary
+    finalize_smoke(project_root, config, row, summary_path)
+    validation = validate_smoke_precommit(project_root, config, row, summary_path)
+    return _pending_commit_result(validation)
 
 
 def main() -> int:
@@ -282,6 +360,7 @@ def main() -> int:
         python=args.python,
         reference_mpirun=args.reference_mpirun,
         reference_launcher=args.reference_launcher,
+        require_clean_worktree=False,
     )
     row = next(
         value

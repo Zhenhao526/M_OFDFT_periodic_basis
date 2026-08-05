@@ -80,15 +80,32 @@ scripts/run_s1_runtime_relocation_smoke.py \
    strace 和结果摘要归档到受管证据目录并生成校验和。
 
 `evidence_manifest.tsv` 完整枚举 run 树每个 leaf 的相对路径、Git mode、字节数和
-SHA-256；新增、删除、类型/mode 或 blob 变化均拒绝。`summary.json` 还冻结 smoke code
-commit、smoke commit、runtime/tool/wrapper/ELF 身份和完整实现闭包；summary、manifest、
-run metadata 必须在同一 smoke commit 首次加入，且该 commit 的 parent 等于实际执行的
-code commit。
+SHA-256；新增、删除、类型/mode 或 blob 变化均拒绝。`summary.json` 冻结实际执行的
+`code_commit`、runtime/tool/wrapper/ELF 身份和完整实现闭包，但不伪造尚不存在的
+`smoke_commit`。首次成功先写完 manifest 与 summary，完成严格本地证据、原始 trace/maps、
+namespace、输入归档和科学量的 **precommit validation**，入口返回
+`status=pending_commit` 和下一条提交命令。此时必须执行：
+
+```bash
+git add analysis/s1/runtime_relocation_smoke_20260805
+git commit -m "record managed 074 runtime-relocation smoke"
+```
+
+随后以完全相同参数再次调用上述 smoke 入口；它不得重跑 074，而应幂等执行 committed
+validation 并返回 `status=accepted_committed`。committed validator 从当前 canonical
+完整树每个 leaf 的**最新** introduction 推导唯一 `smoke_commit`，要求所有 leaf 同次
+提交、当前 blob/mode/type 与该提交一致，并要求 `smoke_commit^ == code_commit`。正式
+generator/validator 只接受这一 committed 结果；未提交的 `pending_commit` 绝不能生成
+正式 config/manifest。
 
 失败 smoke 不删除、不原地覆盖。先提交完整失败根；下次专用入口自动移动到
 `failed_runs/runtime_relocation_smoke/attempt-<failure-commit-prefix>/` 并单独提交，随后
-才创建新 attempt。未提交、缺 machine-readable rejected status 或已接收 smoke 均拒绝
-自动归档。
+以同一 smoke ID 创建新 attempt。未提交或缺 machine-readable rejected status 的失败根
+拒绝自动归档；未提交的 accepted 根只幂等重做 precommit validation 并提示提交，已提交
+accepted 根只幂等验证。所有历史 failed-smoke archive 都是正式硬门：archive commit 的
+parent 必须等于目录名登记的 failure commit，failure/copy/current HEAD 的完整 leaf 集合、
+mode、type、blob 必须一致；任何历史 archive 的删除、增加、篡改或工作树漂移都使
+generator 和 validator 拒绝。
 
 074 smoke 只证明执行通路具备条件，不替代正式 preregistration 或六点结果。
 
@@ -151,7 +168,10 @@ namespace 内以 `size=1m,nosuid,nodev,noexec` 的 tmpfs 覆盖旧 runtime root�
 counterpart、postflight 和 summary 写入的绝对 deadline。每个阻塞子进程使用剩余时间
 timeout，逐块哈希前后复核 deadline，两层另有 process-wide watchdog。summary 记录
 timezone-aware UTC、start/end epoch 和 monotonic elapsed；validator 重算一致性，超时或
-elapsed 越界一律拒绝。
+elapsed 越界一律拒绝。唯一 start/deadline 在各 launcher 的 `main()` 审计入口建立并传入
+全部实现；SIGALRM 使用不会被 `OSError`/`TimeoutError`/宽泛 `Exception` 捕获吞掉的专用
+异常。alarm 触发后即使执行清理和零残留复核，最终也只能写出 rejected/124，不能恢复为
+accepted。
 
 运行环境从 `env -i` 建立，并要求：
 

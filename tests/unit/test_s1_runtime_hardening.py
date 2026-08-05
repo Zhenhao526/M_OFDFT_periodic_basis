@@ -15,9 +15,26 @@ ACTIVATE = PROJECT_ROOT / "environment" / "activate.sh"
 RUN_SINGLE = PROJECT_ROOT / "scripts" / "run_s1_single.sh"
 RUN_MANIFEST = PROJECT_ROOT / "scripts" / "run_s1_non_equilibrium_manifest.sh"
 STATUS_WRITER = PROJECT_ROOT / "scripts" / "write_s1_runtime_relocation_status.py"
+SMOKE_RUNNER = PROJECT_ROOT / "scripts" / "run_s1_runtime_relocation_smoke.py"
 
 
 class S1RuntimeHardeningTest(unittest.TestCase):
+    def test_managed_smoke_entry_is_executable_and_direct_help_works(self) -> None:
+        self.assertTrue(os.access(SMOKE_RUNNER, os.X_OK))
+        stage = subprocess.check_output(
+            ["git", "-C", str(PROJECT_ROOT), "ls-files", "--stage", str(SMOKE_RUNNER)],
+            text=True,
+        )
+        self.assertTrue(stage.startswith("100755 "), stage)
+        completed = subprocess.run(
+            [str(SMOKE_RUNNER), "--help"],
+            check=False,
+            text=True,
+            capture_output=True,
+        )
+        self.assertEqual(completed.returncode, 0, completed.stderr)
+        self.assertIn("managed S1-R8 074", completed.stdout)
+
     def test_status_writer_synthesizes_strict_early_failure_bundle(self) -> None:
         with tempfile.TemporaryDirectory() as temporary:
             run = Path(temporary) / "runs/S1-20260805-113"

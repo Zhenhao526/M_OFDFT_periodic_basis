@@ -24,6 +24,7 @@ from s1_mpi_prefix_equivalence_common import (
     path_from_project,
     raw_observables,
     reparse_run,
+    require_tracked_at_head,
     sha256,
 )
 
@@ -64,6 +65,55 @@ SMOKE_IMPLEMENTATION_PATHS = (
     "scripts/runtime_relocation_rank_wrapper.py",
     "scripts/parse_s1_single.py",
 )
+FAILED_SMOKE_ARCHIVE_ROOT = Path("failed_runs/runtime_relocation_smoke")
+
+
+def _git_bytes(project_root: Path, *arguments: str) -> bytes:
+    completed = subprocess.run(
+        ["git", "-C", str(project_root), *arguments],
+        stdout=subprocess.PIPE,
+        stderr=subprocess.PIPE,
+        check=False,
+    )
+    if completed.returncode != 0:
+        detail = completed.stderr.decode("utf-8", errors="replace").strip()
+        raise ValueError(f"git {' '.join(arguments)} failed: {detail}")
+    return completed.stdout
+
+
+def _git_tree_entries(
+    project_root: Path, commit: str, prefix: str
+) -> dict[str, tuple[str, str, str]]:
+    normalized = prefix.rstrip("/")
+    output = _git_bytes(
+        project_root, "ls-tree", "-r", "-z", commit, "--", normalized
+    )
+    entries: dict[str, tuple[str, str, str]] = {}
+    for raw in output.split(b"\0"):
+        if not raw:
+            continue
+        try:
+            metadata, raw_path = raw.split(b"\t", 1)
+            mode, object_type, object_id = metadata.decode("ascii").split(" ", 2)
+            path = raw_path.decode("utf-8", errors="surrogateescape")
+        except ValueError as error:
+            raise ValueError(f"cannot parse Git tree below {normalized}") from error
+        expected_prefix = normalized + "/"
+        if not path.startswith(expected_prefix):
+            raise ValueError(f"Git tree path escaped {normalized}: {path}")
+        suffix = path[len(expected_prefix) :]
+        if not suffix or suffix in entries:
+            raise ValueError(f"duplicate/empty Git tree entry below {normalized}")
+        entries[suffix] = (mode, object_type, object_id)
+    return entries
+
+
+def _tree_sha256(entries: dict[str, tuple[str, str, str]]) -> str:
+    encoded = json.dumps(
+        sorted((path, *identity) for path, identity in entries.items()),
+        separators=(",", ":"),
+    ).encode("utf-8")
+    return hashlib.sha256(encoded).hexdigest()
 
 
 def _atomic_text(path: Path, value: str) -> None:
@@ -186,37 +236,55 @@ def _implementation_closure(project_root: Path, code_commit: str) -> list[dict]:
 def _validate_smoke_commit_chain(
     project_root: Path, code_commit: str, paths: tuple[Path, ...]
 ) -> str:
+    canonical_prefix = RUNTIME_SMOKE_ROOT.as_posix()
+    head_entries = _git_tree_entries(project_root, "HEAD", canonical_prefix)
+    expected_suffixes = {
+        path.resolve().relative_to((project_root / RUNTIME_SMOKE_ROOT).resolve()).as_posix()
+        for path in paths
+    }
+    if not head_entries or set(head_entries) != expected_suffixes:
+        raise ValueError("managed smoke committed tree differs from complete evidence tree")
     additions = []
     for path in paths:
         relative = path.relative_to(project_root).as_posix()
-        values = subprocess.check_output(
-            [
-                "git",
-                "-C",
-                str(project_root),
-                "log",
-                "--diff-filter=A",
-                "--format=%H",
-                "--",
-                relative,
-            ],
-            text=True,
-        ).splitlines()
-        if len(values) != 1:
-            raise ValueError(
-                f"managed smoke artifact must have one introduction commit: {relative}"
-            )
+        values = _git_bytes(
+            project_root,
+            "log",
+            "--no-renames",
+            "--diff-filter=A",
+            "--format=%H",
+            "HEAD",
+            "--",
+            relative,
+        ).decode("ascii").splitlines()
+        if not values:
+            raise ValueError(f"managed smoke artifact has no introduction: {relative}")
+        # A failed canonical attempt may have introduced the same path before it
+        # was archived.  Bind the current tree to the newest introduction, not
+        # to a historically unique pathname.
         additions.append(values[0])
-        committed = subprocess.check_output(
-            ["git", "-C", str(project_root), "cat-file", "blob", f"{values[0]}:{relative}"]
+        committed = _git_bytes(
+            project_root, "cat-file", "blob", f"{values[0]}:{relative}"
         )
         if committed != path.read_bytes():
             raise ValueError(f"managed smoke artifact differs from introduction: {relative}")
     if len(set(additions)) != 1:
         raise ValueError("managed smoke summary/manifest/run metadata were not committed together")
     smoke_commit = additions[0]
-    parent = subprocess.check_output(
-        ["git", "-C", str(project_root), "rev-parse", f"{smoke_commit}^"], text=True
+    if _git_tree_entries(project_root, smoke_commit, canonical_prefix) != head_entries:
+        raise ValueError("managed smoke current tree differs from its latest introduction")
+    status = _git_bytes(
+        project_root,
+        "status",
+        "--porcelain",
+        "--untracked-files=all",
+        "--",
+        canonical_prefix,
+    ).decode("utf-8", errors="replace")
+    if status.strip():
+        raise ValueError("managed smoke worktree differs from HEAD")
+    parent = _git_bytes(project_root, "rev-parse", f"{smoke_commit}^").decode(
+        "ascii"
     ).strip()
     if parent != code_commit:
         raise ValueError("managed smoke commit parent differs from executed code_commit")
@@ -229,6 +297,131 @@ def _validate_smoke_commit_chain(
     if ancestor.returncode != 0:
         raise ValueError("managed smoke commit is not an ancestor of HEAD")
     return smoke_commit
+
+
+def validate_failed_smoke_archives(project_root: Path) -> tuple[list[dict], list[Path]]:
+    """Validate every failed managed-smoke archive reachable from HEAD."""
+
+    project_root = project_root.resolve()
+    archive_root = FAILED_SMOKE_ARCHIVE_ROOT.as_posix()
+    status = _git_bytes(
+        project_root,
+        "status",
+        "--porcelain",
+        "--untracked-files=all",
+        "--",
+        archive_root,
+    ).decode("utf-8", errors="replace")
+    if status.strip():
+        raise ValueError("failed managed-smoke archive worktree differs from HEAD")
+
+    historical_paths = _git_bytes(
+        project_root,
+        "log",
+        "--no-renames",
+        "--diff-filter=A",
+        "--format=",
+        "--name-only",
+        "HEAD",
+        "--",
+        archive_root,
+    ).decode("utf-8", errors="surrogateescape").splitlines()
+    head_root_entries = _git_tree_entries(project_root, "HEAD", archive_root)
+    all_paths = [
+        *[path for path in historical_paths if path],
+        *[f"{archive_root}/{suffix}" for suffix in head_root_entries],
+    ]
+    attempt_names: set[str] = set()
+    prefix = archive_root + "/"
+    for path in all_paths:
+        if not path.startswith(prefix):
+            raise ValueError(f"failed smoke history escaped archive root: {path}")
+        attempt = path[len(prefix) :].split("/", 1)[0]
+        if not re.fullmatch(r"attempt-[0-9a-f]{12}", attempt):
+            raise ValueError(f"invalid failed managed-smoke archive path: {path}")
+        attempt_names.add(attempt)
+
+    archives: list[dict] = []
+    tracked_paths: list[Path] = []
+    canonical_prefix = RUNTIME_SMOKE_ROOT.as_posix()
+    for attempt in sorted(attempt_names):
+        archive_prefix = f"{archive_root}/{attempt}"
+        current_entries = _git_tree_entries(project_root, "HEAD", archive_prefix)
+        if not current_entries:
+            raise ValueError(f"historical failed smoke archive was deleted: {archive_prefix}")
+        addition_commits: set[str] = set()
+        for suffix in current_entries:
+            relative = f"{archive_prefix}/{suffix}"
+            additions = _git_bytes(
+                project_root,
+                "log",
+                "--no-renames",
+                "--diff-filter=A",
+                "--format=%H",
+                "HEAD",
+                "--",
+                relative,
+            ).decode("ascii").splitlines()
+            if len(additions) != 1:
+                raise ValueError(
+                    f"failed smoke archive leaf must have one introduction: {relative}"
+                )
+            addition_commits.add(additions[0])
+            tracked_paths.append(project_root / relative)
+        if len(addition_commits) != 1:
+            raise ValueError(f"failed smoke archive was not introduced atomically: {archive_prefix}")
+        archive_commit = next(iter(addition_commits))
+        failure_commit = _git_bytes(
+            project_root, "rev-parse", f"{attempt.removeprefix('attempt-')}^{{commit}}"
+        ).decode("ascii").strip()
+        archive_parent = _git_bytes(
+            project_root, "rev-parse", f"{archive_commit}^"
+        ).decode("ascii").strip()
+        if archive_parent != failure_commit:
+            raise ValueError(f"failed smoke archive parent mismatch: {archive_prefix}")
+        failure_entries = _git_tree_entries(
+            project_root, failure_commit, canonical_prefix
+        )
+        introduction_entries = _git_tree_entries(
+            project_root, archive_commit, archive_prefix
+        )
+        if (
+            not failure_entries
+            or failure_entries != introduction_entries
+            or introduction_entries != current_entries
+        ):
+            raise ValueError(
+                f"failed smoke archive full Git tree differs from failure commit: {archive_prefix}"
+            )
+        replay_blob = _git_bytes(
+            project_root,
+            "cat-file",
+            "blob",
+            f"{failure_commit}:{canonical_prefix}/run/replay_status.json",
+        )
+        failure_blob = _git_bytes(
+            project_root,
+            "cat-file",
+            "blob",
+            f"{failure_commit}:{canonical_prefix}/run/failure.json",
+        )
+        try:
+            replay = json.loads(replay_blob)
+            failure = json.loads(failure_blob)
+        except json.JSONDecodeError as error:
+            raise ValueError(f"failed smoke archive status JSON is invalid: {archive_prefix}") from error
+        if replay.get("status") != "rejected" or not isinstance(failure, dict):
+            raise ValueError(f"failed smoke archive did not preserve rejection: {archive_prefix}")
+        archives.append(
+            {
+                "archive_path": archive_prefix,
+                "failure_commit": failure_commit,
+                "archive_commit": archive_commit,
+                "file_count": len(current_entries),
+                "tree_sha256": _tree_sha256(current_entries),
+            }
+        )
+    return archives, tracked_paths
 
 
 def _scientific_equivalence(
@@ -412,7 +605,7 @@ def finalize_smoke(
     return summary
 
 
-def validate_smoke(
+def validate_smoke_precommit(
     project_root: Path,
     config: dict,
     row: dict[str, str],
@@ -454,16 +647,6 @@ def validate_smoke(
         raise ValueError("managed smoke summary differs from reparsed evidence")
     if not re.fullmatch(r"[0-9a-f]{40}", str(summary["code_commit"])):
         raise ValueError("managed smoke code_commit is invalid")
-    smoke_commit = _validate_smoke_commit_chain(
-        project_root,
-        summary["code_commit"],
-        (
-            summary_path,
-            manifest_path,
-            run_directory / "experiment_metadata.json",
-        ),
-    )
-
     # Re-run the detailed raw strace/maps/namespace validator against the
     # in-memory pre-registration contract.  This has no dependency on a formal
     # 113--118 config/manifest on disk.
@@ -498,7 +681,13 @@ def validate_smoke(
     for name, expected in archived.items():
         if (run_directory / name).read_bytes() != expected:
             raise ValueError(f"managed smoke archived {name} differs from 074 source")
-    tracked_paths = [summary_path, manifest_path, *[run_directory / row["relative_path"] for row in actual_rows]]
+    archive_validation, archive_paths = validate_failed_smoke_archives(project_root)
+    tracked_paths = [
+        summary_path,
+        manifest_path,
+        *[run_directory / item["relative_path"] for item in actual_rows],
+        *archive_paths,
+    ]
     return {
         "status": "accepted",
         "smoke_id": RUNTIME_SMOKE_ID,
@@ -510,10 +699,45 @@ def validate_smoke(
         "evidence_manifest_sha256": sha256(manifest_path),
         "evidence_file_count": len(actual_rows),
         "code_commit": summary["code_commit"],
-        "smoke_commit": smoke_commit,
         "runtime_registration_sha256": summary["runtime_registration_sha256"],
         "runtime_identities": summary["runtime_identities"],
         "status_gates": summary["status_gates"],
         "scientific_equivalence": summary["scientific_equivalence"],
+        "failed_smoke_archives": archive_validation,
         "tracked_paths": tracked_paths,
     }
+
+
+def validate_smoke(
+    project_root: Path,
+    config: dict,
+    row: dict[str, str],
+    summary_path: Path,
+    *,
+    require_committed: bool = True,
+) -> dict:
+    """Validate managed smoke evidence, optionally requiring its Git closure."""
+
+    validation = validate_smoke_precommit(project_root, config, row, summary_path)
+    if not require_committed:
+        return validation
+    tracked_paths = validation["tracked_paths"]
+    tracking_failures = require_tracked_at_head(project_root, tracked_paths)
+    if tracking_failures:
+        raise ValueError(
+            "managed smoke evidence is not committed at HEAD:\n- "
+            + "\n- ".join(tracking_failures)
+        )
+    canonical_root = (project_root / RUNTIME_SMOKE_ROOT).resolve()
+    canonical_paths = tuple(
+        path
+        for path in tracked_paths
+        if path.resolve().is_relative_to(canonical_root)
+    )
+    smoke_commit = _validate_smoke_commit_chain(
+        project_root,
+        validation["code_commit"],
+        canonical_paths,
+    )
+    validation["smoke_commit"] = smoke_commit
+    return validation

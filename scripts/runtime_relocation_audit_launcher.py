@@ -38,6 +38,11 @@ RESULT_PATTERN = re.compile(
     r"\)\s+=\s+(-?\d+|0x[0-9a-fA-F]+)(?:\s+([A-Z][A-Z0-9]+))?"
 )
 SYSCALL_PATTERN = re.compile(r"^([A-Za-z_][A-Za-z0-9_]*)\(")
+ABSOLUTE_WATCHDOG_SECONDS = 7200.0
+
+
+class AbsoluteWatchdogExpired(BaseException):
+    """Uncatchable by broad operational-error handlers inside the audit."""
 
 
 def _within(path: Path, root: Path) -> bool:
@@ -760,7 +765,13 @@ def _required_environment() -> tuple[str, ...]:
     )
 
 
-def _main_impl() -> int:
+def _main_impl(
+    started: float,
+    started_monotonic: float,
+    started_at_utc: str,
+    total_deadline: float,
+    watchdog_state: dict[str, object],
+) -> int:
     audit_directory = Path(os.environ.get("M_OFDFT_MPI_AUDIT_DIR", "."))
     audit_directory.mkdir(parents=True, exist_ok=True)
     objects_path = audit_directory / "objects.tsv"
@@ -773,10 +784,6 @@ def _main_impl() -> int:
     launcher_pid: int | None = None
     rank_pids: dict[int, int] = {}
     exit_code = 97
-    started = time.time()
-    started_monotonic = time.monotonic()
-    started_at_utc = datetime.now(timezone.utc).isoformat()
-    total_deadline = started_monotonic + 7200
     strace_before: dict = {}
     strace_after: dict = {}
     real_command: list[str] = []
@@ -791,6 +798,8 @@ def _main_impl() -> int:
         "all_group_members_gone": False,
     }
     known_pids: dict[int, dict] = {}
+    watchdog_state["known_pids"] = known_pids
+    watchdog_state["strace_directory"] = strace_directory
     terminal_process_evidence = {
         "known_pid_count": 0,
         "known_pids": [],
@@ -931,6 +940,7 @@ def _main_impl() -> int:
             stdin=subprocess.DEVNULL,
             start_new_session=True,
         )
+        watchdog_state["process"] = process
         _register_known_pids(known_pids, [process.pid], "strace_root")
         rank_pids, launcher_pid, handshake_failures = _wait_for_ready(
             process,
@@ -1297,45 +1307,103 @@ def _main_impl() -> int:
 
 
 def _deadline_alarm(_signum, _frame) -> None:
-    raise TimeoutError("runtime audit absolute watchdog expired")
+    raise AbsoluteWatchdogExpired("runtime audit absolute watchdog expired")
 
 
 def main() -> int:
     """Enforce a process-wide deadline, including preflight and postflight work."""
 
+    started_monotonic = time.monotonic()
+    started = time.time()
+    started_at_utc = datetime.now(timezone.utc).isoformat()
+    total_deadline = started_monotonic + ABSOLUTE_WATCHDOG_SECONDS
+    watchdog_state: dict[str, object] = {}
     previous_handler = signal.getsignal(signal.SIGALRM)
     signal.signal(signal.SIGALRM, _deadline_alarm)
-    signal.setitimer(signal.ITIMER_REAL, 7200.0)
     try:
-        return _main_impl()
-    except TimeoutError as error:
+        remaining = total_deadline - time.monotonic()
+        if remaining <= 0:
+            raise AbsoluteWatchdogExpired(
+                "runtime audit deadline elapsed before watchdog activation"
+            )
+        signal.setitimer(signal.ITIMER_REAL, remaining)
+        return _main_impl(
+            started,
+            started_monotonic,
+            started_at_utc,
+            total_deadline,
+            watchdog_state,
+        )
+    except AbsoluteWatchdogExpired as error:
+        signal.setitimer(signal.ITIMER_REAL, 0.0)
+        cleanup_evidence = {
+            "members_before_cleanup": [],
+            "members_after_cleanup": [],
+            "tracee_pids_before_cleanup": [],
+            "tracee_pids_after_cleanup": [],
+            "all_group_members_gone": False,
+        }
+        terminal_process_evidence = {
+            "known_pid_count": 0,
+            "known_pids": [],
+            "process_group": None,
+            "process_group_members_after": [],
+            "all_known_pids_gone": False,
+        }
+        cleanup_failures: list[str] = []
+        process = watchdog_state.get("process")
+        if process is not None:
+            try:
+                known_pids = watchdog_state.get("known_pids")
+                if not isinstance(known_pids, dict):
+                    known_pids = {}
+                _register_known_pids(known_pids, [process.pid], "watchdog_root")
+                _register_known_pids(
+                    known_pids, _descendants(process.pid), "watchdog_descendant_scan"
+                )
+                cleanup_evidence = _terminate_process_group(process)
+                _register_known_pids(
+                    known_pids,
+                    cleanup_evidence["tracee_pids_before_cleanup"],
+                    "watchdog_cleanup_scan",
+                )
+                strace_directory = watchdog_state.get("strace_directory")
+                if isinstance(strace_directory, Path):
+                    _register_known_pids(
+                        known_pids,
+                        _trace_pids(strace_directory),
+                        "watchdog_strace_trace_file",
+                    )
+                terminal_process_evidence = _prove_known_pids_gone(
+                    known_pids, time.monotonic() + 5.0, process.pid
+                )
+            except Exception as cleanup_error:
+                cleanup_failures.append(f"watchdog_cleanup_failed:{cleanup_error}")
         audit_directory = Path(os.environ.get("M_OFDFT_MPI_AUDIT_DIR", "."))
         audit_directory.mkdir(parents=True, exist_ok=True)
+        ended_monotonic = time.monotonic()
+        ended = time.time()
         _atomic_json(
             audit_directory / "audit.json",
             {
                 "schema_version": 2,
                 "protocol": "runtime_relocation_equivalence",
                 "status": "rejected",
-                "failure_reasons": [f"runtime_audit_absolute_watchdog:{error}"],
+                "failure_reasons": [
+                    f"runtime_audit_absolute_watchdog:{error}",
+                    *cleanup_failures,
+                ],
                 "launcher_exit_code": 124,
                 "runtime_wall_timeout_seconds": 7200,
                 "absolute_deadline_watchdog_seconds": 7200,
+                "started_at_utc": started_at_utc,
+                "ended_at_utc": datetime.now(timezone.utc).isoformat(),
+                "started_epoch_seconds": started,
+                "ended_epoch_seconds": ended,
+                "elapsed_seconds": ended_monotonic - started_monotonic,
                 "timeout_triggered": True,
-                "process_group_cleanup": {
-                    "members_before_cleanup": [],
-                    "members_after_cleanup": [],
-                    "tracee_pids_before_cleanup": [],
-                    "tracee_pids_after_cleanup": [],
-                    "all_group_members_gone": False,
-                },
-                "terminal_process_evidence": {
-                    "known_pid_count": 0,
-                    "known_pids": [],
-                    "process_group": None,
-                    "process_group_members_after": [],
-                    "all_known_pids_gone": False,
-                },
+                "process_group_cleanup": cleanup_evidence,
+                "terminal_process_evidence": terminal_process_evidence,
             },
         )
         return 124

@@ -643,7 +643,11 @@ def build_frozen_payload(
             if row["reference_experiment_id"] == "S1-20260805-074"
         )
         smoke_validation = validate_smoke(
-            project_root, config, smoke_row, smoke_summary_path.resolve()
+            project_root,
+            config,
+            smoke_row,
+            smoke_summary_path.resolve(),
+            require_committed=True,
         )
         smoke_tracked_paths = smoke_validation.pop("tracked_paths")
         tracked_paths.extend(smoke_tracked_paths)
