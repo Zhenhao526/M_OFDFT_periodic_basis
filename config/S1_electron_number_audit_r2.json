@@ -1,0 +1,866 @@
+{
+  "acceptance": {
+    "coverage_required": 90,
+    "failed_allowed": 0,
+    "missing_allowed": 0,
+    "per_point_certified_relative_error_strictly_less_than": 1e-10,
+    "replay_energy_delta_mev_per_atom_strictly_less_than": 0.1,
+    "replay_pressure_delta_gpa_strictly_less_than": 0.02
+  },
+  "density": {
+    "certification_arithmetic": "exact_fraction_including_text_rounding_bound",
+    "cube_density_unit": "electron_per_bohr3",
+    "cube_grid_dimension_authority": "raw_running_scf_log_equal_to_source",
+    "cube_output_control": [
+      1,
+      17
+    ],
+    "cube_sum_algorithm": "exact_scaled_integer_decimal_sum_with_math_fsum_crosscheck",
+    "cube_volume_authority": "STRU",
+    "expected_electron_authority": "STRU_atom_counts_times_local_pseudopotential_zion",
+    "reciprocal_integral": "cell_volume_bohr3_times_sum_spin_real_rho_G0",
+    "reciprocal_spin_count": 1
+  },
+  "execution": {
+    "execution_order": [
+      "S1-20260805-130",
+      "S1-20260805-135",
+      "S1-20260805-131",
+      "S1-20260805-132",
+      "S1-20260805-133",
+      "S1-20260805-134",
+      "S1-20260805-136",
+      "S1-20260805-137",
+      "S1-20260805-138",
+      "S1-20260805-139",
+      "S1-20260805-140",
+      "S1-20260805-141",
+      "S1-20260805-142",
+      "S1-20260805-143",
+      "S1-20260805-144",
+      "S1-20260805-145",
+      "S1-20260805-146",
+      "S1-20260805-147",
+      "S1-20260805-148"
+    ],
+    "pilot_audit_ids": [
+      "S1-20260805-130",
+      "S1-20260805-135"
+    ],
+    "r2_audit_ids": [
+      "S1-20260805-130",
+      "S1-20260805-131",
+      "S1-20260805-132",
+      "S1-20260805-133",
+      "S1-20260805-134",
+      "S1-20260805-135",
+      "S1-20260805-136",
+      "S1-20260805-137",
+      "S1-20260805-138",
+      "S1-20260805-139",
+      "S1-20260805-140",
+      "S1-20260805-141",
+      "S1-20260805-142",
+      "S1-20260805-143",
+      "S1-20260805-144",
+      "S1-20260805-145",
+      "S1-20260805-146",
+      "S1-20260805-147",
+      "S1-20260805-148"
+    ],
+    "remaining_forbidden_until_pilots_accepted": true
+  },
+  "generated_at": "2026-08-05T17:31:39.493585+00:00",
+  "generated_from_commit": "125dd377ae5b68c8954907423a39c8ab9f606c2e",
+  "implementation": {
+    "docs/S1_G1_ELECTRON_NUMBER_AUDIT_PROTOCOL.md": "8cb9b295c4c4f68f734725557dc1cad299eefae141463e6a8c6eea33ea99f975",
+    "docs/S1_G1_ELECTRON_NUMBER_AUDIT_R2_PROTOCOL.md": "8ced0bc56b064bcac001b7204a8a4b0400519d6439ef19dcc522e62abe684cf9",
+    "environment/activate.sh": "438dff0aee97dc9be05df124e43ed58de97f91d2dd69f9416a7c29a4d6d1bd5e",
+    "scripts/analyze_s1_electron_number_audit.py": "83f7d88978d3e5cc36d29370eb719187848d3f66055ce37d34de2463c2bc7c4c",
+    "scripts/analyze_s1_electron_number_audit_r2.py": "db668ffab32c155dbe45262c26b2f27ee6fa10705047607b330b0a56beac2503",
+    "scripts/analyze_s1_eos.py": "81471bfb4b72a8b04ff9765310723b0387883dd1714a9151423d6dec26ffe583",
+    "scripts/analyze_s1_non_equilibrium.py": "6a4f4346fe76bccdb085592aa1cda943144a3502513dc0d47121ae3363f619c9",
+    "scripts/generate_s1_electron_number_audit.py": "20afe592358c16a5b83573b448e7ec68bfab35a33382abbb614515c36bce335b",
+    "scripts/generate_s1_electron_number_audit_r2.py": "6704f9efc99c056d9bfab1628d9b654ef61bffb6c765b0b231fc9e5a1e71af35",
+    "scripts/generate_s1_non_equilibrium_manifest.py": "47f7e942c7f6540f9acf01698a83d166cf05edf8f400daa8bd4366e136581379",
+    "scripts/parse_s1_single.py": "458e20f451bd998405923adb69942ed8e5161923aef602cf86ffa0a7212979ce",
+    "scripts/run_s1_electron_number_audit.sh": "db8f5e3c628db3f87ad65f0feb29dbe6dd82e22ba472c2683b209b5b2f8c528a",
+    "scripts/run_s1_electron_number_audit_r2.sh": "767176a262707b60fe1991d1d17b298eb9c3cbbe5b7a5ae57ca5e78fe5786d95",
+    "scripts/run_s1_single.sh": "8348c5576a79eb7c594f328a0737d55d0698a92945ef4486f11e19d1e9feb83d",
+    "scripts/runtime_relocation_audit_launcher.py": "1a8ed494ef7c804a5b7c292e1b11ddf7b4ece378986ab92274221ff282c2191e",
+    "scripts/runtime_relocation_audit_launcher_g1_r2.py": "7c2e265b191455af9721ef2775b3fd1a4a0778a27a0cb36d3473cb872482b41b",
+    "scripts/runtime_relocation_namespace_launcher.py": "1098ed4c98691d07b394e04f93e1430504cd24beb21e02d3f19ae29b0bbbd0ee",
+    "scripts/runtime_relocation_namespace_payload.sh": "0e6a536214fb29964339d2cef427da8ab1f7c8454fc797e26448f3b9ca511242",
+    "scripts/runtime_relocation_rank_wrapper.py": "0369af0d473c7d2becced933c3b625a1a442b142681aa986120e0e164c9987d6",
+    "scripts/s1_electron_number_common.py": "608b4e21756adecad967aac9254a421ba56f2aa8a6c18899e136566345eab161",
+    "scripts/s1_g1_kmp_runtime_contract.py": "846c6df164c68e60bdfed01f83138259d23e98710a9e05fa7a576699cc98dcc6",
+    "scripts/s1_mpi_prefix_equivalence_common.py": "aa2f442e31e04441abb1238b7778038229e7be769a5031b65320ebf445945fde",
+    "scripts/s1_runtime_relocation_elf.py": "869b076d773538d9934e6dd34302bb10ba12639502c66695a12cef73d4d90469",
+    "scripts/s1_runtime_relocation_smoke.py": "322443f077bfbd0776f183f0477ab0df5ac7c60c52a1ac1f7ebbd8ae7f88acc6",
+    "scripts/validate_s1_electron_number_audit.py": "a70e014eab81e8b56686877312c08cd005c348d068ccefd8c8539e7ecf9ca7a9",
+    "scripts/validate_s1_electron_number_audit_r2.py": "1077728517c9340ab79a81428332e8d8f7c06d4ce87dca9234f5f4a450915255",
+    "scripts/validate_s1_mpi_prefix_equivalence.py": "5b92fcd38234ebcdf624002dac6358079a91e62effada5940d9b1f8454917cda",
+    "scripts/validate_s1_non_equilibrium_manifest.py": "1afb9f062f41f3a2e7eb064817f7532c9945a5f6bcc27b35f7c57ea810953f84",
+    "scripts/write_s1_runtime_relocation_status.py": "711e4f4123c12cbee6134e27edc6c3ef605831dbe35d226085bd5032017d5bc1",
+    "tests/unit/test_s1_electron_number_audit.py": "6a07bdb6d9785ac85ddefcdf1cc8b863770b6600b6f7d92c8ab56f3702d500ef",
+    "tests/unit/test_s1_electron_number_audit_r2.py": "f73fb3f409a296929025b740d38ff237bd4c219fa7c05fb4773bf55bf5a6653c",
+    "tests/unit/test_s1_g1_kmp_runtime_contract.py": "0d2ca491fa8ad5a42ebe33e2388bf6bf9b66ee6776a3a38dbd8b0acfbf430a21"
+  },
+  "implementation_git_modes": {
+    "docs/S1_G1_ELECTRON_NUMBER_AUDIT_PROTOCOL.md": "100644",
+    "docs/S1_G1_ELECTRON_NUMBER_AUDIT_R2_PROTOCOL.md": "100644",
+    "environment/activate.sh": "100755",
+    "scripts/analyze_s1_electron_number_audit.py": "100755",
+    "scripts/analyze_s1_electron_number_audit_r2.py": "100755",
+    "scripts/analyze_s1_eos.py": "100755",
+    "scripts/analyze_s1_non_equilibrium.py": "100755",
+    "scripts/generate_s1_electron_number_audit.py": "100755",
+    "scripts/generate_s1_electron_number_audit_r2.py": "100755",
+    "scripts/generate_s1_non_equilibrium_manifest.py": "100755",
+    "scripts/parse_s1_single.py": "100755",
+    "scripts/run_s1_electron_number_audit.sh": "100755",
+    "scripts/run_s1_electron_number_audit_r2.sh": "100755",
+    "scripts/run_s1_single.sh": "100755",
+    "scripts/runtime_relocation_audit_launcher.py": "100755",
+    "scripts/runtime_relocation_audit_launcher_g1_r2.py": "100755",
+    "scripts/runtime_relocation_namespace_launcher.py": "100755",
+    "scripts/runtime_relocation_namespace_payload.sh": "100755",
+    "scripts/runtime_relocation_rank_wrapper.py": "100755",
+    "scripts/s1_electron_number_common.py": "100644",
+    "scripts/s1_g1_kmp_runtime_contract.py": "100755",
+    "scripts/s1_mpi_prefix_equivalence_common.py": "100755",
+    "scripts/s1_runtime_relocation_elf.py": "100755",
+    "scripts/s1_runtime_relocation_smoke.py": "100644",
+    "scripts/validate_s1_electron_number_audit.py": "100755",
+    "scripts/validate_s1_electron_number_audit_r2.py": "100755",
+    "scripts/validate_s1_mpi_prefix_equivalence.py": "100755",
+    "scripts/validate_s1_non_equilibrium_manifest.py": "100755",
+    "scripts/write_s1_runtime_relocation_status.py": "100644",
+    "tests/unit/test_s1_electron_number_audit.py": "100644",
+    "tests/unit/test_s1_electron_number_audit_r2.py": "100644",
+    "tests/unit/test_s1_g1_kmp_runtime_contract.py": "100644"
+  },
+  "kmp_contract": {
+    "expected_uid": 0,
+    "libomp": {
+      "path": "/home/shenwei01/M_OFDFT_recovery_S0_20260805_001/conda_prefix/lib/libomp.so",
+      "realpath": "/home/shenwei01/M_OFDFT_recovery_S0_20260805_001/conda_prefix/lib/libomp.so",
+      "sha256": "3fe1a40e7676ecb914fde29f45a1083656b9eafea07c680970d8dc4bb8bd0e84"
+    },
+    "lifecycle_count_per_run": 4,
+    "pattern": "^/dev/shm/__KMP_REGISTERED_LIB_[1-9][0-9]*_0$",
+    "rank_count_per_run": 4,
+    "successful_syscall_count_per_run": 12
+  },
+  "manifest_path": "config/S1_electron_number_audit_r2_manifest.tsv",
+  "manifest_sha256": "961eded6054f5382ce156754b98b1a0bc4b837cfb1b8491fc8ecf120566b43ce",
+  "protocol_revision": "S1-G1-ELECTRON-NUMBER-R2",
+  "r1_bridge": {
+    "config_path": "config/S1_electron_number_audit.json",
+    "config_sha256": "b87e0ca7ce089c529849468e2437b96a019f096a9be327627d1954a4f20d3010",
+    "failure_archives": {
+      "S1-20260805-127": {
+        "archive_commit": "0da560bad66591dafe1480c02c69ce97df930612",
+        "archive_path": "failed_runs/runtime_relocation/S1-20260805-127/attempt-95b817c7918a",
+        "failed_attempt_commit": "95b817c7918a4055d4f7e940d0a9f63bbdb27411",
+        "tree_oid": "612b8e910f49f83375c29795bf4689c3789692e6"
+      },
+      "S1-20260805-130": {
+        "archive_commit": "8eb9231cd4500c4bb2d6a4d84aa822ba234374d8",
+        "archive_path": "failed_runs/runtime_relocation/S1-20260805-130/attempt-a894c735d95c",
+        "failed_attempt_commit": "a894c735d95c3fc8d74f3cdb7fb8b16d1fd2c075",
+        "tree_oid": "1fc6f5dbc7cf282df5a8f6646b48d61ff27cb0f3"
+      }
+    },
+    "manifest_path": "config/S1_electron_number_audit_manifest.tsv",
+    "manifest_sha256": "128ac010f20dd236068503cce2ddb704facd41ed9dd9fe040e15d218799fbd66",
+    "preregistration_commit": "f3efec315b1074c34709f8040f978d72575b6f10",
+    "reused_audit_ids": [
+      "S1-20260805-119",
+      "S1-20260805-120",
+      "S1-20260805-121",
+      "S1-20260805-122",
+      "S1-20260805-123",
+      "S1-20260805-124",
+      "S1-20260805-125",
+      "S1-20260805-126",
+      "S1-20260805-127",
+      "S1-20260805-128",
+      "S1-20260805-129"
+    ],
+    "reused_runs": {
+      "S1-20260805-119": {
+        "density_path": "runs/S1-20260805-119/OUT.g1_ne_119_from_113/chg.cube",
+        "density_sha256": "301270f66b8b3e77420bc7bad402a741c28597c49bfc284758de38336c208ffd",
+        "evidence_path": "runs/S1-20260805-119/electron_number_audit.json",
+        "evidence_sha256": "38b53b45ab60341161c40debaf3dee06c4caf4a99ca3f64c69194ac073f5c38d",
+        "introduction_commit": "5fc6b4f92a956539ceb66ff73971cbdc027cb8a6",
+        "tree_oid": "7ea9ef63f3471f24a55873ce81b161a6160424b2"
+      },
+      "S1-20260805-120": {
+        "density_path": "runs/S1-20260805-120/OUT.g1_ne_120_from_116/chg.cube",
+        "density_sha256": "1240068bbf414a238da4c9a414751a2f0cdd865cd0220108f8f55ef849bd89bd",
+        "evidence_path": "runs/S1-20260805-120/electron_number_audit.json",
+        "evidence_sha256": "40cac6968e9f1dd16ab0cea81f6fedf007fc5327ad258d15c35c6191b43e7631",
+        "introduction_commit": "343c5bf4dca20c84f76eb0efe2d656b0a5713abf",
+        "tree_oid": "dc726361b1d8f55d957d5968a7f978b3ab93dc0e"
+      },
+      "S1-20260805-121": {
+        "density_path": "runs/S1-20260805-121/OUT.g1_ne_121_from_029/chg.cube",
+        "density_sha256": "7c642c3f7311c843f78b15b1549082728608e555d78bc0cd61fed5466f4c5862",
+        "evidence_path": "runs/S1-20260805-121/electron_number_audit.json",
+        "evidence_sha256": "7a33438aaf37e5aa302bfe604ffd4239447a78928780c8bf402e833105280e35",
+        "introduction_commit": "5b1f5bb88731b483ef9cdea16a196c4efa61baeb",
+        "tree_oid": "c7ded54f9ee6f33475da909de2d7fd3f06be13ed"
+      },
+      "S1-20260805-122": {
+        "density_path": "runs/S1-20260805-122/OUT.g1_ne_122_from_030/chg.cube",
+        "density_sha256": "65d25ca4a99da7663d51d64d5c886cedcffc56c1bc96c9e9777ff9171aa2c19c",
+        "evidence_path": "runs/S1-20260805-122/electron_number_audit.json",
+        "evidence_sha256": "dc773c255c2daffdb2957526b6f31af062fc1dab920cc624bdeb2d947ac20e4a",
+        "introduction_commit": "5a04e91bee317eea0b3be956261ffdd5861a4cb0",
+        "tree_oid": "8f6c682b3e4da0e4434f143f46d6647bedaff46b"
+      },
+      "S1-20260805-123": {
+        "density_path": "runs/S1-20260805-123/OUT.g1_ne_123_from_031/chg.cube",
+        "density_sha256": "8beb523e420ee39626a63a4308f3ba49bb8dba878aaa43250339fa6a49dc2c12",
+        "evidence_path": "runs/S1-20260805-123/electron_number_audit.json",
+        "evidence_sha256": "952326609ffb65e254525929de2ed2ac87ad31ec09fbf8dffad1eed3633c0040",
+        "introduction_commit": "2b072e1e28f89a0ed7a763a63df0d1684df7747f",
+        "tree_oid": "711605b7c695f003fd4440081540c291b5490dee"
+      },
+      "S1-20260805-124": {
+        "density_path": "runs/S1-20260805-124/OUT.g1_ne_124_from_032/chg.cube",
+        "density_sha256": "f168decbbe0d8eff31462c339d6867e014f413507519234dece117d9b6e8c3ce",
+        "evidence_path": "runs/S1-20260805-124/electron_number_audit.json",
+        "evidence_sha256": "29b17c3e6806a497895594fc9519ffea42d7951fc03d7dd8f7c914903c167164",
+        "introduction_commit": "5d4cf0d253e1e4027e08232dba09c851a7d6322c",
+        "tree_oid": "393858f76042f395abc3f30f0859f66cc8cebc40"
+      },
+      "S1-20260805-125": {
+        "density_path": "runs/S1-20260805-125/OUT.g1_ne_125_from_033/chg.cube",
+        "density_sha256": "ce8914d4b0371059ba56f1536193fd9b450fa23fbbe49762a26cd2797d47b1e0",
+        "evidence_path": "runs/S1-20260805-125/electron_number_audit.json",
+        "evidence_sha256": "64b9117f57478873708b2dbe73ffea0a224a85a7188fe47b431dc6fce3f8b232",
+        "introduction_commit": "0023848ff2a62962f1e779d71ab504fd4d865a75",
+        "tree_oid": "932af1d4009f4f6a50449f32446300e23d87ceeb"
+      },
+      "S1-20260805-126": {
+        "density_path": "runs/S1-20260805-126/OUT.g1_ne_126_from_034/chg.cube",
+        "density_sha256": "0afd36084698712606c898dc3cf3569e85e4286a2ef123c95fa03d7df219e44d",
+        "evidence_path": "runs/S1-20260805-126/electron_number_audit.json",
+        "evidence_sha256": "fce598e0c9f02da8118cfccf800637225abe5d5e9a25b839ecd203b149e9d7c3",
+        "introduction_commit": "fa6e01aeda9119e305ba3dcdde2ad01ba3bf6065",
+        "tree_oid": "a1f9063757f36a3a4e81a7ed79e9f63a662d7604"
+      },
+      "S1-20260805-127": {
+        "density_path": "runs/S1-20260805-127/OUT.g1_ne_127_from_035/chg.cube",
+        "density_sha256": "279b290b2fc2000ce3efa20b1f6a4c47aadacf1d2acbd57d867c47a4addde434",
+        "evidence_path": "runs/S1-20260805-127/electron_number_audit.json",
+        "evidence_sha256": "6319a9f7f10d132f789cd8de989c4bf1b6ea693290b307e5b0481fea5dde93f7",
+        "introduction_commit": "34609dd5965c4ecca5a8d1cce287970223f204f6",
+        "tree_oid": "05ab80c323e06fa6bb5bd1d2148141d1b659cc94"
+      },
+      "S1-20260805-128": {
+        "density_path": "runs/S1-20260805-128/OUT.g1_ne_128_from_050/chg.cube",
+        "density_sha256": "43673b8ab361e25794b9b9b04422f5fef8a30e20704279a3883bfaa70f28fb4e",
+        "evidence_path": "runs/S1-20260805-128/electron_number_audit.json",
+        "evidence_sha256": "ceac662f3aeb104275f8fa9f4488205d228f4954695120b9700e004cce7e4c5c",
+        "introduction_commit": "000ca8e8362d7478845141cad1a1c651738211ce",
+        "tree_oid": "f3467e55149f12afd21fa73fa1587b1aa2ab414d"
+      },
+      "S1-20260805-129": {
+        "density_path": "runs/S1-20260805-129/OUT.g1_ne_129_from_051/chg.cube",
+        "density_sha256": "dd34b491d1d6db56fe53555d1f13322440d5f079cc8c3815879fc3e1428e22e5",
+        "evidence_path": "runs/S1-20260805-129/electron_number_audit.json",
+        "evidence_sha256": "d158c2c0c0a7787ea55b0f1e2e13abe87a27d5d5449f78904ceff89b6c7bc096",
+        "introduction_commit": "df5137cff361d74c97520791d02f8ca8d4ce90ed",
+        "tree_oid": "4e3c7851b61959ecaab41ad90606993552fd8ff8"
+      }
+    }
+  },
+  "rank_count": 4,
+  "runtime": {
+    "elf_relocation": {
+      "chrpath_tool": {
+        "path": "/usr/bin/chrpath",
+        "realpath": "/usr/bin/chrpath",
+        "sha256": "911b2fdb0d729c3bfbfc8ab8f547cb8d2747c179e11a65396f0f4ba4b32ca086",
+        "version_arguments": [
+          "--version"
+        ],
+        "version_first_line": "chrpath version 0.16",
+        "version_output_sha256": "85d4499339a2adf5928c2701dd2d83815da791cf4c50e3ae64f5ade6c570c3b2"
+      },
+      "comparison": {
+        "all_differences_within_runpath_slot": true,
+        "allowed_runpath_slot_end_exclusive_zero_based": 23321,
+        "allowed_runpath_slot_start_zero_based": 23260,
+        "byte_difference_count": 60,
+        "dynamic_difference_only_runtime_path": true,
+        "first_difference_offset_zero_based": 23260,
+        "last_difference_offset_zero_based": 23319,
+        "outside_runpath_slot_byte_identical": true,
+        "replay_runpath_tail_nul_padded": true,
+        "same_build_id": true,
+        "same_elf_header": true,
+        "same_file_size": true,
+        "same_load_segments": true,
+        "same_needed": true,
+        "same_program_headers": true,
+        "same_section_headers": true
+      },
+      "readelf_tool": {
+        "path": "/usr/bin/readelf",
+        "realpath": "/usr/bin/x86_64-linux-gnu-readelf",
+        "sha256": "04db0000749aff89e4af21429340b00b536fc6f80e811c872c006507881a5560",
+        "version_arguments": [
+          "--version"
+        ],
+        "version_first_line": "GNU readelf (GNU Binutils for Ubuntu) 2.38",
+        "version_output_sha256": "46d3eedc868eae139eb63997734bca388eba0291af5376f3d0cf5fca10f36bb9"
+      },
+      "reference_binary": {
+        "path": "/home/shenwei01/M_OFDFT_recovery_S0_20260805_001/source/abacus_pw_para",
+        "realpath": "/home/shenwei01/M_OFDFT_recovery_S0_20260805_001/source/abacus_pw_para",
+        "sha256": "2d68a57c7b25608b3550854dabc2e63601eeca956bf185ad7d0967052bdbb4ba"
+      },
+      "reference_elf": {
+        "build_id": "305c76bb7144250c2cd8632e3ffb6ae02e7185ba",
+        "dynstr": {
+          "file_offset": 12536,
+          "size": 10785
+        },
+        "file_size": 10264504,
+        "load_segments": [
+          {
+            "alignment": "0x1000",
+            "file_size": "0x02adc0",
+            "flags": "R",
+            "memory_size": "0x02adc0",
+            "offset": "0x000000",
+            "physical_address": "0x0000000000000000",
+            "virtual_address": "0x0000000000000000"
+          },
+          {
+            "alignment": "0x1000",
+            "file_size": "0x54baf9",
+            "flags": "RE",
+            "memory_size": "0x54baf9",
+            "offset": "0x02b000",
+            "physical_address": "0x000000000002b000",
+            "virtual_address": "0x000000000002b000"
+          },
+          {
+            "alignment": "0x1000",
+            "file_size": "0x278f8e",
+            "flags": "R",
+            "memory_size": "0x278f8e",
+            "offset": "0x577000",
+            "physical_address": "0x0000000000577000",
+            "virtual_address": "0x0000000000577000"
+          },
+          {
+            "alignment": "0x1000",
+            "file_size": "0x00d354",
+            "flags": "RW",
+            "memory_size": "0x017ea8",
+            "offset": "0x7f02e0",
+            "physical_address": "0x00000000007f12e0",
+            "virtual_address": "0x00000000007f12e0"
+          }
+        ],
+        "needed": [
+          "libxc.so.15",
+          "libmkl_gf_lp64.so.2",
+          "libmkl_gnu_thread.so.2",
+          "libmkl_core.so.2",
+          "libmkl_scalapack_lp64.so.2",
+          "libmkl_blacs_openmpi_lp64.so.2",
+          "libmpi.so.40",
+          "libgomp.so.1",
+          "libstdc++.so.6",
+          "libm.so.6",
+          "libgcc_s.so.1",
+          "libc.so.6"
+        ],
+        "normalized_dynamic_sha256": "10c10bb5669be21f0fc498989b1f1a0a23d11e3c724638e4873d470a16b8c79b",
+        "readelf_output_sha256": {
+          "dynamic_section": "78018df2f70413d92095c36bd6645d6c18e52b56436af8c1afe75cb123ce9f91",
+          "elf_header": "31432d47ff201ee7f5b5cbdfe20a4853b8f849c1bedbededdcb816ffbbfa0079",
+          "notes": "bd5461c78aebe60fb914b82e6e94096cb01150a8714f63441fc0c1d62c8abd34",
+          "program_headers": "778d2d96fddab043c0a8698e73fc7f119b17253e6cc1274535d45da749b2f973",
+          "section_headers": "10343179ab58a5d16434dd6e29133de320999403f281fdb5f7fa866e4920fea1"
+        },
+        "rpath": [],
+        "runpath": [
+          "/home/shenwei01/wt_melting_runtime_20260724/conda_prefix/lib"
+        ]
+      },
+      "relocation_recipe": {
+        "chrpath_argv": [
+          "/usr/bin/chrpath",
+          "-r",
+          "$ORIGIN/../conda_prefix/lib",
+          "/home/shenwei01/M_OFDFT_recovery_S0_20260805_001/source/abacus_pw_para_relocated_20260805"
+        ],
+        "claim": "registered_reproduction_recipe_not_execution_log",
+        "copy_argv": [
+          "/usr/bin/cp",
+          "--preserve=mode,timestamps",
+          "/home/shenwei01/M_OFDFT_recovery_S0_20260805_001/source/abacus_pw_para",
+          "/home/shenwei01/M_OFDFT_recovery_S0_20260805_001/source/abacus_pw_para_relocated_20260805"
+        ],
+        "validator_authority": "byte_level_elf_gate"
+      },
+      "replay_binary": {
+        "path": "/home/shenwei01/M_OFDFT_recovery_S0_20260805_001/source/abacus_pw_para_relocated_20260805",
+        "realpath": "/home/shenwei01/M_OFDFT_recovery_S0_20260805_001/source/abacus_pw_para_relocated_20260805",
+        "sha256": "438c74b9ada4c8df15ffbb66da6755907dfd2a3812ecf868fafd4d7dc4db62e1"
+      },
+      "replay_elf": {
+        "build_id": "305c76bb7144250c2cd8632e3ffb6ae02e7185ba",
+        "dynstr": {
+          "file_offset": 12536,
+          "size": 10785
+        },
+        "file_size": 10264504,
+        "load_segments": [
+          {
+            "alignment": "0x1000",
+            "file_size": "0x02adc0",
+            "flags": "R",
+            "memory_size": "0x02adc0",
+            "offset": "0x000000",
+            "physical_address": "0x0000000000000000",
+            "virtual_address": "0x0000000000000000"
+          },
+          {
+            "alignment": "0x1000",
+            "file_size": "0x54baf9",
+            "flags": "RE",
+            "memory_size": "0x54baf9",
+            "offset": "0x02b000",
+            "physical_address": "0x000000000002b000",
+            "virtual_address": "0x000000000002b000"
+          },
+          {
+            "alignment": "0x1000",
+            "file_size": "0x278f8e",
+            "flags": "R",
+            "memory_size": "0x278f8e",
+            "offset": "0x577000",
+            "physical_address": "0x0000000000577000",
+            "virtual_address": "0x0000000000577000"
+          },
+          {
+            "alignment": "0x1000",
+            "file_size": "0x00d354",
+            "flags": "RW",
+            "memory_size": "0x017ea8",
+            "offset": "0x7f02e0",
+            "physical_address": "0x00000000007f12e0",
+            "virtual_address": "0x00000000007f12e0"
+          }
+        ],
+        "needed": [
+          "libxc.so.15",
+          "libmkl_gf_lp64.so.2",
+          "libmkl_gnu_thread.so.2",
+          "libmkl_core.so.2",
+          "libmkl_scalapack_lp64.so.2",
+          "libmkl_blacs_openmpi_lp64.so.2",
+          "libmpi.so.40",
+          "libgomp.so.1",
+          "libstdc++.so.6",
+          "libm.so.6",
+          "libgcc_s.so.1",
+          "libc.so.6"
+        ],
+        "normalized_dynamic_sha256": "10c10bb5669be21f0fc498989b1f1a0a23d11e3c724638e4873d470a16b8c79b",
+        "readelf_output_sha256": {
+          "dynamic_section": "8825564e527ed32306cee22e93f2ae8fe62ef49380c3a1a28a2b138471a2b609",
+          "elf_header": "31432d47ff201ee7f5b5cbdfe20a4853b8f849c1bedbededdcb816ffbbfa0079",
+          "notes": "bd5461c78aebe60fb914b82e6e94096cb01150a8714f63441fc0c1d62c8abd34",
+          "program_headers": "778d2d96fddab043c0a8698e73fc7f119b17253e6cc1274535d45da749b2f973",
+          "section_headers": "10343179ab58a5d16434dd6e29133de320999403f281fdb5f7fa866e4920fea1"
+        },
+        "rpath": [],
+        "runpath": [
+          "$ORIGIN/../conda_prefix/lib"
+        ]
+      },
+      "schema_version": 1
+    },
+    "mpi_argv_prefix": [
+      "--allow-run-as-root",
+      "--bind-to",
+      "core",
+      "-np",
+      "4"
+    ],
+    "namespace": {
+      "accessible_host_pid_namespace_negative_scan_required": true,
+      "external_old_root_must_survive": true,
+      "host_gid": 1001,
+      "host_proc_pid_namespace_scan_is_auxiliary": true,
+      "host_uid": 1001,
+      "host_uid_remains_unprivileged": true,
+      "mount_options": [
+        "size=1m",
+        "nosuid",
+        "nodev",
+        "noexec"
+      ],
+      "mount_source": "tmpfs",
+      "mount_target": "/home/shenwei01/wt_melting_runtime_20260724",
+      "mount_type": "tmpfs",
+      "namespace_effective_uid": 0,
+      "namespace_init_pid": 1,
+      "pid1_kernel_reap_proof_required": true,
+      "pid_namespace_required": true,
+      "timeout_requires_zero_residual_processes": true,
+      "total_wall_timeout_seconds": 7260,
+      "unshare_argv_prefix": [
+        "/usr/bin/unshare",
+        "--user",
+        "--map-root-user",
+        "--kill-child=KILL",
+        "--mount",
+        "--pid",
+        "--fork",
+        "--mount-proc",
+        "--propagation",
+        "private",
+        "/bin/bash",
+        "/home/shenwei01/M_OFDFT_periodic_basis/scripts/runtime_relocation_namespace_payload.sh"
+      ]
+    },
+    "old_prefix": "/home/shenwei01/wt_melting_runtime_20260724/conda_prefix",
+    "old_root": "/home/shenwei01/wt_melting_runtime_20260724",
+    "prefix_environment": {
+      "OPAL_PREFIX": "/home/shenwei01/M_OFDFT_recovery_S0_20260805_001/conda_prefix",
+      "PMIX_PREFIX": "/home/shenwei01/M_OFDFT_recovery_S0_20260805_001/conda_prefix",
+      "PRTE_PREFIX": "/home/shenwei01/M_OFDFT_recovery_S0_20260805_001/conda_prefix",
+      "UCX_MODULE_DIR": "/home/shenwei01/M_OFDFT_recovery_S0_20260805_001/conda_prefix"
+    },
+    "recovery_prefix": "/home/shenwei01/M_OFDFT_recovery_S0_20260805_001/conda_prefix",
+    "recovery_root": "/home/shenwei01/M_OFDFT_recovery_S0_20260805_001",
+    "reference": {
+      "abacus": {
+        "path": "/home/shenwei01/M_OFDFT_recovery_S0_20260805_001/source/abacus_pw_para",
+        "realpath": "/home/shenwei01/M_OFDFT_recovery_S0_20260805_001/source/abacus_pw_para",
+        "sha256": "2d68a57c7b25608b3550854dabc2e63601eeca956bf185ad7d0967052bdbb4ba"
+      },
+      "launcher": {
+        "path": "/home/shenwei01/wt_melting_runtime_20260724/conda_prefix/bin/prterun",
+        "realpath": "/home/shenwei01/wt_melting_runtime_20260724/conda_prefix/bin/prte",
+        "sha256": "8e61af4375677a82d3dff0ba1fd96b6bc45778de0fe0c86b477c2421a08b73ea"
+      },
+      "mpirun": {
+        "path": "/home/shenwei01/M_OFDFT_recovery_S0_20260805_001/conda_prefix/bin/mpirun",
+        "realpath": "/home/shenwei01/M_OFDFT_recovery_S0_20260805_001/conda_prefix/bin/mpirun",
+        "sha256": "7ae46f275cdccb2b9783d283986f5eac82c837106b7693a6638ecad5e44cfa20"
+      },
+      "r8_launcher_observation": {
+        "claim": "original_42_used_old_prefix_prte",
+        "evidence_scope": "operator_remote_proc_observation_not_archived_per_reference_run",
+        "launcher_bytes_equal_replay_launcher": true,
+        "launcher_realpath_is_in_old_prefix": true,
+        "mpirun_claim": "original_42_invoked_registered_recovery_mpirun",
+        "mpirun_metadata_scope": "explicit_freeze_operator_observation_legacy_run_metadata_omits_mpirun"
+      }
+    },
+    "replay": {
+      "abacus": {
+        "path": "/home/shenwei01/M_OFDFT_recovery_S0_20260805_001/source/abacus_pw_para_relocated_20260805",
+        "realpath": "/home/shenwei01/M_OFDFT_recovery_S0_20260805_001/source/abacus_pw_para_relocated_20260805",
+        "sha256": "438c74b9ada4c8df15ffbb66da6755907dfd2a3812ecf868fafd4d7dc4db62e1"
+      },
+      "launcher": {
+        "path": "/home/shenwei01/M_OFDFT_recovery_S0_20260805_001/conda_prefix/bin/prterun",
+        "realpath": "/home/shenwei01/M_OFDFT_recovery_S0_20260805_001/conda_prefix/bin/prte",
+        "sha256": "8e61af4375677a82d3dff0ba1fd96b6bc45778de0fe0c86b477c2421a08b73ea"
+      },
+      "mpirun": {
+        "path": "/home/shenwei01/M_OFDFT_recovery_S0_20260805_001/conda_prefix/bin/mpirun",
+        "realpath": "/home/shenwei01/M_OFDFT_recovery_S0_20260805_001/conda_prefix/bin/mpirun",
+        "sha256": "7ae46f275cdccb2b9783d283986f5eac82c837106b7693a6638ecad5e44cfa20"
+      }
+    },
+    "tools": {
+      "bash": {
+        "path": "/bin/bash",
+        "realpath": "/usr/bin/bash",
+        "sha256": "59474588a312b6b6e73e5a42a59bf71e62b55416b6c9d5e4a6e1c630c2a9ecd4",
+        "version_arguments": [
+          "--version"
+        ],
+        "version_first_line": "GNU bash, version 5.1.16(1)-release (x86_64-pc-linux-gnu)",
+        "version_output_sha256": "51bd40ffa4710175920033d329a0e9e1667e6b7f56178e302432ff4610d554a7"
+      },
+      "mount": {
+        "path": "/usr/bin/mount",
+        "realpath": "/usr/bin/mount",
+        "sha256": "bad230d68e012eb1a2fcaa3b42688d912940f5c61f041ae9451eee7dfb858ff1",
+        "version_arguments": [
+          "--version"
+        ],
+        "version_first_line": "mount from util-linux 2.37.2 (libmount 2.37.2: selinux, smack, btrfs, verity, namespaces, assert, debug)",
+        "version_output_sha256": "0f39cf283734e19729339a127188aca796c00c49a8e5fc3ee38d8a5a91dffabf"
+      },
+      "python": {
+        "path": "/usr/bin/python3",
+        "realpath": "/usr/bin/python3.10",
+        "sha256": "7d51cd6b48b521277f5caa4610a82126e315fa2be4df069823a8b1eeb5bd4a86",
+        "version_arguments": [
+          "--version"
+        ],
+        "version_first_line": "Python 3.10.12",
+        "version_output_sha256": "f6b75e07f1488db28a89724a522725e3e01af3dc78f6fd365f17eb4059e41056"
+      },
+      "strace": {
+        "path": "/usr/bin/strace",
+        "realpath": "/usr/bin/strace",
+        "sha256": "38a5c75cb29dd85ddd7780d54f5bf595554d7a1b5c42524b23065f5dc4c4b01d",
+        "version_arguments": [
+          "--version"
+        ],
+        "version_first_line": "strace -- version 5.16",
+        "version_output_sha256": "47330880c53e6bafef6d915d42210d289ca470ec6879bac32d4a67549468cb1e"
+      },
+      "unshare": {
+        "path": "/usr/bin/unshare",
+        "realpath": "/usr/bin/unshare",
+        "sha256": "72a34e6ba98a59f1da0c7b4d8c9722b746b5ade54e4d7e8de8e519c2993858ad",
+        "version_arguments": [
+          "--version"
+        ],
+        "version_first_line": "unshare from util-linux 2.37.2",
+        "version_output_sha256": "5033a06a48f3a04eb5473577fa376f3a6c7b56becc2628a7e2b5c17d39e0e9b5"
+      }
+    },
+    "wrappers": {
+      "audit_launcher": {
+        "path": "/home/shenwei01/M_OFDFT_periodic_basis/scripts/runtime_relocation_audit_launcher_g1_r2.py",
+        "sha256": "7c2e265b191455af9721ef2775b3fd1a4a0778a27a0cb36d3473cb872482b41b"
+      },
+      "namespace_launcher": {
+        "path": "/home/shenwei01/M_OFDFT_periodic_basis/scripts/runtime_relocation_namespace_launcher.py",
+        "sha256": "1098ed4c98691d07b394e04f93e1430504cd24beb21e02d3f19ae29b0bbbd0ee"
+      },
+      "namespace_payload": {
+        "path": "/home/shenwei01/M_OFDFT_periodic_basis/scripts/runtime_relocation_namespace_payload.sh",
+        "sha256": "0e6a536214fb29964339d2cef427da8ab1f7c8454fc797e26448f3b9ca511242"
+      },
+      "rank_wrapper": {
+        "path": "/home/shenwei01/M_OFDFT_periodic_basis/scripts/runtime_relocation_rank_wrapper.py",
+        "sha256": "0369af0d473c7d2becced933c3b625a1a442b142681aa986120e0e164c9987d6"
+      }
+    }
+  },
+  "runtime_audit": {
+    "absolute_deadline_watchdog_seconds": 7200,
+    "all_captured_regular_mapped_objects_must_be_hashed": true,
+    "ambiguous_exec_result_count_max": 0,
+    "clean_environment_required": true,
+    "controlled_home_policy": "per_run_marker_only_no_user_mpi_config",
+    "controlled_home_readonly_bind_mount_required": true,
+    "counterpart_byte_mismatch_count_max": 0,
+    "counterpart_exclusions": {
+      "launcher_identity_gate": {
+        "byte_equality_required": true,
+        "reference": {
+          "path": "/home/shenwei01/wt_melting_runtime_20260724/conda_prefix/bin/prterun",
+          "realpath": "/home/shenwei01/wt_melting_runtime_20260724/conda_prefix/bin/prte",
+          "sha256": "8e61af4375677a82d3dff0ba1fd96b6bc45778de0fe0c86b477c2421a08b73ea"
+        },
+        "replay": {
+          "path": "/home/shenwei01/M_OFDFT_recovery_S0_20260805_001/conda_prefix/bin/prterun",
+          "realpath": "/home/shenwei01/M_OFDFT_recovery_S0_20260805_001/conda_prefix/bin/prte",
+          "sha256": "8e61af4375677a82d3dff0ba1fd96b6bc45778de0fe0c86b477c2421a08b73ea"
+        }
+      },
+      "mpirun_identity_gate": {
+        "byte_equality_required": true,
+        "reference": {
+          "path": "/home/shenwei01/M_OFDFT_recovery_S0_20260805_001/conda_prefix/bin/mpirun",
+          "realpath": "/home/shenwei01/M_OFDFT_recovery_S0_20260805_001/conda_prefix/bin/mpirun",
+          "sha256": "7ae46f275cdccb2b9783d283986f5eac82c837106b7693a6638ecad5e44cfa20"
+        },
+        "replay": {
+          "path": "/home/shenwei01/M_OFDFT_recovery_S0_20260805_001/conda_prefix/bin/mpirun",
+          "realpath": "/home/shenwei01/M_OFDFT_recovery_S0_20260805_001/conda_prefix/bin/mpirun",
+          "sha256": "7ae46f275cdccb2b9783d283986f5eac82c837106b7693a6638ecad5e44cfa20"
+        }
+      },
+      "relocated_abacus_elf_gate": {
+        "byte_equality_required": false,
+        "reference": {
+          "path": "/home/shenwei01/M_OFDFT_recovery_S0_20260805_001/source/abacus_pw_para",
+          "realpath": "/home/shenwei01/M_OFDFT_recovery_S0_20260805_001/source/abacus_pw_para",
+          "sha256": "2d68a57c7b25608b3550854dabc2e63601eeca956bf185ad7d0967052bdbb4ba"
+        },
+        "replay": {
+          "path": "/home/shenwei01/M_OFDFT_recovery_S0_20260805_001/source/abacus_pw_para_relocated_20260805",
+          "realpath": "/home/shenwei01/M_OFDFT_recovery_S0_20260805_001/source/abacus_pw_para_relocated_20260805",
+          "sha256": "438c74b9ada4c8df15ffbb66da6755907dfd2a3812ecf868fafd4d7dc4db62e1"
+        }
+      }
+    },
+    "counterpart_missing_count_max": 0,
+    "file_trace_required": true,
+    "initial_maps_required_for_every_target": true,
+    "known_pid_terminal_proof_required": true,
+    "launcher_count": 1,
+    "ld_preload_must_be_unset": true,
+    "mapping_observation_scope": "final_prterun_and_four_abacus_ranks",
+    "mpirun_and_support_daemon_maps_out_of_scope": true,
+    "namespace_evidence_required": true,
+    "old_prefix_exec_success_count_max": 0,
+    "old_prefix_mapped_object_count_max": 0,
+    "old_prefix_successful_access_count_max": 0,
+    "rank_count": 4,
+    "rank_handshake_required": true,
+    "recovery_component_counterpart_byte_equality_required": true,
+    "registered_device_mapping_patterns": [
+      "^/dev/infiniband/(?:uverbs[0-9]+|rdma_cm)$",
+      "^/dev/nvidia(?:[0-9]+|ctl|modeset|uvm|uvm-tools)$",
+      "^/dev/nvidia-caps/nvidia-cap[0-9]+$"
+    ],
+    "registered_old_prefix_failed_probe_count": 22,
+    "registered_old_prefix_failed_probes": [
+      {
+        "errno": "ENOENT",
+        "expected_count": 1,
+        "flags": null,
+        "path": "/home/shenwei01/wt_melting_runtime_20260724/conda_prefix/classid",
+        "probe_id": "launcher_classid_stat",
+        "rank": null,
+        "role": "launcher",
+        "syscall": "stat"
+      },
+      {
+        "errno": "ENOENT",
+        "expected_count": 1,
+        "flags": "O_RDONLY|O_CLOEXEC",
+        "path": "/home/shenwei01/wt_melting_runtime_20260724/conda_prefix/classid",
+        "probe_id": "launcher_classid_open",
+        "rank": null,
+        "role": "launcher",
+        "syscall": "openat"
+      },
+      {
+        "errno": "ENOENT",
+        "expected_count_per_rank": 1,
+        "flags": null,
+        "path": "/home/shenwei01/wt_melting_runtime_20260724/conda_prefix/classid",
+        "probe_id": "rank_classid_stat",
+        "rank": "each",
+        "role": "rank",
+        "syscall": "stat"
+      },
+      {
+        "errno": "ENOENT",
+        "expected_count_per_rank": 1,
+        "flags": "O_RDONLY|O_CLOEXEC",
+        "path": "/home/shenwei01/wt_melting_runtime_20260724/conda_prefix/classid",
+        "probe_id": "rank_classid_open",
+        "rank": "each",
+        "role": "rank",
+        "syscall": "openat"
+      },
+      {
+        "errno": "ENOENT",
+        "expected_count_per_rank": 1,
+        "flags": "O_RDONLY",
+        "path": "/home/shenwei01/wt_melting_runtime_20260724/conda_prefix/ucx.conf",
+        "probe_id": "rank_ucx_conf_open",
+        "rank": "each",
+        "role": "rank",
+        "syscall": "openat"
+      },
+      {
+        "errno": "ENOENT",
+        "expected_count_per_rank": 1,
+        "flags": "O_RDONLY",
+        "path": "/home/shenwei01/wt_melting_runtime_20260724/conda_prefix",
+        "probe_id": "rank_old_prefix_open",
+        "rank": "each",
+        "role": "rank",
+        "syscall": "openat"
+      },
+      {
+        "errno": "ENOENT",
+        "expected_count_per_rank": 1,
+        "flags": "O_RDONLY|O_NONBLOCK|O_CLOEXEC|O_DIRECTORY",
+        "path": "/home/shenwei01/wt_melting_runtime_20260724/conda_prefix",
+        "probe_id": "rank_old_prefix_directory_open",
+        "rank": "each",
+        "role": "rank",
+        "syscall": "openat"
+      }
+    ],
+    "registered_probe_count_mismatch_count_max": 0,
+    "required_cmake_prefix_path": "/home/shenwei01/M_OFDFT_recovery_S0_20260805_001/conda_prefix",
+    "required_cuda_cache_disable": "1",
+    "required_ld_library_path": "/home/shenwei01/M_OFDFT_recovery_S0_20260805_001/conda_prefix/lib",
+    "required_mklroot": "/home/shenwei01/M_OFDFT_recovery_S0_20260805_001/conda_prefix",
+    "required_path": "/home/shenwei01/M_OFDFT_recovery_S0_20260805_001/conda_prefix/bin:/usr/bin:/bin",
+    "runtime_wall_timeout_seconds": 7200,
+    "strace_before_after_identity_required": true,
+    "strace_fixed_arguments": [
+      "-ff",
+      "-qq",
+      "-I",
+      "1",
+      "-s",
+      "4096",
+      "-e",
+      "trace=file,process"
+    ],
+    "successful_exec_multiset": {
+      "/home/shenwei01/M_OFDFT_recovery_S0_20260805_001/conda_prefix/bin/mpirun": 1,
+      "/home/shenwei01/M_OFDFT_recovery_S0_20260805_001/conda_prefix/bin/prte": 1,
+      "/home/shenwei01/M_OFDFT_recovery_S0_20260805_001/source/abacus_pw_para_relocated_20260805": 4,
+      "/usr/bin/python3.10": 4
+    },
+    "system_mapping_exact_paths": [
+      "/etc/ld.so.cache"
+    ],
+    "system_mapping_roots": [
+      "/usr",
+      "/lib",
+      "/lib64"
+    ],
+    "tracee_termination_contract": [
+      "runtime_process_group_zero_residual",
+      "known_pid_cross_channel_terminal_proof",
+      "pid_namespace_init_exit_kernel_sigkill",
+      "accessible_host_inode_negative_scan"
+    ],
+    "transient_mapping_patterns": [
+      "^/SYSV[0-9A-Fa-f]+$",
+      "^/dev/shm/sm_segment[A-Za-z0-9._-]*$",
+      "^/dev/shm/ucx_shm_posix_[A-Za-z0-9._-]+$",
+      "^/tmp/ompi\\.[0-9]+/(?:[A-Za-z0-9._-]+/)*(?:pmix-gds-shmem2|shared_mem_cuda_)[A-Za-z0-9._@-]*(?:/[A-Za-z0-9._-]+)*$",
+      "^/tmp/ompi\\.[0-9]+/hwloc\\.sm$",
+      "^/dev/shm/__KMP_REGISTERED_LIB_[1-9][0-9]*_0$"
+    ],
+    "unexpected_mapped_object_count_max": 0,
+    "unknown_old_prefix_failed_probe_count_max": 0
+  },
+  "runtime_base": {
+    "config_path": "config/S1_electron_number_audit.json",
+    "config_sha256": "b87e0ca7ce089c529849468e2437b96a019f096a9be327627d1954a4f20d3010"
+  },
+  "schema_version": 2,
+  "scope": {
+    "coverage_denominator": 90,
+    "ks_existing_density_count": 60,
+    "ofdft_total_count": 30,
+    "r1_reused_ofdft_count": 11,
+    "r2_executed_ofdft_count": 19
+  },
+  "status": "preregistered_pending_execution"
+}
