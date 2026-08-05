@@ -1,0 +1,1068 @@
+{
+  "acceptance": {
+    "full_42_rerun_triggers": [
+      "elf_difference_outside_registered_runpath_slot",
+      "elf_needed_build_id_or_load_layout_changed",
+      "scientific_energy_or_pressure_gate_failed",
+      "r8_series_or_fit_hard_gate_changed",
+      "mapped_component_byte_equivalence_unprovable"
+    ],
+    "max_absolute_energy_difference_mev_per_atom": 0.1,
+    "max_absolute_pressure_difference_gpa": 0.02,
+    "r8_v100_replacement_must_preserve_conclusion": true,
+    "scientific_runtime_and_r8_gates_passed_action": "close_runtime_relocation_equivalence_and_keep_s1_r8_conclusion",
+    "six_point_retry_after_fix_triggers": [
+      "pure_namespace_launcher_or_runtime_audit_failure"
+    ],
+    "storage_equivalence_tiers_diagnostic_only": [
+      "storage_exact",
+      "storage_resolution_equal"
+    ],
+    "threshold_comparison": "strict_less_than"
+  },
+  "experiment_id_block": {
+    "date": "20260805",
+    "end_sequence": 118,
+    "start_sequence": 113
+  },
+  "generated_from_commit": "92e513f2b72a582efa5b96a3c36d20272003b52a",
+  "manifest_path": "config/S1_runtime_relocation_equivalence_manifest.tsv",
+  "mappings": [
+    {
+      "input_directory": "inputs/s1/non_equilibrium_convergence/al/v100/ofdft_next_cutoff",
+      "material": "al",
+      "reference_experiment_id": "S1-20260805-074",
+      "replay_experiment_id": "S1-20260805-113",
+      "series_id": "ofdft_next_cutoff"
+    },
+    {
+      "input_directory": "inputs/s1/non_equilibrium_convergence/al/v100/ksdft_next_cutoff",
+      "material": "al",
+      "reference_experiment_id": "S1-20260805-081",
+      "replay_experiment_id": "S1-20260805-114",
+      "series_id": "ksdft_next_cutoff"
+    },
+    {
+      "input_directory": "inputs/s1/non_equilibrium_convergence/al/v100/ksdft_next_kmesh",
+      "material": "al",
+      "reference_experiment_id": "S1-20260805-088",
+      "replay_experiment_id": "S1-20260805-115",
+      "series_id": "ksdft_next_kmesh"
+    },
+    {
+      "input_directory": "inputs/s1/non_equilibrium_convergence/mg/v100/ofdft_next_cutoff",
+      "material": "mg",
+      "reference_experiment_id": "S1-20260805-095",
+      "replay_experiment_id": "S1-20260805-116",
+      "series_id": "ofdft_next_cutoff"
+    },
+    {
+      "input_directory": "inputs/s1/non_equilibrium_convergence/mg/v100/ksdft_next_cutoff",
+      "material": "mg",
+      "reference_experiment_id": "S1-20260805-102",
+      "replay_experiment_id": "S1-20260805-117",
+      "series_id": "ksdft_next_cutoff"
+    },
+    {
+      "input_directory": "inputs/s1/non_equilibrium_convergence/mg/v100/ksdft_next_kmesh",
+      "material": "mg",
+      "reference_experiment_id": "S1-20260805-109",
+      "replay_experiment_id": "S1-20260805-118",
+      "series_id": "ksdft_next_kmesh"
+    }
+  ],
+  "protocol_revision": "S1-R8-RUNTIME-RELOCATION-R2",
+  "rank_count": 4,
+  "runtime": {
+    "elf_relocation": {
+      "chrpath_tool": {
+        "path": "/usr/bin/chrpath",
+        "realpath": "/usr/bin/chrpath",
+        "sha256": "911b2fdb0d729c3bfbfc8ab8f547cb8d2747c179e11a65396f0f4ba4b32ca086",
+        "version_arguments": [
+          "--version"
+        ],
+        "version_first_line": "chrpath version 0.16",
+        "version_output_sha256": "85d4499339a2adf5928c2701dd2d83815da791cf4c50e3ae64f5ade6c570c3b2"
+      },
+      "comparison": {
+        "all_differences_within_runpath_slot": true,
+        "allowed_runpath_slot_end_exclusive_zero_based": 23321,
+        "allowed_runpath_slot_start_zero_based": 23260,
+        "byte_difference_count": 60,
+        "dynamic_difference_only_runtime_path": true,
+        "first_difference_offset_zero_based": 23260,
+        "last_difference_offset_zero_based": 23319,
+        "outside_runpath_slot_byte_identical": true,
+        "replay_runpath_tail_nul_padded": true,
+        "same_build_id": true,
+        "same_elf_header": true,
+        "same_file_size": true,
+        "same_load_segments": true,
+        "same_needed": true,
+        "same_program_headers": true,
+        "same_section_headers": true
+      },
+      "readelf_tool": {
+        "path": "/usr/bin/readelf",
+        "realpath": "/usr/bin/x86_64-linux-gnu-readelf",
+        "sha256": "04db0000749aff89e4af21429340b00b536fc6f80e811c872c006507881a5560",
+        "version_arguments": [
+          "--version"
+        ],
+        "version_first_line": "GNU readelf (GNU Binutils for Ubuntu) 2.38",
+        "version_output_sha256": "46d3eedc868eae139eb63997734bca388eba0291af5376f3d0cf5fca10f36bb9"
+      },
+      "reference_binary": {
+        "path": "/home/shenwei01/M_OFDFT_recovery_S0_20260805_001/source/abacus_pw_para",
+        "realpath": "/home/shenwei01/M_OFDFT_recovery_S0_20260805_001/source/abacus_pw_para",
+        "sha256": "2d68a57c7b25608b3550854dabc2e63601eeca956bf185ad7d0967052bdbb4ba"
+      },
+      "reference_elf": {
+        "build_id": "305c76bb7144250c2cd8632e3ffb6ae02e7185ba",
+        "dynstr": {
+          "file_offset": 12536,
+          "size": 10785
+        },
+        "file_size": 10264504,
+        "load_segments": [
+          {
+            "alignment": "0x1000",
+            "file_size": "0x02adc0",
+            "flags": "R",
+            "memory_size": "0x02adc0",
+            "offset": "0x000000",
+            "physical_address": "0x0000000000000000",
+            "virtual_address": "0x0000000000000000"
+          },
+          {
+            "alignment": "0x1000",
+            "file_size": "0x54baf9",
+            "flags": "RE",
+            "memory_size": "0x54baf9",
+            "offset": "0x02b000",
+            "physical_address": "0x000000000002b000",
+            "virtual_address": "0x000000000002b000"
+          },
+          {
+            "alignment": "0x1000",
+            "file_size": "0x278f8e",
+            "flags": "R",
+            "memory_size": "0x278f8e",
+            "offset": "0x577000",
+            "physical_address": "0x0000000000577000",
+            "virtual_address": "0x0000000000577000"
+          },
+          {
+            "alignment": "0x1000",
+            "file_size": "0x00d354",
+            "flags": "RW",
+            "memory_size": "0x017ea8",
+            "offset": "0x7f02e0",
+            "physical_address": "0x00000000007f12e0",
+            "virtual_address": "0x00000000007f12e0"
+          }
+        ],
+        "needed": [
+          "libxc.so.15",
+          "libmkl_gf_lp64.so.2",
+          "libmkl_gnu_thread.so.2",
+          "libmkl_core.so.2",
+          "libmkl_scalapack_lp64.so.2",
+          "libmkl_blacs_openmpi_lp64.so.2",
+          "libmpi.so.40",
+          "libgomp.so.1",
+          "libstdc++.so.6",
+          "libm.so.6",
+          "libgcc_s.so.1",
+          "libc.so.6"
+        ],
+        "normalized_dynamic_sha256": "10c10bb5669be21f0fc498989b1f1a0a23d11e3c724638e4873d470a16b8c79b",
+        "readelf_output_sha256": {
+          "dynamic_section": "78018df2f70413d92095c36bd6645d6c18e52b56436af8c1afe75cb123ce9f91",
+          "elf_header": "31432d47ff201ee7f5b5cbdfe20a4853b8f849c1bedbededdcb816ffbbfa0079",
+          "notes": "bd5461c78aebe60fb914b82e6e94096cb01150a8714f63441fc0c1d62c8abd34",
+          "program_headers": "778d2d96fddab043c0a8698e73fc7f119b17253e6cc1274535d45da749b2f973",
+          "section_headers": "10343179ab58a5d16434dd6e29133de320999403f281fdb5f7fa866e4920fea1"
+        },
+        "rpath": [],
+        "runpath": [
+          "/home/shenwei01/wt_melting_runtime_20260724/conda_prefix/lib"
+        ]
+      },
+      "relocation_recipe": {
+        "chrpath_argv": [
+          "/usr/bin/chrpath",
+          "-r",
+          "$ORIGIN/../conda_prefix/lib",
+          "/home/shenwei01/M_OFDFT_recovery_S0_20260805_001/source/abacus_pw_para_relocated_20260805"
+        ],
+        "claim": "registered_reproduction_recipe_not_execution_log",
+        "copy_argv": [
+          "/usr/bin/cp",
+          "--preserve=mode,timestamps",
+          "/home/shenwei01/M_OFDFT_recovery_S0_20260805_001/source/abacus_pw_para",
+          "/home/shenwei01/M_OFDFT_recovery_S0_20260805_001/source/abacus_pw_para_relocated_20260805"
+        ],
+        "validator_authority": "byte_level_elf_gate"
+      },
+      "replay_binary": {
+        "path": "/home/shenwei01/M_OFDFT_recovery_S0_20260805_001/source/abacus_pw_para_relocated_20260805",
+        "realpath": "/home/shenwei01/M_OFDFT_recovery_S0_20260805_001/source/abacus_pw_para_relocated_20260805",
+        "sha256": "438c74b9ada4c8df15ffbb66da6755907dfd2a3812ecf868fafd4d7dc4db62e1"
+      },
+      "replay_elf": {
+        "build_id": "305c76bb7144250c2cd8632e3ffb6ae02e7185ba",
+        "dynstr": {
+          "file_offset": 12536,
+          "size": 10785
+        },
+        "file_size": 10264504,
+        "load_segments": [
+          {
+            "alignment": "0x1000",
+            "file_size": "0x02adc0",
+            "flags": "R",
+            "memory_size": "0x02adc0",
+            "offset": "0x000000",
+            "physical_address": "0x0000000000000000",
+            "virtual_address": "0x0000000000000000"
+          },
+          {
+            "alignment": "0x1000",
+            "file_size": "0x54baf9",
+            "flags": "RE",
+            "memory_size": "0x54baf9",
+            "offset": "0x02b000",
+            "physical_address": "0x000000000002b000",
+            "virtual_address": "0x000000000002b000"
+          },
+          {
+            "alignment": "0x1000",
+            "file_size": "0x278f8e",
+            "flags": "R",
+            "memory_size": "0x278f8e",
+            "offset": "0x577000",
+            "physical_address": "0x0000000000577000",
+            "virtual_address": "0x0000000000577000"
+          },
+          {
+            "alignment": "0x1000",
+            "file_size": "0x00d354",
+            "flags": "RW",
+            "memory_size": "0x017ea8",
+            "offset": "0x7f02e0",
+            "physical_address": "0x00000000007f12e0",
+            "virtual_address": "0x00000000007f12e0"
+          }
+        ],
+        "needed": [
+          "libxc.so.15",
+          "libmkl_gf_lp64.so.2",
+          "libmkl_gnu_thread.so.2",
+          "libmkl_core.so.2",
+          "libmkl_scalapack_lp64.so.2",
+          "libmkl_blacs_openmpi_lp64.so.2",
+          "libmpi.so.40",
+          "libgomp.so.1",
+          "libstdc++.so.6",
+          "libm.so.6",
+          "libgcc_s.so.1",
+          "libc.so.6"
+        ],
+        "normalized_dynamic_sha256": "10c10bb5669be21f0fc498989b1f1a0a23d11e3c724638e4873d470a16b8c79b",
+        "readelf_output_sha256": {
+          "dynamic_section": "8825564e527ed32306cee22e93f2ae8fe62ef49380c3a1a28a2b138471a2b609",
+          "elf_header": "31432d47ff201ee7f5b5cbdfe20a4853b8f849c1bedbededdcb816ffbbfa0079",
+          "notes": "bd5461c78aebe60fb914b82e6e94096cb01150a8714f63441fc0c1d62c8abd34",
+          "program_headers": "778d2d96fddab043c0a8698e73fc7f119b17253e6cc1274535d45da749b2f973",
+          "section_headers": "10343179ab58a5d16434dd6e29133de320999403f281fdb5f7fa866e4920fea1"
+        },
+        "rpath": [],
+        "runpath": [
+          "$ORIGIN/../conda_prefix/lib"
+        ]
+      },
+      "schema_version": 1
+    },
+    "mpi_argv_prefix": [
+      "--allow-run-as-root",
+      "--bind-to",
+      "core",
+      "-np",
+      "4"
+    ],
+    "namespace": {
+      "accessible_host_pid_namespace_negative_scan_required": true,
+      "external_old_root_must_survive": true,
+      "host_gid": 1001,
+      "host_proc_pid_namespace_scan_is_auxiliary": true,
+      "host_uid": 1001,
+      "host_uid_remains_unprivileged": true,
+      "mount_options": [
+        "size=1m",
+        "nosuid",
+        "nodev",
+        "noexec"
+      ],
+      "mount_source": "tmpfs",
+      "mount_target": "/home/shenwei01/wt_melting_runtime_20260724",
+      "mount_type": "tmpfs",
+      "namespace_effective_uid": 0,
+      "namespace_init_pid": 1,
+      "pid1_kernel_reap_proof_required": true,
+      "pid_namespace_required": true,
+      "timeout_requires_zero_residual_processes": true,
+      "total_wall_timeout_seconds": 7260,
+      "unshare_argv_prefix": [
+        "/usr/bin/unshare",
+        "--user",
+        "--map-root-user",
+        "--kill-child=KILL",
+        "--mount",
+        "--pid",
+        "--fork",
+        "--mount-proc",
+        "--propagation",
+        "private",
+        "/bin/bash",
+        "/home/shenwei01/M_OFDFT_periodic_basis/scripts/runtime_relocation_namespace_payload.sh"
+      ]
+    },
+    "old_prefix": "/home/shenwei01/wt_melting_runtime_20260724/conda_prefix",
+    "old_root": "/home/shenwei01/wt_melting_runtime_20260724",
+    "prefix_environment": {
+      "OPAL_PREFIX": "/home/shenwei01/M_OFDFT_recovery_S0_20260805_001/conda_prefix",
+      "PMIX_PREFIX": "/home/shenwei01/M_OFDFT_recovery_S0_20260805_001/conda_prefix",
+      "PRTE_PREFIX": "/home/shenwei01/M_OFDFT_recovery_S0_20260805_001/conda_prefix",
+      "UCX_MODULE_DIR": "/home/shenwei01/M_OFDFT_recovery_S0_20260805_001/conda_prefix"
+    },
+    "recovery_prefix": "/home/shenwei01/M_OFDFT_recovery_S0_20260805_001/conda_prefix",
+    "recovery_root": "/home/shenwei01/M_OFDFT_recovery_S0_20260805_001",
+    "reference": {
+      "abacus": {
+        "path": "/home/shenwei01/M_OFDFT_recovery_S0_20260805_001/source/abacus_pw_para",
+        "realpath": "/home/shenwei01/M_OFDFT_recovery_S0_20260805_001/source/abacus_pw_para",
+        "sha256": "2d68a57c7b25608b3550854dabc2e63601eeca956bf185ad7d0967052bdbb4ba"
+      },
+      "launcher": {
+        "path": "/home/shenwei01/wt_melting_runtime_20260724/conda_prefix/bin/prterun",
+        "realpath": "/home/shenwei01/wt_melting_runtime_20260724/conda_prefix/bin/prte",
+        "sha256": "8e61af4375677a82d3dff0ba1fd96b6bc45778de0fe0c86b477c2421a08b73ea"
+      },
+      "mpirun": {
+        "path": "/home/shenwei01/M_OFDFT_recovery_S0_20260805_001/conda_prefix/bin/mpirun",
+        "realpath": "/home/shenwei01/M_OFDFT_recovery_S0_20260805_001/conda_prefix/bin/mpirun",
+        "sha256": "7ae46f275cdccb2b9783d283986f5eac82c837106b7693a6638ecad5e44cfa20"
+      },
+      "r8_launcher_observation": {
+        "claim": "original_42_used_old_prefix_prte",
+        "evidence_scope": "operator_remote_proc_observation_not_archived_per_reference_run",
+        "launcher_bytes_equal_replay_launcher": true,
+        "launcher_realpath_is_in_old_prefix": true,
+        "mpirun_claim": "original_42_invoked_registered_recovery_mpirun",
+        "mpirun_metadata_scope": "explicit_freeze_operator_observation_legacy_run_metadata_omits_mpirun"
+      }
+    },
+    "replay": {
+      "abacus": {
+        "path": "/home/shenwei01/M_OFDFT_recovery_S0_20260805_001/source/abacus_pw_para_relocated_20260805",
+        "realpath": "/home/shenwei01/M_OFDFT_recovery_S0_20260805_001/source/abacus_pw_para_relocated_20260805",
+        "sha256": "438c74b9ada4c8df15ffbb66da6755907dfd2a3812ecf868fafd4d7dc4db62e1"
+      },
+      "launcher": {
+        "path": "/home/shenwei01/M_OFDFT_recovery_S0_20260805_001/conda_prefix/bin/prterun",
+        "realpath": "/home/shenwei01/M_OFDFT_recovery_S0_20260805_001/conda_prefix/bin/prte",
+        "sha256": "8e61af4375677a82d3dff0ba1fd96b6bc45778de0fe0c86b477c2421a08b73ea"
+      },
+      "mpirun": {
+        "path": "/home/shenwei01/M_OFDFT_recovery_S0_20260805_001/conda_prefix/bin/mpirun",
+        "realpath": "/home/shenwei01/M_OFDFT_recovery_S0_20260805_001/conda_prefix/bin/mpirun",
+        "sha256": "7ae46f275cdccb2b9783d283986f5eac82c837106b7693a6638ecad5e44cfa20"
+      }
+    },
+    "tools": {
+      "bash": {
+        "path": "/bin/bash",
+        "realpath": "/usr/bin/bash",
+        "sha256": "59474588a312b6b6e73e5a42a59bf71e62b55416b6c9d5e4a6e1c630c2a9ecd4",
+        "version_arguments": [
+          "--version"
+        ],
+        "version_first_line": "GNU bash, version 5.1.16(1)-release (x86_64-pc-linux-gnu)",
+        "version_output_sha256": "51bd40ffa4710175920033d329a0e9e1667e6b7f56178e302432ff4610d554a7"
+      },
+      "mount": {
+        "path": "/usr/bin/mount",
+        "realpath": "/usr/bin/mount",
+        "sha256": "bad230d68e012eb1a2fcaa3b42688d912940f5c61f041ae9451eee7dfb858ff1",
+        "version_arguments": [
+          "--version"
+        ],
+        "version_first_line": "mount from util-linux 2.37.2 (libmount 2.37.2: selinux, smack, btrfs, verity, namespaces, assert, debug)",
+        "version_output_sha256": "0f39cf283734e19729339a127188aca796c00c49a8e5fc3ee38d8a5a91dffabf"
+      },
+      "python": {
+        "path": "/usr/bin/python3",
+        "realpath": "/usr/bin/python3.10",
+        "sha256": "7d51cd6b48b521277f5caa4610a82126e315fa2be4df069823a8b1eeb5bd4a86",
+        "version_arguments": [
+          "--version"
+        ],
+        "version_first_line": "Python 3.10.12",
+        "version_output_sha256": "f6b75e07f1488db28a89724a522725e3e01af3dc78f6fd365f17eb4059e41056"
+      },
+      "strace": {
+        "path": "/usr/bin/strace",
+        "realpath": "/usr/bin/strace",
+        "sha256": "38a5c75cb29dd85ddd7780d54f5bf595554d7a1b5c42524b23065f5dc4c4b01d",
+        "version_arguments": [
+          "--version"
+        ],
+        "version_first_line": "strace -- version 5.16",
+        "version_output_sha256": "47330880c53e6bafef6d915d42210d289ca470ec6879bac32d4a67549468cb1e"
+      },
+      "unshare": {
+        "path": "/usr/bin/unshare",
+        "realpath": "/usr/bin/unshare",
+        "sha256": "72a34e6ba98a59f1da0c7b4d8c9722b746b5ade54e4d7e8de8e519c2993858ad",
+        "version_arguments": [
+          "--version"
+        ],
+        "version_first_line": "unshare from util-linux 2.37.2",
+        "version_output_sha256": "5033a06a48f3a04eb5473577fa376f3a6c7b56becc2628a7e2b5c17d39e0e9b5"
+      }
+    },
+    "wrappers": {
+      "audit_launcher": {
+        "path": "/home/shenwei01/M_OFDFT_periodic_basis/scripts/runtime_relocation_audit_launcher.py",
+        "sha256": "1a8ed494ef7c804a5b7c292e1b11ddf7b4ece378986ab92274221ff282c2191e"
+      },
+      "namespace_launcher": {
+        "path": "/home/shenwei01/M_OFDFT_periodic_basis/scripts/runtime_relocation_namespace_launcher.py",
+        "sha256": "1098ed4c98691d07b394e04f93e1430504cd24beb21e02d3f19ae29b0bbbd0ee"
+      },
+      "namespace_payload": {
+        "path": "/home/shenwei01/M_OFDFT_periodic_basis/scripts/runtime_relocation_namespace_payload.sh",
+        "sha256": "0e6a536214fb29964339d2cef427da8ab1f7c8454fc797e26448f3b9ca511242"
+      },
+      "rank_wrapper": {
+        "path": "/home/shenwei01/M_OFDFT_periodic_basis/scripts/runtime_relocation_rank_wrapper.py",
+        "sha256": "0369af0d473c7d2becced933c3b625a1a442b142681aa986120e0e164c9987d6"
+      }
+    }
+  },
+  "runtime_audit": {
+    "absolute_deadline_watchdog_seconds": 7200,
+    "all_captured_regular_mapped_objects_must_be_hashed": true,
+    "ambiguous_exec_result_count_max": 0,
+    "clean_environment_required": true,
+    "controlled_home_policy": "per_run_marker_only_no_user_mpi_config",
+    "controlled_home_readonly_bind_mount_required": true,
+    "counterpart_byte_mismatch_count_max": 0,
+    "counterpart_exclusions": {
+      "launcher_identity_gate": {
+        "byte_equality_required": true,
+        "reference": {
+          "path": "/home/shenwei01/wt_melting_runtime_20260724/conda_prefix/bin/prterun",
+          "realpath": "/home/shenwei01/wt_melting_runtime_20260724/conda_prefix/bin/prte",
+          "sha256": "8e61af4375677a82d3dff0ba1fd96b6bc45778de0fe0c86b477c2421a08b73ea"
+        },
+        "replay": {
+          "path": "/home/shenwei01/M_OFDFT_recovery_S0_20260805_001/conda_prefix/bin/prterun",
+          "realpath": "/home/shenwei01/M_OFDFT_recovery_S0_20260805_001/conda_prefix/bin/prte",
+          "sha256": "8e61af4375677a82d3dff0ba1fd96b6bc45778de0fe0c86b477c2421a08b73ea"
+        }
+      },
+      "mpirun_identity_gate": {
+        "byte_equality_required": true,
+        "reference": {
+          "path": "/home/shenwei01/M_OFDFT_recovery_S0_20260805_001/conda_prefix/bin/mpirun",
+          "realpath": "/home/shenwei01/M_OFDFT_recovery_S0_20260805_001/conda_prefix/bin/mpirun",
+          "sha256": "7ae46f275cdccb2b9783d283986f5eac82c837106b7693a6638ecad5e44cfa20"
+        },
+        "replay": {
+          "path": "/home/shenwei01/M_OFDFT_recovery_S0_20260805_001/conda_prefix/bin/mpirun",
+          "realpath": "/home/shenwei01/M_OFDFT_recovery_S0_20260805_001/conda_prefix/bin/mpirun",
+          "sha256": "7ae46f275cdccb2b9783d283986f5eac82c837106b7693a6638ecad5e44cfa20"
+        }
+      },
+      "relocated_abacus_elf_gate": {
+        "byte_equality_required": false,
+        "reference": {
+          "path": "/home/shenwei01/M_OFDFT_recovery_S0_20260805_001/source/abacus_pw_para",
+          "realpath": "/home/shenwei01/M_OFDFT_recovery_S0_20260805_001/source/abacus_pw_para",
+          "sha256": "2d68a57c7b25608b3550854dabc2e63601eeca956bf185ad7d0967052bdbb4ba"
+        },
+        "replay": {
+          "path": "/home/shenwei01/M_OFDFT_recovery_S0_20260805_001/source/abacus_pw_para_relocated_20260805",
+          "realpath": "/home/shenwei01/M_OFDFT_recovery_S0_20260805_001/source/abacus_pw_para_relocated_20260805",
+          "sha256": "438c74b9ada4c8df15ffbb66da6755907dfd2a3812ecf868fafd4d7dc4db62e1"
+        }
+      }
+    },
+    "counterpart_missing_count_max": 0,
+    "file_trace_required": true,
+    "initial_maps_required_for_every_target": true,
+    "known_pid_terminal_proof_required": true,
+    "launcher_count": 1,
+    "ld_preload_must_be_unset": true,
+    "mapping_observation_scope": "final_prterun_and_four_abacus_ranks",
+    "mpirun_and_support_daemon_maps_out_of_scope": true,
+    "namespace_evidence_required": true,
+    "old_prefix_exec_success_count_max": 0,
+    "old_prefix_mapped_object_count_max": 0,
+    "old_prefix_successful_access_count_max": 0,
+    "rank_count": 4,
+    "rank_handshake_required": true,
+    "recovery_component_counterpart_byte_equality_required": true,
+    "registered_device_mapping_patterns": [
+      "^/dev/infiniband/(?:uverbs[0-9]+|rdma_cm)$",
+      "^/dev/nvidia(?:[0-9]+|ctl|modeset|uvm|uvm-tools)$",
+      "^/dev/nvidia-caps/nvidia-cap[0-9]+$"
+    ],
+    "registered_old_prefix_failed_probe_count": 22,
+    "registered_old_prefix_failed_probes": [
+      {
+        "errno": "ENOENT",
+        "expected_count": 1,
+        "flags": null,
+        "path": "/home/shenwei01/wt_melting_runtime_20260724/conda_prefix/classid",
+        "probe_id": "launcher_classid_stat",
+        "rank": null,
+        "role": "launcher",
+        "syscall": "stat"
+      },
+      {
+        "errno": "ENOENT",
+        "expected_count": 1,
+        "flags": "O_RDONLY|O_CLOEXEC",
+        "path": "/home/shenwei01/wt_melting_runtime_20260724/conda_prefix/classid",
+        "probe_id": "launcher_classid_open",
+        "rank": null,
+        "role": "launcher",
+        "syscall": "openat"
+      },
+      {
+        "errno": "ENOENT",
+        "expected_count_per_rank": 1,
+        "flags": null,
+        "path": "/home/shenwei01/wt_melting_runtime_20260724/conda_prefix/classid",
+        "probe_id": "rank_classid_stat",
+        "rank": "each",
+        "role": "rank",
+        "syscall": "stat"
+      },
+      {
+        "errno": "ENOENT",
+        "expected_count_per_rank": 1,
+        "flags": "O_RDONLY|O_CLOEXEC",
+        "path": "/home/shenwei01/wt_melting_runtime_20260724/conda_prefix/classid",
+        "probe_id": "rank_classid_open",
+        "rank": "each",
+        "role": "rank",
+        "syscall": "openat"
+      },
+      {
+        "errno": "ENOENT",
+        "expected_count_per_rank": 1,
+        "flags": "O_RDONLY",
+        "path": "/home/shenwei01/wt_melting_runtime_20260724/conda_prefix/ucx.conf",
+        "probe_id": "rank_ucx_conf_open",
+        "rank": "each",
+        "role": "rank",
+        "syscall": "openat"
+      },
+      {
+        "errno": "ENOENT",
+        "expected_count_per_rank": 1,
+        "flags": "O_RDONLY",
+        "path": "/home/shenwei01/wt_melting_runtime_20260724/conda_prefix",
+        "probe_id": "rank_old_prefix_open",
+        "rank": "each",
+        "role": "rank",
+        "syscall": "openat"
+      },
+      {
+        "errno": "ENOENT",
+        "expected_count_per_rank": 1,
+        "flags": "O_RDONLY|O_NONBLOCK|O_CLOEXEC|O_DIRECTORY",
+        "path": "/home/shenwei01/wt_melting_runtime_20260724/conda_prefix",
+        "probe_id": "rank_old_prefix_directory_open",
+        "rank": "each",
+        "role": "rank",
+        "syscall": "openat"
+      }
+    ],
+    "registered_probe_count_mismatch_count_max": 0,
+    "required_cmake_prefix_path": "/home/shenwei01/M_OFDFT_recovery_S0_20260805_001/conda_prefix",
+    "required_cuda_cache_disable": "1",
+    "required_ld_library_path": "/home/shenwei01/M_OFDFT_recovery_S0_20260805_001/conda_prefix/lib",
+    "required_mklroot": "/home/shenwei01/M_OFDFT_recovery_S0_20260805_001/conda_prefix",
+    "required_path": "/home/shenwei01/M_OFDFT_recovery_S0_20260805_001/conda_prefix/bin:/usr/bin:/bin",
+    "runtime_wall_timeout_seconds": 7200,
+    "strace_before_after_identity_required": true,
+    "strace_fixed_arguments": [
+      "-ff",
+      "-qq",
+      "-I",
+      "1",
+      "-s",
+      "4096",
+      "-e",
+      "trace=file,process"
+    ],
+    "successful_exec_multiset": {
+      "/home/shenwei01/M_OFDFT_recovery_S0_20260805_001/conda_prefix/bin/mpirun": 1,
+      "/home/shenwei01/M_OFDFT_recovery_S0_20260805_001/conda_prefix/bin/prte": 1,
+      "/home/shenwei01/M_OFDFT_recovery_S0_20260805_001/source/abacus_pw_para_relocated_20260805": 4,
+      "/usr/bin/python3.10": 4
+    },
+    "system_mapping_exact_paths": [
+      "/etc/ld.so.cache"
+    ],
+    "system_mapping_roots": [
+      "/usr",
+      "/lib",
+      "/lib64"
+    ],
+    "tracee_termination_contract": [
+      "runtime_process_group_zero_residual",
+      "known_pid_cross_channel_terminal_proof",
+      "pid_namespace_init_exit_kernel_sigkill",
+      "accessible_host_inode_negative_scan"
+    ],
+    "transient_mapping_patterns": [
+      "^/SYSV[0-9A-Fa-f]+$",
+      "^/dev/shm/sm_segment[A-Za-z0-9._-]*$",
+      "^/dev/shm/ucx_shm_posix_[A-Za-z0-9._-]+$",
+      "^/tmp/ompi\\.[0-9]+/(?:[A-Za-z0-9._-]+/)*(?:pmix-gds-shmem2|shared_mem_cuda_)[A-Za-z0-9._@-]*(?:/[A-Za-z0-9._-]+)*$",
+      "^/tmp/ompi\\.[0-9]+/hwloc\\.sm$"
+    ],
+    "unexpected_mapped_object_count_max": 0,
+    "unknown_old_prefix_failed_probe_count_max": 0
+  },
+  "schema_version": 2,
+  "source": {
+    "r8_algorithm_provenance": {
+      "analysis_commit": "9010eed2f4ab0cf9032eae622195abe1a7ae8e24",
+      "eos_analyzer_sha256": "81471bfb4b72a8b04ff9765310723b0387883dd1714a9151423d6dec26ffe583",
+      "r8_analyzer_sha256": "6a4f4346fe76bccdb085592aa1cda943144a3502513dc0d47121ae3363f619c9",
+      "result_parser_sha256": "458e20f451bd998405923adb69942ed8e5161923aef602cf86ffa0a7212979ce"
+    },
+    "r8_config_path": "config/S1_non_equilibrium_convergence.json",
+    "r8_config_sha256": "17e511669893cf8c4b7d4512da8b96d0bde42ac0f71c5e4daaacf03c747482dc",
+    "r8_manifest_path": "config/S1_non_equilibrium_run_manifest.tsv",
+    "r8_manifest_sha256": "7498616f5a1e0effcbb1af97db6bd4c8e49b70e03197782786f3b6c69df940df",
+    "r8_manifest_validation": {
+      "config_sha256": "17e511669893cf8c4b7d4512da8b96d0bde42ac0f71c5e4daaacf03c747482dc",
+      "experiment_count": 42,
+      "first_experiment_id": "S1-20260805-071",
+      "last_experiment_id": "S1-20260805-112",
+      "manifest_sha256": "7498616f5a1e0effcbb1af97db6bd4c8e49b70e03197782786f3b6c69df940df",
+      "preregistration_commit": "d6ffe59256b3ad0dbbaedfc81fd13e9740042c08"
+    },
+    "r8_series_status": {
+      "al/ksdft_next_cutoff": "accepted",
+      "al/ksdft_next_kmesh": "accepted",
+      "al/ofdft_next_cutoff": "accepted",
+      "mg/ksdft_next_cutoff": "accepted",
+      "mg/ksdft_next_kmesh": "accepted",
+      "mg/ofdft_next_cutoff": "accepted"
+    },
+    "r8_status": "accepted",
+    "r8_summary_path": "analysis/s1/non_equilibrium_convergence_20260805/summary.json",
+    "r8_summary_sha256": "94f947aa8db1c22c9ae26defc03ec516e5292c2c4ecdee9f373ce7a0056deb9f",
+    "runtime_relocation_smoke": {
+      "code_commit": "22eff3876b9fe260afd3296e2260c851c5332586",
+      "evidence_file_count": 66,
+      "evidence_manifest_path": "analysis/s1/runtime_relocation_smoke_20260805/evidence_manifest.tsv",
+      "evidence_manifest_sha256": "77934dc18fa3386cf98d0198b0f2878a952a79c10b785a287788ff40341d986a",
+      "failed_smoke_archives": [
+        {
+          "archive_commit": "1b75d57d30fa81d8315a2103b656f77a5866ec4b",
+          "archive_path": "failed_runs/runtime_relocation_smoke/attempt-1f4403ab5795",
+          "failure_commit": "1f4403ab57957cd4d99afef6d94ca6c26824c3c9",
+          "file_count": 69,
+          "tree_sha256": "0b0fe87ebf1e79059950864105df9f994c533a599108216c391112b37c059e93"
+        },
+        {
+          "archive_commit": "fa529dd9577e0dfd21f2858be423b9c816b3a74a",
+          "archive_path": "failed_runs/runtime_relocation_smoke/attempt-6241487bfbde",
+          "failure_commit": "6241487bfbded614064dce37ce3a4ab1264b088b",
+          "file_count": 66,
+          "tree_sha256": "9a64c292cf03c7f4c41724ad3379f36be055df10f550e0c53e3bf0800271e0bb"
+        },
+        {
+          "archive_commit": "597b3ea546ba5f8365c5348cd31e72799490bb4a",
+          "archive_path": "failed_runs/runtime_relocation_smoke/attempt-85993b37175a",
+          "failure_commit": "85993b37175ab6c951700ffab52636130f20b437",
+          "file_count": 29,
+          "tree_sha256": "df39681cf07d1cc3f736af17018122f671e7e9adcc836aa7f56e6f564548bf15"
+        }
+      ],
+      "reference_experiment_id": "S1-20260805-074",
+      "run_directory": "analysis/s1/runtime_relocation_smoke_20260805/run",
+      "runtime_identities": {
+        "elf_relocation": {
+          "chrpath_tool": {
+            "path": "/usr/bin/chrpath",
+            "realpath": "/usr/bin/chrpath",
+            "sha256": "911b2fdb0d729c3bfbfc8ab8f547cb8d2747c179e11a65396f0f4ba4b32ca086",
+            "version_arguments": [
+              "--version"
+            ],
+            "version_first_line": "chrpath version 0.16",
+            "version_output_sha256": "85d4499339a2adf5928c2701dd2d83815da791cf4c50e3ae64f5ade6c570c3b2"
+          },
+          "comparison": {
+            "all_differences_within_runpath_slot": true,
+            "allowed_runpath_slot_end_exclusive_zero_based": 23321,
+            "allowed_runpath_slot_start_zero_based": 23260,
+            "byte_difference_count": 60,
+            "dynamic_difference_only_runtime_path": true,
+            "first_difference_offset_zero_based": 23260,
+            "last_difference_offset_zero_based": 23319,
+            "outside_runpath_slot_byte_identical": true,
+            "replay_runpath_tail_nul_padded": true,
+            "same_build_id": true,
+            "same_elf_header": true,
+            "same_file_size": true,
+            "same_load_segments": true,
+            "same_needed": true,
+            "same_program_headers": true,
+            "same_section_headers": true
+          },
+          "readelf_tool": {
+            "path": "/usr/bin/readelf",
+            "realpath": "/usr/bin/x86_64-linux-gnu-readelf",
+            "sha256": "04db0000749aff89e4af21429340b00b536fc6f80e811c872c006507881a5560",
+            "version_arguments": [
+              "--version"
+            ],
+            "version_first_line": "GNU readelf (GNU Binutils for Ubuntu) 2.38",
+            "version_output_sha256": "46d3eedc868eae139eb63997734bca388eba0291af5376f3d0cf5fca10f36bb9"
+          },
+          "reference_binary": {
+            "path": "/home/shenwei01/M_OFDFT_recovery_S0_20260805_001/source/abacus_pw_para",
+            "realpath": "/home/shenwei01/M_OFDFT_recovery_S0_20260805_001/source/abacus_pw_para",
+            "sha256": "2d68a57c7b25608b3550854dabc2e63601eeca956bf185ad7d0967052bdbb4ba"
+          },
+          "reference_elf": {
+            "build_id": "305c76bb7144250c2cd8632e3ffb6ae02e7185ba",
+            "dynstr": {
+              "file_offset": 12536,
+              "size": 10785
+            },
+            "file_size": 10264504,
+            "load_segments": [
+              {
+                "alignment": "0x1000",
+                "file_size": "0x02adc0",
+                "flags": "R",
+                "memory_size": "0x02adc0",
+                "offset": "0x000000",
+                "physical_address": "0x0000000000000000",
+                "virtual_address": "0x0000000000000000"
+              },
+              {
+                "alignment": "0x1000",
+                "file_size": "0x54baf9",
+                "flags": "RE",
+                "memory_size": "0x54baf9",
+                "offset": "0x02b000",
+                "physical_address": "0x000000000002b000",
+                "virtual_address": "0x000000000002b000"
+              },
+              {
+                "alignment": "0x1000",
+                "file_size": "0x278f8e",
+                "flags": "R",
+                "memory_size": "0x278f8e",
+                "offset": "0x577000",
+                "physical_address": "0x0000000000577000",
+                "virtual_address": "0x0000000000577000"
+              },
+              {
+                "alignment": "0x1000",
+                "file_size": "0x00d354",
+                "flags": "RW",
+                "memory_size": "0x017ea8",
+                "offset": "0x7f02e0",
+                "physical_address": "0x00000000007f12e0",
+                "virtual_address": "0x00000000007f12e0"
+              }
+            ],
+            "needed": [
+              "libxc.so.15",
+              "libmkl_gf_lp64.so.2",
+              "libmkl_gnu_thread.so.2",
+              "libmkl_core.so.2",
+              "libmkl_scalapack_lp64.so.2",
+              "libmkl_blacs_openmpi_lp64.so.2",
+              "libmpi.so.40",
+              "libgomp.so.1",
+              "libstdc++.so.6",
+              "libm.so.6",
+              "libgcc_s.so.1",
+              "libc.so.6"
+            ],
+            "normalized_dynamic_sha256": "10c10bb5669be21f0fc498989b1f1a0a23d11e3c724638e4873d470a16b8c79b",
+            "readelf_output_sha256": {
+              "dynamic_section": "78018df2f70413d92095c36bd6645d6c18e52b56436af8c1afe75cb123ce9f91",
+              "elf_header": "31432d47ff201ee7f5b5cbdfe20a4853b8f849c1bedbededdcb816ffbbfa0079",
+              "notes": "bd5461c78aebe60fb914b82e6e94096cb01150a8714f63441fc0c1d62c8abd34",
+              "program_headers": "778d2d96fddab043c0a8698e73fc7f119b17253e6cc1274535d45da749b2f973",
+              "section_headers": "10343179ab58a5d16434dd6e29133de320999403f281fdb5f7fa866e4920fea1"
+            },
+            "rpath": [],
+            "runpath": [
+              "/home/shenwei01/wt_melting_runtime_20260724/conda_prefix/lib"
+            ]
+          },
+          "relocation_recipe": {
+            "chrpath_argv": [
+              "/usr/bin/chrpath",
+              "-r",
+              "$ORIGIN/../conda_prefix/lib",
+              "/home/shenwei01/M_OFDFT_recovery_S0_20260805_001/source/abacus_pw_para_relocated_20260805"
+            ],
+            "claim": "registered_reproduction_recipe_not_execution_log",
+            "copy_argv": [
+              "/usr/bin/cp",
+              "--preserve=mode,timestamps",
+              "/home/shenwei01/M_OFDFT_recovery_S0_20260805_001/source/abacus_pw_para",
+              "/home/shenwei01/M_OFDFT_recovery_S0_20260805_001/source/abacus_pw_para_relocated_20260805"
+            ],
+            "validator_authority": "byte_level_elf_gate"
+          },
+          "replay_binary": {
+            "path": "/home/shenwei01/M_OFDFT_recovery_S0_20260805_001/source/abacus_pw_para_relocated_20260805",
+            "realpath": "/home/shenwei01/M_OFDFT_recovery_S0_20260805_001/source/abacus_pw_para_relocated_20260805",
+            "sha256": "438c74b9ada4c8df15ffbb66da6755907dfd2a3812ecf868fafd4d7dc4db62e1"
+          },
+          "replay_elf": {
+            "build_id": "305c76bb7144250c2cd8632e3ffb6ae02e7185ba",
+            "dynstr": {
+              "file_offset": 12536,
+              "size": 10785
+            },
+            "file_size": 10264504,
+            "load_segments": [
+              {
+                "alignment": "0x1000",
+                "file_size": "0x02adc0",
+                "flags": "R",
+                "memory_size": "0x02adc0",
+                "offset": "0x000000",
+                "physical_address": "0x0000000000000000",
+                "virtual_address": "0x0000000000000000"
+              },
+              {
+                "alignment": "0x1000",
+                "file_size": "0x54baf9",
+                "flags": "RE",
+                "memory_size": "0x54baf9",
+                "offset": "0x02b000",
+                "physical_address": "0x000000000002b000",
+                "virtual_address": "0x000000000002b000"
+              },
+              {
+                "alignment": "0x1000",
+                "file_size": "0x278f8e",
+                "flags": "R",
+                "memory_size": "0x278f8e",
+                "offset": "0x577000",
+                "physical_address": "0x0000000000577000",
+                "virtual_address": "0x0000000000577000"
+              },
+              {
+                "alignment": "0x1000",
+                "file_size": "0x00d354",
+                "flags": "RW",
+                "memory_size": "0x017ea8",
+                "offset": "0x7f02e0",
+                "physical_address": "0x00000000007f12e0",
+                "virtual_address": "0x00000000007f12e0"
+              }
+            ],
+            "needed": [
+              "libxc.so.15",
+              "libmkl_gf_lp64.so.2",
+              "libmkl_gnu_thread.so.2",
+              "libmkl_core.so.2",
+              "libmkl_scalapack_lp64.so.2",
+              "libmkl_blacs_openmpi_lp64.so.2",
+              "libmpi.so.40",
+              "libgomp.so.1",
+              "libstdc++.so.6",
+              "libm.so.6",
+              "libgcc_s.so.1",
+              "libc.so.6"
+            ],
+            "normalized_dynamic_sha256": "10c10bb5669be21f0fc498989b1f1a0a23d11e3c724638e4873d470a16b8c79b",
+            "readelf_output_sha256": {
+              "dynamic_section": "8825564e527ed32306cee22e93f2ae8fe62ef49380c3a1a28a2b138471a2b609",
+              "elf_header": "31432d47ff201ee7f5b5cbdfe20a4853b8f849c1bedbededdcb816ffbbfa0079",
+              "notes": "bd5461c78aebe60fb914b82e6e94096cb01150a8714f63441fc0c1d62c8abd34",
+              "program_headers": "778d2d96fddab043c0a8698e73fc7f119b17253e6cc1274535d45da749b2f973",
+              "section_headers": "10343179ab58a5d16434dd6e29133de320999403f281fdb5f7fa866e4920fea1"
+            },
+            "rpath": [],
+            "runpath": [
+              "$ORIGIN/../conda_prefix/lib"
+            ]
+          },
+          "schema_version": 1
+        },
+        "reference_abacus": {
+          "path": "/home/shenwei01/M_OFDFT_recovery_S0_20260805_001/source/abacus_pw_para",
+          "realpath": "/home/shenwei01/M_OFDFT_recovery_S0_20260805_001/source/abacus_pw_para",
+          "sha256": "2d68a57c7b25608b3550854dabc2e63601eeca956bf185ad7d0967052bdbb4ba"
+        },
+        "reference_launcher": {
+          "path": "/home/shenwei01/wt_melting_runtime_20260724/conda_prefix/bin/prterun",
+          "realpath": "/home/shenwei01/wt_melting_runtime_20260724/conda_prefix/bin/prte",
+          "sha256": "8e61af4375677a82d3dff0ba1fd96b6bc45778de0fe0c86b477c2421a08b73ea"
+        },
+        "reference_mpirun": {
+          "path": "/home/shenwei01/M_OFDFT_recovery_S0_20260805_001/conda_prefix/bin/mpirun",
+          "realpath": "/home/shenwei01/M_OFDFT_recovery_S0_20260805_001/conda_prefix/bin/mpirun",
+          "sha256": "7ae46f275cdccb2b9783d283986f5eac82c837106b7693a6638ecad5e44cfa20"
+        },
+        "replay_abacus": {
+          "path": "/home/shenwei01/M_OFDFT_recovery_S0_20260805_001/source/abacus_pw_para_relocated_20260805",
+          "realpath": "/home/shenwei01/M_OFDFT_recovery_S0_20260805_001/source/abacus_pw_para_relocated_20260805",
+          "sha256": "438c74b9ada4c8df15ffbb66da6755907dfd2a3812ecf868fafd4d7dc4db62e1"
+        },
+        "replay_launcher": {
+          "path": "/home/shenwei01/M_OFDFT_recovery_S0_20260805_001/conda_prefix/bin/prterun",
+          "realpath": "/home/shenwei01/M_OFDFT_recovery_S0_20260805_001/conda_prefix/bin/prte",
+          "sha256": "8e61af4375677a82d3dff0ba1fd96b6bc45778de0fe0c86b477c2421a08b73ea"
+        },
+        "replay_mpirun": {
+          "path": "/home/shenwei01/M_OFDFT_recovery_S0_20260805_001/conda_prefix/bin/mpirun",
+          "realpath": "/home/shenwei01/M_OFDFT_recovery_S0_20260805_001/conda_prefix/bin/mpirun",
+          "sha256": "7ae46f275cdccb2b9783d283986f5eac82c837106b7693a6638ecad5e44cfa20"
+        },
+        "tools": {
+          "bash": {
+            "path": "/bin/bash",
+            "realpath": "/usr/bin/bash",
+            "sha256": "59474588a312b6b6e73e5a42a59bf71e62b55416b6c9d5e4a6e1c630c2a9ecd4",
+            "version_arguments": [
+              "--version"
+            ],
+            "version_first_line": "GNU bash, version 5.1.16(1)-release (x86_64-pc-linux-gnu)",
+            "version_output_sha256": "51bd40ffa4710175920033d329a0e9e1667e6b7f56178e302432ff4610d554a7"
+          },
+          "mount": {
+            "path": "/usr/bin/mount",
+            "realpath": "/usr/bin/mount",
+            "sha256": "bad230d68e012eb1a2fcaa3b42688d912940f5c61f041ae9451eee7dfb858ff1",
+            "version_arguments": [
+              "--version"
+            ],
+            "version_first_line": "mount from util-linux 2.37.2 (libmount 2.37.2: selinux, smack, btrfs, verity, namespaces, assert, debug)",
+            "version_output_sha256": "0f39cf283734e19729339a127188aca796c00c49a8e5fc3ee38d8a5a91dffabf"
+          },
+          "python": {
+            "path": "/usr/bin/python3",
+            "realpath": "/usr/bin/python3.10",
+            "sha256": "7d51cd6b48b521277f5caa4610a82126e315fa2be4df069823a8b1eeb5bd4a86",
+            "version_arguments": [
+              "--version"
+            ],
+            "version_first_line": "Python 3.10.12",
+            "version_output_sha256": "f6b75e07f1488db28a89724a522725e3e01af3dc78f6fd365f17eb4059e41056"
+          },
+          "strace": {
+            "path": "/usr/bin/strace",
+            "realpath": "/usr/bin/strace",
+            "sha256": "38a5c75cb29dd85ddd7780d54f5bf595554d7a1b5c42524b23065f5dc4c4b01d",
+            "version_arguments": [
+              "--version"
+            ],
+            "version_first_line": "strace -- version 5.16",
+            "version_output_sha256": "47330880c53e6bafef6d915d42210d289ca470ec6879bac32d4a67549468cb1e"
+          },
+          "unshare": {
+            "path": "/usr/bin/unshare",
+            "realpath": "/usr/bin/unshare",
+            "sha256": "72a34e6ba98a59f1da0c7b4d8c9722b746b5ade54e4d7e8de8e519c2993858ad",
+            "version_arguments": [
+              "--version"
+            ],
+            "version_first_line": "unshare from util-linux 2.37.2",
+            "version_output_sha256": "5033a06a48f3a04eb5473577fa376f3a6c7b56becc2628a7e2b5c17d39e0e9b5"
+          }
+        },
+        "wrappers": {
+          "audit_launcher": {
+            "path": "/home/shenwei01/M_OFDFT_periodic_basis/scripts/runtime_relocation_audit_launcher.py",
+            "sha256": "1a8ed494ef7c804a5b7c292e1b11ddf7b4ece378986ab92274221ff282c2191e"
+          },
+          "namespace_launcher": {
+            "path": "/home/shenwei01/M_OFDFT_periodic_basis/scripts/runtime_relocation_namespace_launcher.py",
+            "sha256": "1098ed4c98691d07b394e04f93e1430504cd24beb21e02d3f19ae29b0bbbd0ee"
+          },
+          "namespace_payload": {
+            "path": "/home/shenwei01/M_OFDFT_periodic_basis/scripts/runtime_relocation_namespace_payload.sh",
+            "sha256": "0e6a536214fb29964339d2cef427da8ab1f7c8454fc797e26448f3b9ca511242"
+          },
+          "rank_wrapper": {
+            "path": "/home/shenwei01/M_OFDFT_periodic_basis/scripts/runtime_relocation_rank_wrapper.py",
+            "sha256": "0369af0d473c7d2becced933c3b625a1a442b142681aa986120e0e164c9987d6"
+          }
+        }
+      },
+      "runtime_registration_sha256": "13d646cda16f20681837111f7bb7bfacd407c8ca7f4f66c7abdd47cedd6dd2fe",
+      "scientific_equivalence": {
+        "delta_energy_mev_per_atom": "0E-16",
+        "delta_pressure_gpa": "0E-7",
+        "energy_strictly_below_0_1_mev_per_atom": true,
+        "manifest_input_directory": "inputs/s1/non_equilibrium_convergence/al/v100/ofdft_next_cutoff",
+        "pressure_strictly_below_0_02_gpa": true,
+        "reference_log_sha256": "a513863dba0225a0599adea825bebd6b7342db3c75232a3aee5256d4a1387fa6",
+        "reference_result_sha256": "93a28628e95d5d10ede91a911e99fc7814bc9013c8ca3dd2e0a118aba17c86fe",
+        "smoke_log_sha256": "fad9b84584740c24a9fadbb2c6e417d793de95280526a15905f16a9c02e97f58",
+        "smoke_result_sha256": "93a28628e95d5d10ede91a911e99fc7814bc9013c8ca3dd2e0a118aba17c86fe",
+        "status": "accepted",
+        "tier": "storage_exact"
+      },
+      "smoke_commit": "92e513f2b72a582efa5b96a3c36d20272003b52a",
+      "smoke_id": "S1-RUNTIME-SMOKE-20260805-074",
+      "status": "accepted",
+      "status_gates": {
+        "counterpart_audit": {
+          "path": "/home/shenwei01/M_OFDFT_periodic_basis/analysis/s1/runtime_relocation_smoke_20260805/run/mpi_runtime_audit/counterpart_audit.json",
+          "sha256": "ad1aeff2d7dfb4c5f568d6ff06b8a6f7e01754999e353273c026f313d1f2c7ab",
+          "status": "accepted"
+        },
+        "namespace_host": {
+          "path": "/home/shenwei01/M_OFDFT_periodic_basis/analysis/s1/runtime_relocation_smoke_20260805/run/mpi_runtime_audit/namespace/host_status.json",
+          "sha256": "f8a1112b729fd092b8e84d18b59413f59a8d0f52d6ee862df2726245fae5a20c",
+          "status": "accepted"
+        },
+        "replay_status": {
+          "path": "/home/shenwei01/M_OFDFT_periodic_basis/analysis/s1/runtime_relocation_smoke_20260805/run/replay_status.json",
+          "sha256": "faeed45e992c876c962a1648af978691d942fd1a44d2d985810dea0a5d7c5da2",
+          "status": "accepted"
+        },
+        "run_status": {
+          "path": "/home/shenwei01/M_OFDFT_periodic_basis/analysis/s1/runtime_relocation_smoke_20260805/run/run_status.json",
+          "sha256": "0d1b4892fbe09b8aa4a340d06f49a912250fffc8f9cf23f6b4e81da494dd9ac1",
+          "status": "accepted"
+        },
+        "runtime_audit": {
+          "path": "/home/shenwei01/M_OFDFT_periodic_basis/analysis/s1/runtime_relocation_smoke_20260805/run/mpi_runtime_audit/audit.json",
+          "sha256": "4e5d1f307ef8abe5fb499836e21d051b52d8e9d8de50fb9d160faa2a0d8068be",
+          "status": "accepted"
+        }
+      },
+      "summary_path": "analysis/s1/runtime_relocation_smoke_20260805/summary.json",
+      "summary_sha256": "cc081cd4687aa0c4bf3dd88d984d98f4d071a7513ff7721ebb0a54e22832c328"
+    }
+  },
+  "status": "runtime_relocation_equivalence_frozen"
+}
