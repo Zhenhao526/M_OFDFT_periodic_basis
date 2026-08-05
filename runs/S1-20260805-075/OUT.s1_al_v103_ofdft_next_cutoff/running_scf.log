@@ -1,0 +1,375 @@
+                                                                                     
+                              ABACUS v3.11.0-beta.5
+
+               Atomic-orbital Based Ab-initio Computation at UStc                    
+
+                     Website: http://abacus.ustc.edu.cn/                             
+               Documentation: https://abacus.deepmodeling.com/                       
+                  Repository: https://github.com/abacusmodeling/abacus-develop       
+                              https://github.com/deepmodeling/abacus-develop         
+                      Commit: unknown
+
+    Start Time is Wed Aug  5 18:01:06 2026
+                                                                                     
+ ------------------------------------------------------------------------------------
+
+ READING GENERAL INFORMATION
+                           global_out_dir = OUT.s1_al_v103_ofdft_next_cutoff/
+                           global_in_card = INPUT
+                               pseudo_dir = ./
+                              orbital_dir = 
+                                    DRANK = 1
+                                    DSIZE = 4
+                                   DCOLOR = 1
+                                    GRANK = 1
+                                    GSIZE = 1
+
+
+ >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
+ |                                                                    |
+ |                        #Setup Unitcell#                            |
+ | From the input file and the structure file we know the number of   |
+ | different elments in this unitcell, then we list the detail        |
+ | information for each element, especially the zeta and polar atomic |
+ | orbital number for each element. The total atom number is counted. |
+ | We calculate the nearest atom distance for each atom and show the  |
+ | Cartesian and Direct coordinates for each atom. We list the file   |
+ | address for atomic orbitals. The volume and the lattice vectors    |
+ | in real and reciprocal space is also shown.                        |
+ |                                                                    |
+ <<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<
+
+ READING UNITCELL INFORMATION
+                       Number of elements = 1
+                  Lattice constant (Bohr) = 1.88973
+              Lattice constant (Angstrom) = 1
+
+ READING ATOM TYPE 1
+                               Atom label = Al
+                      L=0, number of zeta = 1
+                      L=1, number of zeta = 1
+                      L=2, number of zeta = 1
+            Number of atoms for this type = 1
+
+                        TOTAL ATOM NUMBER = 1
+
+ DIRECT COORDINATES
+ atom                  x                  y                  z     mag
+   Al     0.000000000000     0.000000000000     0.000000000000  0.0000
+
+ ATOMIC VELOCITIES
+ atom                 vx                 vy                 vz
+   Al                  0                  0                  0
+
+                     Cell volume (Bohr^3) = 115.435
+                        Cell volume (A^3) = 17.1057
+
+ Lattice vectors: (Cartesian coordinate: in unit of a_0)
+                   +0            +2.04505            +2.04505
+             +2.04505                  +0            +2.04505
+             +2.04505            +2.04505                  +0
+ Reciprocal vectors: (Cartesian coordinate: in unit of 2 pi/a_0)
+            -0.244493           +0.244493           +0.244493
+            +0.244493           -0.244493           +0.244493
+            +0.244493           +0.244493           -0.244493
+
+ #ENERGY SOLVER# ofdft
+ RUNNING WITH DEVICE  : CPU / Intel(R) Xeon(R) Platinum 8368Q CPU @ 2.60GHz (x2)
+
+
+ >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
+ |                                                                    |
+ |                 #Read Pseudopotentials Files#                      |
+ | ABACUS supports norm-conserving (NC) pseudopotentials for both     |
+ | plane wave basis and numerical atomic orbital basis sets.          |
+ | In addition, ABACUS supports ultrasoft pseudopotentials (USPP)     |
+ | for plane wave basis set.                                          |
+ |                                                                    |
+ <<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<
+
+                PAO radial cut off (Bohr) = 16
+
+                     Pseudopotential file = al.gga.psp
+                     Pseudopotential type = 
+          Exchange-correlation functional = PBE
+                 Nonlocal core correction = 0
+                        Valence electrons = 3
+                                     Lmax = 0
+                           Number of zeta = 0
+                     Number of projectors = 0
+                    DFT functional set to = XC_GGA_X_PBE+XC_GGA_C_PBE
+         Number of pseudo atomic orbitals = 0
+            Electron number of element Al = 3
+      Total electron number of element Al = 3
+          Autoset the number of electrons = 3
+               Occupied electronic states = 2
+     Number of electronic states (NBANDS) = 12
+
+
+ >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
+ |                                                                    |
+ |           #Setup Plane Waves of Charge/Potential#                  |
+ | Use the kinetic energy cutoff and the lattice vectors to generate  |
+ | the dimensions of FFT grid, which is used to represent the charge  |
+ | density or potential. If USPP is used, a double grid technique     |
+ | is applied.                                                        |
+ |                                                                    |
+ <<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<
+
+ SETUP PLANE WAVES FOR CHARGE/POTENTIAL
+  Energy cutoff for charge/potential (Ry) = 120
+            FFT grid for charge/potential = [ 20, 20, 20 ]
+           Number of FFT grids this proc. = 2000
+                Division for big FFT grid = [ 1, 1, 1 ]
+      FFT (big) grid for charge/potential = [ 20, 20, 20 ]
+     Number of FFT (big) grids this proc. = 2000
+                    Number of plane waves = 8000
+        Number of sticks on FFT x-y plane = 400
+
+ PARALLEL PW FOR CHARGE/POTENTIAL
+     PROC   COLUMNS(POT)             PW
+        1            100           2000
+        2            100           2000
+        3            100           2000
+        4            100           2000
+ --------------- SUM -------------------
+        4            400           8000
+
+                            Number of |g| = 221
+                                  Max |g| = 59.956
+                                  Min |g| = 0.478213
+ DONE : SETUP UNITCELL Time : 0.0808616 (SEC)
+
+
+ >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
+ |                                                                    |
+ |                       #Setup K-points#                             |
+ | We setup the k-points according to input parameters.               |
+ | The reduced k-points are set according to symmetry operations.     |
+ | We treat the spin as another set of k-points.                      |
+ |                                                                    |
+ <<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<
+
+
+ SETUP K-POINTS
+                                    nspin = 1
+                   Input type of k points = Monkhorst-Pack(Gamma)
+                                   nkstot = 1
+           Number of irreducible k-points = 1
+
+ K-POINTS REDUCTION ACCORDING TO SYMMETRY
+     IBZ    DIRECT_X    DIRECT_Y    DIRECT_Z  WEIGHT  ibz2bz
+       1  0.00000000  0.00000000  0.00000000  1.0000       0
+
+                               nkstot now = 1
+ K-POINTS DIRECT COORDINATES
+ KPOINTS    DIRECT_X    DIRECT_Y    DIRECT_Z  WEIGHT
+       1  0.00000000  0.00000000  0.00000000  1.0000
+
+
+       Number of k-points in this process = 1
+       Minimum distributed k-point number = 1
+
+ K-POINTS CARTESIAN COORDINATES
+ KPOINTS CARTESIAN_X CARTESIAN_Y CARTESIAN_Z  WEIGHT
+       1  0.00000000  0.00000000  0.00000000  2.0000
+
+
+ K-POINTS DIRECT COORDINATES
+ KPOINTS    DIRECT_X    DIRECT_Y    DIRECT_Z  WEIGHT
+       1  0.00000000  0.00000000  0.00000000  2.0000
+
+ DONE : INIT K-POINTS Time : 0.0810808 (SEC)
+
+ Libxc v7.0.0
+	S. Lehtola, C. Steigemann, M. J.T. Oliveira, and M. A.L. Marques.,  SoftwareX 7, 1–5 (2018)
+ XC: Perdew, Burke & Ernzerhof
+	J. P. Perdew, K. Burke, and M. Ernzerhof.,  Phys. Rev. Lett. 77, 3865 (1996)
+	J. P. Perdew, K. Burke, and M. Ernzerhof.,  Phys. Rev. Lett. 78, 1396 (1997)
+ XC: Perdew, Burke & Ernzerhof
+	J. P. Perdew, K. Burke, and M. Ernzerhof.,  Phys. Rev. Lett. 77, 3865 (1996)
+	J. P. Perdew, K. Burke, and M. Ernzerhof.,  Phys. Rev. Lett. 78, 1396 (1997)
+
+ DONE : SETUP UNITCELL Time : 0.0813511 (SEC)
+
+                                 init_chg = atomic
+ DONE : LOCAL POTENTIAL Time : 0.10171 (SEC)
+
+ DONE : INIT POTENTIAL Time : 0.104357 (SEC)
+
+ DONE : INIT KEDF Time : 0.104435 (SEC)
+
+ DONE : INIT OPTIMIZATION Time : 0.104447 (SEC)
+
+ DONE : INIT PHI Time : 0.104462 (SEC)
+
+ ================================================================
+ SELF-CONSISTENT
+ ================================================================
+
+Iter0: the norm of potential is 0.20437328342
+----------------------------------------------------------------
+        Energy              Rydberg                 eV          
+----------------------------------------------------------------
+              E_Total      -4.040857249679     -54.978683400239 
+              E_Fermi       0.609329946979       8.290359240947 
+----------------------------------------------------------------
+
+
+Iter1: the norm of potential is 0.246571685805
+----------------------------------------------------------------
+        Energy              Rydberg                 eV          
+----------------------------------------------------------------
+              E_Total      -4.069417234470     -55.367261928196 
+              E_Fermi       0.598994046027       8.149732094036 
+----------------------------------------------------------------
+
+
+Iter2: the norm of potential is 0.273353829112
+----------------------------------------------------------------
+        Energy              Rydberg                 eV          
+----------------------------------------------------------------
+              E_Total      -4.083412666300     -55.557679547055 
+              E_Fermi       0.593761189568       8.078535429380 
+----------------------------------------------------------------
+
+
+Iter3: the norm of potential is 0.340028530068
+----------------------------------------------------------------
+        Energy              Rydberg                 eV          
+----------------------------------------------------------------
+              E_Total      -4.146697192142     -56.418709693732 
+              E_Fermi       0.571497053691       7.775616320409 
+----------------------------------------------------------------
+
+
+Iter4: the norm of potential is 0.0585302787691
+----------------------------------------------------------------
+        Energy              Rydberg                 eV          
+----------------------------------------------------------------
+              E_Total      -4.201195919822     -57.160202923926 
+              E_Fermi       0.552739818335       7.520411040848 
+----------------------------------------------------------------
+
+
+Iter5: the norm of potential is 0.00873015579938
+----------------------------------------------------------------
+        Energy              Rydberg                 eV          
+----------------------------------------------------------------
+              E_Total      -4.202776242972     -57.181704323455 
+              E_Fermi       0.552280370826       7.514159936783 
+----------------------------------------------------------------
+
+
+Iter6: the norm of potential is 0.00142429227365
+----------------------------------------------------------------
+        Energy              Rydberg                 eV          
+----------------------------------------------------------------
+              E_Total      -4.202810674177     -57.182172784029 
+              E_Fermi       0.552263579242       7.513931475564 
+----------------------------------------------------------------
+
+
+Iter7: the norm of potential is 0.000212582821957
+----------------------------------------------------------------
+        Energy              Rydberg                 eV          
+----------------------------------------------------------------
+              E_Total      -4.202811872271     -57.182189084930 
+              E_Fermi       0.552269485274       7.514011831256 
+----------------------------------------------------------------
+
+
+Iter8: the norm of potential is 3.46453995488e-05
+----------------------------------------------------------------
+        Energy              Rydberg                 eV          
+----------------------------------------------------------------
+              E_Total      -4.202811905233     -57.182189533409 
+              E_Fermi       0.552268039706       7.513992163288 
+----------------------------------------------------------------
+
+
+Iter9: the norm of potential is 5.91730294098e-06
+----------------------------------------------------------------
+        Energy              Rydberg                 eV          
+----------------------------------------------------------------
+              E_Total      -4.202811906132     -57.182189545634 
+              E_Fermi       0.552268218955       7.513994602106 
+----------------------------------------------------------------
+
+
+Iter10: the norm of potential is 8.38155491295e-07
+----------------------------------------------------------------
+        Energy              Rydberg                 eV          
+----------------------------------------------------------------
+              E_Total      -4.202811906168     -57.182189546123 
+              E_Fermi       0.552268161226       7.513993816655 
+----------------------------------------------------------------
+
+ #SCF IS CONVERGED#
+ #TOTAL ENERGY# -57.182189546 eV
+
+
+
+ #TOTAL-FORCE (eV/Angstrom)#
+ -------------------------------------------------------------------------
+     Atoms              Force_x              Force_y              Force_z 
+ -------------------------------------------------------------------------
+       Al1         0.0000000000         0.0000000000         0.0000000000 
+ -------------------------------------------------------------------------
+
+ #TOTAL-STRESS (kbar)#
+ ----------------------------------------------------------------
+              Stress_x             Stress_y             Stress_z 
+ ----------------------------------------------------------------
+        -14.9406109832         0.0000052110         0.0000052110 
+          0.0000052110       -14.9406109828         0.0000052108 
+          0.0000052110         0.0000052108       -14.9406109829 
+ ----------------------------------------------------------------
+ #TOTAL-PRESSURE# (EXCLUDE KINETIC PART OF IONS): -14.940611 kbar
+
+ --------------------------------------------
+ !FINAL_ETOT_IS -57.1821895461234391 eV
+ --------------------------------------------
+
+
+
+ TIME STATISTICS
+-----------------------------------------------------------------------
+     CLASS_NAME             NAME         TIME/s  CALLS   AVG/s  PER/%  
+-----------------------------------------------------------------------
+                     total               0.54   17       0.03   100.00 
+ Driver              atomic_world        0.54   1        0.54   100.00 
+ Driver              reading             0.02   1        0.02   4.24   
+ Charge              atomic_rho          0.02   2        0.01   2.90   
+ PW_Basis_Sup        recip2real          0.09   2050     0.00   15.69  
+ PW_Basis_Sup        recip2real_copy_g   0.01   2050     0.00   1.67   
+ PW_Basis_Sup        gathers_copy_pack   0.01   2050     0.00   1.09   
+ ppcell_vl           init_vloc           0.01   1        0.01   1.80   
+ Potential           cal_veff            0.29   227      0.00   53.82  
+ H_Hartree_pw        v_hartree           0.02   227      0.00   3.93   
+ PW_Basis_Sup        real2recip          0.10   2499     0.00   17.93  
+ PW_Basis_Sup        gatherp_copy_pack   0.01   2499     0.00   1.27   
+ PW_Basis_Sup        gatherp_copy_unpack 0.01   2499     0.00   1.96   
+ PW_Basis_Sup        real2recip_copy_g   0.01   2499     0.00   1.03   
+ PotXC               cal_veff            0.27   227      0.00   49.79  
+ XC_Functional_Libxc v_xc_libxc          0.27   227      0.00   49.73  
+ Libxc               xc_lda/gga_exc_vxc  0.11   454      0.00   20.55  
+ Relax_Driver        relax_driver        0.44   1        0.44   80.75  
+ ESolver_OF          runner              0.43   1        0.43   78.40  
+ KEDF_Manager        get_potential       0.12   225      0.00   22.74  
+ KEDF_TF             tf_potential        0.02   225      0.00   3.54   
+ KEDF_WT             wt_potential        0.08   225      0.00   15.35  
+ KEDF_vW             vw_potential        0.02   225      0.00   3.78   
+ OF_Stress_PW        cal_stress          0.01   1        0.01   2.21   
+ Stress              stress_loc          0.01   1        0.01   1.69   
+-----------------------------------------------------------------------
+
+
+ NAME-------------------------|MEMORY(MB)------------------
+                         total         1.0451
+ -------------   < 1.0 MB has been ignored ----------------
+ ----------------------------------------------------------
+
+ Start  Time  : Wed Aug  5 18:01:06 2026
+ Finish Time  : Wed Aug  5 18:01:06 2026
+ Total  Time  : 0 h 0 mins 0 secs 
