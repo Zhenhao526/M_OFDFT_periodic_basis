@@ -1,8 +1,8 @@
 component	version	path	provenance
 abacus	v3.11.0-beta.5	/home/shenwei01/wt_melting_runtime_20260724/build-abacus-wt-cpu/source/abacus_pw_para	local rebuilt WT CPU baseline
 runtime_prefix	conda explicit package snapshot	/home/shenwei01/wt_melting_runtime_20260724/conda_prefix	local isolated prefix
+runtime_archive	binary recovery snapshot	/home/shenwei01/M_OFDFT_runtime_20260805.tar.gz	locked prefix plus audited ABACUS binary; SHA-256 in environment sidecar
 openmpi	5.0.10	/home/shenwei01/wt_melting_runtime_20260724/conda_prefix/bin/mpirun	conda-forge package
 libxc	7.0.0	/home/shenwei01/wt_melting_runtime_20260724/conda_prefix/lib/libxc.so.15	conda-forge package
 al_blps	Nov-2010 GGA	assets/pseudo/al.gga.psp	reused from audited WT Al workspace
 mg_blps	LDA BLPS	assets/pseudo/mg.lda.lps	reused from audited WT Mg workspace
-

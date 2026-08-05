@@ -6,9 +6,16 @@ M_OFDFT_EXPERIMENT_ID=${1:-S0-20260805-001}
 M_OFDFT_EXPERIMENT_ROOT="$M_OFDFT_ROOT/runs/$M_OFDFT_EXPERIMENT_ID"
 M_OFDFT_TEMPLATE="$M_OFDFT_ROOT/tests/smoke/al_fcc_wt"
 M_OFDFT_PSEUDO="$M_OFDFT_ROOT/assets/pseudo/al.gga.psp"
-M_OFDFT_ABACUS=/home/shenwei01/wt_melting_runtime_20260724/build-abacus-wt-cpu/source/abacus_pw_para
-M_OFDFT_MPIRUN=/home/shenwei01/wt_melting_runtime_20260724/conda_prefix/bin/mpirun
 M_OFDFT_NPROCS=${M_OFDFT_NPROCS:-4}
+
+source "$M_OFDFT_ROOT/environment/activate.sh"
+M_OFDFT_ABACUS=${M_OFDFT_ABACUS:-/home/shenwei01/wt_melting_runtime_20260724/build-abacus-wt-cpu/source/abacus_pw_para}
+M_OFDFT_MPIRUN=${M_OFDFT_MPIRUN:-$M_OFDFT_PREFIX/bin/mpirun}
+M_OFDFT_GIT_COMMIT=$(git -C "$M_OFDFT_ROOT" rev-parse HEAD)
+M_OFDFT_GIT_DIRTY=false
+if [[ -n "$(git -C "$M_OFDFT_ROOT" status --porcelain)" ]]; then
+    M_OFDFT_GIT_DIRTY=true
+fi
 
 if [[ -e "$M_OFDFT_EXPERIMENT_ROOT" ]]; then
     echo "Refusing to overwrite existing experiment: $M_OFDFT_EXPERIMENT_ROOT" >&2
@@ -18,15 +25,19 @@ if [[ ! -x "$M_OFDFT_ABACUS" ]]; then
     echo "ABACUS binary is not executable: $M_OFDFT_ABACUS" >&2
     exit 2
 fi
+if [[ ! -x "$M_OFDFT_MPIRUN" ]]; then
+    echo "MPI launcher is not executable: $M_OFDFT_MPIRUN" >&2
+    exit 2
+fi
 if [[ ! -f "$M_OFDFT_PSEUDO" ]]; then
     echo "Pseudopotential is missing: $M_OFDFT_PSEUDO" >&2
     exit 2
 fi
+M_OFDFT_ABACUS_SHA256=$(sha256sum "$M_OFDFT_ABACUS" | awk '{print $1}')
 
-source "$M_OFDFT_ROOT/environment/activate.sh"
 mkdir -p "$M_OFDFT_EXPERIMENT_ROOT/repeat1" "$M_OFDFT_EXPERIMENT_ROOT/repeat2"
 
-python3 - "$M_OFDFT_EXPERIMENT_ROOT/experiment_metadata.json" "$M_OFDFT_EXPERIMENT_ID" "$M_OFDFT_NPROCS" <<'PY'
+python3 - "$M_OFDFT_EXPERIMENT_ROOT/experiment_metadata.json" "$M_OFDFT_EXPERIMENT_ID" "$M_OFDFT_NPROCS" "$M_OFDFT_ABACUS" "$M_OFDFT_PREFIX" "$M_OFDFT_GIT_COMMIT" "$M_OFDFT_GIT_DIRTY" "$M_OFDFT_ABACUS_SHA256" <<'PY'
 from __future__ import annotations
 
 import datetime
@@ -44,6 +55,11 @@ payload = {
     "repeats": 2,
     "mpi_ranks": int(sys.argv[3]),
     "abacus_version": "v3.11.0-beta.5",
+    "abacus_path": sys.argv[4],
+    "abacus_sha256": sys.argv[8],
+    "code_commit": sys.argv[6],
+    "worktree_dirty": sys.argv[7] == "true",
+    "runtime_prefix": sys.argv[5],
     "kinetic_functional": "WT",
     "xc": "PBE",
     "pseudopotential": "al.gga.psp",

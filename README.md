@@ -20,6 +20,28 @@
 
 精确哈希见 `manifests/SOFTWARE_SHA256SUMS`，完整包列表见 `environment/conda_prefix_packages.txt`。
 
+## 干净二进制环境恢复
+
+基线前缀没有 Conda 元数据，因此 G0 使用“已锁定二进制归档恢复”而非不可审计的
+联网重解算。归档包含完整依赖前缀和已校验的 ABACUS 二进制；恢复脚本拒绝覆盖
+已有目录，先校验归档和 ABACUS SHA-256，再检查动态库不得回落到原基线前缀。
+
+```bash
+cd /home/shenwei01/M_OFDFT_periodic_basis
+./scripts/restore_runtime.sh \
+  /home/shenwei01/M_OFDFT_runtime_20260805.tar.gz \
+  /home/shenwei01/M_OFDFT_recovery_S0_20260805_001
+
+export M_OFDFT_RUNTIME=/home/shenwei01/M_OFDFT_recovery_S0_20260805_001
+export M_OFDFT_ABACUS="$M_OFDFT_RUNTIME/source/abacus_pw_para"
+./scripts/run_unit_tests.sh
+./scripts/run_smoke.sh S0-20260805-003
+```
+
+`run_smoke.sh` 默认使用基线运行时；设置上述两个环境变量后，MPI 和全部动态库
+必须来自新恢复目录。该验收证明锁定二进制环境可从空目录恢复，不等同于 ABACUS
+源码重编译。
+
 ## 快速测试
 
 ```bash
@@ -55,4 +77,3 @@ tests/unit/          解析器与协议单元测试
 3. 每次工作结束前更新本地与远端的 `M_OFDFT_项目进度与交接.md`。
 4. 任何结果必须记录 ABACUS、赝势、输入和代码提交哈希。
 5. 许可证尚待项目负责人决定；在此之前不得对外发布本仓库内容。
-
