@@ -2,7 +2,9 @@
 
 周期金属原子/混合密度基 M-OFDFT 项目的远端执行仓库。
 
-当前阶段：S0（初始化与可复现协议）。当前只建立平面波 ABACUS/WT 基线和 fcc Al smoke test；尚未开始混合密度基或 ML-KEDF 开发。
+当前阶段：S1（平面波 OFDFT/KSDFT 基准闭环）。G0 已通过；Al/Mg 的 WT
+及 KSDFT 截断扫描已完成，正在执行 k 点与展宽收敛。尚未开始混合密度基或
+ML-KEDF 开发。
 
 ## 固定远端位置
 

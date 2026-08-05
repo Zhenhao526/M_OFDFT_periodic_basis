@@ -2,6 +2,7 @@ from __future__ import annotations
 
 import importlib.util
 import math
+import sys
 import unittest
 from pathlib import Path
 
@@ -11,6 +12,15 @@ SPEC = importlib.util.spec_from_file_location("generate_s1_inputs", SCRIPT)
 assert SPEC and SPEC.loader
 MODULE = importlib.util.module_from_spec(SPEC)
 SPEC.loader.exec_module(MODULE)
+
+CONVERGENCE_SCRIPT = SCRIPT.with_name("generate_s1_convergence_inputs.py")
+CONVERGENCE_SPEC = importlib.util.spec_from_file_location(
+    "generate_s1_convergence_inputs", CONVERGENCE_SCRIPT
+)
+assert CONVERGENCE_SPEC and CONVERGENCE_SPEC.loader
+sys.modules["generate_s1_inputs"] = MODULE
+CONVERGENCE_MODULE = importlib.util.module_from_spec(CONVERGENCE_SPEC)
+CONVERGENCE_SPEC.loader.exec_module(CONVERGENCE_MODULE)
 
 
 class GenerateS1InputsTest(unittest.TestCase):
@@ -35,6 +45,12 @@ class GenerateS1InputsTest(unittest.TestCase):
         self.assertAlmostEqual(abs(MODULE.determinant(cell)), expected, places=12)
         self.assertEqual(MODULE.ratio_label(0.90), "v090")
         self.assertEqual(MODULE.ratio_label(1.10), "v110")
+
+    def test_convergence_labels_are_stable(self) -> None:
+        self.assertEqual(CONVERGENCE_MODULE.kmesh_label([12, 12, 8]), "k012x012x008")
+        self.assertEqual(
+            CONVERGENCE_MODULE.sigma_label(0.00734986), "sigma0p00734986"
+        )
 
 
 if __name__ == "__main__":

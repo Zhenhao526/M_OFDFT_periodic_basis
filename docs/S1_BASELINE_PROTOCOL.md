@@ -69,6 +69,13 @@ S2 must not start before every G1 acceptance item has evidence.
   settings and produced a numerical plateau. Before any retry, tolerances were
   changed to `of_tole=1e-7`, `of_tolp=1e-6`; G1 energy and pressure acceptance
   thresholds were not changed. The failed run remains in the experiment ledger.
+- `S1-R2`, 2026-08-05: Al and Mg KSDFT cutoff scans both selected 40 Ry at
+  `V/V0=1.00`. The candidate KS reference was therefore changed from 60/240 Ry
+  to 40/160 Ry before generating k-point and smearing scans. This is a
+  one-axis-at-a-time protocol update, not final G1 parameter freezing.
+- The two-point smearing scan at `V/V0=1.00` is an energy pre-screen only. It
+  cannot establish the required `<0.2%` equilibrium-volume change; full
+  smearing acceptance remains pending until EOS fits exist at both sigmas.
 
 ## Completed convergence evidence
 
@@ -99,3 +106,25 @@ checked; no production parameter is silently frozen from a single point.
 All four Mg attempts converged and every adjacent comparison passes. The
 minimum scanned value, 30 Ry, is the V0 candidate. As for Al, this remains
 provisional until non-equilibrium EOS points confirm relative-energy behavior.
+
+### Al KSDFT cutoff at `V/V0 = 1.00`
+
+| Cutoff (Ry) | Experiment | Converged | Delta to next (meV/atom) | Pressure delta to next (GPa) |
+|---:|---|---|---:|---:|
+| 40 | `S1-20260805-010` | yes | 0.125921 | 0.0064297 |
+| 60 | `S1-20260805-011` | yes | 0.009981 | 0.0000603 |
+| 80 | `S1-20260805-012` | yes | — | — |
+
+All points converged. The minimum scanned value, 40 Ry, passes the adjacent
+energy and pressure thresholds and is the reference for the Al k-point scan.
+
+### Mg KSDFT cutoff at `V/V0 = 1.00`
+
+| Cutoff (Ry) | Experiment | Converged | Delta to next (meV/atom) | Pressure delta to next (GPa) |
+|---:|---|---|---:|---:|
+| 40 | `S1-20260805-013` | yes | 0.001405 | 0.0000296 |
+| 60 | `S1-20260805-014` | yes | 0.000050 | 0.0000014 |
+| 80 | `S1-20260805-015` | yes | — | — |
+
+All points converged. The minimum scanned value, 40 Ry, passes the adjacent
+energy and pressure thresholds and is the reference for the Mg k-point scan.
