@@ -170,6 +170,7 @@ def generate(project_root: Path, config_path: Path, output_root: Path) -> int:
                         "config_sha256": config_digest,
                         "ecutrho_ry": material[solver]["ecutrho_ry"],
                         "ecutwfc_ry": material[solver]["ecutwfc_ry"],
+                        "expected_electrons": material["valence_electrons"] * len(positions),
                         "kmesh": material[solver]["kmesh"],
                         "material": material_id,
                         "pseudopotential": material["pseudopotential"],

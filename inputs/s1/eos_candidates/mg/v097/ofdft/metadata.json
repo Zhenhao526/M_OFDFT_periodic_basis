@@ -18,9 +18,10 @@
       5.158162057727363
     ]
   ],
-  "config_sha256": "7e9b3918a797bde38b8bd1bee819161cec729010093431304837231330356a62",
+  "config_sha256": "9e1fed198e368b4970344b3b06a2c11614539a971717cfd43727439802ec6755",
   "ecutrho_ry": 160,
   "ecutwfc_ry": 40,
+  "expected_electrons": 4,
   "kmesh": [
     1,
     1,
