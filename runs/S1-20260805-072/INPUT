@@ -1,0 +1,23 @@
+INPUT_PARAMETERS
+suffix s1_al_v094_ofdft_next_cutoff
+calculation scf
+esolver_type ofdft
+basis_type pw
+dft_functional XC_GGA_X_PBE+XC_GGA_C_PBE
+symmetry 0
+pseudo_dir .
+pseudo_rcut 16
+ecutwfc 30
+ecutrho 120
+scf_nmax 200
+cal_force 1
+cal_stress 1
+of_kinetic wt
+of_method tn
+of_conv both
+of_tole 1e-7
+of_tolp 1e-6
+of_wt_alpha 0.8333333333333334
+of_wt_beta 0.8333333333333334
+of_wt_rho0 0.0
+of_hold_rho0 0
