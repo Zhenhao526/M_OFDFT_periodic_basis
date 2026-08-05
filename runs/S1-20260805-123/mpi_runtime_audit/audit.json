@@ -1,0 +1,1067 @@
+{
+  "absolute_deadline_watchdog_seconds": 7200,
+  "ambiguous_exec_result_count": 0,
+  "command": [
+    "/home/shenwei01/M_OFDFT_recovery_S0_20260805_001/conda_prefix/bin/mpirun",
+    "--allow-run-as-root",
+    "--bind-to",
+    "core",
+    "-np",
+    "4",
+    "/usr/bin/python3.10",
+    "/home/shenwei01/M_OFDFT_periodic_basis/scripts/runtime_relocation_rank_wrapper.py",
+    "/home/shenwei01/M_OFDFT_recovery_S0_20260805_001/source/abacus_pw_para_relocated_20260805"
+  ],
+  "elapsed_seconds": 9.396514908410609,
+  "ended_at_utc": "2026-08-05T16:39:16.124687+00:00",
+  "ended_epoch_seconds": 1785947956.1246846,
+  "failure_reasons": [],
+  "launcher_discovery": {
+    "authoritative_launcher_pid": 17,
+    "authoritative_pid_live_at_handshake": true,
+    "authoritative_pid_start_time_ticks": 617083916,
+    "expected_launcher_realpath": "/home/shenwei01/M_OFDFT_recovery_S0_20260805_001/conda_prefix/bin/prte",
+    "live_proc_exe_candidate_pids": [
+      17
+    ],
+    "method": "unique_successful_execve_with_live_proc_exe_confirmation",
+    "schema_version": 1,
+    "successful_exec_pids": [
+      17
+    ]
+  },
+  "launcher_exit_code": 0,
+  "launcher_pid": 17,
+  "launcher_successful_exec_pids": [
+    17
+  ],
+  "ld_library_path": "/home/shenwei01/M_OFDFT_recovery_S0_20260805_001/conda_prefix/lib",
+  "ld_preload": null,
+  "mapped_object_count": 323,
+  "observed_execve_records": [
+    {
+      "errno": null,
+      "path": "/home/shenwei01/M_OFDFT_recovery_S0_20260805_001/conda_prefix/bin/mpirun",
+      "pid": 17,
+      "rank": null,
+      "result": "0",
+      "role": "launcher",
+      "successful": true
+    },
+    {
+      "errno": null,
+      "path": "/home/shenwei01/M_OFDFT_recovery_S0_20260805_001/conda_prefix/bin/prte",
+      "pid": 17,
+      "rank": null,
+      "result": "0",
+      "role": "launcher",
+      "successful": true
+    },
+    {
+      "errno": null,
+      "path": "/usr/bin/python3.10",
+      "pid": 20,
+      "rank": 0,
+      "result": "0",
+      "role": "rank",
+      "successful": true
+    },
+    {
+      "errno": null,
+      "path": "/home/shenwei01/M_OFDFT_recovery_S0_20260805_001/source/abacus_pw_para_relocated_20260805",
+      "pid": 20,
+      "rank": 0,
+      "result": "0",
+      "role": "rank",
+      "successful": true
+    },
+    {
+      "errno": null,
+      "path": "/usr/bin/python3.10",
+      "pid": 21,
+      "rank": 1,
+      "result": "0",
+      "role": "rank",
+      "successful": true
+    },
+    {
+      "errno": null,
+      "path": "/home/shenwei01/M_OFDFT_recovery_S0_20260805_001/source/abacus_pw_para_relocated_20260805",
+      "pid": 21,
+      "rank": 1,
+      "result": "0",
+      "role": "rank",
+      "successful": true
+    },
+    {
+      "errno": null,
+      "path": "/usr/bin/python3.10",
+      "pid": 22,
+      "rank": 2,
+      "result": "0",
+      "role": "rank",
+      "successful": true
+    },
+    {
+      "errno": null,
+      "path": "/home/shenwei01/M_OFDFT_recovery_S0_20260805_001/source/abacus_pw_para_relocated_20260805",
+      "pid": 22,
+      "rank": 2,
+      "result": "0",
+      "role": "rank",
+      "successful": true
+    },
+    {
+      "errno": null,
+      "path": "/usr/bin/python3.10",
+      "pid": 23,
+      "rank": 3,
+      "result": "0",
+      "role": "rank",
+      "successful": true
+    },
+    {
+      "errno": null,
+      "path": "/home/shenwei01/M_OFDFT_recovery_S0_20260805_001/source/abacus_pw_para_relocated_20260805",
+      "pid": 23,
+      "rank": 3,
+      "result": "0",
+      "role": "rank",
+      "successful": true
+    }
+  ],
+  "old_prefix": "/home/shenwei01/wt_melting_runtime_20260724/conda_prefix",
+  "old_prefix_access_attempt_count": 22,
+  "old_prefix_access_events": [
+    {
+      "errno": "ENOENT",
+      "flags": null,
+      "line": "stat(\"/home/shenwei01/wt_melting_runtime_20260724/conda_prefix/classid\", 0x7ffcef47a200) = -1 ENOENT (No such file or directory)",
+      "paths": [
+        "/home/shenwei01/wt_melting_runtime_20260724/conda_prefix/classid"
+      ],
+      "pid": 17,
+      "rank": null,
+      "registered_probe_id": "launcher_classid_stat",
+      "result": "-1",
+      "role": "launcher",
+      "successful": false,
+      "syscall": "stat"
+    },
+    {
+      "errno": "ENOENT",
+      "flags": "O_RDONLY|O_CLOEXEC",
+      "line": "openat(AT_FDCWD, \"/home/shenwei01/wt_melting_runtime_20260724/conda_prefix/classid\", O_RDONLY|O_CLOEXEC) = -1 ENOENT (No such file or directory)",
+      "paths": [
+        "/home/shenwei01/wt_melting_runtime_20260724/conda_prefix/classid"
+      ],
+      "pid": 17,
+      "rank": null,
+      "registered_probe_id": "launcher_classid_open",
+      "result": "-1",
+      "role": "launcher",
+      "successful": false,
+      "syscall": "openat"
+    },
+    {
+      "errno": "ENOENT",
+      "flags": null,
+      "line": "stat(\"/home/shenwei01/wt_melting_runtime_20260724/conda_prefix/classid\", 0x7fffb5800b40) = -1 ENOENT (No such file or directory)",
+      "paths": [
+        "/home/shenwei01/wt_melting_runtime_20260724/conda_prefix/classid"
+      ],
+      "pid": 20,
+      "rank": 0,
+      "registered_probe_id": "rank_classid_stat",
+      "result": "-1",
+      "role": "rank",
+      "successful": false,
+      "syscall": "stat"
+    },
+    {
+      "errno": "ENOENT",
+      "flags": "O_RDONLY|O_CLOEXEC",
+      "line": "openat(AT_FDCWD, \"/home/shenwei01/wt_melting_runtime_20260724/conda_prefix/classid\", O_RDONLY|O_CLOEXEC) = -1 ENOENT (No such file or directory)",
+      "paths": [
+        "/home/shenwei01/wt_melting_runtime_20260724/conda_prefix/classid"
+      ],
+      "pid": 20,
+      "rank": 0,
+      "registered_probe_id": "rank_classid_open",
+      "result": "-1",
+      "role": "rank",
+      "successful": false,
+      "syscall": "openat"
+    },
+    {
+      "errno": "ENOENT",
+      "flags": "O_RDONLY",
+      "line": "openat(AT_FDCWD, \"/home/shenwei01/wt_melting_runtime_20260724/conda_prefix/ucx.conf\", O_RDONLY) = -1 ENOENT (No such file or directory)",
+      "paths": [
+        "/home/shenwei01/wt_melting_runtime_20260724/conda_prefix/ucx.conf"
+      ],
+      "pid": 20,
+      "rank": 0,
+      "registered_probe_id": "rank_ucx_conf_open",
+      "result": "-1",
+      "role": "rank",
+      "successful": false,
+      "syscall": "openat"
+    },
+    {
+      "errno": "ENOENT",
+      "flags": "O_RDONLY",
+      "line": "openat(AT_FDCWD, \"/home/shenwei01/wt_melting_runtime_20260724/conda_prefix\", O_RDONLY) = -1 ENOENT (No such file or directory)",
+      "paths": [
+        "/home/shenwei01/wt_melting_runtime_20260724/conda_prefix"
+      ],
+      "pid": 20,
+      "rank": 0,
+      "registered_probe_id": "rank_old_prefix_open",
+      "result": "-1",
+      "role": "rank",
+      "successful": false,
+      "syscall": "openat"
+    },
+    {
+      "errno": "ENOENT",
+      "flags": "O_RDONLY|O_NONBLOCK|O_CLOEXEC|O_DIRECTORY",
+      "line": "openat(AT_FDCWD, \"/home/shenwei01/wt_melting_runtime_20260724/conda_prefix\", O_RDONLY|O_NONBLOCK|O_CLOEXEC|O_DIRECTORY) = -1 ENOENT (No such file or directory)",
+      "paths": [
+        "/home/shenwei01/wt_melting_runtime_20260724/conda_prefix"
+      ],
+      "pid": 20,
+      "rank": 0,
+      "registered_probe_id": "rank_old_prefix_directory_open",
+      "result": "-1",
+      "role": "rank",
+      "successful": false,
+      "syscall": "openat"
+    },
+    {
+      "errno": "ENOENT",
+      "flags": null,
+      "line": "stat(\"/home/shenwei01/wt_melting_runtime_20260724/conda_prefix/classid\", 0x7ffc15285d30) = -1 ENOENT (No such file or directory)",
+      "paths": [
+        "/home/shenwei01/wt_melting_runtime_20260724/conda_prefix/classid"
+      ],
+      "pid": 21,
+      "rank": 1,
+      "registered_probe_id": "rank_classid_stat",
+      "result": "-1",
+      "role": "rank",
+      "successful": false,
+      "syscall": "stat"
+    },
+    {
+      "errno": "ENOENT",
+      "flags": "O_RDONLY|O_CLOEXEC",
+      "line": "openat(AT_FDCWD, \"/home/shenwei01/wt_melting_runtime_20260724/conda_prefix/classid\", O_RDONLY|O_CLOEXEC) = -1 ENOENT (No such file or directory)",
+      "paths": [
+        "/home/shenwei01/wt_melting_runtime_20260724/conda_prefix/classid"
+      ],
+      "pid": 21,
+      "rank": 1,
+      "registered_probe_id": "rank_classid_open",
+      "result": "-1",
+      "role": "rank",
+      "successful": false,
+      "syscall": "openat"
+    },
+    {
+      "errno": "ENOENT",
+      "flags": "O_RDONLY",
+      "line": "openat(AT_FDCWD, \"/home/shenwei01/wt_melting_runtime_20260724/conda_prefix/ucx.conf\", O_RDONLY) = -1 ENOENT (No such file or directory)",
+      "paths": [
+        "/home/shenwei01/wt_melting_runtime_20260724/conda_prefix/ucx.conf"
+      ],
+      "pid": 21,
+      "rank": 1,
+      "registered_probe_id": "rank_ucx_conf_open",
+      "result": "-1",
+      "role": "rank",
+      "successful": false,
+      "syscall": "openat"
+    },
+    {
+      "errno": "ENOENT",
+      "flags": "O_RDONLY",
+      "line": "openat(AT_FDCWD, \"/home/shenwei01/wt_melting_runtime_20260724/conda_prefix\", O_RDONLY) = -1 ENOENT (No such file or directory)",
+      "paths": [
+        "/home/shenwei01/wt_melting_runtime_20260724/conda_prefix"
+      ],
+      "pid": 21,
+      "rank": 1,
+      "registered_probe_id": "rank_old_prefix_open",
+      "result": "-1",
+      "role": "rank",
+      "successful": false,
+      "syscall": "openat"
+    },
+    {
+      "errno": "ENOENT",
+      "flags": "O_RDONLY|O_NONBLOCK|O_CLOEXEC|O_DIRECTORY",
+      "line": "openat(AT_FDCWD, \"/home/shenwei01/wt_melting_runtime_20260724/conda_prefix\", O_RDONLY|O_NONBLOCK|O_CLOEXEC|O_DIRECTORY) = -1 ENOENT (No such file or directory)",
+      "paths": [
+        "/home/shenwei01/wt_melting_runtime_20260724/conda_prefix"
+      ],
+      "pid": 21,
+      "rank": 1,
+      "registered_probe_id": "rank_old_prefix_directory_open",
+      "result": "-1",
+      "role": "rank",
+      "successful": false,
+      "syscall": "openat"
+    },
+    {
+      "errno": "ENOENT",
+      "flags": null,
+      "line": "stat(\"/home/shenwei01/wt_melting_runtime_20260724/conda_prefix/classid\", 0x7fff3b0c98c0) = -1 ENOENT (No such file or directory)",
+      "paths": [
+        "/home/shenwei01/wt_melting_runtime_20260724/conda_prefix/classid"
+      ],
+      "pid": 22,
+      "rank": 2,
+      "registered_probe_id": "rank_classid_stat",
+      "result": "-1",
+      "role": "rank",
+      "successful": false,
+      "syscall": "stat"
+    },
+    {
+      "errno": "ENOENT",
+      "flags": "O_RDONLY|O_CLOEXEC",
+      "line": "openat(AT_FDCWD, \"/home/shenwei01/wt_melting_runtime_20260724/conda_prefix/classid\", O_RDONLY|O_CLOEXEC) = -1 ENOENT (No such file or directory)",
+      "paths": [
+        "/home/shenwei01/wt_melting_runtime_20260724/conda_prefix/classid"
+      ],
+      "pid": 22,
+      "rank": 2,
+      "registered_probe_id": "rank_classid_open",
+      "result": "-1",
+      "role": "rank",
+      "successful": false,
+      "syscall": "openat"
+    },
+    {
+      "errno": "ENOENT",
+      "flags": "O_RDONLY",
+      "line": "openat(AT_FDCWD, \"/home/shenwei01/wt_melting_runtime_20260724/conda_prefix/ucx.conf\", O_RDONLY) = -1 ENOENT (No such file or directory)",
+      "paths": [
+        "/home/shenwei01/wt_melting_runtime_20260724/conda_prefix/ucx.conf"
+      ],
+      "pid": 22,
+      "rank": 2,
+      "registered_probe_id": "rank_ucx_conf_open",
+      "result": "-1",
+      "role": "rank",
+      "successful": false,
+      "syscall": "openat"
+    },
+    {
+      "errno": "ENOENT",
+      "flags": "O_RDONLY",
+      "line": "openat(AT_FDCWD, \"/home/shenwei01/wt_melting_runtime_20260724/conda_prefix\", O_RDONLY) = -1 ENOENT (No such file or directory)",
+      "paths": [
+        "/home/shenwei01/wt_melting_runtime_20260724/conda_prefix"
+      ],
+      "pid": 22,
+      "rank": 2,
+      "registered_probe_id": "rank_old_prefix_open",
+      "result": "-1",
+      "role": "rank",
+      "successful": false,
+      "syscall": "openat"
+    },
+    {
+      "errno": "ENOENT",
+      "flags": "O_RDONLY|O_NONBLOCK|O_CLOEXEC|O_DIRECTORY",
+      "line": "openat(AT_FDCWD, \"/home/shenwei01/wt_melting_runtime_20260724/conda_prefix\", O_RDONLY|O_NONBLOCK|O_CLOEXEC|O_DIRECTORY) = -1 ENOENT (No such file or directory)",
+      "paths": [
+        "/home/shenwei01/wt_melting_runtime_20260724/conda_prefix"
+      ],
+      "pid": 22,
+      "rank": 2,
+      "registered_probe_id": "rank_old_prefix_directory_open",
+      "result": "-1",
+      "role": "rank",
+      "successful": false,
+      "syscall": "openat"
+    },
+    {
+      "errno": "ENOENT",
+      "flags": null,
+      "line": "stat(\"/home/shenwei01/wt_melting_runtime_20260724/conda_prefix/classid\", 0x7ffdfaa759a0) = -1 ENOENT (No such file or directory)",
+      "paths": [
+        "/home/shenwei01/wt_melting_runtime_20260724/conda_prefix/classid"
+      ],
+      "pid": 23,
+      "rank": 3,
+      "registered_probe_id": "rank_classid_stat",
+      "result": "-1",
+      "role": "rank",
+      "successful": false,
+      "syscall": "stat"
+    },
+    {
+      "errno": "ENOENT",
+      "flags": "O_RDONLY|O_CLOEXEC",
+      "line": "openat(AT_FDCWD, \"/home/shenwei01/wt_melting_runtime_20260724/conda_prefix/classid\", O_RDONLY|O_CLOEXEC) = -1 ENOENT (No such file or directory)",
+      "paths": [
+        "/home/shenwei01/wt_melting_runtime_20260724/conda_prefix/classid"
+      ],
+      "pid": 23,
+      "rank": 3,
+      "registered_probe_id": "rank_classid_open",
+      "result": "-1",
+      "role": "rank",
+      "successful": false,
+      "syscall": "openat"
+    },
+    {
+      "errno": "ENOENT",
+      "flags": "O_RDONLY",
+      "line": "openat(AT_FDCWD, \"/home/shenwei01/wt_melting_runtime_20260724/conda_prefix/ucx.conf\", O_RDONLY) = -1 ENOENT (No such file or directory)",
+      "paths": [
+        "/home/shenwei01/wt_melting_runtime_20260724/conda_prefix/ucx.conf"
+      ],
+      "pid": 23,
+      "rank": 3,
+      "registered_probe_id": "rank_ucx_conf_open",
+      "result": "-1",
+      "role": "rank",
+      "successful": false,
+      "syscall": "openat"
+    },
+    {
+      "errno": "ENOENT",
+      "flags": "O_RDONLY",
+      "line": "openat(AT_FDCWD, \"/home/shenwei01/wt_melting_runtime_20260724/conda_prefix\", O_RDONLY) = -1 ENOENT (No such file or directory)",
+      "paths": [
+        "/home/shenwei01/wt_melting_runtime_20260724/conda_prefix"
+      ],
+      "pid": 23,
+      "rank": 3,
+      "registered_probe_id": "rank_old_prefix_open",
+      "result": "-1",
+      "role": "rank",
+      "successful": false,
+      "syscall": "openat"
+    },
+    {
+      "errno": "ENOENT",
+      "flags": "O_RDONLY|O_NONBLOCK|O_CLOEXEC|O_DIRECTORY",
+      "line": "openat(AT_FDCWD, \"/home/shenwei01/wt_melting_runtime_20260724/conda_prefix\", O_RDONLY|O_NONBLOCK|O_CLOEXEC|O_DIRECTORY) = -1 ENOENT (No such file or directory)",
+      "paths": [
+        "/home/shenwei01/wt_melting_runtime_20260724/conda_prefix"
+      ],
+      "pid": 23,
+      "rank": 3,
+      "registered_probe_id": "rank_old_prefix_directory_open",
+      "result": "-1",
+      "role": "rank",
+      "successful": false,
+      "syscall": "openat"
+    }
+  ],
+  "old_prefix_exec_success_count": 0,
+  "old_prefix_mapped_object_count": 0,
+  "old_prefix_successful_access_count": 0,
+  "prefix_environment": {
+    "OPAL_PREFIX": "/home/shenwei01/M_OFDFT_recovery_S0_20260805_001/conda_prefix",
+    "PMIX_PREFIX": "/home/shenwei01/M_OFDFT_recovery_S0_20260805_001/conda_prefix",
+    "PRTE_PREFIX": "/home/shenwei01/M_OFDFT_recovery_S0_20260805_001/conda_prefix",
+    "UCX_MODULE_DIR": "/home/shenwei01/M_OFDFT_recovery_S0_20260805_001/conda_prefix"
+  },
+  "process_group_cleanup": {
+    "all_group_members_gone": true,
+    "members_after_cleanup": [],
+    "members_before_cleanup": [],
+    "tracee_pids_after_cleanup": [],
+    "tracee_pids_before_cleanup": [
+      14
+    ]
+  },
+  "processes": [
+    {
+      "executable_realpath": "/home/shenwei01/M_OFDFT_recovery_S0_20260805_001/conda_prefix/bin/prte",
+      "executable_sha256": "8e61af4375677a82d3dff0ba1fd96b6bc45778de0fe0c86b477c2421a08b73ea",
+      "initial_map_capture_observed": true,
+      "mapped_object_count": 24,
+      "observed_start_time_ticks": 617083916,
+      "pid": 17,
+      "rank": null,
+      "role": "launcher"
+    },
+    {
+      "executable_realpath": "/home/shenwei01/M_OFDFT_recovery_S0_20260805_001/source/abacus_pw_para_relocated_20260805",
+      "executable_sha256": "438c74b9ada4c8df15ffbb66da6755907dfd2a3812ecf868fafd4d7dc4db62e1",
+      "initial_map_capture_observed": true,
+      "mapped_object_count": 77,
+      "observed_start_time_ticks": 617084003,
+      "pid": 20,
+      "rank": 0,
+      "role": "rank"
+    },
+    {
+      "executable_realpath": "/home/shenwei01/M_OFDFT_recovery_S0_20260805_001/source/abacus_pw_para_relocated_20260805",
+      "executable_sha256": "438c74b9ada4c8df15ffbb66da6755907dfd2a3812ecf868fafd4d7dc4db62e1",
+      "initial_map_capture_observed": true,
+      "mapped_object_count": 74,
+      "observed_start_time_ticks": 617084003,
+      "pid": 21,
+      "rank": 1,
+      "role": "rank"
+    },
+    {
+      "executable_realpath": "/home/shenwei01/M_OFDFT_recovery_S0_20260805_001/source/abacus_pw_para_relocated_20260805",
+      "executable_sha256": "438c74b9ada4c8df15ffbb66da6755907dfd2a3812ecf868fafd4d7dc4db62e1",
+      "initial_map_capture_observed": true,
+      "mapped_object_count": 74,
+      "observed_start_time_ticks": 617084004,
+      "pid": 22,
+      "rank": 2,
+      "role": "rank"
+    },
+    {
+      "executable_realpath": "/home/shenwei01/M_OFDFT_recovery_S0_20260805_001/source/abacus_pw_para_relocated_20260805",
+      "executable_sha256": "438c74b9ada4c8df15ffbb66da6755907dfd2a3812ecf868fafd4d7dc4db62e1",
+      "initial_map_capture_observed": true,
+      "mapped_object_count": 74,
+      "observed_start_time_ticks": 617084004,
+      "pid": 23,
+      "rank": 3,
+      "role": "rank"
+    }
+  ],
+  "protocol": "runtime_relocation_equivalence",
+  "rank_handshake_status": "accepted",
+  "rank_handshake_terminal_state": {
+    "abort_exists": false,
+    "failure_files": [],
+    "ready_files": [
+      "rank-0.json",
+      "rank-1.json",
+      "rank-2.json",
+      "rank-3.json"
+    ],
+    "release_files": [
+      "rank-0",
+      "rank-1",
+      "rank-2",
+      "rank-3"
+    ]
+  },
+  "rank_pids": {
+    "0": 20,
+    "1": 21,
+    "2": 22,
+    "3": 23
+  },
+  "recovery_prefix": "/home/shenwei01/M_OFDFT_recovery_S0_20260805_001/conda_prefix",
+  "recovery_root": "/home/shenwei01/M_OFDFT_recovery_S0_20260805_001",
+  "registered_device_mapped_object_count": 52,
+  "registered_device_mapping_patterns": [
+    "^/dev/infiniband/(?:uverbs[0-9]+|rdma_cm)$",
+    "^/dev/nvidia(?:[0-9]+|ctl|modeset|uvm|uvm-tools)$",
+    "^/dev/nvidia-caps/nvidia-cap[0-9]+$"
+  ],
+  "registered_old_prefix_failed_probe_count": 22,
+  "registered_old_prefix_failed_probes": [
+    {
+      "errno": "ENOENT",
+      "expected_count": 1,
+      "flags": null,
+      "path": "/home/shenwei01/wt_melting_runtime_20260724/conda_prefix/classid",
+      "probe_id": "launcher_classid_stat",
+      "rank": null,
+      "role": "launcher",
+      "syscall": "stat"
+    },
+    {
+      "errno": "ENOENT",
+      "expected_count": 1,
+      "flags": "O_RDONLY|O_CLOEXEC",
+      "path": "/home/shenwei01/wt_melting_runtime_20260724/conda_prefix/classid",
+      "probe_id": "launcher_classid_open",
+      "rank": null,
+      "role": "launcher",
+      "syscall": "openat"
+    },
+    {
+      "errno": "ENOENT",
+      "expected_count_per_rank": 1,
+      "flags": null,
+      "path": "/home/shenwei01/wt_melting_runtime_20260724/conda_prefix/classid",
+      "probe_id": "rank_classid_stat",
+      "rank": "each",
+      "role": "rank",
+      "syscall": "stat"
+    },
+    {
+      "errno": "ENOENT",
+      "expected_count_per_rank": 1,
+      "flags": "O_RDONLY|O_CLOEXEC",
+      "path": "/home/shenwei01/wt_melting_runtime_20260724/conda_prefix/classid",
+      "probe_id": "rank_classid_open",
+      "rank": "each",
+      "role": "rank",
+      "syscall": "openat"
+    },
+    {
+      "errno": "ENOENT",
+      "expected_count_per_rank": 1,
+      "flags": "O_RDONLY",
+      "path": "/home/shenwei01/wt_melting_runtime_20260724/conda_prefix/ucx.conf",
+      "probe_id": "rank_ucx_conf_open",
+      "rank": "each",
+      "role": "rank",
+      "syscall": "openat"
+    },
+    {
+      "errno": "ENOENT",
+      "expected_count_per_rank": 1,
+      "flags": "O_RDONLY",
+      "path": "/home/shenwei01/wt_melting_runtime_20260724/conda_prefix",
+      "probe_id": "rank_old_prefix_open",
+      "rank": "each",
+      "role": "rank",
+      "syscall": "openat"
+    },
+    {
+      "errno": "ENOENT",
+      "expected_count_per_rank": 1,
+      "flags": "O_RDONLY|O_NONBLOCK|O_CLOEXEC|O_DIRECTORY",
+      "path": "/home/shenwei01/wt_melting_runtime_20260724/conda_prefix",
+      "probe_id": "rank_old_prefix_directory_open",
+      "rank": "each",
+      "role": "rank",
+      "syscall": "openat"
+    }
+  ],
+  "registered_probe_count_mismatch_count": 0,
+  "registered_probe_counts": {
+    "launcher_classid_open": {
+      "expected_count": 1,
+      "mismatch": false,
+      "total": 1
+    },
+    "launcher_classid_stat": {
+      "expected_count": 1,
+      "mismatch": false,
+      "total": 1
+    },
+    "rank_classid_open": {
+      "by_rank": {
+        "0": 1,
+        "1": 1,
+        "2": 1,
+        "3": 1
+      },
+      "expected_count_per_rank": 1,
+      "mismatches": {},
+      "total": 4
+    },
+    "rank_classid_stat": {
+      "by_rank": {
+        "0": 1,
+        "1": 1,
+        "2": 1,
+        "3": 1
+      },
+      "expected_count_per_rank": 1,
+      "mismatches": {},
+      "total": 4
+    },
+    "rank_old_prefix_directory_open": {
+      "by_rank": {
+        "0": 1,
+        "1": 1,
+        "2": 1,
+        "3": 1
+      },
+      "expected_count_per_rank": 1,
+      "mismatches": {},
+      "total": 4
+    },
+    "rank_old_prefix_open": {
+      "by_rank": {
+        "0": 1,
+        "1": 1,
+        "2": 1,
+        "3": 1
+      },
+      "expected_count_per_rank": 1,
+      "mismatches": {},
+      "total": 4
+    },
+    "rank_ucx_conf_open": {
+      "by_rank": {
+        "0": 1,
+        "1": 1,
+        "2": 1,
+        "3": 1
+      },
+      "expected_count_per_rank": 1,
+      "mismatches": {},
+      "total": 4
+    }
+  },
+  "runtime_environment": {
+    "CMAKE_PREFIX_PATH": "/home/shenwei01/M_OFDFT_recovery_S0_20260805_001/conda_prefix",
+    "CUDA_CACHE_DISABLE": "1",
+    "HOME": "/home/shenwei01/M_OFDFT_periodic_basis/runs/S1-20260805-123/runtime_home",
+    "LD_LIBRARY_PATH": "/home/shenwei01/M_OFDFT_recovery_S0_20260805_001/conda_prefix/lib",
+    "LD_PRELOAD": null,
+    "MKLROOT": "/home/shenwei01/M_OFDFT_recovery_S0_20260805_001/conda_prefix",
+    "OMP_NUM_THREADS": "1",
+    "PATH": "/home/shenwei01/M_OFDFT_recovery_S0_20260805_001/conda_prefix/bin:/usr/bin:/bin"
+  },
+  "runtime_wall_timeout_seconds": 7200,
+  "schema_version": 2,
+  "started_at_utc": "2026-08-05T16:39:06.728171+00:00",
+  "started_epoch_seconds": 1785947946.7281694,
+  "status": "accepted",
+  "strace_command": [
+    "/usr/bin/strace",
+    "-ff",
+    "-qq",
+    "-I",
+    "1",
+    "-s",
+    "4096",
+    "-e",
+    "trace=file,process",
+    "-o",
+    "/home/shenwei01/M_OFDFT_periodic_basis/runs/S1-20260805-123/mpi_runtime_audit/strace/trace",
+    "/home/shenwei01/M_OFDFT_recovery_S0_20260805_001/conda_prefix/bin/mpirun",
+    "--allow-run-as-root",
+    "--bind-to",
+    "core",
+    "-np",
+    "4",
+    "/usr/bin/python3.10",
+    "/home/shenwei01/M_OFDFT_periodic_basis/scripts/runtime_relocation_rank_wrapper.py",
+    "/home/shenwei01/M_OFDFT_recovery_S0_20260805_001/source/abacus_pw_para_relocated_20260805"
+  ],
+  "strace_identity_after": {
+    "path": "/usr/bin/strace",
+    "realpath": "/usr/bin/strace",
+    "sha256": "38a5c75cb29dd85ddd7780d54f5bf595554d7a1b5c42524b23065f5dc4c4b01d",
+    "version_arguments": [
+      "--version"
+    ],
+    "version_first_line": "strace -- version 5.16",
+    "version_output_sha256": "47330880c53e6bafef6d915d42210d289ca470ec6879bac32d4a67549468cb1e"
+  },
+  "strace_identity_before": {
+    "path": "/usr/bin/strace",
+    "realpath": "/usr/bin/strace",
+    "sha256": "38a5c75cb29dd85ddd7780d54f5bf595554d7a1b5c42524b23065f5dc4c4b01d",
+    "version_arguments": [
+      "--version"
+    ],
+    "version_first_line": "strace -- version 5.16",
+    "version_output_sha256": "47330880c53e6bafef6d915d42210d289ca470ec6879bac32d4a67549468cb1e"
+  },
+  "successful_exec_multiset": {
+    "/home/shenwei01/M_OFDFT_recovery_S0_20260805_001/conda_prefix/bin/mpirun": 1,
+    "/home/shenwei01/M_OFDFT_recovery_S0_20260805_001/conda_prefix/bin/prte": 1,
+    "/home/shenwei01/M_OFDFT_recovery_S0_20260805_001/source/abacus_pw_para_relocated_20260805": 4,
+    "/usr/bin/python3.10": 4
+  },
+  "system_mapping_exact_paths": [
+    "/etc/ld.so.cache"
+  ],
+  "system_mapping_roots": [
+    "/usr",
+    "/lib",
+    "/lib64"
+  ],
+  "terminal_process_evidence": {
+    "all_known_pids_gone": true,
+    "known_pid_count": 28,
+    "known_pids": [
+      {
+        "observed_start_time_ticks": 617083916,
+        "pid": 14,
+        "sources": [
+          "descendant_scan",
+          "process_group_scan",
+          "strace_root"
+        ],
+        "terminal_start_time_ticks": null,
+        "terminal_state": "gone"
+      },
+      {
+        "observed_start_time_ticks": 617083916,
+        "pid": 17,
+        "sources": [
+          "descendant_scan",
+          "launcher_proc_exe_live",
+          "launcher_strace_exec",
+          "process_group_scan",
+          "strace_trace_file"
+        ],
+        "terminal_start_time_ticks": null,
+        "terminal_state": "gone"
+      },
+      {
+        "observed_start_time_ticks": 617083998,
+        "pid": 18,
+        "sources": [
+          "strace_trace_file"
+        ],
+        "terminal_start_time_ticks": null,
+        "terminal_state": "gone"
+      },
+      {
+        "observed_start_time_ticks": 617084001,
+        "pid": 19,
+        "sources": [
+          "strace_trace_file"
+        ],
+        "terminal_start_time_ticks": null,
+        "terminal_state": "gone"
+      },
+      {
+        "observed_start_time_ticks": 617084003,
+        "pid": 20,
+        "sources": [
+          "descendant_scan",
+          "rank_handshake",
+          "strace_trace_file"
+        ],
+        "terminal_start_time_ticks": null,
+        "terminal_state": "gone"
+      },
+      {
+        "observed_start_time_ticks": 617084003,
+        "pid": 21,
+        "sources": [
+          "descendant_scan",
+          "rank_handshake",
+          "strace_trace_file"
+        ],
+        "terminal_start_time_ticks": null,
+        "terminal_state": "gone"
+      },
+      {
+        "observed_start_time_ticks": 617084004,
+        "pid": 22,
+        "sources": [
+          "descendant_scan",
+          "rank_handshake",
+          "strace_trace_file"
+        ],
+        "terminal_start_time_ticks": null,
+        "terminal_state": "gone"
+      },
+      {
+        "observed_start_time_ticks": 617084004,
+        "pid": 23,
+        "sources": [
+          "descendant_scan",
+          "rank_handshake",
+          "strace_trace_file"
+        ],
+        "terminal_start_time_ticks": null,
+        "terminal_state": "gone"
+      },
+      {
+        "observed_start_time_ticks": 617084024,
+        "pid": 24,
+        "sources": [
+          "strace_trace_file"
+        ],
+        "terminal_start_time_ticks": null,
+        "terminal_state": "gone"
+      },
+      {
+        "observed_start_time_ticks": 617084024,
+        "pid": 25,
+        "sources": [
+          "strace_trace_file"
+        ],
+        "terminal_start_time_ticks": null,
+        "terminal_state": "gone"
+      },
+      {
+        "observed_start_time_ticks": 617084026,
+        "pid": 26,
+        "sources": [
+          "strace_trace_file"
+        ],
+        "terminal_start_time_ticks": null,
+        "terminal_state": "gone"
+      },
+      {
+        "observed_start_time_ticks": 617084026,
+        "pid": 27,
+        "sources": [
+          "strace_trace_file"
+        ],
+        "terminal_start_time_ticks": null,
+        "terminal_state": "gone"
+      },
+      {
+        "observed_start_time_ticks": 617084028,
+        "pid": 28,
+        "sources": [
+          "strace_trace_file"
+        ],
+        "terminal_start_time_ticks": null,
+        "terminal_state": "gone"
+      },
+      {
+        "observed_start_time_ticks": 617084029,
+        "pid": 29,
+        "sources": [
+          "strace_trace_file"
+        ],
+        "terminal_start_time_ticks": null,
+        "terminal_state": "gone"
+      },
+      {
+        "observed_start_time_ticks": 617084029,
+        "pid": 30,
+        "sources": [
+          "strace_trace_file"
+        ],
+        "terminal_start_time_ticks": null,
+        "terminal_state": "gone"
+      },
+      {
+        "observed_start_time_ticks": 617084031,
+        "pid": 31,
+        "sources": [
+          "strace_trace_file"
+        ],
+        "terminal_start_time_ticks": null,
+        "terminal_state": "gone"
+      },
+      {
+        "observed_start_time_ticks": null,
+        "pid": 32,
+        "sources": [
+          "strace_trace_file"
+        ],
+        "terminal_start_time_ticks": null,
+        "terminal_state": "gone"
+      },
+      {
+        "observed_start_time_ticks": 617084322,
+        "pid": 33,
+        "sources": [
+          "strace_trace_file"
+        ],
+        "terminal_start_time_ticks": null,
+        "terminal_state": "gone"
+      },
+      {
+        "observed_start_time_ticks": null,
+        "pid": 34,
+        "sources": [
+          "strace_trace_file"
+        ],
+        "terminal_start_time_ticks": null,
+        "terminal_state": "gone"
+      },
+      {
+        "observed_start_time_ticks": null,
+        "pid": 35,
+        "sources": [
+          "strace_trace_file"
+        ],
+        "terminal_start_time_ticks": null,
+        "terminal_state": "gone"
+      },
+      {
+        "observed_start_time_ticks": 617084329,
+        "pid": 36,
+        "sources": [
+          "strace_trace_file"
+        ],
+        "terminal_start_time_ticks": null,
+        "terminal_state": "gone"
+      },
+      {
+        "observed_start_time_ticks": null,
+        "pid": 37,
+        "sources": [
+          "strace_trace_file"
+        ],
+        "terminal_start_time_ticks": null,
+        "terminal_state": "gone"
+      },
+      {
+        "observed_start_time_ticks": null,
+        "pid": 38,
+        "sources": [
+          "strace_trace_file"
+        ],
+        "terminal_start_time_ticks": null,
+        "terminal_state": "gone"
+      },
+      {
+        "observed_start_time_ticks": null,
+        "pid": 39,
+        "sources": [
+          "strace_trace_file"
+        ],
+        "terminal_start_time_ticks": null,
+        "terminal_state": "gone"
+      },
+      {
+        "observed_start_time_ticks": null,
+        "pid": 40,
+        "sources": [
+          "strace_trace_file"
+        ],
+        "terminal_start_time_ticks": null,
+        "terminal_state": "gone"
+      },
+      {
+        "observed_start_time_ticks": 617084336,
+        "pid": 41,
+        "sources": [
+          "strace_trace_file"
+        ],
+        "terminal_start_time_ticks": null,
+        "terminal_state": "gone"
+      },
+      {
+        "observed_start_time_ticks": 617084337,
+        "pid": 42,
+        "sources": [
+          "strace_trace_file"
+        ],
+        "terminal_start_time_ticks": null,
+        "terminal_state": "gone"
+      },
+      {
+        "observed_start_time_ticks": 617084341,
+        "pid": 43,
+        "sources": [
+          "strace_trace_file"
+        ],
+        "terminal_start_time_ticks": null,
+        "terminal_state": "gone"
+      }
+    ],
+    "process_group": 14,
+    "process_group_members_after": []
+  },
+  "timeout_triggered": false,
+  "transient_mapping_patterns": [
+    "^/SYSV[0-9A-Fa-f]+$",
+    "^/dev/shm/sm_segment[A-Za-z0-9._-]*$",
+    "^/dev/shm/ucx_shm_posix_[A-Za-z0-9._-]+$",
+    "^/tmp/ompi\\.[0-9]+/(?:[A-Za-z0-9._-]+/)*(?:pmix-gds-shmem2|shared_mem_cuda_)[A-Za-z0-9._@-]*(?:/[A-Za-z0-9._-]+)*$",
+    "^/tmp/ompi\\.[0-9]+/hwloc\\.sm$"
+  ],
+  "transient_system_mapped_object_count": 28,
+  "unexpected_mapped_object_count": 0,
+  "unhashed_regular_mapped_object_count": 0,
+  "unknown_old_prefix_failed_probe_count": 0
+}
