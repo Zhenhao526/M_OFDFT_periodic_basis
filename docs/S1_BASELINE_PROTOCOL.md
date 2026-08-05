@@ -1,8 +1,10 @@
 # S1 plane-wave baseline protocol
 
-Status: `non_equilibrium_convergence_matrix_frozen` at S1-R8. The S1-R7 core
-EOS and double-smearing checks are accepted, but the numerical settings are not
-final production parameters until S1-R8 and the remaining G1 checks pass.
+Status: `g1_electron_number_accepted_g1_pending_1_of_6` after the
+S1-G1-ELECTRON-NUMBER-R2 audit. The S1-R7 core EOS and double-smearing checks
+and the S1-R8 non-equilibrium convergence matrix are accepted. Independent
+electron-number integration is also accepted, but the numerical settings are
+not final production parameters until the other five G1 items pass.
 
 ## Scope and structures
 
@@ -78,9 +80,9 @@ can have the smallest sampled energy even though the fitted minimum is inside.
 Generated inputs are candidates until the convergence results are committed.
 S2 must not start before every G1 acceptance item has evidence.
 
-## S1-R8 pre-registered non-equilibrium convergence matrix
+## S1-R8 accepted non-equilibrium convergence matrix
 
-S1-R8 adds six dense seven-point series, 42 new calculations in total. It does
+S1-R8 added six dense seven-point series, 42 new calculations in total. It did
 not rerun the 28 unique S1-R7 baseline calculations. The frozen registration is
 `config/S1_non_equilibrium_convergence.json`; the executable manifest is
 `config/S1_non_equilibrium_run_manifest.tsv`.
@@ -127,6 +129,34 @@ Analyze it with `scripts/analyze_s1_non_equilibrium.py OUTPUT_DIRECTORY`.
 Missing or nonconverged points make a series indeterminate; a numerical limit
 failure rejects that material/axis and requires a new protocol revision and new
 experiment IDs before any denser follow-up.
+
+## Current G1 closure state
+
+The authoritative accepted electron-number evidence is
+`analysis/s1/electron_number_audit_r2_20260805/`. Its two orthogonal coverage
+breakdowns are exact: 90/90 points comprise 84 primary baseline plus six
+supplemental replay points, and also comprise 60 existing KS densities plus 30
+OF density replays. The OF evidence is 11 R1 accepted runs reused without
+rerunning plus 19 R2 runs newly executed.
+
+- The maximum certified relative electron-number error is
+  `1.0127696865884852e-11` at `S1-20260805-044`, strictly below `1e-10`.
+- All 30/30 OF replays converge and satisfy both scientific-equivalence gates:
+  `|delta E| < 0.1 meV/atom` and `|delta P| < 0.02 GPa`.
+- All 30/30 OF runs satisfy the KMP runtime contract, covering exactly 120/120
+  rank lifecycles and 360/360 successful create/read/unlink syscalls.
+- The point, density, scientific-equivalence, and KMP-contract failure-ID lists
+  are all empty, and R2 introduced zero new failed attempts.
+- The archived failed R1 attempt for `S1-20260805-130` is root-cause provenance
+  only and contributes zero points to the acceptance denominator. The accepted
+  R2 run under the same registered ID is counted exactly once.
+
+This evidence closes only independent electron-number integration. Overall G1
+remains `pending` at 1/6; the third-smearing/dense-k label audit, independent
+OFDFT cross-code check, KS-NL→KS-L→OF-L three-layer check,
+displacement/strain references, and 10-case single-command regeneration remain
+pending. The sole next action is to preregister the third-smearing/dense-k label
+audit; S2 remains blocked until all six G1 items are accepted.
 
 ## Protocol revisions
 
@@ -194,6 +224,12 @@ experiment IDs before any denser follow-up.
   corresponding v100 points preserves all six accepted R8 conclusions. This
   closes only the registered relocated/private-namespace execution profile;
   the density-integral and the other five G1 items above remain open.
+- `S1-G1 electron-number R2 closure`, 2026-08-06: the formal incremental audit
+  accepted 90/90 points (60 KS plus 30 OF; 11 OF reused from R1 plus 19 executed
+  in R2), with maximum certified relative error
+  `1.0127696865884852e-11`. All 30 OF scientific-equivalence checks and all
+  120/120 KMP rank lifecycles passed. This closes only independent
+  electron-number integration; G1 remains `pending` at 1/6.
 
 ## Completed convergence evidence
 
@@ -209,8 +245,9 @@ experiment IDs before any denser follow-up.
 All adjacent comparisons are below `1 meV/atom` and `0.02 GPa`; 20 Ry is the
 minimum passing candidate at the equilibrium point. `S1-20260805-004` is a
 retained nonconverged 60 Ry attempt preceding S1-R1. The 20 Ry recommendation
-remains candidate status until EOS and pressure behavior away from `V0` are
-checked; no production parameter is silently frozen from a single point.
+was subsequently carried through the accepted seven-point EOS and S1-R8
+next-cutoff comparison. It is the accepted S1 baseline setting, but it is not a
+final production parameter until G1 closes.
 
 ### Mg WT cutoff at `V/V0 = 1.00`
 
@@ -222,8 +259,9 @@ checked; no production parameter is silently frozen from a single point.
 | 80 | `S1-20260805-009` | yes | — | — |
 
 All four Mg attempts converged and every adjacent comparison passes. The
-minimum scanned value, 30 Ry, is the V0 candidate. As for Al, this remains
-provisional until non-equilibrium EOS points confirm relative-energy behavior.
+minimum scanned value, 30 Ry, was subsequently carried through the accepted
+seven-point EOS and S1-R8 next-cutoff comparison. It is the accepted S1
+baseline setting, but it is not a final production parameter until G1 closes.
 
 ### Al KSDFT cutoff at `V/V0 = 1.00`
 
@@ -274,15 +312,19 @@ The S1-R7 28³ confirmation passes, so 24³ is the first tail-stable Al mesh.
 The isolated first-pair pass is rejected by S1-R4. The accepted V0 reference
 for the Mg smearing scan is 20x20x12.
 
-### KSDFT smearing diagnostics at `V/V0 = 1.00`
+### KSDFT smearing diagnostics at `V/V0 = 1.00` and EOS follow-up
 
-| Material | Standard sigma experiment | Half sigma experiment | Zero-T shift (meV/atom) | Free-energy shift (meV/atom) | Diagnostic complete | G1 accepted |
+| Material | Standard sigma experiment | Half sigma experiment | Zero-T shift (meV/atom) | Free-energy shift (meV/atom) | V0 diagnostic | Core EOS follow-up |
 |---|---|---|---:|---:|---|---|
-| Al | `S1-20260805-024` | `S1-20260805-025` | 0.000889 | 4.634969 | yes | no, EOS pending |
-| Mg | `S1-20260805-026` | `S1-20260805-027` | 0.082773 | 4.824088 | yes | no, EOS pending |
+| Al | `S1-20260805-024` | `S1-20260805-025` | 0.000889 | 4.634969 | complete | accepted in S1-R7 |
+| Mg | `S1-20260805-026` | `S1-20260805-027` | 0.082773 | 4.824088 | complete | accepted in S1-R7 |
 
 All four calculations converged and reported the nominal electron count. The
 free-energy and zero-temperature absolute shifts above are deliberately not
 compared with the `<2 meV/atom` relative-energy gate: the gate applies after
 subtracting the common `V/V0=1.00` reference within each sigma series. Both
-sigma values must therefore be carried into the EOS step for final acceptance.
+sigma values were carried through the seven-point S1-R7 EOS. Al/Mg maximum
+pointwise relative-energy differences were `0.135259/0.205258 meV/atom`, and
+their fitted equilibrium-volume differences were `0.027655%/0.031817%`, so
+both strict double-smearing gates passed. This accepted EOS result is a baseline
+prerequisite and does not make the six-item G1 gate accepted.

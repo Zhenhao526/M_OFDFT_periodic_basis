@@ -2,32 +2,35 @@
 
 > 本文件是项目状态的唯一人工入口。任何人接手前先读本文件，再读项目书和当前阶段 README。  
 > 状态词仅使用：`not_started`、`in_progress`、`blocked`、`accepted`、`rejected`、`paused`。  
-> 更新时间：2026-08-05 23:44 CST
-> 文档版本：V3.0
+> 更新时间：2026-08-06 02:53 CST
+> 文档版本：V3.1
 
 ## 0. 十分钟上手摘要
 
 | 项目 | 当前值 |
 |---|---|
-| 当前总状态 | `in_progress`（G0 数值/归档恢复结论保留；runtime-isolation 在“重定位 ABACUS + 私有 user/mount/PID namespace + 严格审计”登记范围内 `accepted`；S1-R8 已验收，G1 尚未闭合） |
+| 当前总状态 | `in_progress`（G0 数值/归档恢复结论保留；runtime-isolation 在“重定位 ABACUS + 私有 user/mount/PID namespace + 严格审计”登记范围内 `accepted`；S1-R8 已验收；G1 独立电子数积分子项 `accepted`，G1 总体仍为 `pending`，1/6） |
 | 当前阶段 | S1：平面波 OFDFT/KSDFT 基准闭环 |
 | 当前闸门 | G1，执行中 |
 | 当前负责人 | 远端账户 `shenwei01`；本轮执行与记录：Codex |
-| 当前工作分支 | `main`；本地未跟踪 `tmp/` 属其他 QA 产物，保留未动 |
-| 最近可用提交 | `a01ac70`（runtime-relocation 六点正式分析）；预注册 `9a0fd7d`，六点结果终点 `ce51927`，074 证据提交 `92e513f` |
+| 当前工作分支 | `main`；本地未跟踪 `tmp/`、`audit.json`、`objects.tsv` 属其他产物，保留未动 |
+| 最近可用提交 | `c94796d`（G1 电子数 R2 正式分析）；实现 `f4a816a`、顺序验证硬化 `125dd37`、R2 预注册 `b18106b`、结果终点 `c722c81` |
 | 最近通过的数值 smoke | `S1-RUNTIME-SMOKE-20260805-074`：`storage_exact`，五类状态门全部 `accepted`；幂等重验返回 `accepted_committed` |
-| 当前阻塞 | G1 六项尚未形成完整闭环；node01 无第二套独立 OFDFT/KSDFT 程序；许可证与 LPP 条款仍限制发布 |
-| 下一项唯一动作 | 冻结并执行 G1 电子数独立积分审计，覆盖已验收的 Al/Mg 基准结果并要求相对误差 `<1e-10` |
+| 最近通过的正式分析 | `analysis/s1/electron_number_audit_r2_20260805/`：90/90 accepted；60 KS + 11 R1 reused OF + 19 R2 executed OF；G1 仅关闭电子数子项 |
+| 当前阻塞 | G1 剩余五项尚未形成完整闭环；node01 无第二套独立 OFDFT/KSDFT 程序；许可证与 LPP 条款仍限制发布 |
+| 下一项唯一动作 | 预注册并执行 G1 第三 smearing/稠密 k 点标签审计，采用 `σ/σ/2/σ/4` 或“两宽度 + 极密 k”参考，统一 F、TS、内部能/熵修正估计量及密度、势、导数口径，并保持 `ΔVeq <0.2%`、锚定相对能量变化 `<2 meV/atom` |
 
 ### 必读文件
 
 1. [V2.1 项目书](M_OFDFT_周期金属原子密度基组研究计划书.md)
-2. [扩大文献调研与可行性再评估](M_OFDFT_扩大文献调研与可行性再评估_2026-08.md)
-3. [扩展文献逐篇研判](references/M_OFDFT_extended/M_OFDFT_扩展文献逐篇研判.md)
-4. [扩展参考文献包索引](references/M_OFDFT_extended/README.md)
-5. [初次可行性复核](M_OFDFT_任务书可行性复核.md)
-6. [原参考文献精读报告](references/M_OFDFT/M_OFDFT_参考文献逐篇精读报告.md)
-7. [原参考文献包索引](references/M_OFDFT/README.md)
+2. [G1 电子数 R2 协议](S1_G1_ELECTRON_NUMBER_AUDIT_R2_PROTOCOL.md)
+3. G1 电子数 R2 正式分析：`analysis/s1/electron_number_audit_r2_20260805/README.md`、`analysis/s1/electron_number_audit_r2_20260805/summary.json`
+4. [扩大文献调研与可行性再评估](M_OFDFT_扩大文献调研与可行性再评估_2026-08.md)
+5. [扩展文献逐篇研判](references/M_OFDFT_extended/M_OFDFT_扩展文献逐篇研判.md)
+6. [扩展参考文献包索引](references/M_OFDFT_extended/README.md)
+7. [初次可行性复核](M_OFDFT_任务书可行性复核.md)
+8. [原参考文献精读报告](references/M_OFDFT/M_OFDFT_参考文献逐篇精读报告.md)
+9. [原参考文献包索引](references/M_OFDFT/README.md)
 
 ### 最近可运行命令
 
@@ -36,6 +39,7 @@ ssh -p 39987 liangkun@180.184.249.155
 ssh -p 2200 shenwei01@localhost
 cd /home/shenwei01/M_OFDFT_periodic_basis
 ./scripts/run_unit_tests.sh
+python3 scripts/validate_s1_electron_number_audit_r2.py --require-committed --require-all-runs
 ./scripts/run_smoke.sh S0-YYYYMMDD-NNN
 ```
 
@@ -94,6 +98,10 @@ cd /home/shenwei01/M_OFDFT_periodic_basis
 - [x] 以 `9a0fd7d` 冻结 S1-113–118 config/manifest，SHA-256 分别为 `9130989f...a0a4a7`、`6cdaa3e6...6195c1`；
 - [x] 完成 S1-113–118 六点串行复演：六点逐点 committed validator 通过，结果提交终点 `ce51927`；
 - [x] 以 `a01ac70` 固化正式分析：6/6 科学门、6/6 runtime 审计、6/6 R8 替换结论通过，六点均为 `storage_exact`；
+- [x] 以 `f4a816a` 实现 G1 电子数增量 R2，以 `125dd37` 硬化归档尝试顺序验证；全套单元测试 123/123 通过；
+- [x] 以 `b18106b` 预注册 S1-130–148 的 19 点 R2 continuation，完成 19/19 新执行点且 R2 新失败为 0，结果终点为 `c722c81`；
+- [x] 以 `c94796d` 固化正式电子数分析：90/90 accepted，覆盖 84 个 primary baseline 与 6 个 supplemental runtime replay；证据拆分为 60 KS、11 R1 reused OF 和 19 R2 executed OF；
+- [x] 电子数审计最大 `certified_relative_error` 为 `1.0127696865884852e-11`（源点 `S1-20260805-044`），30/30 OF 科学等价、120/120 KMP rank lifecycles、360/360 成功 syscall 均通过，四类 failure ID 列表全空；
 - [x] 扩大调研至原包 8 篇核心文献、扩展包 13 篇全文/241 页、1 篇网页全文及 20 余篇方法/软件补充证据；
 - [x] 识别 AMD-OFDFT 2014 直接先例，收窄“原子中心密度 + 变分 + Pulay 力”的创新主张；
 - [x] 完成闸门式项目再评估：整体 66/100、S0–S4A 核心 73/100、全范围 S0–S7 约 43/100；
@@ -103,12 +111,12 @@ cd /home/shenwei01/M_OFDFT_periodic_basis
 
 ### 下次开始位置
 
-从 S1 的下一个 G1 缺口开始；不要重跑已经严格验收的 42 点、074 或 113–118，也不要进入 S2 混合基或 ML：
+从 S1 的下一个 G1 缺口开始；不要重跑已经严格验收的 42 点、074、113–118 或电子数审计 S1-119–148，也不要进入 S2 混合基或 ML：
 
-1. 阅读 `analysis/s1/runtime_relocation_equivalence_20260805/summary.json`、`docs/G0_ACCEPTANCE.md` 与 `analysis/s1/non_equilibrium_convergence_20260805/summary.json`；
-2. 先冻结电子数独立积分审计的输入范围、解析口径和清单，要求已验收 Al/Mg 基准结果覆盖率 100%、相对误差 `<1e-10`，失败时保留原始密度/日志证据；
-3. 六点结果虽均报告精确名义电子数，但这不替代全范围、独立重算的密度积分证据，因此 G1 该项仍为 pending；
-4. 其余 G1 缺口继续是第三展宽/超密 k 标签审计、独立 OF 交叉代码、KS-NL→KS-L→OF-L 三层验证、位移/应变参考数据和 10 例单命令重生；
+1. 阅读 `analysis/s1/electron_number_audit_r2_20260805/summary.json`、`points.tsv`、`docs/S1_G1_ELECTRON_NUMBER_AUDIT_R2_PROTOCOL.md`，再回看 runtime-relocation 与 S1-R8 summary；
+2. 独立电子数积分子项已经 `accepted`：90/90 覆盖、每点认证相对误差严格 `<1e-10`；旧 R1 S1-130 失败尝试只作根因档案且对分母贡献 0，不得重算或重复计数；
+3. 预注册并执行第三 smearing/稠密 k 点标签审计；冻结 `σ/σ/2/σ/4` 或“两宽度 + 极密 k”参考、F/TS/内部能/熵修正估计量、密度、势和导数口径，并应用 `ΔVeq <0.2%`、锚定相对能量变化 `<2 meV/atom` 的既定门槛；
+4. G1 总体保持 `pending`（1/6）；标签审计之外的四个缺口仍是独立 OF 交叉代码、KS-NL→KS-L→OF-L 三层验证、位移/应变参考数据和 10 例单命令重生；
 5. runtime-isolation 的 `accepted` 仅适用于已登记的重定位二进制、私有 namespace 和严格审计启动路径；不得把原 S0 归档本身倒推称为天然 hermetic；
 6. 许可证和 LPP 再分发条款继续跟踪。
 
@@ -117,7 +125,7 @@ cd /home/shenwei01/M_OFDFT_periodic_basis
 | 阶段 | 名称 | 状态 | 开始日期 | 结束日期 | 闸门 | 证据链接 | 下一动作 |
 |---|---|---|---|---|---|---|---|
 | S0 | 初始化与复现协议 | `accepted` | 2026-08-05 | 2026-08-05 | G0 | `docs/G0_ACCEPTANCE.md`; `analysis/s1/runtime_relocation_equivalence_20260805/` | 数值/归档恢复结论保留；登记的 namespace runtime-isolation 路径已验收，原归档本身不称 hermetic |
-| S1 | 平面波基准闭环 | `in_progress` | 2026-08-05 | — | G1 | `analysis/s1/non_equilibrium_convergence_20260805/`; `analysis/s1/runtime_relocation_equivalence_20260805/` | 冻结并执行电子数独立积分审计 |
+| S1 | 平面波基准闭环 | `in_progress` | 2026-08-05 | — | G1 | `analysis/s1/non_equilibrium_convergence_20260805/`; `analysis/s1/runtime_relocation_equivalence_20260805/`; `analysis/s1/electron_number_audit_r2_20260805/` | 预注册并执行第三 smearing/稠密 k 点标签审计 |
 | S2 | 混合密度基表示 | `not_started` | — | — | G2 | — | 等待 G1 |
 | S3 | 固定 KEDF 自洽求解 | `not_started` | — | — | G3 | — | 等待 G2 |
 | S4A | 固定晶胞解析力 | `not_started` | — | — | G4A | — | 等待 G3 |
@@ -152,6 +160,8 @@ cd /home/shenwei01/M_OFDFT_periodic_basis
 | 扩大可行性再评估 | [综合报告](M_OFDFT_扩大文献调研与可行性再评估_2026-08.md) | 已完成 | 66/100；核心 S0–S4A 为 73/100 |
 | 初次可行性复核 | [初次报告](M_OFDFT_任务书可行性复核.md) | 已完成 | 初次立项依据，保留用于审计演变 |
 | 参考文献证据 | [原包索引](references/M_OFDFT/README.md)；[扩展包索引](references/M_OFDFT_extended/README.md) | 已完成 | 原创研判与索引入库；PDF/全文抽取保留在受控本地包，不公开再分发 |
+| G1 电子数 R2 协议 | `docs/S1_G1_ELECTRON_NUMBER_AUDIT_R2_PROTOCOL.md` | 已执行 | 复用 R1 accepted 11 点并新执行 R2 19 点；只关闭电子数子项 |
+| G1 电子数 R2 分析 | `analysis/s1/electron_number_audit_r2_20260805/` | `accepted` | 90/90；分析提交 `c94796d`；G1 总体 1/6 |
 | 代码仓库 | `https://github.com/Zhenhao526/M_OFDFT_periodic_basis` | 已建立 | 服务器路径 `/home/shenwei01/M_OFDFT_periodic_basis`；node01 通过校验 bundle 中转，由本地推送并以 `ls-remote` 核验 |
 | 环境锁 | `/home/shenwei01/M_OFDFT_periodic_basis/environment/` | 已建立 | 包清单、CMake、系统快照 |
 | 软件清单 | `/home/shenwei01/M_OFDFT_periodic_basis/manifests/` | 已建立 | 二进制、源码包与 LPP 哈希 |
@@ -173,9 +183,10 @@ cd /home/shenwei01/M_OFDFT_periodic_basis
 - 当前结果：S1-R8 在 `d6ffe59` 预注册；S1-071 至 112 已 42/42 收敛，六组比较 6/6 `accepted`；原始结果终点 `300a2aa`、硬化 `9010eed`、正式分析 `d28126b`。
 - 六组正式指标（最大相对能量差 / 最大压力差 / BM3 最大残差，单位 meV/atom / GPa / meV/atom）：Al OF cutoff `0.001538733 / 0.0001703 / 0.017076344`；Al KS cutoff `0.006794400 / 0.0071189 / 0.009295506`；Al KS kmesh `0.392503700 / 0.0307428（诊断） / 0.008623252`；Mg OF cutoff `0.000007179 / 0.0000431 / 0.002466982`；Mg KS cutoff `0.000705450 / 0.0001021 / 0.003863243`；Mg KS kmesh `0.403149550 / 0.0171684（诊断） / 0.004079008`。
 - 当前结果：074 受管 smoke、正式预注册和 S1-113–118 六点复演均已完成；正式分析 `a01ac70` 为 6/6 `storage_exact`、6/6 runtime accepted、6/6 R8 替换结论不变。
-- G1 仍为 `pending`，六项均未闭合：积分电子数；第三展宽/超密 k 的密度、势和导数标签审计；独立 OFDFT 跨代码 EOS/压力；KS-NL→KS-L→OF-L 三层验证；小位移/应变参考密度与能量分量；10 例单命令重生失败率。
+- 当前结果：G1 电子数 R2 正式分析 `c94796d` 为 90/90 `accepted`；84 个 primary + 6 个 supplemental，60 KS + 11 R1 reused OF + 19 R2 executed OF，最大认证相对误差 `1.0127696865884852e-11`，30/30 OF 科学等价及 120/120、360/360 KMP 门全部通过，R2 新失败为 0。
+- G1 仍为 `pending`（1/6）：独立电子数积分子项已经 `accepted`；剩余五项是第三 smearing/稠密 k 的密度、势和导数标签审计、独立 OFDFT 跨代码 EOS/压力、KS-NL→KS-L→OF-L 三层验证、小位移/应变参考密度与能量分量、10 例单命令重生失败率。
 - runtime-isolation 复核：原 `ldd` 外推仍撤回；登记的重定位 ABACUS + 私有 namespace + 严格审计路径已通过 074 和六点正式复演，因此该限定子项 `accepted`。锁定归档本身仍不得称为天然 hermetic。
-- 当前唯一动作：冻结并执行 G1 电子数独立积分审计；不得重跑已经验收的 runtime 六点或进入 S2/ML。
+- 当前唯一动作：预注册并执行 G1 第三 smearing/稠密 k 点标签审计；不得重跑电子数审计、已经验收的 runtime 六点或进入 S2/ML。
 
 ## 4. 闸门决策记录
 
@@ -220,6 +231,7 @@ cd /home/shenwei01/M_OFDFT_periodic_basis
 | S1-20260805-071–112 | 2026-08-05 | S1 | Al/Mg OF/KS 下一截断及 KS 下一 k 网格七点复核 | 预注册 `d6ffe59`；raw `300a2aa`；硬化 `9010eed`；分析 `d28126b` | `config/S1_non_equilibrium_run_manifest.tsv` | `runs/S1-20260805-071/`–`runs/S1-20260805-112/`；`analysis/s1/non_equilibrium_convergence_20260805/` | 42/42 收敛；6/6 accepted；六组最大相对能差均通过；cutoff 压力均通过 | S1-R8 `accepted`；G1 六项仍 pending | 42 次 |
 | S1-RUNTIME-SMOKE-20260805-074 | 2026-08-05 | S1 | 以 074 冻结输入验证重定位 ABACUS、私有 namespace 与严格 whole-runtime 审计入口 | 执行代码 `22eff38`；证据提交 `92e513f` | `analysis/s1/runtime_relocation_smoke_20260805/summary.json` | `analysis/s1/runtime_relocation_smoke_20260805/run/` | 66 个证据文件；能量/压力 `storage_exact`；五类状态门 accepted；三次历史失败归档保留 | `accepted`；幂等重验 `accepted_committed` | 是 |
 | S1-20260805-113–118 | 2026-08-05 | S1 | 用重定位 ABACUS 与私有 namespace 复演六个 v100 映射点，复核 whole-runtime 隔离及 R8 结论 | 预注册 `9a0fd7d`；逐点 `8ad4ea8`、`a96896b`、`9800067`、`ce7da88`、`12d2867`、`ce51927`；分析 `a01ac70` | `config/S1_runtime_relocation_equivalence.json`; `config/S1_runtime_relocation_equivalence_manifest.tsv` | `runs/S1-20260805-113/`–`runs/S1-20260805-118/`; `analysis/s1/runtime_relocation_equivalence_20260805/` | 6/6 `storage_exact`；6/6 runtime accepted；每点 22 个登记 ENOENT，成功旧访问/执行/映射和未知探针均为 0；R8 替换结论 6/6 不变 | runtime-relocation equivalence `accepted`；G1 仍 pending | 6 次 |
+| S1-20260805-119–148 | 2026-08-05/06 | S1 | 对 90 个已验收基准点独立积分电子数；为 30 个 OF 点输出高精度密度并复核科学/runtime 等价 | R1 accepted 119–129；R2 预注册 `b18106b`；结果终点 `c722c81`；分析 `c94796d` | `config/S1_electron_number_audit.json`; `config/S1_electron_number_audit_r2.json` | `runs/S1-20260805-119/`–`runs/S1-20260805-148/`; `analysis/s1/electron_number_audit_r2_20260805/` | 90/90 accepted；60 KS + 11 R1 reused OF + 19 R2 executed OF；最大认证相对误差 `1.0127696865884852e-11`；30/30 OF 科学等价；KMP 120/120、360/360；R2 新失败 0 | G1 电子数子项 `accepted`；G1 总体 1/6 | R1 复用 11 点 + R2 新执行 19 点 |
 
 ## 6. 当前指标看板
 
@@ -251,7 +263,13 @@ cd /home/shenwei01/M_OFDFT_periodic_basis
 | Mg OF cutoff R8：最大 ΔE / ΔP / BM3 残差 | 0.000007179 meV/atom / 0.0000431 GPa / 0.002466982 meV/atom | <1 / <0.02 / <1 | 同上 | 通过 |
 | Mg KS cutoff R8：最大 ΔE / ΔP / BM3 残差 | 0.000705450 meV/atom / 0.0001021 GPa / 0.003863243 meV/atom | <1 / <0.02 / <1 | 同上 | 通过 |
 | Mg KS kmesh R8：最大 ΔE / ΔP / BM3 残差 | 0.403149550 meV/atom / 0.0171684 GPa（诊断） / 0.004079008 meV/atom | <2 / 诊断 / <1 | 同上 | 通过 |
-| G1 待闭合项 | 0/6 闭合 | 6/6 | `analysis/s1/non_equilibrium_convergence_20260805/summary.json` | `pending` |
+| G1 电子数审计覆盖与证据拆分 | 90/90 accepted；84 primary + 6 supplemental；60 KS + 11 R1 reused OF + 19 R2 executed OF | 90/90 且拆分精确一致 | `analysis/s1/electron_number_audit_r2_20260805/summary.json` | 子项 `accepted` |
+| G1 电子数最大认证相对误差 | `1.0127696865884852e-11`，源点 `S1-20260805-044` | 每点严格 `<1e-10` | 同上 | 通过 |
+| G1 电子数 OF 科学等价 | 30/30；能量/压力 failure 0 | `|ΔE| <0.1 meV/atom`；`|ΔP| <0.02 GPa` | 同上 | 通过 |
+| G1 电子数 KMP/runtime | 30/30 OF；120/120 rank lifecycles；360/360 成功 syscall | 精确等于 120/360；旧前缀成功访问/映射、unexpected/unhashed mapping 为 0 | 同上 | 通过 |
+| G1 电子数失败清单 | density/scientific/KMP/point failure IDs 均为空；R2 新失败 0 | 四类均为 0 | 同上 | 通过 |
+| R1 S1-130 历史失败尝试 | 仅作根因档案；验收分母贡献 0；当前 R2 同 ID 结果计 1 次 | 历史失败不删除、不重复计数 | 同上 | 保留并排除 |
+| G1 待闭合项 | 1/6 闭合 | 6/6 | `analysis/s1/electron_number_audit_r2_20260805/summary.json` | `pending` |
 | runtime-relocation 六点科学/R8 等价 | 6/6 `storage_exact`；R8 替换结论 6/6 不变 | `|dE|<0.1 meV/atom`、`|dP|<0.02 GPa`；6/6 不翻转 | S1-20260805-113–118；`a01ac70` | `accepted` |
 | whole-runtime 旧前缀隔离 | 074 + 六点均为成功旧访问/执行/映射 0、未知探针 0；每点恰有 22 个登记 ENOENT | 同左；登记探针计数必须精确 | `analysis/s1/runtime_relocation_smoke_20260805/`; `analysis/s1/runtime_relocation_equivalence_20260805/` | 限定 namespace 部署路径 `accepted` |
 | 密度投影 L2 | — | 平衡 <1% | — | 未测 |
@@ -330,16 +348,18 @@ cd /home/shenwei01/M_OFDFT_periodic_basis
 | 2026-08-05 | D-032 | 对 G0 runtime-isolation 作勘误：撤回 whole-runtime/hermetic 主张，将隔离子项置为 `paused` | 原“旧前缀 0”仅来自 ABACUS `ldd`；后续追踪发现恢复 `mpirun` 转调旧 `prterun` 且存在旧路径成功访问；数值重复性未因此失效 | 继续把库解析报告外推为整个 MPI/UCX 运行链隔离 | 保留锁定归档、哈希、耗时和数值观察；修复协议、074 smoke、113–118 六点复演后再判隔离 |
 | 2026-08-05 | D-033 | runtime 修复采用“仅 RUNPATH 重定位 + 私有 user/mount namespace 遮蔽旧根 + 严格追踪 + 六点映射复演”的分级复核 | 已确认重定位二进制与原二进制 Build ID/`NEEDED`/`LOAD` 一致，差异限于 RUNPATH 字符槽；namespace 可使旧根不可见，但正式 074/六点复演尚未完成 | 仅靠 `LD_LIBRARY_PATH`/`ldd`，或在不遮蔽旧根时把运行成功当隔离成功 | 先修协议，074 smoke 失败只修协议重试；113–118 通过前不得声称修复完成 |
 | 2026-08-05 | D-034 | 接受登记的 runtime-relocation + 私有 namespace 部署路径并关闭六点等价复演；G1 保持 pending | 074 与正式六点均通过全部 runtime 门；六点 `storage_exact`，R8 替换结论 6/6 不变；分析 `a01ac70` 无失败 | 把 S0 `ldd` 结果继续当 whole-runtime 证明，或把六点通过误报为完整 G1 通过 | G0/runtime-isolation 限定子项改为 accepted；下一步转入 G1 电子数独立积分审计 |
+| 2026-08-06 | D-035 | 采用增量电子数 R2：复用 R1 已接受的 11 点并新执行 19 点；KMP 登记对象必须由 raw create/read/unlink 生命周期证明 | R1 119–129 均可严格重验；旧 S1-130 只因 sampler 捕获合法短命 KMP 对象而失败；R2 对 30 个 OF 点证明 120/120 lifecycles、360/360 syscall | 重试等待 sampler 漏采、追溯改写 R1，或无证据重跑全部 30 点 | R1 证据与失败档案保持不可变；R2 新失败 0；结果终点 `c722c81` |
+| 2026-08-06 | D-036 | 接受 G1 独立电子数积分子项，但完整 G1 保持 `pending`（1/6） | 正式分析 `c94796d` 为 90/90 accepted；最大认证相对误差 `1.0127696865884852e-11`；30/30 OF 科学等价及 KMP 总门通过，四类 failure ID 全空 | 用 ABACUS 名义电子数代替独立积分，或把一个子项通过误报为完整 G1 通过 | 下一唯一动作转为预注册并执行第三 smearing/稠密 k 点标签审计；不得进入 S2/ML |
 
 ## 9. 最近可用状态
 
 此节必须始终指向一个可运行、可复现的状态；若暂无则明确写“无”。
 
-- 最近可用状态：提交 `a01ac70`；包含 S1 runtime-relocation 六点正式分析。证据链为 074 执行代码 `22eff38`→074 证据 `92e513f`→正式预注册 `9a0fd7d`→六点结果终点 `ce51927`→正式分析 `a01ac70`。
+- 最近可用状态：提交 `c94796d`；包含 G1 电子数 R2 正式分析。电子数证据链为实现 `f4a816a`→顺序验证硬化 `125dd37`→R2 预注册 `b18106b`→19 点结果终点 `c722c81`→正式分析 `c94796d`；既有 runtime-relocation 证据链仍保留在 `a01ac70`。
 - 对应环境：`environment/`，ABACUS v3.11.0-beta.5 CPU + OpenMPI 5.0.10 + LibXC 7.0.0。
-- 已通过测试：92/92 单元测试；42/42 S1-R8 数值收敛；074 受管 smoke accepted；113–118 六点 committed validator 6/6、科学门 6/6、runtime 门 6/6、R8 替换结论 6/6；正式 config/manifest SHA-256 为 `9130989f...a0a4a7`、`6cdaa3e6...6195c1`。
-- 已知失败/暂停：`S1-20260805-004` 初始严格阈值失败已复核；三次 runtime smoke 失败 attempt 已完整归档且未删除；G1 六项仍 pending；node01 第二程序与公开发布许可仍未闭合。
-- 恢复方法：按“最近可运行命令”登录并运行 92/92 单元测试；对 074 使用相同命令只做 `accepted_committed` 幂等重验，对 113–118 使用 committed validator，不得无理由重算；下一步只执行电子数独立积分审计。
+- 已通过测试：123/123 单元测试；42/42 S1-R8 数值收敛；074 受管 smoke accepted；113–118 六点 committed validator 6/6；电子数 R1 复用 11/11、R2 执行 19/19、最终 90/90 accepted，KMP 120/120 lifecycles 与 360/360 syscall。
+- 已知失败/暂停：`S1-20260805-004` 初始严格阈值失败已复核；三次 runtime smoke 失败 attempt 已完整归档且未删除；旧 R1 S1-130 失败尝试保留为根因档案且对电子数分母贡献 0，R2 新失败为 0；G1 剩余五项仍 pending；node01 第二程序与公开发布许可仍未闭合。
+- 恢复方法：按“最近可运行命令”登录并运行 123/123 单元测试及 R2 committed validator；读取已提交的电子数 summary/points，不得无理由重算 119–148 或重复计入旧 S1-130 失败尝试；下一步只预注册并执行第三 smearing/稠密 k 点标签审计。
 - 同步方法：node01 执行 `git bundle create ... --all` 并 `git bundle verify`，经跳板机传至本机；三端 SHA-256 一致后，从临时 clone 使用 `git push --atomic origin main --tags`，最后以 `git ls-remote` 核验。
 
 ## 10. 交接说明
@@ -388,6 +408,7 @@ cd /home/shenwei01/M_OFDFT_periodic_basis
 | 2026-08-05 17:57 CST | S1-R8 预注册 | Codex | S1 | `d6ffe59` | 34/34 单测；42/42 manifest 预检；空结果负路径正确 | 六条七点加密曲线与 S1-071–112 已冻结；下一步远端顺序执行约 2.25 小时 |
 | 2026-08-05 20:17 CST | S1-R8 验收与 runtime 勘误 | Codex | S1 | raw `300a2aa`；硬化 `9010eed`；正式分析 `d28126b` | 49/49 单测；42/42 收敛；6/6 accepted；runtime replay 未执行 | 固化六组指标和 G1 六项 pending；G0 runtime-isolation 子项 `paused`；唯一下一动作是修协议→074 smoke→113–118 |
 | 2026-08-05 23:44 CST | runtime-relocation 六点闭环 | Codex | S1 | 074 `92e513f`；预注册 `9a0fd7d`；六点终点 `ce51927`；分析 `a01ac70` | 92/92 单测；074 accepted；六点 6/6 `storage_exact`、runtime accepted、R8 结论不变 | G0/runtime-isolation 在登记 namespace 路径内 accepted；G1 仍 pending；下一动作是电子数独立积分审计 |
+| 2026-08-06 02:53 CST | G1 电子数 R2 闭环 | Codex | S1 | 预注册 `b18106b`；结果终点 `c722c81`；分析 `c94796d` | 123/123 单测；R1 11/11 + R2 19/19；90/90 accepted；KMP 120/120、360/360 | 仅 G1 电子数子项 accepted，G1 总体 1/6；下一动作是第三 smearing/稠密 k 点标签审计 |
 
 ## 11. 文档变更记录
 
@@ -414,3 +435,4 @@ cd /home/shenwei01/M_OFDFT_periodic_basis
 | 2026-08-05 | V2.8 | Codex | 记录 S1-R8 42 点预注册、固定 ID/基线引用、34/34 单测、严格门槛和服务器唯一执行动作 |
 | 2026-08-05 | V2.9 | Codex | 记录 S1-R8 42/42、6/6 accepted 与 `300a2aa`/`9010eed`/`d28126b` 证据链；新增 G0 runtime-isolation 勘误、B-007、D-031–033、六组指标、113–118 预留和严格下一动作；未宣称复演通过 |
 | 2026-08-05 | V3.0 | Codex | 记录 074 受管 smoke、正式预注册、S1-113–118 六点逐点提交与 `a01ac70` 6/6 正式分析；限定接受 namespace runtime-isolation 路径，保留原 S0 hermetic 勘误与 G1 pending；下一动作转为电子数独立积分审计 |
+| 2026-08-06 | V3.1 | Codex | 记录电子数增量 R2 的 11+19 证据拆分、90/90 正式验收、最大认证误差、KMP 120/360 与零新增失败；只关闭 G1 电子数子项并将总体更新为 1/6，下一动作转为第三 smearing/稠密 k 点标签审计 |
