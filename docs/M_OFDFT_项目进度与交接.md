@@ -2,8 +2,8 @@
 
 > 本文件是项目状态的唯一人工入口。任何人接手前先读本文件，再读项目书和当前阶段 README。  
 > 状态词仅使用：`not_started`、`in_progress`、`blocked`、`accepted`、`rejected`、`paused`。  
-> 更新时间：2026-08-05 14:06 CST
-> 文档版本：V1.5
+> 更新时间：2026-08-05 14:11 CST
+> 文档版本：V1.6
 
 ## 0. 十分钟上手摘要
 
@@ -14,7 +14,7 @@
 | 当前闸门 | G0，尚未验收 |
 | 当前负责人 | 远端账户 `shenwei01`；本轮执行与记录：Codex |
 | 当前工作分支 | `main`，工作树干净；`origin` 为 GitHub 仓库 |
-| 最近可用提交 | 标签 `s0-github-sync-20260805`（包含数值基线、复现协议、GitHub 地址和最新交接状态） |
+| 最近可用提交 | 标签 `s0-upload-complete-20260805`（包含数值基线、复现协议、GitHub 地址和同步路径） |
 | 最近通过的 smoke test | `S0-20260805-002`：隔离 shell 中单测 2/2；两次 SCF 均收敛，能量差 0.0 meV/atom |
 | 当前阻塞 | 尚未选择项目许可证；第三方 LPP 再分发条件待核对；尚未完成“从零安装”60 分钟验收 |
 | 下一项唯一动作 | 项目负责人确定项目许可证或明确维持内部研究限制 |
@@ -167,6 +167,7 @@ cd /home/shenwei01/M_OFDFT_periodic_basis
 | B-002 | 2026-08-05 | Al/Mg LPP 已有来源与校验和，但再分发许可证仍需核对 | S0/S7 | 待填写 | 核对第三方再分发条件 | 是 | `in_progress` |
 | B-003 | 2026-08-05 | 项目许可证尚未选择 | S0/S7 | 项目负责人 | 选择许可证或维持内部研究限制 | 是 | `blocked` |
 | B-004 | 2026-08-05 | `env -i` 恢复已通过，但尚未在全新运行时前缀验证 60 分钟从零安装 | S0 | 待填写 | 在独立新前缀执行安装、单测和 smoke 并计时 | 否 | `in_progress` |
+| B-005 | 2026-08-05 | node01 直连 GitHub HTTPS 超时，不能在计算节点直接推送 | S0–S7 | Codex | 暂用完整 Git bundle 经跳板机传回本机后原子推送；后续可配置可审计的出口代理 | 否 | `paused` |
 
 ### 活跃风险
 
@@ -191,16 +192,18 @@ cd /home/shenwei01/M_OFDFT_periodic_basis
 | 2026-08-05 | D-005 | 新建独立 `/home/shenwei01/M_OFDFT_periodic_basis` | 旧 Al/Mg 熔化目录含进行中工作且不是 Git 仓库 | 直接在旧目录开发 | 避免覆盖既有成果，便于独立验收 |
 | 2026-08-05 | D-006 | 统一归档单位为 Å、eV、eV/atom、eV/Å 和 GPa，并保留原始程序输出 | 防止不同程序原生单位和能量口径混入验收表 | 直接沿用各程序打印单位 | S1 起所有解析结果必须显式声明单位和参考态 |
 | 2026-08-05 | D-007 | GitHub 仓库 `Zhenhao526/M_OFDFT_periodic_basis` 作为远端代码库 | 用户指定目标；首次上传已通过 SSH 原子推送完成 | 仅保留 node01 本地 Git | 解除 B-001，后续可从外部获取提交与标签 |
+| 2026-08-05 | D-008 | node01 无 GitHub 出口时使用完整 Git bundle 中转，并在三端校验 SHA-256 | node01 HTTPS 连接 20 秒超时；bundle 验证完整且三端哈希一致 | 在计算节点反复直接 push | 不阻塞版本发布，但每次同步必须核验远端 ref |
 
 ## 9. 最近可用状态
 
 此节必须始终指向一个可运行、可复现的状态；若暂无则明确写“无”。
 
-- 最近可用状态：GitHub `main` 标签 `s0-github-sync-20260805`；数值证据提交为 `5c6a63423c3c0cca0ac46002fa1df9212b480a6e`，标签 `s0-isolated-smoke-20260805`。
+- 最近可用状态：GitHub `main` 标签 `s0-upload-complete-20260805`；数值证据提交为 `5c6a63423c3c0cca0ac46002fa1df9212b480a6e`，标签 `s0-isolated-smoke-20260805`。
 - 对应环境：`environment/`，ABACUS v3.11.0-beta.5 CPU + OpenMPI 5.0.10 + LibXC 7.0.0。
 - 已通过测试：隔离 shell 中 2/2 单元测试；`S0-20260805-001` 与 `S0-20260805-002` 的双重复 SCF 均收敛，重复差均为 0.0 meV/atom。
 - 已知失败：本项目暂无失败实验；许可证、远端 Git、LPP 再分发条件和从零安装仍未验收。
 - 恢复方法：按“最近可运行命令”登录，进入仓库并运行单元测试；新 smoke 必须使用新的实验 ID。
+- 同步方法：node01 执行 `git bundle create ... --all` 并 `git bundle verify`，经跳板机传至本机；三端 SHA-256 一致后，从临时 clone 使用 `git push --atomic origin main --tags`，最后以 `git ls-remote` 核验。
 
 ## 10. 交接说明
 
@@ -235,6 +238,7 @@ cd /home/shenwei01/M_OFDFT_periodic_basis
 | 2026-08-05 13:22 CST | 执行更新 | Codex | S0 | `5c6a634`; `s0-isolated-smoke-20260805` | S0-20260805-002 通过 | Git 基线、隔离 shell 恢复证据和复现协议已固化；等待 G0 外部决策和从零安装验收 |
 | 2026-08-05 13:26 CST | 交接固化 | Codex | S0 | `s0-handoff-20260805` | S0-20260805-002 通过 | 校验清单全量通过，工作树干净；G0 保持 paused |
 | 2026-08-05 14:06 CST | 远端同步 | Codex | S0 | `s0-github-sync-20260805` | S0-20260805-002 通过 | `main` 与 S0 标签已上传 GitHub；B-001 已解除 |
+| 2026-08-05 14:11 CST | 上传验收 | Codex | S0 | `s0-upload-complete-20260805` | S0-20260805-002 通过 | GitHub HEAD、`main` 和全部标签已远端核验；登记 node01 出口限制与 bundle 中转方法 |
 
 ## 11. 文档变更记录
 
@@ -246,3 +250,4 @@ cd /home/shenwei01/M_OFDFT_periodic_basis
 | 2026-08-05 | V1.3 | Codex | 增补 S0 单位、能量口径、命名、随机种子和文件格式协议，并更新交接起点 |
 | 2026-08-05 | V1.4 | Codex | 固化最终交接标签、校验清单通过状态和 G0 暂停结论 |
 | 2026-08-05 | V1.5 | Codex | 记录 GitHub 远端、首次上传结果、B-001 解除及新的唯一下一动作 |
+| 2026-08-05 | V1.6 | Codex | 记录 GitHub 引用验收、node01 出口限制及经校验 bundle 中转的标准同步路径 |
