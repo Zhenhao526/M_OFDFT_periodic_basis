@@ -6,9 +6,9 @@
   "ecutwfc_ry": 40,
   "expected_electrons": 4,
   "kmesh": [
-    16,
-    16,
-    10
+    24,
+    24,
+    16
   ],
   "material": "mg",
   "pseudopotential": "mg.lda.lps",

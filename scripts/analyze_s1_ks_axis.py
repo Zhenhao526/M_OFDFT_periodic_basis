@@ -19,6 +19,17 @@ def display_key(key: tuple, axis: str):
     return list(key) if axis == "kpoint" else key[0]
 
 
+def mark_tail_stability(rows: list[dict]) -> None:
+    for index, row in enumerate(rows):
+        if index == len(rows) - 1:
+            row["passes_all_denser_steps"] = None
+        else:
+            row["passes_all_denser_steps"] = all(
+                candidate["passes_energy_threshold"] is True
+                for candidate in rows[index:-1]
+            )
+
+
 def main() -> int:
     parser = argparse.ArgumentParser()
     parser.add_argument("axis", choices=("kpoint", "smearing"))
@@ -70,10 +81,12 @@ def main() -> int:
             current["converged"] and following["converged"] and delta < 2.0
         )
 
+    mark_tail_stability(rows)
+
     energy_passed = any(row["passes_energy_threshold"] for row in rows[:-1])
     if args.axis == "kpoint":
         recommended = next(
-            (row["value"] for row in rows[:-1] if row["passes_energy_threshold"]), None
+            (row["value"] for row in rows[:-1] if row["passes_all_denser_steps"]), None
         )
         passed = recommended is not None
         pending = []
@@ -102,7 +115,7 @@ def main() -> int:
     )
     lines = [
         "value\texperiment_id\tconverged\tenergy_ev_per_atom\tpressure_gpa\t"
-        "delta_to_next_mev_per_atom\tpasses_energy_threshold"
+        "delta_to_next_mev_per_atom\tpasses_energy_threshold\tpasses_all_denser_steps"
     ]
     for row in rows:
         chosen = row["chosen"]
@@ -118,6 +131,7 @@ def main() -> int:
                     chosen["pressure_gpa"],
                     row["delta_to_next_mev_per_atom"],
                     row["passes_energy_threshold"],
+                    row["passes_all_denser_steps"],
                 )
             )
         )

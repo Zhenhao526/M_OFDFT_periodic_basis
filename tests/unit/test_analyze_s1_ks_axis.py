@@ -27,6 +27,19 @@ class AnalyzeS1KsAxisTest(unittest.TestCase):
         with self.assertRaisesRegex(ValueError, "unsupported KS scan axis"):
             MODULE.axis_key({}, "cutoff")
 
+    def test_tail_stability_rejects_early_isolated_pass(self) -> None:
+        rows = [
+            {"passes_energy_threshold": True},
+            {"passes_energy_threshold": False},
+            {"passes_energy_threshold": True},
+            {"passes_energy_threshold": None},
+        ]
+        MODULE.mark_tail_stability(rows)
+        self.assertEqual(
+            [row["passes_all_denser_steps"] for row in rows],
+            [False, False, True, None],
+        )
+
 
 if __name__ == "__main__":
     unittest.main()
