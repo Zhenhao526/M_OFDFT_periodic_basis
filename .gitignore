@@ -1,10 +1,10 @@
 __pycache__/
 *.pyc
 .pytest_cache/
+/remote_stage/
 runs/*/repeat1/OUT.*/
 runs/*/repeat2/OUT.*/
 runs/*/repeat1/run.stdout
 runs/*/repeat2/run.stdout
 runs/*/repeat1/resource_usage.txt
 runs/*/repeat2/resource_usage.txt
-

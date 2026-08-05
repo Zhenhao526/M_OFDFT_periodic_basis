@@ -14,7 +14,7 @@
 | 当前闸门 | G1，执行中 |
 | 当前负责人 | 远端账户 `shenwei01`；本轮执行与记录：Codex |
 | 当前工作分支 | `main`，工作树干净；`origin` 为 GitHub 仓库 |
-| 最近可用提交 | 待标记 `s1-ks-convergence-20260805`（Al/Mg WT/KS 截断、KS k 点及展宽 V0 诊断） |
+| 最近可用提交 | 标签 `s1-ks-convergence-20260805`（Al/Mg WT/KS 截断、KS k 点及展宽 V0 诊断） |
 | 最近通过的 smoke test | `S0-20260805-003`：新恢复前缀中单测 2/2；两次 SCF 均收敛，能量差 0.0 meV/atom |
 | 当前阻塞 | node01 无第二套独立 OFDFT/KSDFT 程序；许可证与 LPP 条款仍限制发布 |
 | 下一项唯一动作 | 冻结 EOS 候选参数并生成标准/半展宽成对的 Al/Mg 七点 EOS 输入矩阵 |
@@ -260,7 +260,7 @@ cd /home/shenwei01/M_OFDFT_periodic_basis
 
 此节必须始终指向一个可运行、可复现的状态；若暂无则明确写“无”。
 
-- 最近可用状态：待标记 `s1-ks-convergence-20260805`；包含 G0 clean recovery、Al/Mg WT/KS 截断、扩展 k 点扫描、尾部稳定分析和双展宽 V0 诊断。
+- 最近可用状态：标签 `s1-ks-convergence-20260805`；包含 G0 clean recovery、Al/Mg WT/KS 截断、扩展 k 点扫描、尾部稳定分析和双展宽 V0 诊断。
 - 对应环境：`environment/`，ABACUS v3.11.0-beta.5 CPU + OpenMPI 5.0.10 + LibXC 7.0.0。
 - 已通过测试：13/13 单元测试；`S0-20260805-001/002/003` 双重复 SCF 均收敛；S1-010 至 027 的 KSDFT 数值运行全部收敛。
 - 已知失败：`S1-20260805-004` 的初始严格阈值失败已复核；Al 原 12/16/20³ k 点门槛不通过及 Mg 中间反弹均已保留并经扩展点解决；G1 展宽 EOS、第二程序和发布限制仍未解决。
@@ -304,7 +304,7 @@ cd /home/shenwei01/M_OFDFT_periodic_basis
 | 2026-08-05 14:18 CST | G0 验收 | Codex | S1 | `s0-clean-recovery-20260805` | S0-20260805-003 通过 | clean-prefix 恢复与测试 23.46 秒；G0 accepted，进入内部 S1 |
 | 2026-08-05 14:32 CST | S1 更新 | Codex | S1 | `s1-al-wt-cutoff-20260805` | S1-005 通过；S1-004 失败保留 | 28 个 EOS 与 14 个截断候选已生成；Al WT V0 推荐 20 Ry 候选 |
 | 2026-08-05 14:38 CST | S1 更新 | Codex | S1 | `s1-wt-cutoffs-20260805` | S1-006 至 009 全部通过 | Mg WT V0 推荐 30 Ry 候选；下一步转入 KSDFT 收敛扫描 |
-| 2026-08-05 15:26 CST | S1 更新 | Codex | S1 | 待标记 `s1-ks-convergence-20260805` | S1-010 至 027 除协议门槛比较外均数值收敛 | KS 截断和 k 点已选定；双展宽 V0 诊断完成；下一步双展宽 EOS |
+| 2026-08-05 15:26 CST | S1 更新 | Codex | S1 | `s1-ks-convergence-20260805` | S1-010 至 027 除协议门槛比较外均数值收敛 | KS 截断和 k 点已选定；双展宽 V0 诊断完成；下一步双展宽 EOS |
 
 ## 11. 文档变更记录
 
