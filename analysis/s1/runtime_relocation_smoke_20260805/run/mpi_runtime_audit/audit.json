@@ -1,0 +1,336 @@
+{
+  "absolute_deadline_watchdog_seconds": 7200,
+  "ambiguous_exec_result_count": 0,
+  "command": [
+    "/home/shenwei01/M_OFDFT_recovery_S0_20260805_001/conda_prefix/bin/mpirun",
+    "--allow-run-as-root",
+    "--bind-to",
+    "core",
+    "-np",
+    "4",
+    "/usr/bin/python3.10",
+    "/home/shenwei01/M_OFDFT_periodic_basis/scripts/runtime_relocation_rank_wrapper.py",
+    "/home/shenwei01/M_OFDFT_recovery_S0_20260805_001/source/abacus_pw_para_relocated_20260805"
+  ],
+  "elapsed_seconds": 0.03627961501479149,
+  "ended_at_utc": "2026-08-05T13:27:44.232259+00:00",
+  "ended_epoch_seconds": 1785936464.2322578,
+  "failure_reasons": [
+    "launcher_exited_before_rank_handshake",
+    "rank_handshake_set:[]",
+    "launcher_handshake_count:0",
+    "launcher_exit_code:1",
+    "target_process_set_incomplete",
+    "registered_probe_count_mismatch_count:22",
+    "successful_exec_multiset_mismatch:{\"expected\": {\"/home/shenwei01/M_OFDFT_recovery_S0_20260805_001/conda_prefix/bin/mpirun\": 1, \"/home/shenwei01/M_OFDFT_recovery_S0_20260805_001/conda_prefix/bin/prte\": 1, \"/home/shenwei01/M_OFDFT_recovery_S0_20260805_001/source/abacus_pw_para_relocated_20260805\": 4, \"/usr/bin/python3.10\": 4}, \"observed\": {}}"
+  ],
+  "launcher_exit_code": 1,
+  "launcher_pid": null,
+  "ld_library_path": "/home/shenwei01/M_OFDFT_recovery_S0_20260805_001/conda_prefix/lib",
+  "ld_preload": null,
+  "mapped_object_count": 0,
+  "observed_execve_records": [],
+  "old_prefix": "/home/shenwei01/wt_melting_runtime_20260724/conda_prefix",
+  "old_prefix_access_attempt_count": 0,
+  "old_prefix_access_events": [],
+  "old_prefix_exec_success_count": 0,
+  "old_prefix_mapped_object_count": 0,
+  "old_prefix_successful_access_count": 0,
+  "prefix_environment": {
+    "OPAL_PREFIX": "/home/shenwei01/M_OFDFT_recovery_S0_20260805_001/conda_prefix",
+    "PMIX_PREFIX": "/home/shenwei01/M_OFDFT_recovery_S0_20260805_001/conda_prefix",
+    "PRTE_PREFIX": "/home/shenwei01/M_OFDFT_recovery_S0_20260805_001/conda_prefix",
+    "UCX_MODULE_DIR": "/home/shenwei01/M_OFDFT_recovery_S0_20260805_001/conda_prefix"
+  },
+  "process_group_cleanup": {
+    "all_group_members_gone": true,
+    "members_after_cleanup": [],
+    "members_before_cleanup": [],
+    "tracee_pids_after_cleanup": [],
+    "tracee_pids_before_cleanup": [
+      12
+    ]
+  },
+  "processes": [],
+  "protocol": "runtime_relocation_equivalence",
+  "rank_handshake_status": "rejected",
+  "rank_handshake_terminal_state": {
+    "abort_exists": true,
+    "failure_files": [],
+    "ready_files": [],
+    "release_files": [
+      "rank-0",
+      "rank-1",
+      "rank-2",
+      "rank-3"
+    ]
+  },
+  "rank_pids": {},
+  "recovery_prefix": "/home/shenwei01/M_OFDFT_recovery_S0_20260805_001/conda_prefix",
+  "recovery_root": "/home/shenwei01/M_OFDFT_recovery_S0_20260805_001",
+  "registered_device_mapped_object_count": 0,
+  "registered_device_mapping_patterns": [
+    "^/dev/infiniband/(?:uverbs[0-9]+|rdma_cm)$",
+    "^/dev/nvidia(?:[0-9]+|ctl|modeset|uvm|uvm-tools)$",
+    "^/dev/nvidia-caps/nvidia-cap[0-9]+$"
+  ],
+  "registered_old_prefix_failed_probe_count": 0,
+  "registered_old_prefix_failed_probes": [
+    {
+      "errno": "ENOENT",
+      "expected_count": 1,
+      "flags": null,
+      "path": "/home/shenwei01/wt_melting_runtime_20260724/conda_prefix/classid",
+      "probe_id": "launcher_classid_stat",
+      "rank": null,
+      "role": "launcher",
+      "syscall": "stat"
+    },
+    {
+      "errno": "ENOENT",
+      "expected_count": 1,
+      "flags": "O_RDONLY|O_CLOEXEC",
+      "path": "/home/shenwei01/wt_melting_runtime_20260724/conda_prefix/classid",
+      "probe_id": "launcher_classid_open",
+      "rank": null,
+      "role": "launcher",
+      "syscall": "openat"
+    },
+    {
+      "errno": "ENOENT",
+      "expected_count_per_rank": 1,
+      "flags": null,
+      "path": "/home/shenwei01/wt_melting_runtime_20260724/conda_prefix/classid",
+      "probe_id": "rank_classid_stat",
+      "rank": "each",
+      "role": "rank",
+      "syscall": "stat"
+    },
+    {
+      "errno": "ENOENT",
+      "expected_count_per_rank": 1,
+      "flags": "O_RDONLY|O_CLOEXEC",
+      "path": "/home/shenwei01/wt_melting_runtime_20260724/conda_prefix/classid",
+      "probe_id": "rank_classid_open",
+      "rank": "each",
+      "role": "rank",
+      "syscall": "openat"
+    },
+    {
+      "errno": "ENOENT",
+      "expected_count_per_rank": 1,
+      "flags": "O_RDONLY",
+      "path": "/home/shenwei01/wt_melting_runtime_20260724/conda_prefix/ucx.conf",
+      "probe_id": "rank_ucx_conf_open",
+      "rank": "each",
+      "role": "rank",
+      "syscall": "openat"
+    },
+    {
+      "errno": "ENOENT",
+      "expected_count_per_rank": 1,
+      "flags": "O_RDONLY",
+      "path": "/home/shenwei01/wt_melting_runtime_20260724/conda_prefix",
+      "probe_id": "rank_old_prefix_open",
+      "rank": "each",
+      "role": "rank",
+      "syscall": "openat"
+    },
+    {
+      "errno": "ENOENT",
+      "expected_count_per_rank": 1,
+      "flags": "O_RDONLY|O_NONBLOCK|O_CLOEXEC|O_DIRECTORY",
+      "path": "/home/shenwei01/wt_melting_runtime_20260724/conda_prefix",
+      "probe_id": "rank_old_prefix_directory_open",
+      "rank": "each",
+      "role": "rank",
+      "syscall": "openat"
+    }
+  ],
+  "registered_probe_count_mismatch_count": 22,
+  "registered_probe_counts": {
+    "launcher_classid_open": {
+      "expected_count": 1,
+      "mismatch": true,
+      "total": 0
+    },
+    "launcher_classid_stat": {
+      "expected_count": 1,
+      "mismatch": true,
+      "total": 0
+    },
+    "rank_classid_open": {
+      "by_rank": {
+        "0": 0,
+        "1": 0,
+        "2": 0,
+        "3": 0
+      },
+      "expected_count_per_rank": 1,
+      "mismatches": {
+        "0": 0,
+        "1": 0,
+        "2": 0,
+        "3": 0
+      },
+      "total": 0
+    },
+    "rank_classid_stat": {
+      "by_rank": {
+        "0": 0,
+        "1": 0,
+        "2": 0,
+        "3": 0
+      },
+      "expected_count_per_rank": 1,
+      "mismatches": {
+        "0": 0,
+        "1": 0,
+        "2": 0,
+        "3": 0
+      },
+      "total": 0
+    },
+    "rank_old_prefix_directory_open": {
+      "by_rank": {
+        "0": 0,
+        "1": 0,
+        "2": 0,
+        "3": 0
+      },
+      "expected_count_per_rank": 1,
+      "mismatches": {
+        "0": 0,
+        "1": 0,
+        "2": 0,
+        "3": 0
+      },
+      "total": 0
+    },
+    "rank_old_prefix_open": {
+      "by_rank": {
+        "0": 0,
+        "1": 0,
+        "2": 0,
+        "3": 0
+      },
+      "expected_count_per_rank": 1,
+      "mismatches": {
+        "0": 0,
+        "1": 0,
+        "2": 0,
+        "3": 0
+      },
+      "total": 0
+    },
+    "rank_ucx_conf_open": {
+      "by_rank": {
+        "0": 0,
+        "1": 0,
+        "2": 0,
+        "3": 0
+      },
+      "expected_count_per_rank": 1,
+      "mismatches": {
+        "0": 0,
+        "1": 0,
+        "2": 0,
+        "3": 0
+      },
+      "total": 0
+    }
+  },
+  "runtime_environment": {
+    "CMAKE_PREFIX_PATH": "/home/shenwei01/M_OFDFT_recovery_S0_20260805_001/conda_prefix",
+    "HOME": "/home/shenwei01/M_OFDFT_periodic_basis/analysis/s1/runtime_relocation_smoke_20260805/run/runtime_home",
+    "LD_LIBRARY_PATH": "/home/shenwei01/M_OFDFT_recovery_S0_20260805_001/conda_prefix/lib",
+    "LD_PRELOAD": null,
+    "MKLROOT": "/home/shenwei01/M_OFDFT_recovery_S0_20260805_001/conda_prefix",
+    "OMP_NUM_THREADS": "1",
+    "PATH": "/home/shenwei01/M_OFDFT_recovery_S0_20260805_001/conda_prefix/bin:/usr/bin:/bin"
+  },
+  "runtime_wall_timeout_seconds": 7200,
+  "schema_version": 2,
+  "started_at_utc": "2026-08-05T13:27:44.195979+00:00",
+  "started_epoch_seconds": 1785936464.1959782,
+  "status": "rejected",
+  "strace_command": [
+    "/usr/bin/strace",
+    "-ff",
+    "-qq",
+    "--kill-on-exit",
+    "-s",
+    "4096",
+    "-e",
+    "trace=file,process",
+    "-o",
+    "/home/shenwei01/M_OFDFT_periodic_basis/analysis/s1/runtime_relocation_smoke_20260805/run/mpi_runtime_audit/strace/trace",
+    "/home/shenwei01/M_OFDFT_recovery_S0_20260805_001/conda_prefix/bin/mpirun",
+    "--allow-run-as-root",
+    "--bind-to",
+    "core",
+    "-np",
+    "4",
+    "/usr/bin/python3.10",
+    "/home/shenwei01/M_OFDFT_periodic_basis/scripts/runtime_relocation_rank_wrapper.py",
+    "/home/shenwei01/M_OFDFT_recovery_S0_20260805_001/source/abacus_pw_para_relocated_20260805"
+  ],
+  "strace_identity_after": {
+    "path": "/usr/bin/strace",
+    "realpath": "/usr/bin/strace",
+    "sha256": "38a5c75cb29dd85ddd7780d54f5bf595554d7a1b5c42524b23065f5dc4c4b01d",
+    "version_arguments": [
+      "--version"
+    ],
+    "version_first_line": "strace -- version 5.16",
+    "version_output_sha256": "47330880c53e6bafef6d915d42210d289ca470ec6879bac32d4a67549468cb1e"
+  },
+  "strace_identity_before": {
+    "path": "/usr/bin/strace",
+    "realpath": "/usr/bin/strace",
+    "sha256": "38a5c75cb29dd85ddd7780d54f5bf595554d7a1b5c42524b23065f5dc4c4b01d",
+    "version_arguments": [
+      "--version"
+    ],
+    "version_first_line": "strace -- version 5.16",
+    "version_output_sha256": "47330880c53e6bafef6d915d42210d289ca470ec6879bac32d4a67549468cb1e"
+  },
+  "successful_exec_multiset": {},
+  "system_mapping_exact_paths": [
+    "/etc/ld.so.cache"
+  ],
+  "system_mapping_roots": [
+    "/usr",
+    "/lib",
+    "/lib64"
+  ],
+  "terminal_process_evidence": {
+    "all_known_pids_gone": true,
+    "known_pid_count": 1,
+    "known_pids": [
+      {
+        "observed_start_time_ticks": 615935662,
+        "pid": 12,
+        "sources": [
+          "strace_root"
+        ],
+        "terminal_start_time_ticks": null,
+        "terminal_state": "gone"
+      }
+    ],
+    "process_group": 12,
+    "process_group_members_after": []
+  },
+  "timeout_triggered": false,
+  "transient_mapping_patterns": [
+    "^/SYSV[0-9A-Fa-f]+$",
+    "^/dev/shm/sm_segment[A-Za-z0-9._-]*$",
+    "^/dev/shm/ucx_shm_posix_[A-Za-z0-9._-]+$",
+    "^/tmp/ompi\\.[0-9]+/(?:[A-Za-z0-9._-]+/)*(?:pmix-gds-shmem2|shared_mem_cuda_)[A-Za-z0-9._@-]*(?:/[A-Za-z0-9._-]+)*$",
+    "^/tmp/ompi\\.[0-9]+/hwloc\\.sm$"
+  ],
+  "transient_system_mapped_object_count": 0,
+  "unexpected_mapped_object_count": 0,
+  "unhashed_regular_mapped_object_count": 0,
+  "unknown_old_prefix_failed_probe_count": 0
+}

@@ -1,0 +1,37 @@
+{
+  "effective_uid": 0,
+  "gid_map": "         0       1001          1\n",
+  "mountinfo_path": "/home/shenwei01/M_OFDFT_periodic_basis/analysis/s1/runtime_relocation_smoke_20260805/run/mpi_runtime_audit/namespace/mountinfo.after_run",
+  "namespace_init_pid": 1,
+  "nspid": [
+    14
+  ],
+  "old_prefix": "/home/shenwei01/wt_melting_runtime_20260724/conda_prefix",
+  "old_prefix_exists": false,
+  "old_prefix_lstat": null,
+  "old_root": "/home/shenwei01/wt_melting_runtime_20260724",
+  "old_root_exists": true,
+  "old_root_lstat": {
+    "device": 56,
+    "gid": 0,
+    "inode": 1,
+    "is_symlink": false,
+    "mode": 17407,
+    "mode_type": 16384,
+    "mtime_ns": 1785936464109497354,
+    "realpath": "/home/shenwei01/wt_melting_runtime_20260724",
+    "size": 40,
+    "uid": 0
+  },
+  "old_root_mountinfo_lines": [
+    "920 104 0:56 / /home/shenwei01/wt_melting_runtime_20260724 rw,nosuid,nodev,noexec,relatime - tmpfs tmpfs rw,size=1024k,uid=1001,gid=1001,inode64"
+  ],
+  "phase": "after_run",
+  "pid": 14,
+  "pid_namespace_inode": 4026540921,
+  "pid_namespace_link": "pid:[4026540921]",
+  "schema_version": 1,
+  "shared_mount_lines": [],
+  "uid": 0,
+  "uid_map": "         0       1001          1\n"
+}

@@ -1,0 +1,21 @@
+{
+  "core_validation_exit_code": 97,
+  "failure_stage": "runtime_invocation_or_parser",
+  "invocation_exit_code": 1,
+  "launcher_exit_code": 1,
+  "parser_exit_code": 1,
+  "retry_requires_committed_archive": true,
+  "runtime_audit_failure_reasons": [
+    "launcher_exited_before_rank_handshake",
+    "rank_handshake_set:[]",
+    "launcher_handshake_count:0",
+    "launcher_exit_code:1",
+    "target_process_set_incomplete",
+    "registered_probe_count_mismatch_count:22",
+    "successful_exec_multiset_mismatch:{\"expected\": {\"/home/shenwei01/M_OFDFT_recovery_S0_20260805_001/conda_prefix/bin/mpirun\": 1, \"/home/shenwei01/M_OFDFT_recovery_S0_20260805_001/conda_prefix/bin/prte\": 1, \"/home/shenwei01/M_OFDFT_recovery_S0_20260805_001/source/abacus_pw_para_relocated_20260805\": 4, \"/usr/bin/python3.10\": 4}, \"observed\": {}}"
+  ],
+  "schema_version": 2,
+  "setup_completed": true,
+  "status": "failed_attempt_preserved",
+  "workflow_exit_code": 1
+}
