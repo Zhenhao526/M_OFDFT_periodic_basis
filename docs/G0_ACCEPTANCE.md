@@ -1,7 +1,7 @@
 # G0 acceptance record
 
 - Decision: `accepted` for locked-archive recovery and internal numerical use
-- Runtime-isolation subdecision: `paused`
+- Runtime-isolation subdecision: `accepted` for the registered R2 relocated/private-namespace execution profile
 - Date: 2026-08-05
 - Scope: internal numerical research
 - Evidence experiment: `S0-20260805-003`
@@ -33,6 +33,26 @@ user/mount namespace that hides the old runtime root, and mapped experiments
 S1-20260805-113 through 118 pass both strict runtime tracing and numerical/R8
 replacement gates.
 
+## Runtime-isolation resolution (2026-08-05)
+
+The predeclared reconsideration conditions are now satisfied. The managed
+`S1-RUNTIME-SMOKE-20260805-074` evidence was committed at `92e513f`, the formal
+six-point preregistration at `9a0fd7d`, replay results S1-20260805-113 through
+118 ended at `ce51927`, and the committed analysis at `a01ac70` is `accepted`.
+
+All six formal points are `storage_exact` relative to their registered
+references. Scientific gates passed 6/6, runtime audits passed 6/6, and the six
+R8 conclusions remained `accepted` after replacement. At every point, exactly
+22 registered old-prefix probes failed with `ENOENT`; successful old-prefix
+accesses, successful old-prefix execution, old-prefix mappings, unknown failed
+probes, and registered-probe count mismatches were all zero.
+
+The accepted scope is deliberately narrow: protocol R2 on node01, four MPI
+ranks, the registered relocated ABACUS, and the private user/mount/PID namespace
+launcher with strict tracing. It does not retroactively turn the original S0
+archive into a generally hermetic runtime, prove a source rebuild, or generalize
+to unregistered hosts, binaries, launch paths, or rank counts.
+
 ## Decision table
 
 | G0 criterion | Required | Observed | Result |
@@ -43,7 +63,7 @@ replacement gates.
 | Repeated-run energy difference | <0.1 meV/atom | 0.0 meV/atom | pass |
 | Automated test entry point | zero errors | 2/2 unit tests passed | pass |
 | Progress handoff fields | complete | state, next action, tag, experiment, and blockers recorded | pass |
-| Whole-runtime old-prefix isolation | zero successful old-prefix access, execution, or mapping | ABACUS `ldd` mapped zero old-prefix libraries, but later tracing found old `prterun` execution and successful old-root accesses | paused |
+| Whole-runtime old-prefix isolation | zero successful old-prefix access, execution, or mapping | Registered R2 profile: managed 074 plus 6/6 formal points accepted; each formal point has 22/22 registered ENOENT probes and zero successful old access/exec, old mapping, unknown probe, or count mismatch | pass in registered relocated/private-namespace scope |
 
 ## Clean recovery evidence
 
@@ -80,7 +100,7 @@ Evidence files are stored under `runs/S0-20260805-003/`, including input hashes,
 metadata, parsed result, restore result, archive checksum, and the dynamic-library
 resolution report.
 
-## Correction protocol in progress
+## Correction protocol completed
 
 - Original ABACUS SHA-256:
   `2d68a57c7b25608b3550854dabc2e63601eeca956bf185ad7d0967052bdbb4ba`.
@@ -89,20 +109,22 @@ resolution report.
 - The candidate keeps the same ELF Build ID, `NEEDED` entries, and load layout;
   the observed byte differences are confined to the RUNPATH string/padding slot,
   changing the absolute old-prefix RUNPATH to `$ORIGIN/../conda_prefix/lib`.
-- The planned launcher uses an unprivileged private user/mount namespace and
+- The accepted launcher uses an unprivileged private user/mount/PID namespace and
   masks `/home/shenwei01/wt_melting_runtime_20260724` inside that namespace.
 - Acceptance requires zero successful old-prefix accesses, zero old-prefix
   execution, zero old-prefix mappings, zero unknown failed probes, and exact
   registered-probe counts under strict tracing.
-- Sequence is fixed: repair/freeze protocol → S1-074 namespace smoke →
-  S1-20260805-113–118 mapped replays. At this document state, neither the smoke
-  nor the six official replays has passed.
+- The fixed sequence completed as protocol/code hardening → managed S1-074
+  namespace smoke (`92e513f`) → preregistration (`9a0fd7d`) → six mapped replays
+  (`8ad4ea8`, `a96896b`, `9800067`, `ce7da88`, `12d2867`, `ce51927`) → accepted
+  analysis (`a01ac70`).
 
 ## Restrictions carried forward
 
-The retained numerical/recovery portion of G0 permits internal S1 analysis, but
-the archive must not be called whole-runtime isolated or hermetic while the
-runtime-isolation subdecision is `paused`. G0 does not grant redistribution rights.
+The retained numerical/recovery portion of G0 permits internal S1 analysis. The
+registered relocated/private-namespace execution profile may now be described
+as whole-runtime old-prefix isolated under protocol R2, but the original archive
+alone must not be called generally hermetic. G0 does not grant redistribution rights.
 The project license and third-party LPP redistribution terms remain unresolved;
 public release is prohibited until those items are accepted. The node01 host also
 cannot currently reach GitHub directly, so the verified Git-bundle relay remains

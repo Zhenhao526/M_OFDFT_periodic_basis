@@ -1,10 +1,11 @@
 # S1-R8-RUNTIME-RELOCATION-R2 六点运行时重定位等价协议
 
-状态：`generator_ready_not_frozen`。本文件名为历史兼容名称；正式协议不是“只改
-MPI 前缀”，而是 **runtime-relocation equivalence**。当前提交没有创建正式
-`config/S1_runtime_relocation_equivalence.json` 或
-`config/S1_runtime_relocation_equivalence_manifest.tsv`。不得手写这两个文件，也
-不得在 074 先行检查通过前启动正式 113–118。
+状态：`closed_accepted`。本文件名为历史兼容名称；正式协议不是“只改 MPI 前缀”，
+而是 **runtime-relocation equivalence**。受管 074 smoke 已提交为 `92e513f`，正式
+config/manifest 已由生成器在 `9a0fd7d` 冻结，S1-113–118 的逐点结果终点为
+`ce51927`，正式分析 `a01ac70` 为 6/6 科学门、6/6 runtime 门、6/6 R8 替换结论
+通过，六点均为 `storage_exact`。这些完成事实不放宽下文任何前置门、失败保全或
+验收规则。
 
 ## 1. 固定对象和六点矩阵
 
@@ -372,3 +373,11 @@ runtime-relocation 语义，不提供旧的宽松协议，也不得生成旧 con
 已由生成器创建并提交；最后一个已提交/已归档的 113–118；逐点 status 与审计原始
 证据；最终 `summary.json`、`points.tsv` 和 README。正式 config 不存在就表示仍处于
 先行检查/冻结前阶段，禁止启动 113–118。
+
+当前接受证据为：074 证据提交 `92e513f`；预注册 `9a0fd7d`；六点提交
+`8ad4ea8`、`a96896b`、`9800067`、`ce7da88`、`12d2867`、`ce51927`；分析
+`analysis/s1/runtime_relocation_equivalence_20260805/` 与提交 `a01ac70`。每个正式
+点恰有 22 个登记的旧前缀 `ENOENT` 探针；成功旧访问/执行/映射、未知失败探针和计数
+错配均为 0。该结论只适用于冻结的 R2、node01 单节点四 rank、登记二进制与私有
+user/mount/PID namespace 执行剖面，不把原 S0 归档本身泛化为任意调用方式下的
+hermetic runtime，也不关闭完整 G1。

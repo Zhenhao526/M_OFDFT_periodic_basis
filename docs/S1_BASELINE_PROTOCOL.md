@@ -188,6 +188,12 @@ experiment IDs before any denser follow-up.
   will not close the density-integral, third-smearing/dense-k label audit,
   second-program, three-layer pseudopotential/KEDF, displacement/strain, or
   0/10 regeneration G1 items.
+- `S1-R8 runtime-relocation closure`, 2026-08-05: the managed 074 smoke and
+  formal S1-113--118 replay completed under protocol R2. All six replay points
+  are `storage_exact`, all six runtime audits are accepted, and replacing the
+  corresponding v100 points preserves all six accepted R8 conclusions. This
+  closes only the registered relocated/private-namespace execution profile;
+  the density-integral and the other five G1 items above remain open.
 
 ## Completed convergence evidence
 

@@ -2,22 +2,22 @@
 
 > 本文件是项目状态的唯一人工入口。任何人接手前先读本文件，再读项目书和当前阶段 README。  
 > 状态词仅使用：`not_started`、`in_progress`、`blocked`、`accepted`、`rejected`、`paused`。  
-> 更新时间：2026-08-05 20:17 CST
-> 文档版本：V2.9
+> 更新时间：2026-08-05 23:44 CST
+> 文档版本：V3.0
 
 ## 0. 十分钟上手摘要
 
 | 项目 | 当前值 |
 |---|---|
-| 当前总状态 | `in_progress`（G0 数值/归档恢复结论保留，runtime-isolation 子项 `paused`；S1-R8 已验收，G1 尚未闭合） |
+| 当前总状态 | `in_progress`（G0 数值/归档恢复结论保留；runtime-isolation 在“重定位 ABACUS + 私有 user/mount/PID namespace + 严格审计”登记范围内 `accepted`；S1-R8 已验收，G1 尚未闭合） |
 | 当前阶段 | S1：平面波 OFDFT/KSDFT 基准闭环 |
 | 当前闸门 | G1，执行中 |
 | 当前负责人 | 远端账户 `shenwei01`；本轮执行与记录：Codex |
 | 当前工作分支 | `main`；本地未跟踪 `tmp/` 属其他 QA 产物，保留未动 |
-| 最近可用提交 | `d28126b`（正式 S1-R8 分析）；其分析硬化提交 `9010eed`，42 点原始结果终点 `300a2aa` |
-| 最近通过的数值 smoke | `S0-20260805-003`：两次 SCF 均收敛，能量差 0.0 meV/atom；该实验不再作为 whole-runtime 隔离证明 |
-| 当前阻塞 | runtime-relocation/namespace 严格隔离协议尚未修复并复演；node01 无第二套独立 OFDFT/KSDFT 程序；许可证与 LPP 条款仍限制发布 |
-| 下一项唯一动作 | 修复并冻结 runtime-relocation equivalence 协议，依次完成 S1-074 namespace smoke 与 S1-113–118 六点复演；复演未通过前不得恢复隔离结论 |
+| 最近可用提交 | `a01ac70`（runtime-relocation 六点正式分析）；预注册 `9a0fd7d`，六点结果终点 `ce51927`，074 证据提交 `92e513f` |
+| 最近通过的数值 smoke | `S1-RUNTIME-SMOKE-20260805-074`：`storage_exact`，五类状态门全部 `accepted`；幂等重验返回 `accepted_committed` |
+| 当前阻塞 | G1 六项尚未形成完整闭环；node01 无第二套独立 OFDFT/KSDFT 程序；许可证与 LPP 条款仍限制发布 |
+| 下一项唯一动作 | 冻结并执行 G1 电子数独立积分审计，覆盖已验收的 Al/Mg 基准结果并要求相对误差 `<1e-10` |
 
 ### 必读文件
 
@@ -89,7 +89,11 @@ cd /home/shenwei01/M_OFDFT_periodic_basis
 - [x] 完成 S1-071 至 112：42/42 数值收敛、6/6 加密曲线严格验收，原始结果终点为 `300a2aa`；
 - [x] 以 `9010eed` 固化分析溯源与严格验收硬化，以 `d28126b` 固化 `analysis/s1/non_equilibrium_convergence_20260805/` 正式分析；
 - [x] 后续 runtime 审计确认原 G0/S1 证据只证明 ABACUS `ldd` 解析，不证明 whole-runtime/hermetic：恢复前缀 `mpirun` 可转调旧前缀 `prterun`，运行探针也出现旧前缀成功访问；
-- [ ] 修复并冻结 runtime-relocation/namespace 协议，完成 S1-074 smoke 及 S1-113–118 六点等价复演；
+- [x] 将 runtime-relocation/namespace 协议硬化至 92/92 单元测试通过，并完整保留三次失败 smoke 档案；
+- [x] 完成受管 074 smoke：提交 `92e513f`，66 个证据文件，能量/压力逐存储位一致，五类状态门全部 `accepted`；
+- [x] 以 `9a0fd7d` 冻结 S1-113–118 config/manifest，SHA-256 分别为 `9130989f...a0a4a7`、`6cdaa3e6...6195c1`；
+- [x] 完成 S1-113–118 六点串行复演：六点逐点 committed validator 通过，结果提交终点 `ce51927`；
+- [x] 以 `a01ac70` 固化正式分析：6/6 科学门、6/6 runtime 审计、6/6 R8 替换结论通过，六点均为 `storage_exact`；
 - [x] 扩大调研至原包 8 篇核心文献、扩展包 13 篇全文/241 页、1 篇网页全文及 20 余篇方法/软件补充证据；
 - [x] 识别 AMD-OFDFT 2014 直接先例，收窄“原子中心密度 + 变分 + Pulay 力”的创新主张；
 - [x] 完成闸门式项目再评估：整体 66/100、S0–S4A 核心 73/100、全范围 S0–S7 约 43/100；
@@ -99,21 +103,21 @@ cd /home/shenwei01/M_OFDFT_periodic_basis
 
 ### 下次开始位置
 
-从 S1 runtime 隔离复核开始，不要重跑 42 点，也不要进入 S2 混合基或 ML：
+从 S1 的下一个 G1 缺口开始；不要重跑已经严格验收的 42 点、074 或 113–118，也不要进入 S2 混合基或 ML：
 
-1. 阅读 `docs/G0_ACCEPTANCE.md` 的 runtime-isolation erratum、`analysis/s1/non_equilibrium_convergence_20260805/summary.json` 与待冻结的 runtime-relocation equivalence 协议；
-2. 先修复协议并在私有 user/mount namespace 内遮蔽旧运行时根目录，以重定位 ABACUS 对 S1-074 做严格 `strace` smoke；旧前缀成功访问、旧前缀执行、旧映射和未知失败探针必须均为 0；
-3. 074 smoke 通过后才冻结配置/manifest，并执行 S1-113–118 六个 v100 映射复演；本版文档记录时二者均未通过；
-4. 六点复演须同时通过 runtime 门、数值差门和替换后六条 R8 曲线复算，随后才可恢复 runtime-isolation 子项；
-5. G1 仍有六项 pending：积分电子数、第三展宽/超密 k 标签审计、独立 OF 交叉代码、KS-NL→KS-L→OF-L 三层验证、位移/应变参考数据、10 例单命令重生；
+1. 阅读 `analysis/s1/runtime_relocation_equivalence_20260805/summary.json`、`docs/G0_ACCEPTANCE.md` 与 `analysis/s1/non_equilibrium_convergence_20260805/summary.json`；
+2. 先冻结电子数独立积分审计的输入范围、解析口径和清单，要求已验收 Al/Mg 基准结果覆盖率 100%、相对误差 `<1e-10`，失败时保留原始密度/日志证据；
+3. 六点结果虽均报告精确名义电子数，但这不替代全范围、独立重算的密度积分证据，因此 G1 该项仍为 pending；
+4. 其余 G1 缺口继续是第三展宽/超密 k 标签审计、独立 OF 交叉代码、KS-NL→KS-L→OF-L 三层验证、位移/应变参考数据和 10 例单命令重生；
+5. runtime-isolation 的 `accepted` 仅适用于已登记的重定位二进制、私有 namespace 和严格审计启动路径；不得把原 S0 归档本身倒推称为天然 hermetic；
 6. 许可证和 LPP 再分发条款继续跟踪。
 
 ## 2. 阶段总览
 
 | 阶段 | 名称 | 状态 | 开始日期 | 结束日期 | 闸门 | 证据链接 | 下一动作 |
 |---|---|---|---|---|---|---|---|
-| S0 | 初始化与复现协议 | `accepted` | 2026-08-05 | 2026-08-05 | G0 | `docs/G0_ACCEPTANCE.md`; `S0-20260805-003` | 数值/归档恢复结论保留；runtime-isolation 子项 `paused` 并由 S1 六点复演复核 |
-| S1 | 平面波基准闭环 | `in_progress` | 2026-08-05 | — | G1 | `analysis/s1/non_equilibrium_convergence_20260805/`; `config/S1_non_equilibrium_convergence.json` | 修复隔离协议→S1-074 smoke→S1-113–118 六点复演 |
+| S0 | 初始化与复现协议 | `accepted` | 2026-08-05 | 2026-08-05 | G0 | `docs/G0_ACCEPTANCE.md`; `analysis/s1/runtime_relocation_equivalence_20260805/` | 数值/归档恢复结论保留；登记的 namespace runtime-isolation 路径已验收，原归档本身不称 hermetic |
+| S1 | 平面波基准闭环 | `in_progress` | 2026-08-05 | — | G1 | `analysis/s1/non_equilibrium_convergence_20260805/`; `analysis/s1/runtime_relocation_equivalence_20260805/` | 冻结并执行电子数独立积分审计 |
 | S2 | 混合密度基表示 | `not_started` | — | — | G2 | — | 等待 G1 |
 | S3 | 固定 KEDF 自洽求解 | `not_started` | — | — | G3 | — | 等待 G2 |
 | S4A | 固定晶胞解析力 | `not_started` | — | — | G4A | — | 等待 G3 |
@@ -138,7 +142,7 @@ cd /home/shenwei01/M_OFDFT_periodic_basis
 - [x] 重复运行能量差 0.0 meV/atom，满足 <0.1 meV/atom；
 - [x] 建立自动测试入口，2/2 单元测试通过；
 - [x] 填写 G0 决策记录：`docs/G0_ACCEPTANCE.md`。
-- [ ] 以 whole-runtime 追踪证明旧前缀成功访问/执行/映射均为 0；原 ABACUS `ldd` 证据不足，该隔离子项当前 `paused`。
+- [x] 以受管 074 与 S1-113–118 whole-runtime 追踪证明登记 namespace 路径中旧前缀成功访问/执行/映射均为 0、未知失败探针为 0；原 ABACUS `ldd` 仍不单独构成该证明。
 
 ### 当前阶段文件
 
@@ -148,12 +152,12 @@ cd /home/shenwei01/M_OFDFT_periodic_basis
 | 扩大可行性再评估 | [综合报告](M_OFDFT_扩大文献调研与可行性再评估_2026-08.md) | 已完成 | 66/100；核心 S0–S4A 为 73/100 |
 | 初次可行性复核 | [初次报告](M_OFDFT_任务书可行性复核.md) | 已完成 | 初次立项依据，保留用于审计演变 |
 | 参考文献证据 | [原包索引](references/M_OFDFT/README.md)；[扩展包索引](references/M_OFDFT_extended/README.md) | 已完成 | 原创研判与索引入库；PDF/全文抽取保留在受控本地包，不公开再分发 |
-| 代码仓库 | `https://github.com/Zhenhao526/M_OFDFT_periodic_basis` | 已同步 | 服务器路径 `/home/shenwei01/M_OFDFT_periodic_basis`；`main` 已提交且干净 |
+| 代码仓库 | `https://github.com/Zhenhao526/M_OFDFT_periodic_basis` | 已建立 | 服务器路径 `/home/shenwei01/M_OFDFT_periodic_basis`；node01 通过校验 bundle 中转，由本地推送并以 `ls-remote` 核验 |
 | 环境锁 | `/home/shenwei01/M_OFDFT_periodic_basis/environment/` | 已建立 | 包清单、CMake、系统快照 |
 | 软件清单 | `/home/shenwei01/M_OFDFT_periodic_basis/manifests/` | 已建立 | 二进制、源码包与 LPP 哈希 |
 | 复现协议 | `/home/shenwei01/M_OFDFT_periodic_basis/docs/S0_REPRODUCIBILITY_PROTOCOL.md` | 已完成 | 固定单位、能量口径、ID、随机种子和格式 |
 | 运行时归档 | `/home/shenwei01/M_OFDFT_runtime_20260805.tar.gz` | 已通过 | 443 MB；SHA-256 `5fbfa016...dad6bdd` |
-| G0 验收 | `/home/shenwei01/M_OFDFT_periodic_basis/docs/G0_ACCEPTANCE.md` | 部分修订 | 数值/归档恢复保留；原 ABACUS `ldd` 证据不支持 whole-runtime/hermetic，隔离子项 `paused` |
+| G0 验收 | `/home/shenwei01/M_OFDFT_periodic_basis/docs/G0_ACCEPTANCE.md` | 已复核 | 数值/归档恢复保留；登记的重定位+namespace 路径隔离 `accepted`，原 S0 归档本身不称 hermetic |
 | smoke test | `/home/shenwei01/M_OFDFT_periodic_basis/runs/S0-20260805-003/` | 数值通过 | 新恢复前缀；单测 2/2；双重复耗时 12.33 秒；不再作为 whole-runtime 隔离证明 |
 
 ## 3A. 当前阶段：S1
@@ -168,9 +172,10 @@ cd /home/shenwei01/M_OFDFT_periodic_basis
 - 当前结果：OFDFT 相对标准展宽 KSDFT 的最大锚定曲线差为 Al 13.064922、Mg 4.819330 meV/atom，为基准诊断，无 G1 通过阈值。
 - 当前结果：S1-R8 在 `d6ffe59` 预注册；S1-071 至 112 已 42/42 收敛，六组比较 6/6 `accepted`；原始结果终点 `300a2aa`、硬化 `9010eed`、正式分析 `d28126b`。
 - 六组正式指标（最大相对能量差 / 最大压力差 / BM3 最大残差，单位 meV/atom / GPa / meV/atom）：Al OF cutoff `0.001538733 / 0.0001703 / 0.017076344`；Al KS cutoff `0.006794400 / 0.0071189 / 0.009295506`；Al KS kmesh `0.392503700 / 0.0307428（诊断） / 0.008623252`；Mg OF cutoff `0.000007179 / 0.0000431 / 0.002466982`；Mg KS cutoff `0.000705450 / 0.0001021 / 0.003863243`；Mg KS kmesh `0.403149550 / 0.0171684（诊断） / 0.004079008`。
+- 当前结果：074 受管 smoke、正式预注册和 S1-113–118 六点复演均已完成；正式分析 `a01ac70` 为 6/6 `storage_exact`、6/6 runtime accepted、6/6 R8 替换结论不变。
 - G1 仍为 `pending`，六项均未闭合：积分电子数；第三展宽/超密 k 的密度、势和导数标签审计；独立 OFDFT 跨代码 EOS/压力；KS-NL→KS-L→OF-L 三层验证；小位移/应变参考密度与能量分量；10 例单命令重生失败率。
-- runtime-isolation 复核：原证据限于 ABACUS `ldd`；whole-runtime 审计发现旧前缀 `prterun` 转调和旧路径成功访问，因此隔离子项 `paused`。当前不得将锁定归档称为 hermetic。
-- 当前唯一动作：修复协议→S1-074 namespace smoke→S1-113–118 六点复演；截至本版三步尚未完成。
+- runtime-isolation 复核：原 `ldd` 外推仍撤回；登记的重定位 ABACUS + 私有 namespace + 严格审计路径已通过 074 和六点正式复演，因此该限定子项 `accepted`。锁定归档本身仍不得称为天然 hermetic。
+- 当前唯一动作：冻结并执行 G1 电子数独立积分审计；不得重跑已经验收的 runtime 六点或进入 S2/ML。
 
 ## 4. 闸门决策记录
 
@@ -184,6 +189,7 @@ cd /home/shenwei01/M_OFDFT_periodic_basis
 | 2026-08-05 | G0 | `paused` | Codex | GitHub 远端已建立并完成 `main`/标签上传；许可证、LPP 再分发和从零安装仍未完成 | `s0-github-sync-20260805` | 保持 S0，不进入 S1 |
 | 2026-08-05 | G0 | `accepted` | Codex | 锁定二进制归档从空目录恢复 11.13 s；恢复加单测/smoke 23.46 s；动态库旧前缀引用 0；重复差 0.0 meV/atom；单测 2/2 | `docs/G0_ACCEPTANCE.md`; `S0-20260805-003` | 允许内部 S1；许可证/LPP 再分发继续限制发布 |
 | 2026-08-05 | G0/runtime-isolation | `paused` | Codex | 原“旧前缀引用 0”仅为 ABACUS `ldd` 解析；whole-runtime 追踪发现恢复 `mpirun` 转调旧前缀 `prterun` 且存在旧路径成功访问 | `docs/G0_ACCEPTANCE.md` | 保留归档恢复与数值观察；修复协议→074 smoke→113–118，未通过前撤回 hermetic 主张 |
+| 2026-08-05 | G0/runtime-isolation | `accepted` | Codex | 074 与 S1-113–118 在登记的重定位+私有 namespace 路径下全部通过；每点成功旧访问/执行/映射、未知探针均为 0，六点数值逐存储位一致 | `analysis/s1/runtime_relocation_equivalence_20260805/`; `a01ac70` | 接受限定部署路径；保留 S0-003 erratum，不把原归档本身称为天然 hermetic |
 
 ## 5. 实验台账
 
@@ -212,7 +218,8 @@ cd /home/shenwei01/M_OFDFT_periodic_basis
 | S1-20260805-028 | 2026-08-05 | S1 | Al KS 28³ 零温能量确认 | `e1b414e` | `inputs/s1/convergence_candidates/al/ksdft/kpoint/k028x028x028/` | `runs/S1-20260805-028/` | 24³→28³：0.822250 meV/atom | 通过，选择 24³ | 单次 |
 | S1-20260805-029–070 | 2026-08-05 | S1 | Al/Mg OFDFT、标准/半展宽 KSDFT 七点 EOS | 逐点提交；分析 `76dbf43` | `config/S1_eos_run_manifest.tsv` | 对应 `runs/` | 42/42 收敛；6/6 BM3；展宽能量/Veq 双门槛通过 | 核心 EOS `accepted`；G1 仍 pending | 42 次 |
 | S1-20260805-071–112 | 2026-08-05 | S1 | Al/Mg OF/KS 下一截断及 KS 下一 k 网格七点复核 | 预注册 `d6ffe59`；raw `300a2aa`；硬化 `9010eed`；分析 `d28126b` | `config/S1_non_equilibrium_run_manifest.tsv` | `runs/S1-20260805-071/`–`runs/S1-20260805-112/`；`analysis/s1/non_equilibrium_convergence_20260805/` | 42/42 收敛；6/6 accepted；六组最大相对能差均通过；cutoff 压力均通过 | S1-R8 `accepted`；G1 六项仍 pending | 42 次 |
-| S1-20260805-113–118（ID 预留） | 2026-08-05 | S1 | 用重定位 ABACUS 与私有 namespace 复演六个 v100 映射点，复核 whole-runtime 隔离及 R8 结论 | 待协议修复后冻结 | `config/S1_runtime_relocation_equivalence.json`（待冻结） | 未生成 | 先通过 S1-074 smoke；旧前缀成功访问/执行/映射和未知探针均须为 0；数值与替换后 R8 门均须通过 | 未开始；不得记为复演通过 | 计划 6 次 |
+| S1-RUNTIME-SMOKE-20260805-074 | 2026-08-05 | S1 | 以 074 冻结输入验证重定位 ABACUS、私有 namespace 与严格 whole-runtime 审计入口 | 执行代码 `22eff38`；证据提交 `92e513f` | `analysis/s1/runtime_relocation_smoke_20260805/summary.json` | `analysis/s1/runtime_relocation_smoke_20260805/run/` | 66 个证据文件；能量/压力 `storage_exact`；五类状态门 accepted；三次历史失败归档保留 | `accepted`；幂等重验 `accepted_committed` | 是 |
+| S1-20260805-113–118 | 2026-08-05 | S1 | 用重定位 ABACUS 与私有 namespace 复演六个 v100 映射点，复核 whole-runtime 隔离及 R8 结论 | 预注册 `9a0fd7d`；逐点 `8ad4ea8`、`a96896b`、`9800067`、`ce7da88`、`12d2867`、`ce51927`；分析 `a01ac70` | `config/S1_runtime_relocation_equivalence.json`; `config/S1_runtime_relocation_equivalence_manifest.tsv` | `runs/S1-20260805-113/`–`runs/S1-20260805-118/`; `analysis/s1/runtime_relocation_equivalence_20260805/` | 6/6 `storage_exact`；6/6 runtime accepted；每点 22 个登记 ENOENT，成功旧访问/执行/映射和未知探针均为 0；R8 替换结论 6/6 不变 | runtime-relocation equivalence `accepted`；G1 仍 pending | 6 次 |
 
 ## 6. 当前指标看板
 
@@ -245,7 +252,8 @@ cd /home/shenwei01/M_OFDFT_periodic_basis
 | Mg KS cutoff R8：最大 ΔE / ΔP / BM3 残差 | 0.000705450 meV/atom / 0.0001021 GPa / 0.003863243 meV/atom | <1 / <0.02 / <1 | 同上 | 通过 |
 | Mg KS kmesh R8：最大 ΔE / ΔP / BM3 残差 | 0.403149550 meV/atom / 0.0171684 GPa（诊断） / 0.004079008 meV/atom | <2 / 诊断 / <1 | 同上 | 通过 |
 | G1 待闭合项 | 0/6 闭合 | 6/6 | `analysis/s1/non_equilibrium_convergence_20260805/summary.json` | `pending` |
-| whole-runtime 旧前缀隔离 | ABACUS `ldd` 映射 0；whole-runtime 追踪发现旧 `prterun` 与旧路径成功访问 | 旧前缀成功访问/执行/映射均为 0，未知探针为 0 | G0 erratum；S1-074/113–118 待执行 | `paused` |
+| runtime-relocation 六点科学/R8 等价 | 6/6 `storage_exact`；R8 替换结论 6/6 不变 | `|dE|<0.1 meV/atom`、`|dP|<0.02 GPa`；6/6 不翻转 | S1-20260805-113–118；`a01ac70` | `accepted` |
+| whole-runtime 旧前缀隔离 | 074 + 六点均为成功旧访问/执行/映射 0、未知探针 0；每点恰有 22 个登记 ENOENT | 同左；登记探针计数必须精确 | `analysis/s1/runtime_relocation_smoke_20260805/`; `analysis/s1/runtime_relocation_equivalence_20260805/` | 限定 namespace 部署路径 `accepted` |
 | 密度投影 L2 | — | 平衡 <1% | — | 未测 |
 | 固定 KEDF 能量差 P95 | — | <10 meV/atom | — | 未测 |
 | 自洽成功率 | — | >95% | — | 未测 |
@@ -266,7 +274,7 @@ cd /home/shenwei01/M_OFDFT_periodic_basis
 | B-004 | 2026-08-05 | 已在全新空目录恢复锁定二进制前缀并完成单测/smoke | S0 | Codex | 结果固定于 `S0-20260805-003` | 否 | `accepted` |
 | B-005 | 2026-08-05 | node01 直连 GitHub HTTPS 超时，不能在计算节点直接推送 | S0–S7 | Codex | 暂用完整 Git bundle 经跳板机传回本机后原子推送；后续可配置可审计的出口代理 | 否 | `paused` |
 | B-006 | 2026-08-05 | node01 未发现第二套独立 OFDFT/KSDFT 程序 | S1 | 待填写 | 评估 DFTpy/Quantum ESPRESSO 的可审计安装或在其他主机交叉核验 | 否 | `in_progress` |
-| B-007 | 2026-08-05 | 原 runtime-isolation 证据只覆盖 ABACUS `ldd`；恢复 `mpirun` 可转调旧前缀 `prterun`，运行中也有旧路径成功访问 | G0/S1 | Codex | 修复并冻结 runtime-relocation/namespace 协议→S1-074 smoke→S1-113–118 六点复演 | 否 | `in_progress` |
+| B-007 | 2026-08-05 | 原 runtime-isolation 证据只覆盖 ABACUS `ldd`；恢复 `mpirun` 可转调旧前缀 `prterun`，运行中也有旧路径成功访问 | G0/S1 | Codex | 已以登记的重定位+私有 namespace 协议完成 074 和六点复演；冻结身份改变时重新打开 | 否 | `accepted` |
 
 ### 活跃风险
 
@@ -278,7 +286,7 @@ cd /home/shenwei01/M_OFDFT_periodic_basis
 | 系数规范不唯一 | 中 | 高 | 同密度不同能量 | 固定最小范数规范、零空间测试 | 未验证 |
 | LPP 不可迁移 | 中 | 高 | EOS/相能系统偏差 | 先 Al/Mg、固定同 LPP 对照 | 未验证 |
 | 金属展宽标签热力学不一致 | 高 | 高 | 标量能量稳定但密度/势随 sigma 改变 | 三宽度或密 k 参考；F/TS/估计量/密度/导数同口径 | S1B 待验证 |
-| 锁定归档并非 whole-runtime hermetic | 已发生 | 高 | ABACUS `ldd` 通过但 MPI/UCX 转调或访问旧前缀 | 重定位二进制；私有 namespace 遮蔽旧根；严格 `strace` 门；六点数值复演 | 隔离子项 `paused` |
+| 锁定归档并非 whole-runtime hermetic | 已发生 | 高 | ABACUS `ldd` 通过但 MPI/UCX 转调或访问旧前缀 | 重定位二进制；私有 namespace 遮蔽旧根；严格 `strace` 门；六点数值复演 | 登记路径已缓解并 accepted；原归档口径限制保留 |
 | ML 离线准确但自洽失败 | 高 | 高 | 优化逃离训练流形 | 导数/轨迹/响应联合训练 | 未启动 |
 | Pulay 导数不连续 | 中 | 高 | FD 无二阶收敛区 | 固定基维数和可微裁剪 | 未启动 |
 
@@ -321,16 +329,17 @@ cd /home/shenwei01/M_OFDFT_periodic_basis
 | 2026-08-05 | D-031 | S1-R8 六条非平衡加密比较判为 `accepted`，但 G1 保持 `pending` | 42/42 收敛、6/6 严格门通过；正式证据链 raw `300a2aa`→硬化 `9010eed`→分析 `d28126b` | 用 V0 单点、拟合平滑或部分曲线替代原始七点门 | 固化六组 cutoff/kmesh 指标；G1 六项缺口均不因 R8 通过而豁免 |
 | 2026-08-05 | D-032 | 对 G0 runtime-isolation 作勘误：撤回 whole-runtime/hermetic 主张，将隔离子项置为 `paused` | 原“旧前缀 0”仅来自 ABACUS `ldd`；后续追踪发现恢复 `mpirun` 转调旧 `prterun` 且存在旧路径成功访问；数值重复性未因此失效 | 继续把库解析报告外推为整个 MPI/UCX 运行链隔离 | 保留锁定归档、哈希、耗时和数值观察；修复协议、074 smoke、113–118 六点复演后再判隔离 |
 | 2026-08-05 | D-033 | runtime 修复采用“仅 RUNPATH 重定位 + 私有 user/mount namespace 遮蔽旧根 + 严格追踪 + 六点映射复演”的分级复核 | 已确认重定位二进制与原二进制 Build ID/`NEEDED`/`LOAD` 一致，差异限于 RUNPATH 字符槽；namespace 可使旧根不可见，但正式 074/六点复演尚未完成 | 仅靠 `LD_LIBRARY_PATH`/`ldd`，或在不遮蔽旧根时把运行成功当隔离成功 | 先修协议，074 smoke 失败只修协议重试；113–118 通过前不得声称修复完成 |
+| 2026-08-05 | D-034 | 接受登记的 runtime-relocation + 私有 namespace 部署路径并关闭六点等价复演；G1 保持 pending | 074 与正式六点均通过全部 runtime 门；六点 `storage_exact`，R8 替换结论 6/6 不变；分析 `a01ac70` 无失败 | 把 S0 `ldd` 结果继续当 whole-runtime 证明，或把六点通过误报为完整 G1 通过 | G0/runtime-isolation 限定子项改为 accepted；下一步转入 G1 电子数独立积分审计 |
 
 ## 9. 最近可用状态
 
 此节必须始终指向一个可运行、可复现的状态；若暂无则明确写“无”。
 
-- 最近可用状态：提交 `d28126b`；包含 S1-R8 正式分析。证据链为预注册 `d6ffe59`、42 点原始结果终点 `300a2aa`、分析/溯源硬化 `9010eed`、正式结果 `d28126b`。
+- 最近可用状态：提交 `a01ac70`；包含 S1 runtime-relocation 六点正式分析。证据链为 074 执行代码 `22eff38`→074 证据 `92e513f`→正式预注册 `9a0fd7d`→六点结果终点 `ce51927`→正式分析 `a01ac70`。
 - 对应环境：`environment/`，ABACUS v3.11.0-beta.5 CPU + OpenMPI 5.0.10 + LibXC 7.0.0。
-- 已通过测试：49/49 单元测试；42/42 S1-R8 数值收敛；6/6 比较 accepted；配置 SHA-256 `17e51166...747482dc`、manifest SHA-256 `7498616f...df940df` 均通过内容校验；S1-R7 结论保持不变。
-- 已知失败/暂停：`S1-20260805-004` 初始严格阈值失败已复核；清单 stdin 缺陷已修复；whole-runtime 审计否定原 hermetic 外推，runtime-isolation 子项 `paused`；S1-074 smoke 和 S1-113–118 均尚未完成；G1 六项仍 pending。
-- 恢复方法：按“最近可运行命令”登录并运行单元测试；先修复 runtime-relocation equivalence 协议，再严格执行 074 namespace smoke；不得直接跳到六点复演或重跑 42 点。
+- 已通过测试：92/92 单元测试；42/42 S1-R8 数值收敛；074 受管 smoke accepted；113–118 六点 committed validator 6/6、科学门 6/6、runtime 门 6/6、R8 替换结论 6/6；正式 config/manifest SHA-256 为 `9130989f...a0a4a7`、`6cdaa3e6...6195c1`。
+- 已知失败/暂停：`S1-20260805-004` 初始严格阈值失败已复核；三次 runtime smoke 失败 attempt 已完整归档且未删除；G1 六项仍 pending；node01 第二程序与公开发布许可仍未闭合。
+- 恢复方法：按“最近可运行命令”登录并运行 92/92 单元测试；对 074 使用相同命令只做 `accepted_committed` 幂等重验，对 113–118 使用 committed validator，不得无理由重算；下一步只执行电子数独立积分审计。
 - 同步方法：node01 执行 `git bundle create ... --all` 并 `git bundle verify`，经跳板机传至本机；三端 SHA-256 一致后，从临时 clone 使用 `git push --atomic origin main --tags`，最后以 `git ls-remote` 核验。
 
 ## 10. 交接说明
@@ -378,6 +387,7 @@ cd /home/shenwei01/M_OFDFT_periodic_basis
 | 2026-08-05 17:40 CST | 扩大文献与可行性复核 | Codex | S1 | `76dbf43`（仅本地文档更新） | 沿用最近 25/25；本轮无新数值运行 | 13 篇/241 页扩展全文精读；项目书 V2.1；新增 G1/S2/S5/S4C 与 surrogate 转向决策；S1-R8 唯一下一动作不变 |
 | 2026-08-05 17:57 CST | S1-R8 预注册 | Codex | S1 | `d6ffe59` | 34/34 单测；42/42 manifest 预检；空结果负路径正确 | 六条七点加密曲线与 S1-071–112 已冻结；下一步远端顺序执行约 2.25 小时 |
 | 2026-08-05 20:17 CST | S1-R8 验收与 runtime 勘误 | Codex | S1 | raw `300a2aa`；硬化 `9010eed`；正式分析 `d28126b` | 49/49 单测；42/42 收敛；6/6 accepted；runtime replay 未执行 | 固化六组指标和 G1 六项 pending；G0 runtime-isolation 子项 `paused`；唯一下一动作是修协议→074 smoke→113–118 |
+| 2026-08-05 23:44 CST | runtime-relocation 六点闭环 | Codex | S1 | 074 `92e513f`；预注册 `9a0fd7d`；六点终点 `ce51927`；分析 `a01ac70` | 92/92 单测；074 accepted；六点 6/6 `storage_exact`、runtime accepted、R8 结论不变 | G0/runtime-isolation 在登记 namespace 路径内 accepted；G1 仍 pending；下一动作是电子数独立积分审计 |
 
 ## 11. 文档变更记录
 
@@ -403,3 +413,4 @@ cd /home/shenwei01/M_OFDFT_periodic_basis
 | 2026-08-05 | V2.7 | Codex | 将 V2.1 项目书、两轮复核及两套原创文献研判整理为可移植仓库文档；PDF、全文抽取和 QA 产物因许可与历史体积不入库 |
 | 2026-08-05 | V2.8 | Codex | 记录 S1-R8 42 点预注册、固定 ID/基线引用、34/34 单测、严格门槛和服务器唯一执行动作 |
 | 2026-08-05 | V2.9 | Codex | 记录 S1-R8 42/42、6/6 accepted 与 `300a2aa`/`9010eed`/`d28126b` 证据链；新增 G0 runtime-isolation 勘误、B-007、D-031–033、六组指标、113–118 预留和严格下一动作；未宣称复演通过 |
+| 2026-08-05 | V3.0 | Codex | 记录 074 受管 smoke、正式预注册、S1-113–118 六点逐点提交与 `a01ac70` 6/6 正式分析；限定接受 namespace runtime-isolation 路径，保留原 S0 hermetic 勘误与 G1 pending；下一动作转为电子数独立积分审计 |
