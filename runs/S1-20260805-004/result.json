@@ -5,8 +5,17 @@
   "electron_count_nominal_relative_error": 0.0,
   "electron_count_reported": 3.0,
   "energy_ev": -57.18340185078486,
+  "energy_ev_kind": "total_energy",
   "energy_ev_per_atom": -57.18340185078486,
+  "entropy_minus_ts_ev": null,
+  "entropy_minus_ts_ev_per_atom": null,
   "failure_reason": "scf_not_converged",
+  "free_energy_ev": null,
+  "free_energy_ev_per_atom": null,
+  "internal_energy_ev": null,
+  "internal_energy_ev_per_atom": null,
   "pressure_gpa": 0.7788049,
-  "pressure_kbar": 7.788049
+  "pressure_kbar": 7.788049,
+  "zero_temp_extrapolated_energy_ev": null,
+  "zero_temp_extrapolated_energy_ev_per_atom": null
 }

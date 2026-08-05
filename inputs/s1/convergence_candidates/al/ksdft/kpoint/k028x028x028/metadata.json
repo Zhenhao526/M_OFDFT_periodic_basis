@@ -6,9 +6,9 @@
   "ecutwfc_ry": 40,
   "expected_electrons": 3,
   "kmesh": [
-    16,
-    16,
-    16
+    28,
+    28,
+    28
   ],
   "material": "al",
   "pseudopotential": "al.gga.psp",

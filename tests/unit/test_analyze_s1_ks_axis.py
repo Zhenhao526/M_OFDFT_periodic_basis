@@ -46,7 +46,7 @@ class AnalyzeS1KsAxisTest(unittest.TestCase):
             {"delta_to_next_mev_per_atom": None, "passes_energy_threshold": None},
         ]
         MODULE.convert_smearing_rows_to_diagnostics(rows)
-        self.assertEqual(rows[0]["absolute_energy_shift_to_next_mev_per_atom"], 4.5)
+        self.assertEqual(rows[0]["zero_temp_energy_shift_to_next_mev_per_atom"], 4.5)
         self.assertNotIn("passes_energy_threshold", rows[0])
 
 

@@ -5,8 +5,17 @@
   "electron_count_nominal_relative_error": 0.0,
   "electron_count_reported": 3.0,
   "energy_ev": -57.21035030674789,
+  "energy_ev_kind": "helmholtz_free_energy",
   "energy_ev_per_atom": -57.21035030674789,
+  "entropy_minus_ts_ev": -0.0116332967,
+  "entropy_minus_ts_ev_per_atom": -0.0116332967,
   "failure_reason": null,
+  "free_energy_ev": -57.21035030674789,
+  "free_energy_ev_per_atom": -57.21035030674789,
+  "internal_energy_ev": -57.19871701004789,
+  "internal_energy_ev_per_atom": -57.19871701004789,
   "pressure_gpa": -0.3233114,
-  "pressure_kbar": -3.233114
+  "pressure_kbar": -3.233114,
+  "zero_temp_extrapolated_energy_ev": -57.2045336584,
+  "zero_temp_extrapolated_energy_ev_per_atom": -57.2045336584
 }

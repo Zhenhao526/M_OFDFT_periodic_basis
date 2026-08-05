@@ -1,7 +1,8 @@
 {
   "axis": "kpoint",
-  "energy_prescreen_passed": true,
+  "diagnostic_complete": null,
   "failed_attempts": 0,
+  "metric_interpretation": "adjacent_zero_temp_extrapolated_energy_convergence",
   "passed": true,
   "pending_acceptance": [],
   "recommended_value": [
@@ -15,21 +16,26 @@
         {
           "code_commit": "e79489ad2e95f4c61868b7deb431b1cf22e9d4c3",
           "converged": true,
-          "energy_ev_per_atom": -24.656644618599938,
+          "energy_ev_per_atom": -24.64959605545,
+          "energy_observable": "zero_temp_extrapolated_energy",
           "experiment_id": "S1-20260805-020",
           "failure_reason": null,
+          "free_energy_ev_per_atom": -24.656644618599938,
           "pressure_gpa": -2.9972129
         }
       ],
       "chosen": {
         "code_commit": "e79489ad2e95f4c61868b7deb431b1cf22e9d4c3",
         "converged": true,
-        "energy_ev_per_atom": -24.656644618599938,
+        "energy_ev_per_atom": -24.64959605545,
+        "energy_observable": "zero_temp_extrapolated_energy",
         "experiment_id": "S1-20260805-020",
         "failure_reason": null,
+        "free_energy_ev_per_atom": -24.656644618599938,
         "pressure_gpa": -2.9972129
       },
-      "delta_to_next_mev_per_atom": 0.22566465666784552,
+      "delta_to_next_mev_per_atom": 0.8132811500018988,
+      "free_energy_delta_to_next_mev_per_atom": 0.22566465666784552,
       "passes_all_denser_steps": false,
       "passes_energy_threshold": true,
       "value": [
@@ -43,21 +49,26 @@
         {
           "code_commit": "acff48ef8660f10a0b6906e50506640e4c9ff85c",
           "converged": true,
-          "energy_ev_per_atom": -24.65641895394327,
+          "energy_ev_per_atom": -24.6487827743,
+          "energy_observable": "zero_temp_extrapolated_energy",
           "experiment_id": "S1-20260805-021",
           "failure_reason": null,
+          "free_energy_ev_per_atom": -24.65641895394327,
           "pressure_gpa": -2.9370424
         }
       ],
       "chosen": {
         "code_commit": "acff48ef8660f10a0b6906e50506640e4c9ff85c",
         "converged": true,
-        "energy_ev_per_atom": -24.65641895394327,
+        "energy_ev_per_atom": -24.6487827743,
+        "energy_observable": "zero_temp_extrapolated_energy",
         "experiment_id": "S1-20260805-021",
         "failure_reason": null,
+        "free_energy_ev_per_atom": -24.65641895394327,
         "pressure_gpa": -2.9370424
       },
-      "delta_to_next_mev_per_atom": 2.035275826496985,
+      "delta_to_next_mev_per_atom": 3.1742262000022947,
+      "free_energy_delta_to_next_mev_per_atom": 2.035275826496985,
       "passes_all_denser_steps": false,
       "passes_energy_threshold": false,
       "value": [
@@ -71,21 +82,26 @@
         {
           "code_commit": "3094e6e1b5f0156228375b968b8f2c2d839b21d1",
           "converged": true,
-          "energy_ev_per_atom": -24.658454229769767,
+          "energy_ev_per_atom": -24.6519570005,
+          "energy_observable": "zero_temp_extrapolated_energy",
           "experiment_id": "S1-20260805-022",
           "failure_reason": null,
+          "free_energy_ev_per_atom": -24.658454229769767,
           "pressure_gpa": -2.9538810000000004
         }
       ],
       "chosen": {
         "code_commit": "3094e6e1b5f0156228375b968b8f2c2d839b21d1",
         "converged": true,
-        "energy_ev_per_atom": -24.658454229769767,
+        "energy_ev_per_atom": -24.6519570005,
+        "energy_observable": "zero_temp_extrapolated_energy",
         "experiment_id": "S1-20260805-022",
         "failure_reason": null,
+        "free_energy_ev_per_atom": -24.658454229769767,
         "pressure_gpa": -2.9538810000000004
       },
-      "delta_to_next_mev_per_atom": 0.059513343629191695,
+      "delta_to_next_mev_per_atom": 0.101673649997025,
+      "free_energy_delta_to_next_mev_per_atom": 0.059513343629191695,
       "passes_all_denser_steps": true,
       "passes_energy_threshold": true,
       "value": [
@@ -99,21 +115,26 @@
         {
           "code_commit": "ccde7c381fbf2779240fb0b3bc3bcfe181ad6acc",
           "converged": true,
-          "energy_ev_per_atom": -24.658513743113396,
+          "energy_ev_per_atom": -24.65205867415,
+          "energy_observable": "zero_temp_extrapolated_energy",
           "experiment_id": "S1-20260805-023",
           "failure_reason": null,
+          "free_energy_ev_per_atom": -24.658513743113396,
           "pressure_gpa": -2.9656466000000004
         }
       ],
       "chosen": {
         "code_commit": "ccde7c381fbf2779240fb0b3bc3bcfe181ad6acc",
         "converged": true,
-        "energy_ev_per_atom": -24.658513743113396,
+        "energy_ev_per_atom": -24.65205867415,
+        "energy_observable": "zero_temp_extrapolated_energy",
         "experiment_id": "S1-20260805-023",
         "failure_reason": null,
+        "free_energy_ev_per_atom": -24.658513743113396,
         "pressure_gpa": -2.9656466000000004
       },
       "delta_to_next_mev_per_atom": null,
+      "free_energy_delta_to_next_mev_per_atom": null,
       "passes_all_denser_steps": null,
       "passes_energy_threshold": null,
       "value": [
@@ -124,6 +145,6 @@
     }
   ],
   "thresholds": {
-    "energy_mev_per_atom": 2.0
+    "relative_energy_mev_per_atom": 2.0
   }
 }

@@ -22,11 +22,18 @@ def main() -> int:
             (run_directory / "experiment_metadata.json").read_text(encoding="utf-8")
         )
         cutoff = float(input_metadata["ecutwfc_ry"])
+        if input_metadata["solver"] == "ksdft":
+            energy_ev_per_atom = result["zero_temp_extrapolated_energy_ev_per_atom"]
+            energy_observable = "zero_temp_extrapolated_energy"
+        else:
+            energy_ev_per_atom = result["energy_ev_per_atom"]
+            energy_observable = "total_energy"
         attempts_by_cutoff[cutoff].append(
             {
                 "code_commit": experiment_metadata["code_commit"],
                 "converged": bool(result["converged"]),
-                "energy_ev_per_atom": result["energy_ev_per_atom"],
+                "energy_ev_per_atom": energy_ev_per_atom,
+                "energy_observable": energy_observable,
                 "experiment_id": run_directory.name,
                 "failure_reason": result.get("failure_reason"),
                 "pressure_gpa": result["pressure_gpa"],

@@ -1,7 +1,7 @@
 {
   "atom_count": 2,
   "candidate_status": "candidate_not_converged",
-  "config_sha256": "1f9a181cb95c70f230d674207d3aa4645849f64693c6895225cdfee091d886cb",
+  "config_sha256": "322fa4e814272d815c939f729e1ad3f632ccb303fa362b893317eb47053ea699",
   "ecutrho_ry": 240,
   "ecutwfc_ry": 60,
   "expected_electrons": 4,

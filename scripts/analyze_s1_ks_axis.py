@@ -32,7 +32,7 @@ def mark_tail_stability(rows: list[dict]) -> None:
 
 def convert_smearing_rows_to_diagnostics(rows: list[dict]) -> None:
     for row in rows:
-        row["absolute_energy_shift_to_next_mev_per_atom"] = row.pop(
+        row["zero_temp_energy_shift_to_next_mev_per_atom"] = row.pop(
             "delta_to_next_mev_per_atom"
         )
         row.pop("passes_energy_threshold")
@@ -59,7 +59,9 @@ def main() -> int:
             {
                 "code_commit": experiment["code_commit"],
                 "converged": bool(result["converged"]),
-                "energy_ev_per_atom": result["energy_ev_per_atom"],
+                "energy_ev_per_atom": result["zero_temp_extrapolated_energy_ev_per_atom"],
+                "energy_observable": "zero_temp_extrapolated_energy",
+                "free_energy_ev_per_atom": result["free_energy_ev_per_atom"],
                 "experiment_id": run_directory.name,
                 "failure_reason": result.get("failure_reason"),
                 "pressure_gpa": result["pressure_gpa"],
@@ -80,11 +82,15 @@ def main() -> int:
         if index == len(rows) - 1:
             row["delta_to_next_mev_per_atom"] = None
             row["passes_energy_threshold"] = None
+            row["free_energy_delta_to_next_mev_per_atom"] = None
             continue
         current = row["chosen"]
         following = rows[index + 1]["chosen"]
         delta = abs(current["energy_ev_per_atom"] - following["energy_ev_per_atom"]) * 1000.0
         row["delta_to_next_mev_per_atom"] = delta
+        row["free_energy_delta_to_next_mev_per_atom"] = abs(
+            current["free_energy_ev_per_atom"] - following["free_energy_ev_per_atom"]
+        ) * 1000.0
         row["passes_energy_threshold"] = (
             current["converged"] and following["converged"] and delta < 2.0
         )
@@ -97,7 +103,7 @@ def main() -> int:
         passed = recommended is not None
         pending = []
         diagnostic_complete = None
-        metric_interpretation = "adjacent_relative_energy_convergence"
+        metric_interpretation = "adjacent_zero_temp_extrapolated_energy_convergence"
     else:
         convert_smearing_rows_to_diagnostics(rows)
         recommended = None
@@ -107,7 +113,7 @@ def main() -> int:
             "equilibrium_volume_change_below_0.2_percent",
         ]
         diagnostic_complete = len(rows) >= 2 and all(row["chosen"]["converged"] for row in rows)
-        metric_interpretation = "single_volume_absolute_energy_shift_not_acceptance_metric"
+        metric_interpretation = "single_volume_zero_temp_and_free_energy_shifts_not_eos_acceptance"
 
     payload = {
         "axis": args.axis,
@@ -143,7 +149,7 @@ def main() -> int:
     else:
         lines = [
             "value\texperiment_id\tconverged\tenergy_ev_per_atom\tpressure_gpa\t"
-            "absolute_energy_shift_to_next_mev_per_atom"
+            "zero_temp_energy_shift_to_next_mev_per_atom\tfree_energy_shift_to_next_mev_per_atom"
         ]
     for row in rows:
         chosen = row["chosen"]
@@ -162,7 +168,10 @@ def main() -> int:
                 row["passes_all_denser_steps"],
             )
         else:
-            values = common + (row["absolute_energy_shift_to_next_mev_per_atom"],)
+            values = common + (
+                row["zero_temp_energy_shift_to_next_mev_per_atom"],
+                row["free_energy_delta_to_next_mev_per_atom"],
+            )
         lines.append("\t".join(str(item) for item in values))
     (args.output_directory / "summary.tsv").write_text("\n".join(lines) + "\n", encoding="utf-8")
     print(json.dumps(payload, indent=2, sort_keys=True))

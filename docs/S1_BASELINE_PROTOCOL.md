@@ -22,7 +22,7 @@ points for convergence scans, not accepted production parameters.
 |---|---|---|---|---|
 | Al | WT-OFDFT | 20, 30, 40, 60 | Gamma | n/a |
 | Mg | WT-OFDFT | 30, 40, 60, 80 | Gamma | n/a |
-| Al | KSDFT | 40, 60, 80 | 12³, 16³, 20³, 24³ | 0.00734986, 0.00367493 |
+| Al | KSDFT | 40, 60, 80 | 12³, 16³, 20³, 24³, 28³ | 0.00734986, 0.00367493 |
 | Mg | KSDFT | 40, 60, 80 | 12x12x8, 16x16x10, 20x20x12, 24x24x16 | 0.00734986, 0.00367493 |
 
 For each scan, vary one axis at a time at `V/V0 = 1.00`. A setting is accepted
@@ -92,6 +92,14 @@ S2 must not start before every G1 acceptance item has evidence.
   20x20x12 for Mg. These meshes replaced the initial 16³ and 16x16x10
   references before generating smearing inputs. G1 remains open because the
   smearing equilibrium-volume check and EOS are not complete.
+- `S1-R6`, 2026-08-05: source and output audit established that
+  `!FINAL_ETOT_IS` is the finite-smearing Helmholtz free energy, while ABACUS
+  separately reports `E_KS(sigma->0)`. The parser now preserves free energy,
+  `-TS`, internal energy, and the zero-temperature extrapolated energy. The
+  latter is frozen as the primary 0 K EOS observable. Re-evaluating k-point
+  data with this observable gives 2.024876 meV/atom for Al 20³→24³, just above
+  the strict `<2` gate, so the prior Al recommendation is reopened and 28³ is
+  added before EOS. Mg remains tail-stable at 20x20x12.
 
 ## Completed convergence evidence
 
@@ -149,21 +157,24 @@ energy and pressure thresholds and is the reference for the Mg k-point scan.
 
 | Mesh | Experiment | Delta to next (meV/atom) | Tail stable |
 |---|---|---:|---|
-| 12x12x12 | `S1-20260805-016` | 3.662659 | no |
-| 16x16x16 | `S1-20260805-017` | 4.432064 | no |
-| 20x20x20 | `S1-20260805-018` | 1.377592 | yes |
-| 24x24x24 | `S1-20260805-019` | — | confirmation |
+| 12x12x12 | `S1-20260805-016` | 3.393612 | no |
+| 16x16x16 | `S1-20260805-017` | 5.082681 | no |
+| 20x20x20 | `S1-20260805-018` | 2.024876 | no |
+| 24x24x24 | `S1-20260805-019` | — | pending 28³ confirmation |
+| 28x28x28 | planned | — | not run |
 
-The original three-mesh plan failed. After the committed S1-R3 extension,
-20x20x20 is the first mesh whose complete sampled denser tail passes.
+The original three-mesh plan failed. S1-R3 initially accepted 20x20x20 using
+the finite-smearing free energy. S1-R6 freezes the zero-temperature
+extrapolated energy for 0 K work; under that observable 20³→24³ narrowly fails,
+so no Al mesh is currently accepted and 28³ must be run before EOS.
 
 ### Mg KSDFT k-point scan at `V/V0 = 1.00`
 
 | Mesh | Experiment | Delta to next (meV/atom) | Tail stable |
 |---|---|---:|---|
-| 12x12x8 | `S1-20260805-020` | 0.225665 | no |
-| 16x16x10 | `S1-20260805-021` | 2.035276 | no |
-| 20x20x12 | `S1-20260805-022` | 0.059513 | yes |
+| 12x12x8 | `S1-20260805-020` | 0.813281 | no |
+| 16x16x10 | `S1-20260805-021` | 3.174226 | no |
+| 20x20x12 | `S1-20260805-022` | 0.101674 | yes |
 | 24x24x16 | `S1-20260805-023` | — | confirmation |
 
 The isolated first-pair pass is rejected by S1-R4. The accepted V0 reference
@@ -171,13 +182,13 @@ for the Mg smearing scan is 20x20x12.
 
 ### KSDFT smearing diagnostics at `V/V0 = 1.00`
 
-| Material | Standard sigma experiment | Half sigma experiment | Absolute energy shift (meV/atom) | Diagnostic complete | G1 accepted |
-|---|---|---|---:|---|---|
-| Al | `S1-20260805-024` | `S1-20260805-025` | 4.634969 | yes | no, EOS pending |
-| Mg | `S1-20260805-026` | `S1-20260805-027` | 4.824088 | yes | no, EOS pending |
+| Material | Standard sigma experiment | Half sigma experiment | Zero-T shift (meV/atom) | Free-energy shift (meV/atom) | Diagnostic complete | G1 accepted |
+|---|---|---|---:|---:|---|---|
+| Al | `S1-20260805-024` | `S1-20260805-025` | 0.000889 | 4.634969 | yes | no, EOS pending |
+| Mg | `S1-20260805-026` | `S1-20260805-027` | 0.082773 | 4.824088 | yes | no, EOS pending |
 
 All four calculations converged and reported the nominal electron count. The
-absolute shifts above are deliberately not compared with the `<2 meV/atom`
-relative-energy gate: the gate applies after subtracting a common EOS reference
-within each sigma series. Both sigma values must therefore be carried into the
-EOS step for final smearing acceptance.
+free-energy and zero-temperature absolute shifts above are deliberately not
+compared with the `<2 meV/atom` relative-energy gate: the gate applies after
+subtracting the common `V/V0=1.00` reference within each sigma series. Both
+sigma values must therefore be carried into the EOS step for final acceptance.

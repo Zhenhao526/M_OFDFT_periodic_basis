@@ -40,6 +40,38 @@ Autoset the number of electrons = 3
         self.assertFalse(result["converged"])
         self.assertEqual(result["failure_reason"], "scf_not_converged")
 
+    def test_parse_ks_thermodynamic_energies(self) -> None:
+        text = """
+Autoset the number of electrons = 3
+ E_KS(sigma->0) -4.2038311717 -57.1960573656
+ E_entropy(-TS) -0.0009111209 -0.0123964355
+ #SCF IS CONVERGED#
+ #TOTAL-PRESSURE# (EXCLUDE KINETIC PART OF IONS): -0.9 kbar
+ !FINAL_ETOT_IS -57.2022555834 eV
+"""
+        result = MODULE.parse_log(
+            text, expected_electrons=3.0, atom_count=1, solver="ksdft"
+        )
+        self.assertEqual(result["energy_ev_kind"], "helmholtz_free_energy")
+        self.assertAlmostEqual(result["free_energy_ev"], -57.2022555834)
+        self.assertAlmostEqual(
+            result["zero_temp_extrapolated_energy_ev"], -57.1960573656
+        )
+        self.assertAlmostEqual(result["entropy_minus_ts_ev"], -0.0123964355)
+        self.assertAlmostEqual(result["internal_energy_ev"], -57.1898591479)
+
+    def test_ks_requires_zero_temperature_markers(self) -> None:
+        text = """
+Autoset the number of electrons = 3
+ #SCF IS CONVERGED#
+ #TOTAL-PRESSURE# (EXCLUDE KINETIC PART OF IONS): 0.0 kbar
+ !FINAL_ETOT_IS -57.2 eV
+"""
+        with self.assertRaisesRegex(ValueError, "zero-temperature"):
+            MODULE.parse_log(
+                text, expected_electrons=3.0, atom_count=1, solver="ksdft"
+            )
+
 
 if __name__ == "__main__":
     unittest.main()
