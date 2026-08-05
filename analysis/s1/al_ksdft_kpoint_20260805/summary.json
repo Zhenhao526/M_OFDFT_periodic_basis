@@ -3,9 +3,13 @@
   "diagnostic_complete": null,
   "failed_attempts": 0,
   "metric_interpretation": "adjacent_zero_temp_extrapolated_energy_convergence",
-  "passed": false,
+  "passed": true,
   "pending_acceptance": [],
-  "recommended_value": null,
+  "recommended_value": [
+    24,
+    24,
+    24
+  ],
   "rows": [
     {
       "attempts": [
@@ -129,14 +133,47 @@
         "free_energy_ev_per_atom": -57.20087799095041,
         "pressure_gpa": -0.1202419
       },
+      "delta_to_next_mev_per_atom": 0.8222499999988031,
+      "free_energy_delta_to_next_mev_per_atom": 0.6380322858206,
+      "passes_all_denser_steps": true,
+      "passes_energy_threshold": true,
+      "value": [
+        24,
+        24,
+        24
+      ]
+    },
+    {
+      "attempts": [
+        {
+          "code_commit": "e1b414edaec25ae772dc6d614d5c0e4054ed7531",
+          "converged": true,
+          "energy_ev_per_atom": -57.1948547395,
+          "energy_observable": "zero_temp_extrapolated_energy",
+          "experiment_id": "S1-20260805-028",
+          "failure_reason": null,
+          "free_energy_ev_per_atom": -57.20151602323623,
+          "pressure_gpa": -0.1450817
+        }
+      ],
+      "chosen": {
+        "code_commit": "e1b414edaec25ae772dc6d614d5c0e4054ed7531",
+        "converged": true,
+        "energy_ev_per_atom": -57.1948547395,
+        "energy_observable": "zero_temp_extrapolated_energy",
+        "experiment_id": "S1-20260805-028",
+        "failure_reason": null,
+        "free_energy_ev_per_atom": -57.20151602323623,
+        "pressure_gpa": -0.1450817
+      },
       "delta_to_next_mev_per_atom": null,
       "free_energy_delta_to_next_mev_per_atom": null,
       "passes_all_denser_steps": null,
       "passes_energy_threshold": null,
       "value": [
-        24,
-        24,
-        24
+        28,
+        28,
+        28
       ]
     }
   ],
