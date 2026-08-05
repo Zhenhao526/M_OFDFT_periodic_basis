@@ -162,6 +162,46 @@ def compare_sigma_series(
     }
 
 
+def compare_baseline_series(
+    ofdft: list[dict],
+    ksdft: list[dict],
+    ofdft_fit: dict,
+    ksdft_fit: dict,
+) -> dict:
+    ofdft_by_ratio = {round(float(point["volume_ratio"]), 12): point for point in ofdft}
+    ksdft_by_ratio = {round(float(point["volume_ratio"]), 12): point for point in ksdft}
+    if set(ofdft_by_ratio) != set(ksdft_by_ratio) or 1.0 not in ofdft_by_ratio:
+        return {"status": "indeterminate", "failure_reason": "mismatched_ratios_or_missing_v100"}
+    ofdft_reference = ofdft_by_ratio[1.0]["energy_ev_per_atom"]
+    ksdft_reference = ksdft_by_ratio[1.0]["energy_ev_per_atom"]
+    rows = []
+    for ratio in sorted(ofdft_by_ratio):
+        ofdft_relative = (ofdft_by_ratio[ratio]["energy_ev_per_atom"] - ofdft_reference) * 1000.0
+        ksdft_relative = (ksdft_by_ratio[ratio]["energy_ev_per_atom"] - ksdft_reference) * 1000.0
+        rows.append(
+            {
+                "volume_ratio": ratio,
+                "ofdft_relative_energy_mev_per_atom": ofdft_relative,
+                "ksdft_relative_energy_mev_per_atom": ksdft_relative,
+                "ofdft_minus_ksdft_mev_per_atom": ofdft_relative - ksdft_relative,
+            }
+        )
+    ofdft_v0 = ofdft_fit["v0_angstrom3_per_atom"]
+    ksdft_v0 = ksdft_fit["v0_angstrom3_per_atom"]
+    ofdft_b0 = ofdft_fit["b0_gpa"]
+    ksdft_b0 = ksdft_fit["b0_gpa"]
+    return {
+        "status": "diagnostic",
+        "acceptance_role": "reference_baseline_without_G1_threshold",
+        "max_abs_relative_energy_difference_mev_per_atom": max(
+            abs(row["ofdft_minus_ksdft_mev_per_atom"]) for row in rows
+        ),
+        "equilibrium_volume_signed_difference_percent": (ofdft_v0 / ksdft_v0 - 1.0) * 100.0,
+        "bulk_modulus_signed_difference_percent": (ofdft_b0 / ksdft_b0 - 1.0) * 100.0,
+        "rows": rows,
+    }
+
+
 def _energy_for_point(metadata: dict, result: dict) -> float:
     if metadata["solver"] == "ksdft":
         value = result.get("zero_temp_extrapolated_energy_ev_per_atom")
@@ -400,6 +440,21 @@ def main() -> int:
         if comparison["status"] != "accepted":
             global_failures.append(f"{material}: sigma comparison {comparison['status']}")
 
+    baseline_comparisons = {}
+    for material in sorted(config["materials"]):
+        ofdft = series_payload[f"{material}/ofdft"]
+        standard = series_payload[f"{material}/ksdft_standard"]
+        if ofdft["status"] != "accepted" or standard["status"] != "accepted":
+            baseline_comparison = {
+                "status": "indeterminate",
+                "failure_reason": "invalid_ofdft_or_ksdft_series",
+            }
+        else:
+            baseline_comparison = compare_baseline_series(
+                ofdft["points"], standard["points"], ofdft["fit"], standard["fit"]
+            )
+        baseline_comparisons[material] = baseline_comparison
+
     complete_count = sum(
         payload["status"] == "accepted" for payload in series_payload.values()
     )
@@ -427,6 +482,7 @@ def main() -> int:
             ),
             "input_config_sha256_values": input_config_digests,
         },
+        "baseline_comparisons": baseline_comparisons,
         "core_eos_status": core_status,
         "expected_calculations": 42,
         "selected_calculations": len(selected),

@@ -82,6 +82,32 @@ class AnalyzeS1EosTest(unittest.TestCase):
         self.assertTrue(diagnostic["discrete_minimum_at_sampled_endpoint"])
         self.assertEqual(diagnostic["acceptance_role"], "diagnostic_only")
 
+    def test_baseline_comparison_reports_shape_not_constant_offset(self) -> None:
+        ratios = [0.9, 1.0, 1.1]
+        ksdft = [
+            {"volume_ratio": ratio, "energy_ev_per_atom": (ratio - 1.0) ** 2}
+            for ratio in ratios
+        ]
+        ofdft = [
+            {"volume_ratio": ratio, "energy_ev_per_atom": (ratio - 1.0) ** 2 + 2.0}
+            for ratio in ratios
+        ]
+        ksdft_fit = {"v0_angstrom3_per_atom": 16.0, "b0_gpa": 80.0}
+        ofdft_fit = {"v0_angstrom3_per_atom": 16.16, "b0_gpa": 76.0}
+        comparison = MODULE.compare_baseline_series(
+            ofdft, ksdft, ofdft_fit, ksdft_fit
+        )
+        self.assertEqual(comparison["status"], "diagnostic")
+        self.assertAlmostEqual(
+            comparison["max_abs_relative_energy_difference_mev_per_atom"], 0.0
+        )
+        self.assertAlmostEqual(
+            comparison["equilibrium_volume_signed_difference_percent"], 1.0
+        )
+        self.assertAlmostEqual(
+            comparison["bulk_modulus_signed_difference_percent"], -5.0
+        )
+
 
 if __name__ == "__main__":
     unittest.main()
