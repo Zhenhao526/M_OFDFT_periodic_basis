@@ -22,7 +22,7 @@ points for convergence scans, not accepted production parameters.
 |---|---|---|---|---|
 | Al | WT-OFDFT | 20, 30, 40, 60 | Gamma | n/a |
 | Mg | WT-OFDFT | 30, 40, 60, 80 | Gamma | n/a |
-| Al | KSDFT | 40, 60, 80 | 12³, 16³, 20³ | 0.00734986, 0.00367493 |
+| Al | KSDFT | 40, 60, 80 | 12³, 16³, 20³, 24³ | 0.00734986, 0.00367493 |
 | Mg | KSDFT | 40, 60, 80 | 12x12x8, 16x16x10, 20x20x12 | 0.00734986, 0.00367493 |
 
 For each scan, vary one axis at a time at `V/V0 = 1.00`. A setting is accepted
@@ -76,6 +76,11 @@ S2 must not start before every G1 acceptance item has evidence.
 - The two-point smearing scan at `V/V0=1.00` is an energy pre-screen only. It
   cannot establish the required `<0.2%` equilibrium-volume change; full
   smearing acceptance remains pending until EOS fits exist at both sigmas.
+- `S1-R3`, 2026-08-05: the planned Al 12³/16³/20³ k-point scan produced
+  adjacent energy changes of 3.662659 and 4.432064 meV/atom, so no pair met
+  the `<2 meV/atom` gate. The failed gate is retained in
+  `analysis/s1/al_ksdft_kpoint_20260805/`; 24³ was added as the next denser
+  confirmation point before any further calculation.
 
 ## Completed convergence evidence
 
