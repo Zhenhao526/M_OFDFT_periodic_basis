@@ -1,0 +1,108 @@
+
+                     ▄████▄ █████▄ ▄████▄ ▄█████ ██  ██ ▄█████ 
+                     ██▄▄██ ██▄▄██ ██▄▄██ ██     ██  ██ ▀▀▀▄▄▄ 
+                     ██  ██ ██▄▄█▀ ██  ██ ▀█████ ▀████▀ █████▀ 
+
+                                                                                     
+                                v3.11.0-beta.5
+
+               Atomic-orbital Based Ab-initio Computation at UStc                    
+
+                     Website: http://abacus.ustc.edu.cn/                             
+               Documentation: https://abacus.deepmodeling.com/                       
+                  Repository: https://github.com/abacusmodeling/abacus-develop       
+                              https://github.com/deepmodeling/abacus-develop         
+                      Commit: unknown
+
+ Wed Aug  5 16:52:26 2026
+ MAKE THE DIR         : OUT.s1_mg_v097_ofdft/
+ RUNNING WITH DEVICE  : CPU / Intel(R) Xeon(R) Platinum 8368Q CPU @ 2.60GHz (x2)
+ NAME OF ELEMENT      : Mg
+ DFT FUNC. (PSEUDO)   : PZ
+ DFT FUNC. (SET TO)   : XC_LDA_X+XC_LDA_C_PZ
+ MAKE SURE THIS DFT FUNCTIONAL IS WHAT YOU NEED
+ UNIFORM GRID DIM     : 24 * 24 * 36
+ UNIFORM GRID DIM(BIG): 24 * 24 * 36
+ DONE(0.049774   SEC) : SETUP UNITCELL
+ DONE(0.0499665  SEC) : INIT K-POINTS
+ ----------------------------------------------------------------
+ Self-consistent calculations for electrons
+ ----------------------------------------------------------------
+ SPIN    KPOINTS         PROCESSES   THREADS/PROC  THREADS/TOTAL 
+ 1       1               4           1             4             
+ ----------------------------------------------------------------
+ Use plane wave basis
+ ----------------------------------------------------------------
+ ELEMENT NATOM       
+ Mg      2           
+ ----------------------------------------------------------------
+ Initial plane wave basis and FFT box
+ ----------------------------------------------------------------
+ DONE(0.0507412  SEC) : SETUP UNITCELL
+ START CHARGE         : ATOMIC
+ DONE(0.115959   SEC) : LOCAL POTENTIAL
+ DONE(0.117112   SEC) : INIT POTENTIAL
+ DONE(0.117188   SEC) : INIT KEDF
+ DONE(0.117196   SEC) : INIT OPTIMIZATION
+ DONE(0.117207   SEC) : INIT PHI
+
+ ================================================================
+ SELF-CONSISTENT: 
+ ================================================================
+ ============================= Running OFDFT ==============================
+ ITER       ETOT/eV           EDIFF/eV        EFERMI/eV    POTNORM   TIME/s
+ TN0     -4.66461064e+01   -4.66461064e+01   4.2067e+00   1.2383e-01   0.00  
+ TN1     -4.69771221e+01   -3.31015696e-01   4.1161e+00   1.5496e-01   0.06  
+ TN2     -4.92466332e+01   -2.26951109e+00   3.5226e+00   5.9608e-02   0.06  
+ TN3     -4.92914507e+01   -4.48175477e-02   3.5114e+00   1.0307e-02   0.04  
+ TN4     -4.92931082e+01   -1.65747898e-03   3.5116e+00   1.9715e-03   0.05  
+ TN5     -4.92931830e+01   -7.48622573e-05   3.5114e+00   7.2868e-04   0.05  
+ TN6     -4.92931959e+01   -1.28780066e-05   3.5114e+00   1.1774e-04   0.07  
+ TN7     -4.92931962e+01   -2.80037118e-07   3.5114e+00   3.7382e-05   0.04  
+ TN8     -4.92931962e+01   -3.62620521e-08   3.5114e+00   2.0507e-05   0.04  
+ TN9     -4.92931963e+01   -1.20837677e-08   3.5114e+00   3.4438e-06   0.07  
+ TN10    -4.92931963e+01   -2.65479709e-10   3.5114e+00   1.2104e-06   0.05  
+ TN11    -4.92931963e+01   -2.51111491e-11   3.5114e+00   3.2751e-07   0.04  
+ ----------------------------------------------------------------
+              Stress_x             Stress_y             Stress_z 
+ ----------------------------------------------------------------
+        -18.8741937444        -0.0000002232         0.0000000057 
+         -0.0000002232       -18.8741940021         0.0000000098 
+          0.0000000057         0.0000000098       -16.2550289647 
+ ----------------------------------------------------------------
+ TOTAL-PRESSURE (EXCLUDE KINETIC PART OF IONS): -18.001139 kbar
+
+ TIME STATISTICS
+-----------------------------------------------------------------------
+     CLASS_NAME             NAME         TIME/s  CALLS   AVG/s  PER/%  
+-----------------------------------------------------------------------
+                     total               0.78   17       0.05   100.00 
+ Driver              atomic_world        0.78   1        0.78   100.00 
+ Driver              reading             0.01   1        0.01   1.19   
+ Charge              atomic_rho          0.06   2        0.03   8.13   
+ PW_Basis_Sup        recip2real          0.07   1128     0.00   9.26   
+ PW_Basis_Sup        recip2real_copy_g   0.01   1128     0.00   1.41   
+ ppcell_vl           init_vloc           0.02   1        0.02   3.21   
+ Potential           cal_veff            0.21   281      0.00   26.73  
+ H_Hartree_pw        v_hartree           0.04   281      0.00   5.76   
+ PW_Basis_Sup        real2recip          0.07   1124     0.00   9.40   
+ PW_Basis_Sup        gatherp_copy_unpack 0.01   1124     0.00   1.34   
+ PotXC               cal_veff            0.16   281      0.00   20.76  
+ XC_Functional_Libxc v_xc_libxc          0.16   281      0.00   20.68  
+ Libxc               xc_lda/gga_exc_vxc  0.14   562      0.00   17.99  
+ Relax_Driver        relax_driver        0.66   1        0.66   84.89  
+ ESolver_OF          runner              0.61   1        0.61   79.08  
+ KEDF_Manager        get_potential       0.37   279      0.00   47.04  
+ KEDF_TF             tf_potential        0.06   279      0.00   7.74   
+ KEDF_WT             wt_potential        0.26   279      0.00   33.98  
+ KEDF_vW             vw_potential        0.04   279      0.00   5.21   
+ ESolver_OF          after_opt           0.02   1        0.02   2.97   
+ OF_Stress_PW        cal_stress          0.04   1        0.04   5.57   
+ Stress              stress_loc          0.04   1        0.04   5.48   
+-----------------------------------------------------------------------
+
+
+ START  Time  : Wed Aug  5 16:52:26 2026
+ FINISH Time  : Wed Aug  5 16:52:27 2026
+ TOTAL  Time  : 1
+ SEE INFORMATION IN : OUT.s1_mg_v097_ofdft/
