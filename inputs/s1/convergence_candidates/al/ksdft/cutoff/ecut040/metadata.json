@@ -1,0 +1,21 @@
+{
+  "atom_count": 1,
+  "candidate_status": "candidate_not_converged",
+  "config_sha256": "9e1fed198e368b4970344b3b06a2c11614539a971717cfd43727439802ec6755",
+  "ecutrho_ry": 160,
+  "ecutwfc_ry": 40,
+  "expected_electrons": 3,
+  "kmesh": [
+    16,
+    16,
+    16
+  ],
+  "material": "al",
+  "pseudopotential": "al.gga.psp",
+  "pseudopotential_sha256": "d76ceac60058e230eac514fc419269433a33b199eb6abfa7d6ab43cde248bd1d",
+  "scan_axis": "cutoff",
+  "solver": "ksdft",
+  "structure": "fcc_primitive",
+  "volume_per_atom_angstrom3": 16.607531249999997,
+  "volume_ratio": 1.0
+}
