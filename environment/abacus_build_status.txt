@@ -1,0 +1,4 @@
+complete time=2026-07-24T12:20:03+08:00
+build_seconds=13
+binary=/home/shenwei01/wt_melting_runtime_20260724/build-abacus-wt-cpu/source/abacus_pw_para
+compat_binary=/home/shenwei01/wt_melting_runtime_20260724/build-abacus-wt-cpu/source/abacus_wt_ti_cpu
