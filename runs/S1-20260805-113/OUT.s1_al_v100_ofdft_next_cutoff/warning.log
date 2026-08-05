@@ -1,0 +1,27 @@
+ NAME OF ELEMENT      : Al
+ DFT FUNC. (PSEUDO)   : PBE
+ DFT FUNC. (SET TO)   : XC_GGA_X_PBE+XC_GGA_C_PBE
+ MAKE SURE THIS DFT FUNCTIONAL IS WHAT YOU NEED
+ AUTO_SET NBANDS to 12
+                            startmag_type = 2
+                       charge from rho_at = 3
+                         charge should be = 3
+ Warning: negative or imaginary starting charge :  neg = 0 ima = 0.0296089 SPIN = 0
+
+ SETUP ATOMIC RHO FOR SPIN 1
+                 Electron number from rho = 2.99937
+           total electron number from rho = 2.99937
+                                should be = 3
+                 charge before normalized = 2.99999999999999
+                  charge after normalized = 3
+                 charge before normalized = 3
+                  charge after normalized = 3
+                            startmag_type = 2
+                       charge from rho_at = 2.99999999999999
+                         charge should be = 3
+ Warning: negative or imaginary starting charge :  neg = 0 ima = 0.0296089390827416 SPIN = 0
+
+ SETUP ATOMIC RHO FOR SPIN 1
+                 Electron number from rho = 2.999375
+           total electron number from rho = 2.999375
+                                should be = 3
