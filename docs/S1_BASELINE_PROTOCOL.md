@@ -1,8 +1,8 @@
 # S1 plane-wave baseline protocol
 
-Status: `eos_candidate_parameters_frozen` at S1-R7. Values are frozen for the
-pre-registered EOS matrix but are not final production parameters until
-non-equilibrium convergence and G1 checks pass.
+Status: `non_equilibrium_convergence_matrix_frozen` at S1-R8. The S1-R7 core
+EOS and double-smearing checks are accepted, but the numerical settings are not
+final production parameters until S1-R8 and the remaining G1 checks pass.
 
 ## Scope and structures
 
@@ -78,6 +78,56 @@ can have the smallest sampled energy even though the fitted minimum is inside.
 Generated inputs are candidates until the convergence results are committed.
 S2 must not start before every G1 acceptance item has evidence.
 
+## S1-R8 pre-registered non-equilibrium convergence matrix
+
+S1-R8 adds six dense seven-point series, 42 new calculations in total. It does
+not rerun the 28 unique S1-R7 baseline calculations. The frozen registration is
+`config/S1_non_equilibrium_convergence.json`; the executable manifest is
+`config/S1_non_equilibrium_run_manifest.tsv`.
+
+| New series | Dense setting | Frozen S1-R7 baseline |
+|---|---|---|
+| Al `ofdft_next_cutoff` | 30/120 Ry, Gamma | 20/80 Ry, S1-029--035 |
+| Al `ksdft_next_cutoff` | 60/240 Ry, 24 cubed, standard sigma | 40/160 Ry, S1-036--042 |
+| Al `ksdft_next_kmesh` | 40/160 Ry, 28 cubed, standard sigma | 24 cubed, S1-036--042 |
+| Mg `ofdft_next_cutoff` | 40/160 Ry, Gamma | 30/120 Ry, S1-050--056 |
+| Mg `ksdft_next_cutoff` | 60/240 Ry, 20x20x12, standard sigma | 40/160 Ry, S1-057--063 |
+| Mg `ksdft_next_kmesh` | 40/160 Ry, 24x24x16, standard sigma | 20x20x12, S1-057--063 |
+
+The fixed experiment blocks are 071--077, 078--084, 085--091, 092--098,
+099--105, and 106--112 in the table order. Standard sigma remains
+`0.00734986 Ry`. For KSDFT the machine field is the ABACUS
+`E_KS(sigma->0)` value, interpreted here as an entropy-corrected estimator and
+not as an exact zero-temperature label.
+
+For baseline or dense series `s`, define the raw seven-point anchored energy
+
+```text
+delta_e_s(r) = 1000 * (e_s(r) - e_s(1.00))  [meV/atom].
+```
+
+Each material and axis is accepted separately; no BM3 smoothing, RMS, or
+cross-material averaging can replace the raw maximum:
+
+- OFDFT and KSDFT cutoff: maximum absolute dense-minus-baseline anchored
+  energy difference strictly below `1 meV/atom`, and maximum absolute pressure
+  difference strictly below `0.02 GPa` over all seven points;
+- KSDFT k mesh: maximum absolute anchored energy difference strictly below
+  `2 meV/atom`; pressure is diagnostic only;
+- all six dense curves must have 7/7 converged points, identical structures and
+  non-axis metadata, a BM3 minimum strictly inside the sampled interval,
+  positive bulk modulus, and maximum fit residual strictly below
+  `1 meV/atom`. A discrete endpoint minimum remains diagnostic only.
+
+Before execution, `scripts/validate_s1_non_equilibrium_manifest.py` verifies
+all 42 input metadata hashes, frozen reference IDs, structure hashes, and
+single-axis changes. Run the fixed manifest from a clean worktree with
+`scripts/run_s1_non_equilibrium_manifest.sh config/S1_non_equilibrium_run_manifest.tsv`.
+Analyze it with `scripts/analyze_s1_non_equilibrium.py OUTPUT_DIRECTORY`.
+Missing or nonconverged points make a series indeterminate; a numerical limit
+failure rejects that material/axis and requires a new protocol revision and new
+experiment IDs before any denser follow-up.
+
 ## Protocol revisions
 
 - `S1-R1`, 2026-08-05: the initial 60 Ry Al WT run (`S1-20260805-004`)
@@ -129,6 +179,15 @@ S2 must not start before every G1 acceptance item has evidence.
   difference must be `<2 meV/atom`, and fitted equilibrium volumes must differ
   by `<0.2%`. This core EOS does not by itself close the later non-equilibrium
   cutoff/k-mesh, density-integral, or independent-program G1 checks.
+- `S1-R8`, 2026-08-05: the non-equilibrium convergence matrix is frozen as 42
+  dense calculations, S1-071 through S1-112. All comparisons use the raw
+  seven-point curves anchored at v100. Cutoff checks apply the strict
+  `<1 meV/atom` and `<0.02 GPa` gates to both OFDFT and KSDFT; k-mesh checks use
+  strict `<2 meV/atom` with pressure diagnostic only. The S1-R7 config and
+  summary remain immutable, content-addressed references. S1-R8 acceptance
+  will not close the density-integral, third-smearing/dense-k label audit,
+  second-program, three-layer pseudopotential/KEDF, displacement/strain, or
+  0/10 regeneration G1 items.
 
 ## Completed convergence evidence
 

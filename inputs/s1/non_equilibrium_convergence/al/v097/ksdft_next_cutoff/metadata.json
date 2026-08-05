@@ -1,0 +1,53 @@
+{
+  "atom_count": 1,
+  "baseline_config_sha256": "1b781794c54c3642c08ebc333a12bcc732810d97eb90970e604fb9b57f3a947a",
+  "baseline_experiment_id": "S1-20260805-038",
+  "baseline_series_id": "ksdft_standard",
+  "candidate_status": "non_equilibrium_convergence_matrix_frozen",
+  "cell_angstrom": [
+    [
+      0.0,
+      2.004544055979487,
+      2.004544055979487
+    ],
+    [
+      2.004544055979487,
+      0.0,
+      2.004544055979487
+    ],
+    [
+      2.004544055979487,
+      2.004544055979487,
+      0.0
+    ]
+  ],
+  "comparison_axis": "cutoff",
+  "config_sha256": "17e511669893cf8c4b7d4512da8b96d0bde42ac0f71c5e4daaacf03c747482dc",
+  "core_summary_sha256": "508b84a1f6f26edc2cd3de8c3b7d3970fbe2fabb6b6a646dca8ea87b7e2e771d",
+  "dataset_kind": "eos_non_equilibrium_convergence",
+  "ecutrho_ry": 240,
+  "ecutwfc_ry": 60,
+  "energy_observable": "zero_temp_extrapolated_energy",
+  "expected_electrons": 3,
+  "kmesh": [
+    24,
+    24,
+    24
+  ],
+  "material": "al",
+  "protocol_revision": "S1-R8",
+  "pseudopotential": "al.gga.psp",
+  "pseudopotential_sha256": "d76ceac60058e230eac514fc419269433a33b199eb6abfa7d6ab43cde248bd1d",
+  "relative_energy_reference_volume_ratio": 1.0,
+  "series_id": "ksdft_next_cutoff",
+  "smearing_method": "fd",
+  "smearing_sigma_ry": 0.00734986,
+  "solver": "ksdft",
+  "stru_sha256": "afbc4693ab7f9da60ef2058d39a42af782e41982f8e64f06ee52a66b76c4150f",
+  "structure": "fcc_primitive",
+  "structure_id": "al_v097",
+  "volume_angstrom3": 16.109305312500002,
+  "volume_per_atom_angstrom3": 16.109305312500002,
+  "volume_ratio": 0.9700000000000003,
+  "xc": "XC_GGA_X_PBE+XC_GGA_C_PBE"
+}

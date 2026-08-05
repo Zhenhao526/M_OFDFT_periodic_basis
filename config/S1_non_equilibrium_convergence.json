@@ -1,0 +1,90 @@
+{
+  "schema_version": 1,
+  "status": "non_equilibrium_convergence_matrix_frozen",
+  "protocol_revision": "S1-R8",
+  "experiment_id_block": {
+    "date": "20260805",
+    "start_sequence": 71,
+    "end_sequence": 112
+  },
+  "volume_ratios": [0.9, 0.94, 0.97, 1.0, 1.03, 1.06, 1.1],
+  "series_order": [
+    "ofdft_next_cutoff",
+    "ksdft_next_cutoff",
+    "ksdft_next_kmesh"
+  ],
+  "core_reference": {
+    "baseline_config_path": "config/S1_baseline_protocol.json",
+    "baseline_config_sha256": "1b781794c54c3642c08ebc333a12bcc732810d97eb90970e604fb9b57f3a947a",
+    "summary_path": "analysis/s1/core_eos_20260805/summary.json",
+    "summary_sha256": "508b84a1f6f26edc2cd3de8c3b7d3970fbe2fabb6b6a646dca8ea87b7e2e771d",
+    "analysis_commit": "76dbf43c815a2e12df930658a6fd9154689afe80"
+  },
+  "acceptance": {
+    "relative_energy_reference_volume_ratio": 1.0,
+    "cutoff_max_relative_energy_difference_mev_per_atom": 1.0,
+    "cutoff_max_pressure_difference_gpa": 0.02,
+    "kmesh_max_relative_energy_difference_mev_per_atom": 2.0,
+    "threshold_comparison": "strict_less_than"
+  },
+  "materials": {
+    "al": {
+      "ofdft_next_cutoff": {
+        "solver": "ofdft",
+        "comparison_axis": "cutoff",
+        "baseline_series_id": "ofdft",
+        "ecutwfc_ry": 30,
+        "ecutrho_ry": 120,
+        "kmesh": [1, 1, 1],
+        "smearing_sigma_ry": null
+      },
+      "ksdft_next_cutoff": {
+        "solver": "ksdft",
+        "comparison_axis": "cutoff",
+        "baseline_series_id": "ksdft_standard",
+        "ecutwfc_ry": 60,
+        "ecutrho_ry": 240,
+        "kmesh": [24, 24, 24],
+        "smearing_sigma_ry": 0.00734986
+      },
+      "ksdft_next_kmesh": {
+        "solver": "ksdft",
+        "comparison_axis": "kmesh",
+        "baseline_series_id": "ksdft_standard",
+        "ecutwfc_ry": 40,
+        "ecutrho_ry": 160,
+        "kmesh": [28, 28, 28],
+        "smearing_sigma_ry": 0.00734986
+      }
+    },
+    "mg": {
+      "ofdft_next_cutoff": {
+        "solver": "ofdft",
+        "comparison_axis": "cutoff",
+        "baseline_series_id": "ofdft",
+        "ecutwfc_ry": 40,
+        "ecutrho_ry": 160,
+        "kmesh": [1, 1, 1],
+        "smearing_sigma_ry": null
+      },
+      "ksdft_next_cutoff": {
+        "solver": "ksdft",
+        "comparison_axis": "cutoff",
+        "baseline_series_id": "ksdft_standard",
+        "ecutwfc_ry": 60,
+        "ecutrho_ry": 240,
+        "kmesh": [20, 20, 12],
+        "smearing_sigma_ry": 0.00734986
+      },
+      "ksdft_next_kmesh": {
+        "solver": "ksdft",
+        "comparison_axis": "kmesh",
+        "baseline_series_id": "ksdft_standard",
+        "ecutwfc_ry": 40,
+        "ecutrho_ry": 160,
+        "kmesh": [24, 24, 16],
+        "smearing_sigma_ry": 0.00734986
+      }
+    }
+  }
+}
