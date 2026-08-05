@@ -207,6 +207,9 @@ runner 使用独立 FD 9 读取清单；子任务关闭 FD 9，stdin 接 `/dev/n
 PID 猜测替代 handshake。PRRTE 启动 rank 时可能清空 `PRTE_PREFIX` 并重复前置同一个
 recovery `LD_LIBRARY_PATH`；rank wrapper 只在所有非空分量均精确属于 recovery 时，
 把四个 prefix 与库路径收敛为冻结的唯一值，任何外来分量仍硬拒绝。
+release token 必须由审计器以临时文件、`fsync` 和原子发布生成，且内容精确为
+`release\n`；rank 在 exec 前必须用 no-follow FD 读取普通文件，并在读取前后
+均确认 abort 不存在。空、部分、`abort\n` 或符号链接 token 均不得执行 ABACUS。
 
 `/usr/bin/strace` 固定使用与服务器 5.16 兼容的
 `-ff -qq -I 1 -s 4096 -e trace=file,process`，且命令前缀、trace 输出前缀和后续 MPI
@@ -216,7 +219,11 @@ SHA-256、版本输出必须在执行前后完全一致。tracee 收口不依赖
 的 PID 1/kernel reap 证明、可访问 host inode 负向扫描共同完成；任一层不完整均拒绝。执行
 链的成功 `execve` 必须是精确 multiset：mpirun 1、recovery prterun 1、冻结 Python
 4、relocated ABACUS 4。只有明确 `result == 0` 才算成功；额外成功 exec 或截断/未知
-result 均拒绝。
+result 均拒绝。launcher PID 必须直接来自 raw strace 中唯一一条成功执行
+冻结 launcher realpath 的 `execve` 记录；`/proc/<pid>/exe` 只用于证明该权威 PID
+在 maps 捕获时仍存活。PRTE 的 `CLONE_THREAD` 线程可共享同一 executable，因而
+额外 `/proc/exe` 候选只记录为诊断证据，不计为额外 launcher。进程结束后必须
+从完整 trace 重算一次，记录数或 PID 变化均拒绝。
 
 审计器从 strace trace 文件、clone/exec 过程证据、rank handshake、动态 descendant 和
 PGID 扫描合并已知 PID 集合，并逐 PID 记录 observed start-time 与终态 `gone` 或
@@ -225,6 +232,9 @@ validator 只接受 regular、非符号链接且名称严格为 `trace.<positive
 launcher/rank handshake PID 必须逐一出现在 raw trace 中，并与 maps process rows 的
 launcher PID 和 `{rank: PID}` 精确相等。known-PID 集还必须与全部 trace PID、cleanup
 PG/descendant 逐一交叉覆盖，并要求 strace PG leader 带 `strace_root` 来源。
+launcher 的终态行必须同时带 `launcher_strace_exec` 权威来源和
+`launcher_proc_exe_live` 活性来源；maps、handshake 与终态行的 `/proc` start-time tick
+必须一致，防止 PID 复用或中途身份替换。
 PID 1/kernel reap 证明和可访问 host inode 负向扫描是外层独立硬门；连同内层 known-PID
 与 PG 零残留全部通过，才可声称本次执行无残留 tracee。
 

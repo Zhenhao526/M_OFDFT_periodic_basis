@@ -38,6 +38,7 @@ RESULT_PATTERN = re.compile(
     r"\)\s+=\s+(-?\d+|0x[0-9a-fA-F]+)(?:\s+([A-Z][A-Z0-9]+))?"
 )
 SYSCALL_PATTERN = re.compile(r"^([A-Za-z_][A-Za-z0-9_]*)\(")
+TRACE_FILE_PATTERN = re.compile(r"^trace\.([1-9][0-9]*)$")
 ABSOLUTE_WATCHDOG_SECONDS = 7200.0
 STRACE_FIXED_ARGUMENTS = (
     "-ff",
@@ -253,6 +254,100 @@ def parse_execve_records(records: list[dict]) -> list[dict]:
     return values
 
 
+def successful_exec_pids(
+    execve_records: list[dict], expected_path: Path | str
+) -> list[int]:
+    """Return one PID entry per successful exec event for one exact path."""
+
+    expected = str(Path(expected_path).resolve(strict=False))
+    return sorted(
+        [
+            record["pid"]
+            for record in execve_records
+            if record.get("successful") is True
+            and record.get("path") == expected
+            and isinstance(record.get("pid"), int)
+            and not isinstance(record.get("pid"), bool)
+            and record["pid"] > 0
+        ]
+    )
+
+
+def _launcher_exec_pids_from_trace_directory(
+    directory: Path, expected_launcher: Path
+) -> tuple[list[int], list[str]]:
+    """Read only canonical live strace files when discovering the launcher PID."""
+
+    try:
+        entries = sorted(directory.iterdir())
+    except OSError as error:
+        return [], [f"launcher_trace_directory_unreadable:{error}"]
+    records: list[dict] = []
+    failures: list[str] = []
+    for path in entries:
+        match = TRACE_FILE_PATTERN.fullmatch(path.name)
+        if match is None or path.is_symlink() or not path.is_file():
+            failures.append(f"invalid_launcher_trace_artifact:{path.name}")
+            continue
+        pid = int(match.group(1))
+        try:
+            lines = path.read_text(encoding="utf-8", errors="replace").splitlines()
+        except OSError as error:
+            failures.append(f"launcher_trace_unreadable:{path.name}:{error}")
+            continue
+        records.extend(
+            {"pid": pid, "role": "support", "rank": None, "line": line}
+            for line in lines
+        )
+    return (
+        successful_exec_pids(parse_execve_records(records), expected_launcher),
+        failures,
+    )
+
+
+def _select_launcher_pid(
+    expected_launcher: Path,
+    exec_pids: list[int],
+    live_proc_exe_candidates: set[int],
+    authoritative_start_time_ticks: int | None,
+) -> tuple[int | None, dict, list[str]]:
+    """Bind one raw successful exec PID to a live process; tolerate its threads."""
+
+    ordered_exec_pids = sorted(exec_pids)
+    ordered_live_candidates = sorted(set(live_proc_exe_candidates))
+    failures: list[str] = []
+    launcher_pid = ordered_exec_pids[0] if len(ordered_exec_pids) == 1 else None
+    if launcher_pid is None:
+        failures.append(
+            f"launcher_successful_exec_pid_count_at_handshake:{len(ordered_exec_pids)}"
+        )
+    elif launcher_pid not in live_proc_exe_candidates:
+        failures.append(
+            f"launcher_successful_exec_pid_not_live_at_handshake:{launcher_pid}"
+        )
+        launcher_pid = None
+    elif (
+        not isinstance(authoritative_start_time_ticks, int)
+        or isinstance(authoritative_start_time_ticks, bool)
+        or authoritative_start_time_ticks <= 0
+    ):
+        failures.append("launcher_start_time_unavailable_at_handshake")
+        launcher_pid = None
+    evidence = {
+        "schema_version": 1,
+        "method": "unique_successful_execve_with_live_proc_exe_confirmation",
+        "expected_launcher_realpath": str(expected_launcher.resolve(strict=False)),
+        "successful_exec_pids": ordered_exec_pids,
+        "live_proc_exe_candidate_pids": ordered_live_candidates,
+        "authoritative_launcher_pid": launcher_pid,
+        "authoritative_pid_start_time_ticks": (
+            authoritative_start_time_ticks if launcher_pid is not None else None
+        ),
+        "authoritative_pid_live_at_handshake": launcher_pid is not None,
+    }
+    return launcher_pid, evidence, failures
+
+
 def _direct_children(pid: int, proc_root: Path = Path("/proc")) -> set[int]:
     task_directory = proc_root / str(pid) / "task"
     try:
@@ -367,8 +462,22 @@ def _capture_target(
     processes: dict[int, dict],
     objects: dict[tuple[int, str], dict],
 ) -> bool:
+    start_time_before = _proc_start_time_ticks(pid)
     executable = _executable(pid)
-    if executable is None or executable != expected_executable:
+    if (
+        start_time_before is None
+        or executable is None
+        or executable != expected_executable
+    ):
+        return False
+    mapped = _mapped_paths(pid)
+    start_time_after = _proc_start_time_ticks(pid)
+    executable_after = _executable(pid)
+    if (
+        not mapped
+        or start_time_after != start_time_before
+        or executable_after != expected_executable
+    ):
         return False
     record = processes.setdefault(
         pid,
@@ -378,15 +487,18 @@ def _capture_target(
             "rank": rank,
             "executable_realpath": str(executable),
             "executable_sha256": None,
+            "observed_start_time_ticks": start_time_before,
             "mapped_object_count": 0,
             "initial_map_capture_observed": False,
         },
     )
-    if record["role"] != role or record["rank"] != rank:
+    if (
+        record["role"] != role
+        or record["rank"] != rank
+        or record["observed_start_time_ticks"] != start_time_before
+    ):
         raise ValueError(f"PID {pid} changed runtime role/rank")
-    mapped = _mapped_paths(pid)
-    if mapped:
-        record["initial_map_capture_observed"] = True
+    record["initial_map_capture_observed"] = True
     for original_value in mapped:
         key = (pid, original_value)
         if key in objects:
@@ -460,6 +572,29 @@ def _atomic_json(path: Path, payload: dict) -> None:
         json.dumps(payload, indent=2, sort_keys=True) + "\n", encoding="utf-8"
     )
     os.replace(temporary, path)
+
+
+def _atomic_control_token(path: Path, token: bytes) -> None:
+    """Publish an immutable one-shot handshake token without a partial-file window."""
+
+    if path.exists() or path.is_symlink():
+        if not path.is_symlink() and path.is_file() and path.read_bytes() == token:
+            return
+        raise FileExistsError(f"control token already differs: {path}")
+    temporary = path.with_name(f".{path.name}.tmp-{os.getpid()}")
+    try:
+        with temporary.open("xb") as handle:
+            handle.write(token)
+            handle.flush()
+            os.fsync(handle.fileno())
+        os.link(temporary, path)
+        directory_fd = os.open(path.parent, os.O_RDONLY)
+        try:
+            os.fsync(directory_fd)
+        finally:
+            os.close(directory_fd)
+    finally:
+        temporary.unlink(missing_ok=True)
 
 
 def _process_group_members(process_group: int) -> list[int]:
@@ -663,21 +798,42 @@ def _trace_records(
 def _wait_for_ready(
     process: subprocess.Popen,
     handshake: Path,
+    strace_directory: Path,
     expected_ranks: int,
     expected_launcher: Path,
     timeout_seconds: float,
-) -> tuple[dict[int, int], int | None, list[str]]:
+) -> tuple[dict[int, int], int | None, dict, list[str]]:
     deadline = time.monotonic() + timeout_seconds
-    launcher_pids: set[int] = set()
+    live_launcher_candidates: set[int] = set()
+    launcher_exec_pids: list[int] = []
+    launcher_start_time_ticks: int | None = None
+    trace_failures: list[str] = []
     failures: list[str] = []
     ready_directory = handshake / "ready"
     while time.monotonic() < deadline:
-        for pid in _descendants(process.pid):
-            if _executable(pid) == expected_launcher:
-                launcher_pids.add(pid)
-        ready_paths = sorted(ready_directory.glob("rank-*.json"))
-        if len(ready_paths) >= expected_ranks:
+        live_launcher_candidates = {
+            pid
+            for pid in _descendants(process.pid)
+            if _executable(pid) == expected_launcher
+        }
+        launcher_exec_pids, trace_failures = (
+            _launcher_exec_pids_from_trace_directory(
+                strace_directory, expected_launcher
+            )
+        )
+        if trace_failures or len(launcher_exec_pids) > 1:
             break
+        ready_paths = sorted(ready_directory.glob("rank-*.json"))
+        if (
+            len(ready_paths) >= expected_ranks
+            and len(launcher_exec_pids) == 1
+            and launcher_exec_pids[0] in live_launcher_candidates
+        ):
+            launcher_start_time_ticks = _proc_start_time_ticks(
+                launcher_exec_pids[0]
+            )
+            if launcher_start_time_ticks is not None:
+                break
         if process.poll() is not None:
             failures.append("launcher_exited_before_rank_handshake")
             break
@@ -698,10 +854,15 @@ def _wait_for_ready(
         failures.append(f"rank_handshake_set:{sorted(rank_pids)}")
     if len(set(rank_pids.values())) != len(rank_pids):
         failures.append("rank_handshake_duplicate_pid")
-    if len(launcher_pids) != 1:
-        failures.append(f"launcher_handshake_count:{len(launcher_pids)}")
-    launcher_pid = next(iter(launcher_pids)) if len(launcher_pids) == 1 else None
-    return rank_pids, launcher_pid, failures
+    failures.extend(trace_failures)
+    launcher_pid, launcher_discovery, launcher_failures = _select_launcher_pid(
+        expected_launcher,
+        launcher_exec_pids,
+        live_launcher_candidates,
+        launcher_start_time_ticks,
+    )
+    failures.extend(launcher_failures)
+    return rank_pids, launcher_pid, launcher_discovery, failures
 
 
 def _release_and_capture_rank(
@@ -716,10 +877,7 @@ def _release_and_capture_rank(
     timeout_seconds: float,
 ) -> str | None:
     release = handshake / "release" / f"rank-{rank}"
-    with release.open("x", encoding="ascii") as handle:
-        handle.write("release\n")
-        handle.flush()
-        os.fsync(handle.fileno())
+    _atomic_control_token(release, b"release\n")
     deadline = time.monotonic() + timeout_seconds
     while time.monotonic() < deadline:
         executable = _executable(pid)
@@ -806,6 +964,17 @@ def _main_impl(
     processes: dict[int, dict] = {}
     objects: dict[tuple[int, str], dict] = {}
     launcher_pid: int | None = None
+    launcher_discovery = {
+        "schema_version": 1,
+        "method": "unique_successful_execve_with_live_proc_exe_confirmation",
+        "expected_launcher_realpath": None,
+        "successful_exec_pids": [],
+        "live_proc_exe_candidate_pids": [],
+        "authoritative_launcher_pid": None,
+        "authoritative_pid_start_time_ticks": None,
+        "authoritative_pid_live_at_handshake": False,
+    }
+    launcher_successful_exec_pids: list[int] = []
     rank_pids: dict[int, int] = {}
     exit_code = 97
     strace_before: dict = {}
@@ -960,17 +1129,25 @@ def _main_impl(
         )
         watchdog_state["process"] = process
         _register_known_pids(known_pids, [process.pid], "strace_root")
-        rank_pids, launcher_pid, handshake_failures = _wait_for_ready(
-            process,
-            handshake,
-            expected_ranks,
-            expected_launcher,
-            max(0.001, min(120, total_deadline - time.monotonic())),
+        rank_pids, launcher_pid, launcher_discovery, handshake_failures = (
+            _wait_for_ready(
+                process,
+                handshake,
+                strace_directory,
+                expected_ranks,
+                expected_launcher,
+                max(0.001, min(120, total_deadline - time.monotonic())),
+            )
         )
         failures.extend(handshake_failures)
         _register_known_pids(known_pids, set(rank_pids.values()), "rank_handshake")
         if launcher_pid is not None:
-            _register_known_pids(known_pids, [launcher_pid], "launcher_discovery")
+            _register_known_pids(
+                known_pids, [launcher_pid], "launcher_strace_exec"
+            )
+            _register_known_pids(
+                known_pids, [launcher_pid], "launcher_proc_exe_live"
+            )
         if launcher_pid is not None:
             if not _capture_target(
                 launcher_pid,
@@ -983,7 +1160,12 @@ def _main_impl(
                 objects,
             ):
                 failures.append("launcher_initial_map_capture_failed")
-        if not handshake_failures:
+            elif (
+                processes[launcher_pid]["observed_start_time_ticks"]
+                != launcher_discovery["authoritative_pid_start_time_ticks"]
+            ):
+                failures.append("launcher_start_time_changed_before_map_capture")
+        if not failures:
             for rank in range(expected_ranks):
                 failure = _release_and_capture_rank(
                     rank,
@@ -1000,16 +1182,16 @@ def _main_impl(
                     failures.append(failure)
                     break
         if failures:
-            (handshake / "abort").write_text("abort\n", encoding="ascii")
+            _atomic_control_token(handshake / "abort", b"abort\n")
             for rank in range(expected_ranks):
                 release = handshake / "release" / f"rank-{rank}"
                 if not release.exists():
-                    release.write_text("abort\n", encoding="ascii")
+                    _atomic_control_token(release, b"abort\n")
         while process.poll() is None:
             if time.monotonic() >= total_deadline:
                 timeout_triggered = True
                 failures.append("runtime_audit_wall_timeout:7200")
-                (handshake / "abort").write_text("abort\n", encoding="ascii")
+                _atomic_control_token(handshake / "abort", b"abort\n")
                 cleanup_evidence = _terminate_process_group(process)
                 break
             _register_known_pids(
@@ -1196,6 +1378,22 @@ def _main_impl(
     successful_exec_paths = [
         record["path"] for record in execve_records if record["successful"]
     ]
+    launcher_successful_exec_pids = successful_exec_pids(
+        execve_records, expected_launcher_value
+    )
+    if launcher_successful_exec_pids != [launcher_pid]:
+        failures.append(
+            "launcher_pid_raw_exec_binding_mismatch:"
+            + json.dumps(
+                {
+                    "launcher_pid": launcher_pid,
+                    "successful_exec_pids": launcher_successful_exec_pids,
+                },
+                sort_keys=True,
+            )
+        )
+    if launcher_discovery.get("successful_exec_pids") != launcher_successful_exec_pids:
+        failures.append("launcher_exec_pid_set_changed_after_handshake")
     expected_exec_multiset = collections.Counter(
         {
             expected_mpirun: 1,
@@ -1279,11 +1477,14 @@ def _main_impl(
                 "MKLROOT",
                 "HOME",
                 "OMP_NUM_THREADS",
+                "CUDA_CACHE_DISABLE",
             )
         },
         "strace_identity_before": strace_before,
         "strace_identity_after": strace_after,
         "launcher_pid": launcher_pid,
+        "launcher_discovery": launcher_discovery,
+        "launcher_successful_exec_pids": launcher_successful_exec_pids,
         "rank_pids": {str(rank): pid for rank, pid in sorted(rank_pids.items())},
         "rank_handshake_status": (
             "accepted"

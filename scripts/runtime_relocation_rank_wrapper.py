@@ -5,6 +5,7 @@ from __future__ import annotations
 
 import json
 import os
+import stat
 import sys
 import time
 from pathlib import Path
@@ -12,6 +13,7 @@ from pathlib import Path
 
 RANK_ENV_KEYS = ("OMPI_COMM_WORLD_RANK", "PMIX_RANK", "PMI_RANK")
 PREFIX_ENV_KEYS = ("OPAL_PREFIX", "PRTE_PREFIX", "PMIX_PREFIX", "UCX_MODULE_DIR")
+RELEASE_TOKEN = b"release\n"
 
 
 def _rank() -> int:
@@ -85,6 +87,47 @@ def _canonicalize_spawned_rank_environment() -> dict:
     return incoming
 
 
+def _read_release_token(path: Path) -> bytes | None:
+    """Read one regular, non-symlink release file through a no-follow FD."""
+
+    flags = (
+        os.O_RDONLY
+        | getattr(os, "O_CLOEXEC", 0)
+        | getattr(os, "O_NOFOLLOW", 0)
+        | getattr(os, "O_NONBLOCK", 0)
+    )
+    try:
+        descriptor = os.open(path, flags)
+    except FileNotFoundError:
+        return None
+    except OSError as error:
+        raise ValueError(f"cannot open rank release token: {error}") from error
+    try:
+        metadata = os.fstat(descriptor)
+        if not stat.S_ISREG(metadata.st_mode):
+            raise ValueError("rank release token is not a regular file")
+        if metadata.st_size != len(RELEASE_TOKEN):
+            return os.read(descriptor, len(RELEASE_TOKEN) + 1)
+        return os.read(descriptor, len(RELEASE_TOKEN) + 1)
+    finally:
+        os.close(descriptor)
+
+
+def _record_rank_failure(
+    failure_directory: Path, rank: int, status: str, **details: object
+) -> None:
+    _atomic_json(
+        failure_directory / f"rank-{rank}.json",
+        {
+            "schema_version": 1,
+            "pid": os.getpid(),
+            "rank": rank,
+            "status": status,
+            **details,
+        },
+    )
+
+
 def main() -> int:
     if len(sys.argv) < 2:
         print("rank wrapper requires the frozen ABACUS path", file=sys.stderr)
@@ -142,34 +185,48 @@ def main() -> int:
     release_path = release_directory / f"rank-{rank}"
     abort_path = handshake / "abort"
     deadline = time.monotonic() + timeout_seconds
-    while not release_path.is_file():
-        if abort_path.exists():
+    while True:
+        if abort_path.exists() or abort_path.is_symlink():
+            _record_rank_failure(failure_directory, rank, "audit_aborted")
             return 98
-        if time.monotonic() >= deadline:
-            _atomic_json(
-                failure_directory / f"rank-{rank}.json",
-                {
-                    "schema_version": 1,
-                    "pid": os.getpid(),
-                    "rank": rank,
-                    "status": "release_timeout",
-                },
+        try:
+            release_token = _read_release_token(release_path)
+        except ValueError as error:
+            _record_rank_failure(
+                failure_directory,
+                rank,
+                "invalid_release_token",
+                error=str(error),
             )
+            return 98
+        if release_token is not None:
+            if release_token != RELEASE_TOKEN:
+                _record_rank_failure(
+                    failure_directory,
+                    rank,
+                    "invalid_release_token",
+                    observed_hex=release_token.hex(),
+                )
+                return 98
+            if abort_path.exists() or abort_path.is_symlink():
+                _record_rank_failure(
+                    failure_directory, rank, "audit_aborted_after_release"
+                )
+                return 98
+            break
+        if time.monotonic() >= deadline:
+            _record_rank_failure(failure_directory, rank, "release_timeout")
             return 98
         time.sleep(0.01)
     try:
         os.execv(str(expected_abacus), [str(expected_abacus), *sys.argv[2:]])
     except OSError as error:
-        _atomic_json(
-            failure_directory / f"rank-{rank}.json",
-            {
-                "schema_version": 1,
-                "pid": os.getpid(),
-                "rank": rank,
-                "status": "exec_failed",
-                "errno": error.errno,
-                "error": str(error),
-            },
+        _record_rank_failure(
+            failure_directory,
+            rank,
+            "exec_failed",
+            errno=error.errno,
+            error=str(error),
         )
         return 98
 

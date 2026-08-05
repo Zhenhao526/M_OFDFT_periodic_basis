@@ -41,6 +41,7 @@ from runtime_relocation_audit_launcher import (
     classify_mapping,
     parse_execve_records,
     parse_strace_records,
+    successful_exec_pids,
 )
 from s1_runtime_relocation_elf import (
     file_identity,
@@ -260,7 +261,8 @@ def _known_pid_terminal_contract_failures(
     allowed_sources = {
         "strace_root",
         "rank_handshake",
-        "launcher_discovery",
+        "launcher_strace_exec",
+        "launcher_proc_exe_live",
         "descendant_scan",
         "process_group_scan",
         "strace_trace_file",
@@ -369,8 +371,15 @@ def _known_pid_terminal_contract_failures(
         if pid in known and "rank_handshake" not in known[pid].get("sources", []):
             failures.append(f"rank PID {pid} lacks handshake source binding")
     if isinstance(launcher_pid, int) and launcher_pid in known:
-        if "launcher_discovery" not in known[launcher_pid].get("sources", []):
-            failures.append(f"launcher PID {launcher_pid} lacks discovery source binding")
+        sources = known[launcher_pid].get("sources", [])
+        if "launcher_strace_exec" not in sources:
+            failures.append(
+                f"launcher PID {launcher_pid} lacks raw-exec source binding"
+            )
+        if "launcher_proc_exe_live" not in sources:
+            failures.append(
+                f"launcher PID {launcher_pid} lacks live-proc source binding"
+            )
     target_pids = set(rank_pids.values()) | process_pids
     if isinstance(launcher_pid, int):
         target_pids.add(launcher_pid)
@@ -400,7 +409,8 @@ def _known_pid_terminal_contract_failures(
         }
         for source in (
             "strace_root",
-            "launcher_discovery",
+            "launcher_strace_exec",
+            "launcher_proc_exe_live",
             "rank_handshake",
             "strace_trace_file",
         )
@@ -413,7 +423,14 @@ def _known_pid_terminal_contract_failures(
             and process_group > 0
             else set()
         ),
-        "launcher_discovery": (
+        "launcher_strace_exec": (
+            {launcher_pid}
+            if isinstance(launcher_pid, int)
+            and not isinstance(launcher_pid, bool)
+            and launcher_pid > 0
+            else set()
+        ),
+        "launcher_proc_exe_live": (
             {launcher_pid}
             if isinstance(launcher_pid, int)
             and not isinstance(launcher_pid, bool)
@@ -498,6 +515,136 @@ def _runtime_pid_role_contract_failures(
     return failures
 
 
+def _launcher_exec_pid_contract_failures(
+    launcher_pid: object,
+    execve_records: list[dict],
+    expected_launcher_realpath: str,
+    reported_exec_pids: object,
+    discovery: object,
+) -> list[str]:
+    """Bind the claimed launcher to one role-independent raw successful exec."""
+
+    failures: list[str] = []
+    expected_launcher = str(
+        Path(expected_launcher_realpath).resolve(strict=False)
+    )
+    raw_exec_pids = successful_exec_pids(execve_records, expected_launcher)
+    valid_launcher_pid = (
+        isinstance(launcher_pid, int)
+        and not isinstance(launcher_pid, bool)
+        and launcher_pid > 0
+    )
+    if not valid_launcher_pid or raw_exec_pids != [launcher_pid]:
+        failures.append(
+            "audit launcher PID differs from the unique raw successful launcher exec"
+        )
+    reported_exec_pids_valid = (
+        isinstance(reported_exec_pids, list)
+        and all(
+            isinstance(pid, int) and not isinstance(pid, bool) and pid > 0
+            for pid in reported_exec_pids
+        )
+        and reported_exec_pids == raw_exec_pids
+    )
+    if not reported_exec_pids_valid:
+        failures.append("reported launcher exec PID list differs from raw strace")
+    expected_discovery_keys = {
+        "schema_version",
+        "method",
+        "expected_launcher_realpath",
+        "successful_exec_pids",
+        "live_proc_exe_candidate_pids",
+        "authoritative_launcher_pid",
+        "authoritative_pid_start_time_ticks",
+        "authoritative_pid_live_at_handshake",
+    }
+    if not isinstance(discovery, dict) or set(discovery) != expected_discovery_keys:
+        return [*failures, "launcher discovery evidence has an invalid schema"]
+    candidates = discovery.get("live_proc_exe_candidate_pids")
+    candidates_valid = (
+        isinstance(candidates, list)
+        and all(
+            isinstance(pid, int) and not isinstance(pid, bool) and pid > 0
+            for pid in candidates
+        )
+        and candidates == sorted(set(candidates))
+    )
+    start_time = discovery.get("authoritative_pid_start_time_ticks")
+    discovery_exec_pids = discovery.get("successful_exec_pids")
+    discovery_authority = discovery.get("authoritative_launcher_pid")
+    if (
+        discovery.get("schema_version") != 1
+        or discovery.get("method")
+        != "unique_successful_execve_with_live_proc_exe_confirmation"
+        or discovery.get("expected_launcher_realpath") != expected_launcher
+        or not isinstance(discovery_exec_pids, list)
+        or any(
+            not isinstance(pid, int) or isinstance(pid, bool) or pid <= 0
+            for pid in discovery_exec_pids
+        )
+        or discovery_exec_pids != raw_exec_pids
+        or not isinstance(discovery_authority, int)
+        or isinstance(discovery_authority, bool)
+        or discovery_authority != launcher_pid
+        or discovery.get("authoritative_pid_live_at_handshake") is not True
+        or not isinstance(start_time, int)
+        or isinstance(start_time, bool)
+        or start_time <= 0
+        or not candidates_valid
+        or launcher_pid not in candidates
+    ):
+        failures.append("launcher discovery evidence differs from raw/live binding")
+    return failures
+
+
+def _process_start_time_contract_failures(
+    processes: list[dict],
+    terminal_process: object,
+    launcher_pid: object,
+    discovery: object,
+) -> list[str]:
+    """Close PID-reuse gaps across maps, live discovery, and terminal proof."""
+
+    failures: list[str] = []
+    terminal_rows = (
+        terminal_process.get("known_pids", [])
+        if isinstance(terminal_process, dict)
+        else []
+    )
+    terminal_by_pid = {
+        row.get("pid"): row
+        for row in terminal_rows
+        if isinstance(row, dict) and isinstance(row.get("pid"), int)
+    }
+    process_by_pid = {
+        row.get("pid"): row
+        for row in processes
+        if isinstance(row, dict) and isinstance(row.get("pid"), int)
+    }
+    for pid, row in process_by_pid.items():
+        observed = row.get("observed_start_time_ticks")
+        if (
+            not isinstance(observed, int)
+            or isinstance(observed, bool)
+            or observed <= 0
+            or terminal_by_pid.get(pid, {}).get("observed_start_time_ticks")
+            != observed
+        ):
+            failures.append(f"process PID {pid} start-time binding is incomplete")
+    if (
+        isinstance(discovery, dict)
+        and isinstance(launcher_pid, int)
+        and not isinstance(launcher_pid, bool)
+        and launcher_pid in process_by_pid
+    ):
+        if (
+            discovery.get("authoritative_pid_start_time_ticks")
+            != process_by_pid[launcher_pid].get("observed_start_time_ticks")
+        ):
+            failures.append("launcher live/process start-time binding differs")
+    return failures
+
+
 def _trace_file_pid_contract(
     trace_paths: list[Path],
 ) -> tuple[dict[int, Path], list[str]]:
@@ -527,6 +674,43 @@ def _trace_file_pid_contract(
     if not trace_files:
         failures.append("raw trace PID set is empty")
     return trace_files, failures
+
+
+def _read_bounded_regular_file(path: Path, maximum_bytes: int) -> bytes | None:
+    """Read immutable evidence without following links or blocking on special files."""
+
+    flags = (
+        os.O_RDONLY
+        | getattr(os, "O_CLOEXEC", 0)
+        | getattr(os, "O_NOFOLLOW", 0)
+        | getattr(os, "O_NONBLOCK", 0)
+    )
+    try:
+        descriptor = os.open(path, flags)
+    except OSError:
+        return None
+    try:
+        metadata = os.fstat(descriptor)
+        if (
+            not stat.S_ISREG(metadata.st_mode)
+            or metadata.st_size < 0
+            or metadata.st_size > maximum_bytes
+        ):
+            return None
+        chunks = bytearray()
+        while len(chunks) <= metadata.st_size:
+            chunk = os.read(
+                descriptor,
+                min(65536, metadata.st_size - len(chunks) + 1),
+            )
+            if not chunk:
+                break
+            chunks.extend(chunk)
+        return bytes(chunks) if len(chunks) == metadata.st_size else None
+    except OSError:
+        return None
+    finally:
+        os.close(descriptor)
 
 
 def _trace_directory_contract(
@@ -1550,9 +1734,16 @@ def _validate_runtime_relocation_audit_evidence(
         "CUDA_CACHE_DISABLE": audit_spec["required_cuda_cache_disable"],
     }
     for rank, path in enumerate(ready_paths):
+        ready_bytes = _read_bounded_regular_file(path, 65536)
+        if ready_bytes is None:
+            errors.append(
+                f"{prefix} rank ready evidence is not a bounded regular file: "
+                f"{path.name}"
+            )
+            continue
         try:
-            ready = json.loads(path.read_text(encoding="utf-8"))
-        except json.JSONDecodeError as error:
+            ready = json.loads(ready_bytes.decode("utf-8"))
+        except (UnicodeDecodeError, json.JSONDecodeError) as error:
             errors.append(f"{prefix} invalid rank ready JSON {path.name}: {error}")
             continue
         incoming_environment = ready.get("incoming_environment_normalization")
@@ -1576,7 +1767,7 @@ def _validate_runtime_relocation_audit_evidence(
         if ready != expected_ready:
             errors.append(f"{prefix} rank {rank} ready evidence mismatch")
     for path in release_paths:
-        if path.is_symlink() or path.read_bytes() != b"release\n":
+        if _read_bounded_regular_file(path, len(b"release\n")) != b"release\n":
             errors.append(f"{prefix} rank release evidence mismatch: {path.name}")
     expected_terminal = {
         "ready_files": expected_ready_names,
@@ -1616,6 +1807,16 @@ def _validate_runtime_relocation_audit_evidence(
     execve_records = parse_execve_records(trace_records)
     if audit.get("observed_execve_records") != execve_records:
         errors.append(f"{prefix} execve evidence differs from raw strace")
+    errors.extend(
+        f"{prefix} {failure}"
+        for failure in _launcher_exec_pid_contract_failures(
+            launcher_pid,
+            execve_records,
+            replay["launcher"]["realpath"],
+            audit.get("launcher_successful_exec_pids"),
+            audit.get("launcher_discovery"),
+        )
+    )
     successful_execs = [row["path"] for row in execve_records if row.get("successful")]
     expected_execs = {
         replay["mpirun"]["realpath"]: 1,
@@ -1672,6 +1873,15 @@ def _validate_runtime_relocation_audit_evidence(
         audit_spec["rank_count"],
     )
     errors.extend(f"{prefix} {failure}" for failure in role_failures)
+    errors.extend(
+        f"{prefix} {failure}"
+        for failure in _process_start_time_contract_failures(
+            processes,
+            terminal_process,
+            launcher_pid,
+            audit.get("launcher_discovery"),
+        )
+    )
     terminal_failures = _known_pid_terminal_contract_failures(
         terminal_process,
         trace_pids,

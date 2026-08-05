@@ -72,10 +72,123 @@ class S1MpiPrefixEquivalenceTest(unittest.TestCase):
             )
         )
 
+    def test_raw_launcher_exec_is_authoritative_over_live_thread_candidates(
+        self,
+    ) -> None:
+        with tempfile.TemporaryDirectory() as temporary:
+            root = Path(temporary)
+            directory = root / "strace"
+            directory.mkdir()
+            launcher = root / "prte"
+            launcher.write_text("launcher\n")
+            (directory / "trace.17").write_text(
+                f'execve("{launcher}", ["prterun"], 0x1) = 0\n'
+            )
+            (directory / "trace.18").write_text(
+                "clone(child_stack=0x1, flags=CLONE_THREAD) = 19\n"
+            )
+            (directory / "trace.19").write_text("")
+            exec_pids, trace_failures = (
+                AUDIT._launcher_exec_pids_from_trace_directory(
+                    directory, launcher
+                )
+            )
+            self.assertEqual(exec_pids, [17])
+            self.assertEqual(trace_failures, [])
+            launcher_pid, evidence, failures = AUDIT._select_launcher_pid(
+                launcher, exec_pids, {17, 18, 19}, 1234
+            )
+            self.assertEqual(launcher_pid, 17)
+            self.assertEqual(failures, [])
+            self.assertEqual(
+                evidence["live_proc_exe_candidate_pids"], [17, 18, 19]
+            )
+
+            no_pid, _, failures = AUDIT._select_launcher_pid(
+                launcher, [], {17, 18, 19}, None
+            )
+            self.assertIsNone(no_pid)
+            self.assertTrue(failures)
+            duplicate_pid, _, failures = AUDIT._select_launcher_pid(
+                launcher, [17, 18], {17, 18, 19}, 1234
+            )
+            self.assertIsNone(duplicate_pid)
+            self.assertTrue(failures)
+            dead_pid, _, failures = AUDIT._select_launcher_pid(
+                launcher, [17], {18, 19}, 1234
+            )
+            self.assertIsNone(dead_pid)
+            self.assertTrue(failures)
+
+    def test_validator_binds_launcher_pid_to_role_independent_raw_exec(
+        self,
+    ) -> None:
+        launcher = "/recovery/bin/prte"
+        records = AUDIT.parse_execve_records(
+            [
+                {
+                    "pid": 17,
+                    "role": "support",
+                    "rank": None,
+                    "line": (
+                        'execve("/recovery/bin/prte", ["prterun"], 0x1) = 0'
+                    ),
+                }
+            ]
+        )
+        discovery = {
+            "schema_version": 1,
+            "method": "unique_successful_execve_with_live_proc_exe_confirmation",
+            "expected_launcher_realpath": launcher,
+            "successful_exec_pids": [17],
+            "live_proc_exe_candidate_pids": [17, 18, 19],
+            "authoritative_launcher_pid": 17,
+            "authoritative_pid_start_time_ticks": 1234,
+            "authoritative_pid_live_at_handshake": True,
+        }
+        self.assertEqual(
+            VALIDATOR._launcher_exec_pid_contract_failures(
+                17, records, launcher, [17], discovery
+            ),
+            [],
+        )
+        self.assertTrue(
+            VALIDATOR._launcher_exec_pid_contract_failures(
+                18, records, launcher, [17], discovery
+            )
+        )
+        self.assertTrue(
+            VALIDATOR._launcher_exec_pid_contract_failures(
+                17, [*records, *records], launcher, [17, 17], discovery
+            )
+        )
+        processes = [{"pid": 17, "observed_start_time_ticks": 1234}]
+        terminal = {
+            "known_pids": [
+                {"pid": 17, "observed_start_time_ticks": 1234}
+            ]
+        }
+        self.assertEqual(
+            VALIDATOR._process_start_time_contract_failures(
+                processes, terminal, 17, discovery
+            ),
+            [],
+        )
+        processes[0]["observed_start_time_ticks"] = 5678
+        self.assertTrue(
+            VALIDATOR._process_start_time_contract_failures(
+                processes, terminal, 17, discovery
+            )
+        )
+
     def test_known_pid_terminal_proof_covers_every_independent_channel(self) -> None:
         sources = {
             100: ["strace_root"],
-            101: ["launcher_discovery", "strace_trace_file"],
+            101: [
+                "launcher_proc_exe_live",
+                "launcher_strace_exec",
+                "strace_trace_file",
+            ],
             102: ["rank_handshake", "strace_trace_file"],
             103: ["rank_handshake", "strace_trace_file"],
             104: ["rank_handshake", "strace_trace_file"],
@@ -186,7 +299,7 @@ class S1MpiPrefixEquivalenceTest(unittest.TestCase):
         spliced_launcher["known_pids"][-1]["sources"] = sorted(
             [
                 *spliced_launcher["known_pids"][-1]["sources"],
-                "launcher_discovery",
+                "launcher_strace_exec",
             ]
         )
         self.assertTrue(
@@ -897,6 +1010,128 @@ class S1MpiPrefixEquivalenceTest(unittest.TestCase):
                     incoming, "/recovery", "/recovery/lib"
                 )
             )
+
+    def test_rank_wrapper_rejects_abort_partial_and_symlink_release_tokens(
+        self,
+    ) -> None:
+        target = Path("/usr/bin/true").resolve()
+        cases = (
+            "abort",
+            "abort_token",
+            "empty",
+            "partial",
+            "symlink",
+            "fifo",
+        )
+        for case in cases:
+            with self.subTest(case=case), tempfile.TemporaryDirectory() as temporary:
+                handshake = Path(temporary) / "handshake"
+                release_directory = handshake / "release"
+                release_directory.mkdir(parents=True)
+                release = release_directory / "rank-0"
+                if case == "abort":
+                    release.write_bytes(b"release\n")
+                    (handshake / "abort").write_bytes(b"abort\n")
+                elif case == "abort_token":
+                    release.write_bytes(b"abort\n")
+                elif case == "empty":
+                    release.write_bytes(b"")
+                elif case == "partial":
+                    release.write_bytes(b"rele")
+                elif case == "symlink":
+                    target_token = handshake / "linked-release"
+                    target_token.write_bytes(b"release\n")
+                    release.symlink_to(target_token)
+                else:
+                    os.mkfifo(release)
+                completed = subprocess.run(
+                    [
+                        sys.executable,
+                        str(SCRIPTS / "runtime_relocation_rank_wrapper.py"),
+                        str(target),
+                    ],
+                    env={
+                        **os.environ,
+                        "OMPI_COMM_WORLD_RANK": "0",
+                        "PMIX_RANK": "0",
+                        "M_OFDFT_RANK_HANDSHAKE_DIR": str(handshake),
+                        "M_OFDFT_MPI_AUDIT_EXPECTED_RANKS": "4",
+                        "M_OFDFT_EXPECTED_ABACUS": str(target),
+                        "M_OFDFT_RECOVERY_PREFIX": "/recovery",
+                        "OPAL_PREFIX": "/recovery",
+                        "PRTE_PREFIX": "",
+                        "PMIX_PREFIX": "/recovery",
+                        "UCX_MODULE_DIR": "/recovery",
+                        "LD_LIBRARY_PATH": "/recovery/lib",
+                        "CUDA_CACHE_DISABLE": "1",
+                    },
+                    check=False,
+                    text=True,
+                    capture_output=True,
+                    timeout=10,
+                )
+                self.assertEqual(completed.returncode, 98, completed.stderr)
+                failure = json.loads(
+                    (handshake / "failure/rank-0.json").read_text()
+                )
+                self.assertIn(
+                    failure["status"],
+                    {
+                        "audit_aborted",
+                        "audit_aborted_after_release",
+                        "invalid_release_token",
+                    },
+                )
+
+    def test_audit_control_tokens_are_atomically_published(self) -> None:
+        with tempfile.TemporaryDirectory() as temporary:
+            path = Path(temporary) / "rank-0"
+            AUDIT._atomic_control_token(path, b"release\n")
+            self.assertEqual(path.read_bytes(), b"release\n")
+            AUDIT._atomic_control_token(path, b"release\n")
+            with self.assertRaises(FileExistsError):
+                AUDIT._atomic_control_token(path, b"abort\n")
+            self.assertEqual(
+                sorted(candidate.name for candidate in path.parent.iterdir()),
+                ["rank-0"],
+            )
+
+    def test_validator_never_blocks_on_special_handshake_files(self) -> None:
+        with tempfile.TemporaryDirectory() as temporary:
+            root = Path(temporary)
+            regular = root / "regular"
+            regular.write_bytes(b"release\n")
+            self.assertEqual(
+                VALIDATOR._read_bounded_regular_file(regular, 8),
+                b"release\n",
+            )
+            linked = root / "linked"
+            linked.symlink_to(regular)
+            self.assertIsNone(
+                VALIDATOR._read_bounded_regular_file(linked, 8)
+            )
+            fifo = root / "fifo"
+            os.mkfifo(fifo)
+            completed = subprocess.run(
+                [
+                    sys.executable,
+                    "-c",
+                    (
+                        "import sys; from pathlib import Path; "
+                        "sys.path.insert(0, sys.argv[2]); "
+                        "import validate_s1_mpi_prefix_equivalence as module; "
+                        "print(module._read_bounded_regular_file(Path(sys.argv[1]), 8))"
+                    ),
+                    str(fifo),
+                    str(SCRIPTS),
+                ],
+                check=False,
+                text=True,
+                capture_output=True,
+                timeout=5,
+            )
+            self.assertEqual(completed.returncode, 0, completed.stderr)
+            self.assertEqual(completed.stdout.strip(), "None")
 
     def test_rank_wrapper_rejects_foreign_library_components(self) -> None:
         environment = {
