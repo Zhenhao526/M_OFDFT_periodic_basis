@@ -1,0 +1,83 @@
+{
+  "failed_attempts": 0,
+  "passed": true,
+  "recommended_ecutwfc_ry": 40.0,
+  "rows": [
+    {
+      "attempts": [
+        {
+          "code_commit": "fa76d6d98463d39eec5b14d180511b3114924e6a",
+          "converged": true,
+          "energy_ev_per_atom": -24.65641895394327,
+          "experiment_id": "S1-20260805-013",
+          "failure_reason": null,
+          "pressure_gpa": -2.9370424
+        }
+      ],
+      "chosen": {
+        "code_commit": "fa76d6d98463d39eec5b14d180511b3114924e6a",
+        "converged": true,
+        "energy_ev_per_atom": -24.65641895394327,
+        "experiment_id": "S1-20260805-013",
+        "failure_reason": null,
+        "pressure_gpa": -2.9370424
+      },
+      "delta_pressure_to_next_gpa": 2.959999999996299e-05,
+      "delta_to_next_mev_per_atom": 0.0014054448698175293,
+      "ecutwfc_ry": 40.0,
+      "passes_next_step": true
+    },
+    {
+      "attempts": [
+        {
+          "code_commit": "7b300ce66665274cab0174e1a92305d2e602c2fa",
+          "converged": true,
+          "energy_ev_per_atom": -24.65642035938814,
+          "experiment_id": "S1-20260805-014",
+          "failure_reason": null,
+          "pressure_gpa": -2.9370128
+        }
+      ],
+      "chosen": {
+        "code_commit": "7b300ce66665274cab0174e1a92305d2e602c2fa",
+        "converged": true,
+        "energy_ev_per_atom": -24.65642035938814,
+        "experiment_id": "S1-20260805-014",
+        "failure_reason": null,
+        "pressure_gpa": -2.9370128
+      },
+      "delta_pressure_to_next_gpa": 1.3999999999292356e-06,
+      "delta_to_next_mev_per_atom": 5.019012405682588e-05,
+      "ecutwfc_ry": 60.0,
+      "passes_next_step": true
+    },
+    {
+      "attempts": [
+        {
+          "code_commit": "3c117068a64a5880347ccbe3dea06cfa27335b9c",
+          "converged": true,
+          "energy_ev_per_atom": -24.656420409578264,
+          "experiment_id": "S1-20260805-015",
+          "failure_reason": null,
+          "pressure_gpa": -2.9370114000000003
+        }
+      ],
+      "chosen": {
+        "code_commit": "3c117068a64a5880347ccbe3dea06cfa27335b9c",
+        "converged": true,
+        "energy_ev_per_atom": -24.656420409578264,
+        "experiment_id": "S1-20260805-015",
+        "failure_reason": null,
+        "pressure_gpa": -2.9370114000000003
+      },
+      "delta_pressure_to_next_gpa": null,
+      "delta_to_next_mev_per_atom": null,
+      "ecutwfc_ry": 80.0,
+      "passes_next_step": null
+    }
+  ],
+  "thresholds": {
+    "energy_mev_per_atom": 1.0,
+    "pressure_gpa": 0.02
+  }
+}
