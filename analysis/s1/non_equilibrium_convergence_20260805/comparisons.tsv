@@ -1,0 +1,7 @@
+material	series_id	comparison_axis	max_relative_energy_difference_mev_per_atom	max_pressure_difference_gpa	status
+al	ofdft_next_cutoff	cutoff	0.001538732988137781	0.00017029999999884637	accepted
+al	ksdft_next_cutoff	cutoff	0.006794399993736988	0.007118899999998263	accepted
+al	ksdft_next_kmesh	kmesh	0.39250369999876966	0.030742799999999626	accepted
+mg	ofdft_next_cutoff	cutoff	7.179245642419119e-06	4.3100000000073635e-05	accepted
+mg	ksdft_next_cutoff	cutoff	0.0007054500024139543	0.00010210000000032693	accepted
+mg	ksdft_next_kmesh	kmesh	0.40314955000297914	0.017168399999999973	accepted

@@ -1,0 +1,1764 @@
+{
+  "accepted_comparisons": 6,
+  "analysis_provenance": {
+    "analyzer_code_commit": "9010eed2f4ab0cf9032eae622195abe1a7ae8e24",
+    "analyzer_script_sha256": "6a4f4346fe76bccdb085592aa1cda943144a3502513dc0d47121ae3363f619c9",
+    "config_path": "config/S1_non_equilibrium_convergence.json",
+    "config_sha256": "17e511669893cf8c4b7d4512da8b96d0bde42ac0f71c5e4daaacf03c747482dc",
+    "core_summary_path": "analysis/s1/core_eos_20260805/summary.json",
+    "core_summary_sha256": "508b84a1f6f26edc2cd3de8c3b7d3970fbe2fabb6b6a646dca8ea87b7e2e771d",
+    "input_abacus_sha256_values": [
+      "2d68a57c7b25608b3550854dabc2e63601eeca956bf185ad7d0967052bdbb4ba"
+    ],
+    "input_code_commits": [
+      "03a82e2c4ac625d4be399b669fac004751ec62c1",
+      "09dc2d6dbdda98217d94f9faf570d22e40d5877e",
+      "0efdc629fb0c3bffbb2bfeb6e3b5a797fb3047b1",
+      "19aa9e0a7cb44b0bd66bb4e3a19d564bdf515849",
+      "1c88a66ef606eb2fd607194a13d1c89531e76d0b",
+      "41b9987a5f5a75b938a4bf896a1d0ec81fb0ecf3",
+      "499c8414656006b345990b0ae15be622c238ac0a",
+      "4c0a7c9861000fce15a27eec7b5f8abb2395a40c",
+      "4c1717981861beba69873ea59a056921dfa11250",
+      "5e92cf7b05bda1a656c0d4094001ff04298c7cad",
+      "611781dc4341bbbe34a06baf8c2f7372b3a5d6df",
+      "6376033b34dd7ff54ca5e3b2f1c1447021d24f28",
+      "6afd82a05c7187b3b428d3ac13231de16daabb2f",
+      "6b4f6e633206b2087314850a176e1e92d430a70d",
+      "7dceb19970858ff1ebfd0d317006cba803eecae0",
+      "7e6b04da11631e685380e7f83e9801dabe20ec7c",
+      "7f917f80af5e70784be81438b5cb2f593d1bb9b9",
+      "9079fd66ae26ce3306ba6dff013156252ce110ae",
+      "9512553f47dc59430bb2be11a3b903e07e7e33c3",
+      "991393098eb224e6e2f79ffda1517789d9c12a94",
+      "9fffd2ed4cfb5d47f6e503a9fb790fc0533e3abd",
+      "b53306def94f970948efce0a9a62006f63a06d4d",
+      "b98bbecc6da578422d4169bb6f39e8f3acf7ced1",
+      "bab48c583d10028490de803887dcada4cfb4228c",
+      "badc1b959e77619d3ceab4b706fd4b986f63112a",
+      "c1739a59ef30c5212c6347be239e5e585b05a4c3",
+      "c25cefd078a89a2cc0db911d3e2f0d7b5746a0e5",
+      "c5ca6518a3b8343d972fa2693a2cb7a1babf260f",
+      "c9d809a9d89f08b9f80a1fb0efffbd3b675e2b02",
+      "cac9b4c92cc2ade1e275803859c046ba3ab4f589",
+      "d16e457634a119d58526833abb411422bddb1ff2",
+      "da4870d2b6f2141579ffe9e93e819263068d9f89",
+      "ddac43b22934673cd8287cef33006d15c662f3ef",
+      "df0a15613881225b857b4b6702615a3a1c4f508c",
+      "e649fabe2ac555ed8c649832a55ad13152cf0e2d",
+      "e7ccfac26bd88565e3cd6e28e581d43678b7bab6",
+      "ebf7c139fc3e9bd90094198b72707c791e7936b8",
+      "ef63306af2fdd3e048d521419f677826fca4da35",
+      "ef94f3bf11a6ffc3aa409daa4a3ed938c95313ff",
+      "f6f1c525dfb96a99ad8ffa9ddb634c02693f067c",
+      "fd4e681ecf4c858a62a9ea505246d205cab0b1b4",
+      "fede7a9a85a541b6a7b01bc5f39d43a6fab50350"
+    ],
+    "manifest_path": "config/S1_non_equilibrium_run_manifest.tsv",
+    "manifest_sha256": "7498616f5a1e0effcbb1af97db6bd4c8e49b70e03197782786f3b6c69df940df",
+    "preregistration_commit": "d6ffe59256b3ad0dbbaedfc81fd13e9740042c08",
+    "result_parser_script_sha256": "458e20f451bd998405923adb69942ed8e5161923aef602cf86ffa0a7212979ce"
+  },
+  "energy_observables": {
+    "ksdft_interpretation": "entropy_corrected_estimator_not_exact_zero_temperature_label",
+    "ksdft_machine_field": "zero_temp_extrapolated_energy_ev_per_atom",
+    "ofdft": "total_energy"
+  },
+  "expected_calculations": 42,
+  "failures": [],
+  "g1_pending": [
+    "integrated_electron_number_check_not_nominal_input_count",
+    "third_smearing_or_ultradense_k_density_potential_derivative_label_audit",
+    "independent_ofdft_cross_code_eos_pressure_check",
+    "ks_nonlocal_to_ks_local_to_of_local_three_layer_validation",
+    "small_displacement_strain_reference_density_and_energy_component_delivery",
+    "ten_case_one_command_regeneration_failure_rate"
+  ],
+  "g1_status": "pending",
+  "manifest_validation": {
+    "config_sha256": "17e511669893cf8c4b7d4512da8b96d0bde42ac0f71c5e4daaacf03c747482dc",
+    "experiment_count": 42,
+    "first_experiment_id": "S1-20260805-071",
+    "last_experiment_id": "S1-20260805-112",
+    "manifest_sha256": "7498616f5a1e0effcbb1af97db6bd4c8e49b70e03197782786f3b6c69df940df",
+    "preregistration_commit": "d6ffe59256b3ad0dbbaedfc81fd13e9740042c08"
+  },
+  "s1_r8_status": "accepted",
+  "selected_calculations": 42,
+  "series": {
+    "al/ksdft_next_cutoff": {
+      "baseline_series_id": "ksdft_standard",
+      "comparison": {
+        "max_pressure_difference_gpa": 0.007118899999998263,
+        "max_relative_energy_difference_mev_per_atom": 0.006794399993736988,
+        "pressure_acceptance_role": "hard_gate",
+        "pressure_passed": true,
+        "relative_energy_passed": true,
+        "rows": [
+          {
+            "baseline_experiment_id": "S1-20260805-036",
+            "baseline_pressure_gpa": 10.270216000000001,
+            "baseline_relative_energy_mev_per_atom": 47.06376110000576,
+            "pressure_difference_gpa": 0.007118899999998263,
+            "refined_experiment_id": "S1-20260805-078",
+            "refined_pressure_gpa": 10.2773349,
+            "refined_relative_energy_mev_per_atom": 47.06423470000232,
+            "relative_energy_difference_mev_per_atom": 0.00047359999655327556,
+            "volume_ratio": 0.9
+          },
+          {
+            "baseline_experiment_id": "S1-20260805-037",
+            "baseline_pressure_gpa": 5.3773578,
+            "baseline_relative_energy_mev_per_atom": 15.180250200003798,
+            "pressure_difference_gpa": 0.006824299999999894,
+            "refined_experiment_id": "S1-20260805-079",
+            "refined_pressure_gpa": 5.3841821,
+            "refined_relative_energy_mev_per_atom": 15.179858400003354,
+            "relative_energy_difference_mev_per_atom": -0.00039180000044325425,
+            "volume_ratio": 0.94
+          },
+          {
+            "baseline_experiment_id": "S1-20260805-038",
+            "baseline_pressure_gpa": 2.3872755000000003,
+            "baseline_relative_energy_mev_per_atom": 3.337921800003585,
+            "pressure_difference_gpa": 0.006634099999999865,
+            "refined_experiment_id": "S1-20260805-080",
+            "refined_pressure_gpa": 2.3939096,
+            "refined_relative_energy_mev_per_atom": 3.337778800002411,
+            "relative_energy_difference_mev_per_atom": -0.00014300000117373202,
+            "volume_ratio": 0.97
+          },
+          {
+            "baseline_experiment_id": "S1-20260805-039",
+            "baseline_pressure_gpa": -0.1202419,
+            "baseline_relative_energy_mev_per_atom": 0.0,
+            "pressure_difference_gpa": 0.006419999999999981,
+            "refined_experiment_id": "S1-20260805-081",
+            "refined_pressure_gpa": -0.11382190000000002,
+            "refined_relative_energy_mev_per_atom": 0.0,
+            "relative_energy_difference_mev_per_atom": 0.0,
+            "volume_ratio": 1.0
+          },
+          {
+            "baseline_experiment_id": "S1-20260805-040",
+            "baseline_pressure_gpa": -2.2200985,
+            "baseline_relative_energy_mev_per_atom": 3.7917500000048676,
+            "pressure_difference_gpa": 0.006025700000000356,
+            "refined_experiment_id": "S1-20260805-082",
+            "refined_pressure_gpa": -2.2140728,
+            "refined_relative_energy_mev_per_atom": 3.7926583000000846,
+            "relative_energy_difference_mev_per_atom": 0.0009082999952170212,
+            "volume_ratio": 1.03
+          },
+          {
+            "baseline_experiment_id": "S1-20260805-041",
+            "baseline_pressure_gpa": -3.9742586000000006,
+            "baseline_relative_energy_mev_per_atom": 13.558772300001465,
+            "pressure_difference_gpa": 0.005822100000000496,
+            "refined_experiment_id": "S1-20260805-083",
+            "refined_pressure_gpa": -3.9684365,
+            "refined_relative_energy_mev_per_atom": 13.561473599999374,
+            "relative_energy_difference_mev_per_atom": 0.0027012999979092456,
+            "volume_ratio": 1.06
+          },
+          {
+            "baseline_experiment_id": "S1-20260805-042",
+            "baseline_pressure_gpa": -5.862386600000001,
+            "baseline_relative_energy_mev_per_atom": 34.19030160000602,
+            "pressure_difference_gpa": 0.005456099999999964,
+            "refined_experiment_id": "S1-20260805-084",
+            "refined_pressure_gpa": -5.856930500000001,
+            "refined_relative_energy_mev_per_atom": 34.19709599999976,
+            "relative_energy_difference_mev_per_atom": 0.006794399993736988,
+            "volume_ratio": 1.1
+          }
+        ],
+        "status": "accepted",
+        "thresholds": {
+          "comparison": "strict_less_than",
+          "max_pressure_difference_gpa": 0.02,
+          "max_relative_energy_difference_mev_per_atom": 1.0
+        }
+      },
+      "comparison_axis": "cutoff",
+      "failures": [],
+      "fit": {
+        "b0_ev_per_angstrom3": 0.47948197453519226,
+        "b0_gpa": 76.8214809695306,
+        "b0_prime": 4.8682539038360195,
+        "e0_ev_per_atom": -57.19416493078168,
+        "max_abs_residual_mev_per_atom": 0.009295506288253819,
+        "rmse_mev_per_atom": 0.005606401114633684,
+        "sampled_shape_diagnostic": {
+          "acceptance_role": "diagnostic_only",
+          "discrete_minimum_at_sampled_endpoint": false,
+          "discrete_minimum_volume_ratio": 1.0
+        },
+        "v0_angstrom3_per_atom": 16.57711054527054
+      },
+      "fit_failures": [],
+      "material": "al",
+      "points": [
+        {
+          "abacus_sha256": "2d68a57c7b25608b3550854dabc2e63601eeca956bf185ad7d0967052bdbb4ba",
+          "code_commit": "b53306def94f970948efce0a9a62006f63a06d4d",
+          "converged": true,
+          "ecutrho_ry": 240,
+          "ecutwfc_ry": 60,
+          "energy_ev_per_atom": -57.1470940667,
+          "energy_observable": "zero_temp_extrapolated_energy",
+          "experiment_id": "S1-20260805-078",
+          "kmesh": [
+            24,
+            24,
+            24
+          ],
+          "material": "al",
+          "pressure_gpa": 10.2773349,
+          "series_id": "ksdft_next_cutoff",
+          "smearing_sigma_ry": 0.00734986,
+          "solver": "ksdft",
+          "stru_sha256": "78f39f8f09367c41279248b1772a2dbe9dd77d2839931891ce5696b7ebac7fea",
+          "volume_per_atom_angstrom3": 14.946778124999998,
+          "volume_ratio": 0.9
+        },
+        {
+          "abacus_sha256": "2d68a57c7b25608b3550854dabc2e63601eeca956bf185ad7d0967052bdbb4ba",
+          "code_commit": "611781dc4341bbbe34a06baf8c2f7372b3a5d6df",
+          "converged": true,
+          "ecutrho_ry": 240,
+          "ecutwfc_ry": 60,
+          "energy_ev_per_atom": -57.178978443,
+          "energy_observable": "zero_temp_extrapolated_energy",
+          "experiment_id": "S1-20260805-079",
+          "kmesh": [
+            24,
+            24,
+            24
+          ],
+          "material": "al",
+          "pressure_gpa": 5.3841821,
+          "series_id": "ksdft_next_cutoff",
+          "smearing_sigma_ry": 0.00734986,
+          "solver": "ksdft",
+          "stru_sha256": "6cce927335466a5ae8bd542f80cc149f85513eb6fd68ef5adc3399a79f7b3fb4",
+          "volume_per_atom_angstrom3": 15.611079375000001,
+          "volume_ratio": 0.94
+        },
+        {
+          "abacus_sha256": "2d68a57c7b25608b3550854dabc2e63601eeca956bf185ad7d0967052bdbb4ba",
+          "code_commit": "9079fd66ae26ce3306ba6dff013156252ce110ae",
+          "converged": true,
+          "ecutrho_ry": 240,
+          "ecutwfc_ry": 60,
+          "energy_ev_per_atom": -57.1908205226,
+          "energy_observable": "zero_temp_extrapolated_energy",
+          "experiment_id": "S1-20260805-080",
+          "kmesh": [
+            24,
+            24,
+            24
+          ],
+          "material": "al",
+          "pressure_gpa": 2.3939096,
+          "series_id": "ksdft_next_cutoff",
+          "smearing_sigma_ry": 0.00734986,
+          "solver": "ksdft",
+          "stru_sha256": "afbc4693ab7f9da60ef2058d39a42af782e41982f8e64f06ee52a66b76c4150f",
+          "volume_per_atom_angstrom3": 16.109305312500002,
+          "volume_ratio": 0.97
+        },
+        {
+          "abacus_sha256": "2d68a57c7b25608b3550854dabc2e63601eeca956bf185ad7d0967052bdbb4ba",
+          "code_commit": "fede7a9a85a541b6a7b01bc5f39d43a6fab50350",
+          "converged": true,
+          "ecutrho_ry": 240,
+          "ecutwfc_ry": 60,
+          "energy_ev_per_atom": -57.1941583014,
+          "energy_observable": "zero_temp_extrapolated_energy",
+          "experiment_id": "S1-20260805-081",
+          "kmesh": [
+            24,
+            24,
+            24
+          ],
+          "material": "al",
+          "pressure_gpa": -0.11382190000000002,
+          "series_id": "ksdft_next_cutoff",
+          "smearing_sigma_ry": 0.00734986,
+          "solver": "ksdft",
+          "stru_sha256": "31279eb4f9a5a6ad20376271c79c03a8ead1676cb697b5065515041f6799d437",
+          "volume_per_atom_angstrom3": 16.607531249999997,
+          "volume_ratio": 1.0
+        },
+        {
+          "abacus_sha256": "2d68a57c7b25608b3550854dabc2e63601eeca956bf185ad7d0967052bdbb4ba",
+          "code_commit": "f6f1c525dfb96a99ad8ffa9ddb634c02693f067c",
+          "converged": true,
+          "ecutrho_ry": 240,
+          "ecutwfc_ry": 60,
+          "energy_ev_per_atom": -57.1903656431,
+          "energy_observable": "zero_temp_extrapolated_energy",
+          "experiment_id": "S1-20260805-082",
+          "kmesh": [
+            24,
+            24,
+            24
+          ],
+          "material": "al",
+          "pressure_gpa": -2.2140728,
+          "series_id": "ksdft_next_cutoff",
+          "smearing_sigma_ry": 0.00734986,
+          "solver": "ksdft",
+          "stru_sha256": "2f36cb943594eb0cc81dcd3e7b6fd906e9e5da6f898fc5cfa9065db72589a683",
+          "volume_per_atom_angstrom3": 17.105757187499997,
+          "volume_ratio": 1.03
+        },
+        {
+          "abacus_sha256": "2d68a57c7b25608b3550854dabc2e63601eeca956bf185ad7d0967052bdbb4ba",
+          "code_commit": "c25cefd078a89a2cc0db911d3e2f0d7b5746a0e5",
+          "converged": true,
+          "ecutrho_ry": 240,
+          "ecutwfc_ry": 60,
+          "energy_ev_per_atom": -57.1805968278,
+          "energy_observable": "zero_temp_extrapolated_energy",
+          "experiment_id": "S1-20260805-083",
+          "kmesh": [
+            24,
+            24,
+            24
+          ],
+          "material": "al",
+          "pressure_gpa": -3.9684365,
+          "series_id": "ksdft_next_cutoff",
+          "smearing_sigma_ry": 0.00734986,
+          "solver": "ksdft",
+          "stru_sha256": "c178b63db14ecf1fb24c1daaa8dd0db5803f5f584865bb537393b8cb108f2d36",
+          "volume_per_atom_angstrom3": 17.603983125,
+          "volume_ratio": 1.06
+        },
+        {
+          "abacus_sha256": "2d68a57c7b25608b3550854dabc2e63601eeca956bf185ad7d0967052bdbb4ba",
+          "code_commit": "1c88a66ef606eb2fd607194a13d1c89531e76d0b",
+          "converged": true,
+          "ecutrho_ry": 240,
+          "ecutwfc_ry": 60,
+          "energy_ev_per_atom": -57.1599612054,
+          "energy_observable": "zero_temp_extrapolated_energy",
+          "experiment_id": "S1-20260805-084",
+          "kmesh": [
+            24,
+            24,
+            24
+          ],
+          "material": "al",
+          "pressure_gpa": -5.856930500000001,
+          "series_id": "ksdft_next_cutoff",
+          "smearing_sigma_ry": 0.00734986,
+          "solver": "ksdft",
+          "stru_sha256": "c3bbf795bf196b357cd95e7d4ba619229ad687896346ffe1bfd19a3ed463cfb1",
+          "volume_per_atom_angstrom3": 18.268284375000007,
+          "volume_ratio": 1.1
+        }
+      ],
+      "provenance_failures": [],
+      "series_id": "ksdft_next_cutoff",
+      "status": "accepted"
+    },
+    "al/ksdft_next_kmesh": {
+      "baseline_series_id": "ksdft_standard",
+      "comparison": {
+        "max_pressure_difference_gpa": 0.030742799999999626,
+        "max_relative_energy_difference_mev_per_atom": 0.39250369999876966,
+        "pressure_acceptance_role": "diagnostic_only",
+        "pressure_passed": true,
+        "relative_energy_passed": true,
+        "rows": [
+          {
+            "baseline_experiment_id": "S1-20260805-036",
+            "baseline_pressure_gpa": 10.270216000000001,
+            "baseline_relative_energy_mev_per_atom": 47.06376110000576,
+            "pressure_difference_gpa": 0.0003530000000004918,
+            "refined_experiment_id": "S1-20260805-085",
+            "refined_pressure_gpa": 10.270569000000002,
+            "refined_relative_energy_mev_per_atom": 46.81733330000526,
+            "relative_energy_difference_mev_per_atom": -0.2464278000005038,
+            "volume_ratio": 0.9
+          },
+          {
+            "baseline_experiment_id": "S1-20260805-037",
+            "baseline_pressure_gpa": 5.3773578,
+            "baseline_relative_energy_mev_per_atom": 15.180250200003798,
+            "pressure_difference_gpa": -0.013616900000000598,
+            "refined_experiment_id": "S1-20260805-086",
+            "refined_pressure_gpa": 5.3637409,
+            "refined_relative_energy_mev_per_atom": 14.996913899999242,
+            "relative_energy_difference_mev_per_atom": -0.18333630000455514,
+            "volume_ratio": 0.94
+          },
+          {
+            "baseline_experiment_id": "S1-20260805-038",
+            "baseline_pressure_gpa": 2.3872755000000003,
+            "baseline_relative_energy_mev_per_atom": 3.337921800003585,
+            "pressure_difference_gpa": -0.020091800000000326,
+            "refined_experiment_id": "S1-20260805-087",
+            "refined_pressure_gpa": 2.3671837,
+            "refined_relative_energy_mev_per_atom": 3.2379648000002703,
+            "relative_energy_difference_mev_per_atom": -0.09995700000331453,
+            "volume_ratio": 0.97
+          },
+          {
+            "baseline_experiment_id": "S1-20260805-039",
+            "baseline_pressure_gpa": -0.1202419,
+            "baseline_relative_energy_mev_per_atom": 0.0,
+            "pressure_difference_gpa": -0.02483980000000001,
+            "refined_experiment_id": "S1-20260805-088",
+            "refined_pressure_gpa": -0.1450817,
+            "refined_relative_energy_mev_per_atom": 0.0,
+            "relative_energy_difference_mev_per_atom": 0.0,
+            "volume_ratio": 1.0
+          },
+          {
+            "baseline_experiment_id": "S1-20260805-040",
+            "baseline_pressure_gpa": -2.2200985,
+            "baseline_relative_energy_mev_per_atom": 3.7917500000048676,
+            "pressure_difference_gpa": -0.02799800000000019,
+            "refined_experiment_id": "S1-20260805-089",
+            "refined_pressure_gpa": -2.2480965000000004,
+            "refined_relative_energy_mev_per_atom": 3.903947200001312,
+            "relative_energy_difference_mev_per_atom": 0.1121971999964444,
+            "volume_ratio": 1.03
+          },
+          {
+            "baseline_experiment_id": "S1-20260805-041",
+            "baseline_pressure_gpa": -3.9742586000000006,
+            "baseline_relative_energy_mev_per_atom": 13.558772300001465,
+            "pressure_difference_gpa": -0.029729299999999625,
+            "refined_experiment_id": "S1-20260805-090",
+            "refined_pressure_gpa": -4.0039879,
+            "refined_relative_energy_mev_per_atom": 13.788751200003446,
+            "relative_energy_difference_mev_per_atom": 0.2299789000019814,
+            "volume_ratio": 1.06
+          },
+          {
+            "baseline_experiment_id": "S1-20260805-042",
+            "baseline_pressure_gpa": -5.862386600000001,
+            "baseline_relative_energy_mev_per_atom": 34.19030160000602,
+            "pressure_difference_gpa": -0.030742799999999626,
+            "refined_experiment_id": "S1-20260805-091",
+            "refined_pressure_gpa": -5.8931294,
+            "refined_relative_energy_mev_per_atom": 34.58280530000479,
+            "relative_energy_difference_mev_per_atom": 0.39250369999876966,
+            "volume_ratio": 1.1
+          }
+        ],
+        "status": "accepted",
+        "thresholds": {
+          "comparison": "strict_less_than",
+          "max_pressure_difference_gpa": null,
+          "max_relative_energy_difference_mev_per_atom": 2.0
+        }
+      },
+      "comparison_axis": "kmesh",
+      "failures": [],
+      "fit": {
+        "b0_ev_per_angstrom3": 0.4812812751601532,
+        "b0_gpa": 77.10976070904091,
+        "b0_prime": 4.885532921551193,
+        "e0_ev_per_atom": -57.194868839012294,
+        "max_abs_residual_mev_per_atom": 0.008623252163886264,
+        "rmse_mev_per_atom": 0.005200607285165539,
+        "sampled_shape_diagnostic": {
+          "acceptance_role": "diagnostic_only",
+          "discrete_minimum_at_sampled_endpoint": false,
+          "discrete_minimum_volume_ratio": 1.0
+        },
+        "v0_angstrom3_per_atom": 16.569773680162996
+      },
+      "fit_failures": [],
+      "material": "al",
+      "points": [
+        {
+          "abacus_sha256": "2d68a57c7b25608b3550854dabc2e63601eeca956bf185ad7d0967052bdbb4ba",
+          "code_commit": "b98bbecc6da578422d4169bb6f39e8f3acf7ced1",
+          "converged": true,
+          "ecutrho_ry": 160,
+          "ecutwfc_ry": 40,
+          "energy_ev_per_atom": -57.1480374062,
+          "energy_observable": "zero_temp_extrapolated_energy",
+          "experiment_id": "S1-20260805-085",
+          "kmesh": [
+            28,
+            28,
+            28
+          ],
+          "material": "al",
+          "pressure_gpa": 10.270569000000002,
+          "series_id": "ksdft_next_kmesh",
+          "smearing_sigma_ry": 0.00734986,
+          "solver": "ksdft",
+          "stru_sha256": "78f39f8f09367c41279248b1772a2dbe9dd77d2839931891ce5696b7ebac7fea",
+          "volume_per_atom_angstrom3": 14.946778124999998,
+          "volume_ratio": 0.9
+        },
+        {
+          "abacus_sha256": "2d68a57c7b25608b3550854dabc2e63601eeca956bf185ad7d0967052bdbb4ba",
+          "code_commit": "499c8414656006b345990b0ae15be622c238ac0a",
+          "converged": true,
+          "ecutrho_ry": 160,
+          "ecutwfc_ry": 40,
+          "energy_ev_per_atom": -57.1798578256,
+          "energy_observable": "zero_temp_extrapolated_energy",
+          "experiment_id": "S1-20260805-086",
+          "kmesh": [
+            28,
+            28,
+            28
+          ],
+          "material": "al",
+          "pressure_gpa": 5.3637409,
+          "series_id": "ksdft_next_kmesh",
+          "smearing_sigma_ry": 0.00734986,
+          "solver": "ksdft",
+          "stru_sha256": "6cce927335466a5ae8bd542f80cc149f85513eb6fd68ef5adc3399a79f7b3fb4",
+          "volume_per_atom_angstrom3": 15.611079375000001,
+          "volume_ratio": 0.94
+        },
+        {
+          "abacus_sha256": "2d68a57c7b25608b3550854dabc2e63601eeca956bf185ad7d0967052bdbb4ba",
+          "code_commit": "e649fabe2ac555ed8c649832a55ad13152cf0e2d",
+          "converged": true,
+          "ecutrho_ry": 160,
+          "ecutwfc_ry": 40,
+          "energy_ev_per_atom": -57.1916167747,
+          "energy_observable": "zero_temp_extrapolated_energy",
+          "experiment_id": "S1-20260805-087",
+          "kmesh": [
+            28,
+            28,
+            28
+          ],
+          "material": "al",
+          "pressure_gpa": 2.3671837,
+          "series_id": "ksdft_next_kmesh",
+          "smearing_sigma_ry": 0.00734986,
+          "solver": "ksdft",
+          "stru_sha256": "afbc4693ab7f9da60ef2058d39a42af782e41982f8e64f06ee52a66b76c4150f",
+          "volume_per_atom_angstrom3": 16.109305312500002,
+          "volume_ratio": 0.97
+        },
+        {
+          "abacus_sha256": "2d68a57c7b25608b3550854dabc2e63601eeca956bf185ad7d0967052bdbb4ba",
+          "code_commit": "41b9987a5f5a75b938a4bf896a1d0ec81fb0ecf3",
+          "converged": true,
+          "ecutrho_ry": 160,
+          "ecutwfc_ry": 40,
+          "energy_ev_per_atom": -57.1948547395,
+          "energy_observable": "zero_temp_extrapolated_energy",
+          "experiment_id": "S1-20260805-088",
+          "kmesh": [
+            28,
+            28,
+            28
+          ],
+          "material": "al",
+          "pressure_gpa": -0.1450817,
+          "series_id": "ksdft_next_kmesh",
+          "smearing_sigma_ry": 0.00734986,
+          "solver": "ksdft",
+          "stru_sha256": "31279eb4f9a5a6ad20376271c79c03a8ead1676cb697b5065515041f6799d437",
+          "volume_per_atom_angstrom3": 16.607531249999997,
+          "volume_ratio": 1.0
+        },
+        {
+          "abacus_sha256": "2d68a57c7b25608b3550854dabc2e63601eeca956bf185ad7d0967052bdbb4ba",
+          "code_commit": "19aa9e0a7cb44b0bd66bb4e3a19d564bdf515849",
+          "converged": true,
+          "ecutrho_ry": 160,
+          "ecutwfc_ry": 40,
+          "energy_ev_per_atom": -57.1909507923,
+          "energy_observable": "zero_temp_extrapolated_energy",
+          "experiment_id": "S1-20260805-089",
+          "kmesh": [
+            28,
+            28,
+            28
+          ],
+          "material": "al",
+          "pressure_gpa": -2.2480965000000004,
+          "series_id": "ksdft_next_kmesh",
+          "smearing_sigma_ry": 0.00734986,
+          "solver": "ksdft",
+          "stru_sha256": "2f36cb943594eb0cc81dcd3e7b6fd906e9e5da6f898fc5cfa9065db72589a683",
+          "volume_per_atom_angstrom3": 17.105757187499997,
+          "volume_ratio": 1.03
+        },
+        {
+          "abacus_sha256": "2d68a57c7b25608b3550854dabc2e63601eeca956bf185ad7d0967052bdbb4ba",
+          "code_commit": "cac9b4c92cc2ade1e275803859c046ba3ab4f589",
+          "converged": true,
+          "ecutrho_ry": 160,
+          "ecutwfc_ry": 40,
+          "energy_ev_per_atom": -57.1810659883,
+          "energy_observable": "zero_temp_extrapolated_energy",
+          "experiment_id": "S1-20260805-090",
+          "kmesh": [
+            28,
+            28,
+            28
+          ],
+          "material": "al",
+          "pressure_gpa": -4.0039879,
+          "series_id": "ksdft_next_kmesh",
+          "smearing_sigma_ry": 0.00734986,
+          "solver": "ksdft",
+          "stru_sha256": "c178b63db14ecf1fb24c1daaa8dd0db5803f5f584865bb537393b8cb108f2d36",
+          "volume_per_atom_angstrom3": 17.603983125,
+          "volume_ratio": 1.06
+        },
+        {
+          "abacus_sha256": "2d68a57c7b25608b3550854dabc2e63601eeca956bf185ad7d0967052bdbb4ba",
+          "code_commit": "df0a15613881225b857b4b6702615a3a1c4f508c",
+          "converged": true,
+          "ecutrho_ry": 160,
+          "ecutwfc_ry": 40,
+          "energy_ev_per_atom": -57.1602719342,
+          "energy_observable": "zero_temp_extrapolated_energy",
+          "experiment_id": "S1-20260805-091",
+          "kmesh": [
+            28,
+            28,
+            28
+          ],
+          "material": "al",
+          "pressure_gpa": -5.8931294,
+          "series_id": "ksdft_next_kmesh",
+          "smearing_sigma_ry": 0.00734986,
+          "solver": "ksdft",
+          "stru_sha256": "c3bbf795bf196b357cd95e7d4ba619229ad687896346ffe1bfd19a3ed463cfb1",
+          "volume_per_atom_angstrom3": 18.268284375000007,
+          "volume_ratio": 1.1
+        }
+      ],
+      "provenance_failures": [],
+      "series_id": "ksdft_next_kmesh",
+      "status": "accepted"
+    },
+    "al/ofdft_next_cutoff": {
+      "baseline_series_id": "ofdft",
+      "comparison": {
+        "max_pressure_difference_gpa": 0.00017029999999884637,
+        "max_relative_energy_difference_mev_per_atom": 0.001538732988137781,
+        "pressure_acceptance_role": "hard_gate",
+        "pressure_passed": true,
+        "relative_energy_passed": true,
+        "rows": [
+          {
+            "baseline_experiment_id": "S1-20260805-029",
+            "baseline_pressure_gpa": 11.8523237,
+            "baseline_relative_energy_mev_per_atom": 60.12868355586676,
+            "pressure_difference_gpa": -0.00017029999999884637,
+            "refined_experiment_id": "S1-20260805-071",
+            "refined_pressure_gpa": 11.8521534,
+            "refined_relative_energy_mev_per_atom": 60.12714482287862,
+            "relative_energy_difference_mev_per_atom": -0.001538732988137781,
+            "volume_ratio": 0.9
+          },
+          {
+            "baseline_experiment_id": "S1-20260805-030",
+            "baseline_pressure_gpa": 6.6691071,
+            "baseline_relative_energy_mev_per_atom": 22.131123224696125,
+            "pressure_difference_gpa": -0.00010109999999929897,
+            "refined_experiment_id": "S1-20260805-072",
+            "refined_pressure_gpa": 6.669006,
+            "refined_relative_energy_mev_per_atom": 22.130302077357555,
+            "relative_energy_difference_mev_per_atom": -0.0008211473385699719,
+            "volume_ratio": 0.94
+          },
+          {
+            "baseline_experiment_id": "S1-20260805-031",
+            "baseline_pressure_gpa": 3.4757366,
+            "baseline_relative_energy_mev_per_atom": 6.496714928928782,
+            "pressure_difference_gpa": -0.0001260999999996848,
+            "refined_experiment_id": "S1-20260805-073",
+            "refined_pressure_gpa": 3.4756105,
+            "refined_relative_energy_mev_per_atom": 6.496350495261538,
+            "relative_energy_difference_mev_per_atom": -0.0003644336672437021,
+            "volume_ratio": 0.97
+          },
+          {
+            "baseline_experiment_id": "S1-20260805-032",
+            "baseline_pressure_gpa": 0.7789224,
+            "baseline_relative_energy_mev_per_atom": 0.0,
+            "pressure_difference_gpa": -9.209999999992835e-05,
+            "refined_experiment_id": "S1-20260805-074",
+            "refined_pressure_gpa": 0.7788303000000001,
+            "refined_relative_energy_mev_per_atom": 0.0,
+            "relative_energy_difference_mev_per_atom": 0.0,
+            "volume_ratio": 1.0
+          },
+          {
+            "baseline_experiment_id": "S1-20260805-033",
+            "baseline_pressure_gpa": -1.4940346,
+            "baseline_relative_energy_mev_per_atom": 1.213276397081131,
+            "pressure_difference_gpa": -2.6500000000151402e-05,
+            "refined_experiment_id": "S1-20260805-075",
+            "refined_pressure_gpa": -1.4940611000000001,
+            "refined_relative_energy_mev_per_atom": 1.2135329655791338,
+            "relative_energy_difference_mev_per_atom": 0.0002565684980027072,
+            "volume_ratio": 1.03
+          },
+          {
+            "baseline_experiment_id": "S1-20260805-034",
+            "baseline_pressure_gpa": -3.4041643,
+            "baseline_relative_energy_mev_per_atom": 8.916120978980757,
+            "pressure_difference_gpa": -2.3699999999848842e-05,
+            "refined_experiment_id": "S1-20260805-076",
+            "refined_pressure_gpa": -3.404188,
+            "refined_relative_energy_mev_per_atom": 8.916517134217372,
+            "relative_energy_difference_mev_per_atom": 0.000396155236614959,
+            "volume_ratio": 1.06
+          },
+          {
+            "baseline_experiment_id": "S1-20260805-035",
+            "baseline_pressure_gpa": -5.4741692,
+            "baseline_relative_energy_mev_per_atom": 27.49481924799113,
+            "pressure_difference_gpa": 2.079999999970994e-05,
+            "refined_experiment_id": "S1-20260805-077",
+            "refined_pressure_gpa": -5.474148400000001,
+            "refined_relative_energy_mev_per_atom": 27.495219578696606,
+            "relative_energy_difference_mev_per_atom": 0.00040033070547451644,
+            "volume_ratio": 1.1
+          }
+        ],
+        "status": "accepted",
+        "thresholds": {
+          "comparison": "strict_less_than",
+          "max_pressure_difference_gpa": 0.02,
+          "max_relative_energy_difference_mev_per_atom": 1.0
+        }
+      },
+      "comparison_axis": "cutoff",
+      "failures": [],
+      "fit": {
+        "b0_ev_per_angstrom3": 0.4902085070882967,
+        "b0_gpa": 78.54006093741401,
+        "b0_prime": 4.733343130280277,
+        "e0_ev_per_atom": -57.18377942005411,
+        "max_abs_residual_mev_per_atom": 0.017076344448696545,
+        "rmse_mev_per_atom": 0.011158044153373589,
+        "sampled_shape_diagnostic": {
+          "acceptance_role": "diagnostic_only",
+          "discrete_minimum_at_sampled_endpoint": false,
+          "discrete_minimum_volume_ratio": 1.0
+        },
+        "v0_angstrom3_per_atom": 16.769513395429115
+      },
+      "fit_failures": [],
+      "material": "al",
+      "points": [
+        {
+          "abacus_sha256": "2d68a57c7b25608b3550854dabc2e63601eeca956bf185ad7d0967052bdbb4ba",
+          "code_commit": "ef63306af2fdd3e048d521419f677826fca4da35",
+          "converged": true,
+          "ecutrho_ry": 120,
+          "ecutwfc_ry": 30,
+          "energy_ev_per_atom": -57.12327593426614,
+          "energy_observable": "total_energy",
+          "experiment_id": "S1-20260805-071",
+          "kmesh": [
+            1,
+            1,
+            1
+          ],
+          "material": "al",
+          "pressure_gpa": 11.8521534,
+          "series_id": "ofdft_next_cutoff",
+          "smearing_sigma_ry": null,
+          "solver": "ofdft",
+          "stru_sha256": "78f39f8f09367c41279248b1772a2dbe9dd77d2839931891ce5696b7ebac7fea",
+          "volume_per_atom_angstrom3": 14.946778124999998,
+          "volume_ratio": 0.9
+        },
+        {
+          "abacus_sha256": "2d68a57c7b25608b3550854dabc2e63601eeca956bf185ad7d0967052bdbb4ba",
+          "code_commit": "4c1717981861beba69873ea59a056921dfa11250",
+          "converged": true,
+          "ecutrho_ry": 120,
+          "ecutwfc_ry": 30,
+          "energy_ev_per_atom": -57.16127277701166,
+          "energy_observable": "total_energy",
+          "experiment_id": "S1-20260805-072",
+          "kmesh": [
+            1,
+            1,
+            1
+          ],
+          "material": "al",
+          "pressure_gpa": 6.669006,
+          "series_id": "ofdft_next_cutoff",
+          "smearing_sigma_ry": null,
+          "solver": "ofdft",
+          "stru_sha256": "6cce927335466a5ae8bd542f80cc149f85513eb6fd68ef5adc3399a79f7b3fb4",
+          "volume_per_atom_angstrom3": 15.611079375000001,
+          "volume_ratio": 0.94
+        },
+        {
+          "abacus_sha256": "2d68a57c7b25608b3550854dabc2e63601eeca956bf185ad7d0967052bdbb4ba",
+          "code_commit": "7dceb19970858ff1ebfd0d317006cba803eecae0",
+          "converged": true,
+          "ecutrho_ry": 120,
+          "ecutwfc_ry": 30,
+          "energy_ev_per_atom": -57.17690672859376,
+          "energy_observable": "total_energy",
+          "experiment_id": "S1-20260805-073",
+          "kmesh": [
+            1,
+            1,
+            1
+          ],
+          "material": "al",
+          "pressure_gpa": 3.4756105,
+          "series_id": "ofdft_next_cutoff",
+          "smearing_sigma_ry": null,
+          "solver": "ofdft",
+          "stru_sha256": "afbc4693ab7f9da60ef2058d39a42af782e41982f8e64f06ee52a66b76c4150f",
+          "volume_per_atom_angstrom3": 16.109305312500002,
+          "volume_ratio": 0.97
+        },
+        {
+          "abacus_sha256": "2d68a57c7b25608b3550854dabc2e63601eeca956bf185ad7d0967052bdbb4ba",
+          "code_commit": "bab48c583d10028490de803887dcada4cfb4228c",
+          "converged": true,
+          "ecutrho_ry": 120,
+          "ecutwfc_ry": 30,
+          "energy_ev_per_atom": -57.18340307908902,
+          "energy_observable": "total_energy",
+          "experiment_id": "S1-20260805-074",
+          "kmesh": [
+            1,
+            1,
+            1
+          ],
+          "material": "al",
+          "pressure_gpa": 0.7788303000000001,
+          "series_id": "ofdft_next_cutoff",
+          "smearing_sigma_ry": null,
+          "solver": "ofdft",
+          "stru_sha256": "31279eb4f9a5a6ad20376271c79c03a8ead1676cb697b5065515041f6799d437",
+          "volume_per_atom_angstrom3": 16.607531249999997,
+          "volume_ratio": 1.0
+        },
+        {
+          "abacus_sha256": "2d68a57c7b25608b3550854dabc2e63601eeca956bf185ad7d0967052bdbb4ba",
+          "code_commit": "ef94f3bf11a6ffc3aa409daa4a3ed938c95313ff",
+          "converged": true,
+          "ecutrho_ry": 120,
+          "ecutwfc_ry": 30,
+          "energy_ev_per_atom": -57.18218954612344,
+          "energy_observable": "total_energy",
+          "experiment_id": "S1-20260805-075",
+          "kmesh": [
+            1,
+            1,
+            1
+          ],
+          "material": "al",
+          "pressure_gpa": -1.4940611000000001,
+          "series_id": "ofdft_next_cutoff",
+          "smearing_sigma_ry": null,
+          "solver": "ofdft",
+          "stru_sha256": "2f36cb943594eb0cc81dcd3e7b6fd906e9e5da6f898fc5cfa9065db72589a683",
+          "volume_per_atom_angstrom3": 17.105757187499997,
+          "volume_ratio": 1.03
+        },
+        {
+          "abacus_sha256": "2d68a57c7b25608b3550854dabc2e63601eeca956bf185ad7d0967052bdbb4ba",
+          "code_commit": "e7ccfac26bd88565e3cd6e28e581d43678b7bab6",
+          "converged": true,
+          "ecutrho_ry": 120,
+          "ecutwfc_ry": 30,
+          "energy_ev_per_atom": -57.1744865619548,
+          "energy_observable": "total_energy",
+          "experiment_id": "S1-20260805-076",
+          "kmesh": [
+            1,
+            1,
+            1
+          ],
+          "material": "al",
+          "pressure_gpa": -3.404188,
+          "series_id": "ofdft_next_cutoff",
+          "smearing_sigma_ry": null,
+          "solver": "ofdft",
+          "stru_sha256": "c178b63db14ecf1fb24c1daaa8dd0db5803f5f584865bb537393b8cb108f2d36",
+          "volume_per_atom_angstrom3": 17.603983125,
+          "volume_ratio": 1.06
+        },
+        {
+          "abacus_sha256": "2d68a57c7b25608b3550854dabc2e63601eeca956bf185ad7d0967052bdbb4ba",
+          "code_commit": "da4870d2b6f2141579ffe9e93e819263068d9f89",
+          "converged": true,
+          "ecutrho_ry": 120,
+          "ecutwfc_ry": 30,
+          "energy_ev_per_atom": -57.15590785951032,
+          "energy_observable": "total_energy",
+          "experiment_id": "S1-20260805-077",
+          "kmesh": [
+            1,
+            1,
+            1
+          ],
+          "material": "al",
+          "pressure_gpa": -5.474148400000001,
+          "series_id": "ofdft_next_cutoff",
+          "smearing_sigma_ry": null,
+          "solver": "ofdft",
+          "stru_sha256": "c3bbf795bf196b357cd95e7d4ba619229ad687896346ffe1bfd19a3ed463cfb1",
+          "volume_per_atom_angstrom3": 18.268284375000007,
+          "volume_ratio": 1.1
+        }
+      ],
+      "provenance_failures": [],
+      "series_id": "ofdft_next_cutoff",
+      "status": "accepted"
+    },
+    "mg/ksdft_next_cutoff": {
+      "baseline_series_id": "ksdft_standard",
+      "comparison": {
+        "max_pressure_difference_gpa": 0.00010210000000032693,
+        "max_relative_energy_difference_mev_per_atom": 0.0007054500024139543,
+        "pressure_acceptance_role": "hard_gate",
+        "pressure_passed": true,
+        "relative_energy_passed": true,
+        "rows": [
+          {
+            "baseline_experiment_id": "S1-20260805-057",
+            "baseline_pressure_gpa": 0.5155628,
+            "baseline_relative_energy_mev_per_atom": -20.419718499997686,
+            "pressure_difference_gpa": 1.3599999999946988e-05,
+            "refined_experiment_id": "S1-20260805-099",
+            "refined_pressure_gpa": 0.5155763999999999,
+            "refined_relative_energy_mev_per_atom": -20.4204239500001,
+            "relative_energy_difference_mev_per_atom": -0.0007054500024139543,
+            "volume_ratio": 0.9
+          },
+          {
+            "baseline_experiment_id": "S1-20260805-058",
+            "baseline_pressure_gpa": -1.1002629000000002,
+            "baseline_relative_energy_mev_per_atom": -18.36410469999805,
+            "pressure_difference_gpa": -3.0999999999892225e-05,
+            "refined_experiment_id": "S1-20260805-100",
+            "refined_pressure_gpa": -1.1002939,
+            "refined_relative_energy_mev_per_atom": -18.364418200000898,
+            "relative_energy_difference_mev_per_atom": -0.0003135000028464674,
+            "volume_ratio": 0.94
+          },
+          {
+            "baseline_experiment_id": "S1-20260805-059",
+            "baseline_pressure_gpa": -2.1024108,
+            "baseline_relative_energy_mev_per_atom": -11.194921199997765,
+            "pressure_difference_gpa": 1.6200000000132775e-05,
+            "refined_experiment_id": "S1-20260805-101",
+            "refined_pressure_gpa": -2.1023946,
+            "refined_relative_energy_mev_per_atom": -11.195016100000288,
+            "relative_energy_difference_mev_per_atom": -9.490000252299069e-05,
+            "volume_ratio": 0.97
+          },
+          {
+            "baseline_experiment_id": "S1-20260805-060",
+            "baseline_pressure_gpa": -2.9538810000000004,
+            "baseline_relative_energy_mev_per_atom": 0.0,
+            "pressure_difference_gpa": -7.69999999983284e-06,
+            "refined_experiment_id": "S1-20260805-102",
+            "refined_pressure_gpa": -2.9538887000000003,
+            "refined_relative_energy_mev_per_atom": 0.0,
+            "relative_energy_difference_mev_per_atom": 0.0,
+            "volume_ratio": 1.0
+          },
+          {
+            "baseline_experiment_id": "S1-20260805-061",
+            "baseline_pressure_gpa": -3.6763387000000005,
+            "baseline_relative_energy_mev_per_atom": 14.615173850000218,
+            "pressure_difference_gpa": 5.890000000086104e-05,
+            "refined_experiment_id": "S1-20260805-103",
+            "refined_pressure_gpa": -3.6762797999999997,
+            "refined_relative_energy_mev_per_atom": 14.615102699998772,
+            "relative_energy_difference_mev_per_atom": -7.11500014460853e-05,
+            "volume_ratio": 1.03
+          },
+          {
+            "baseline_experiment_id": "S1-20260805-062",
+            "baseline_pressure_gpa": -4.2876304,
+            "baseline_relative_energy_mev_per_atom": 32.13036870000252,
+            "pressure_difference_gpa": 6.360000000071864e-05,
+            "refined_experiment_id": "S1-20260805-104",
+            "refined_pressure_gpa": -4.2875668,
+            "refined_relative_energy_mev_per_atom": 32.13016315000061,
+            "relative_energy_difference_mev_per_atom": -0.00020555000190825012,
+            "volume_ratio": 1.06
+          },
+          {
+            "baseline_experiment_id": "S1-20260805-063",
+            "baseline_pressure_gpa": -4.955926300000001,
+            "baseline_relative_energy_mev_per_atom": 59.228837850000104,
+            "pressure_difference_gpa": 0.00010210000000032693,
+            "refined_experiment_id": "S1-20260805-105",
+            "refined_pressure_gpa": -4.9558242,
+            "refined_relative_energy_mev_per_atom": 59.22843315000037,
+            "relative_energy_difference_mev_per_atom": -0.0004046999997342482,
+            "volume_ratio": 1.1
+          }
+        ],
+        "status": "accepted",
+        "thresholds": {
+          "comparison": "strict_less_than",
+          "max_pressure_difference_gpa": 0.02,
+          "max_relative_energy_difference_mev_per_atom": 1.0
+        }
+      },
+      "comparison_axis": "cutoff",
+      "failures": [],
+      "fit": {
+        "b0_ev_per_angstrom3": 0.2413107413464318,
+        "b0_gpa": 38.662242813316894,
+        "b0_prime": 4.0114519566297515,
+        "e0_ev_per_atom": -24.672765235402434,
+        "max_abs_residual_mev_per_atom": 0.003863243172474995,
+        "rmse_mev_per_atom": 0.002462626635917832,
+        "sampled_shape_diagnostic": {
+          "acceptance_role": "diagnostic_only",
+          "discrete_minimum_at_sampled_endpoint": true,
+          "discrete_minimum_volume_ratio": 0.9
+        },
+        "v0_angstrom3_per_atom": 21.174898296329907
+      },
+      "fit_failures": [],
+      "material": "mg",
+      "points": [
+        {
+          "abacus_sha256": "2d68a57c7b25608b3550854dabc2e63601eeca956bf185ad7d0967052bdbb4ba",
+          "code_commit": "5e92cf7b05bda1a656c0d4094001ff04298c7cad",
+          "converged": true,
+          "ecutrho_ry": 240,
+          "ecutwfc_ry": 60,
+          "energy_ev_per_atom": -24.6723788284,
+          "energy_observable": "zero_temp_extrapolated_energy",
+          "experiment_id": "S1-20260805-099",
+          "kmesh": [
+            20,
+            20,
+            12
+          ],
+          "material": "mg",
+          "pressure_gpa": 0.5155763999999999,
+          "series_id": "ksdft_next_cutoff",
+          "smearing_sigma_ry": 0.00734986,
+          "solver": "ksdft",
+          "stru_sha256": "0e7bfc23e322646ef9a3a3ab3f83d913c6116b293baf0e8982368679601ebbd6",
+          "volume_per_atom_angstrom3": 20.9168001283956,
+          "volume_ratio": 0.9
+        },
+        {
+          "abacus_sha256": "2d68a57c7b25608b3550854dabc2e63601eeca956bf185ad7d0967052bdbb4ba",
+          "code_commit": "ebf7c139fc3e9bd90094198b72707c791e7936b8",
+          "converged": true,
+          "ecutrho_ry": 240,
+          "ecutwfc_ry": 60,
+          "energy_ev_per_atom": -24.67032282265,
+          "energy_observable": "zero_temp_extrapolated_energy",
+          "experiment_id": "S1-20260805-100",
+          "kmesh": [
+            20,
+            20,
+            12
+          ],
+          "material": "mg",
+          "pressure_gpa": -1.1002939,
+          "series_id": "ksdft_next_cutoff",
+          "smearing_sigma_ry": 0.00734986,
+          "solver": "ksdft",
+          "stru_sha256": "ed85bda9b5c17c0907fcadfa4840d546c4e069ae51be657c3b3a4649684ac353",
+          "volume_per_atom_angstrom3": 21.84643568965763,
+          "volume_ratio": 0.94
+        },
+        {
+          "abacus_sha256": "2d68a57c7b25608b3550854dabc2e63601eeca956bf185ad7d0967052bdbb4ba",
+          "code_commit": "badc1b959e77619d3ceab4b706fd4b986f63112a",
+          "converged": true,
+          "ecutrho_ry": 240,
+          "ecutwfc_ry": 60,
+          "energy_ev_per_atom": -24.66315342055,
+          "energy_observable": "zero_temp_extrapolated_energy",
+          "experiment_id": "S1-20260805-101",
+          "kmesh": [
+            20,
+            20,
+            12
+          ],
+          "material": "mg",
+          "pressure_gpa": -2.1023946,
+          "series_id": "ksdft_next_cutoff",
+          "smearing_sigma_ry": 0.00734986,
+          "solver": "ksdft",
+          "stru_sha256": "265aadee1b70fc2f5c3cba85d30ac4b5b8f5a7dd88838c44f8cbfc5db97311af",
+          "volume_per_atom_angstrom3": 22.54366236060415,
+          "volume_ratio": 0.97
+        },
+        {
+          "abacus_sha256": "2d68a57c7b25608b3550854dabc2e63601eeca956bf185ad7d0967052bdbb4ba",
+          "code_commit": "6afd82a05c7187b3b428d3ac13231de16daabb2f",
+          "converged": true,
+          "ecutrho_ry": 240,
+          "ecutwfc_ry": 60,
+          "energy_ev_per_atom": -24.65195840445,
+          "energy_observable": "zero_temp_extrapolated_energy",
+          "experiment_id": "S1-20260805-102",
+          "kmesh": [
+            20,
+            20,
+            12
+          ],
+          "material": "mg",
+          "pressure_gpa": -2.9538887000000003,
+          "series_id": "ksdft_next_cutoff",
+          "smearing_sigma_ry": 0.00734986,
+          "solver": "ksdft",
+          "stru_sha256": "f65d6ce58a2ccc15d9970a14ecfb40a800f4d7a27b325a4d9aae344999faf19c",
+          "volume_per_atom_angstrom3": 23.240889031550665,
+          "volume_ratio": 1.0
+        },
+        {
+          "abacus_sha256": "2d68a57c7b25608b3550854dabc2e63601eeca956bf185ad7d0967052bdbb4ba",
+          "code_commit": "6b4f6e633206b2087314850a176e1e92d430a70d",
+          "converged": true,
+          "ecutrho_ry": 240,
+          "ecutwfc_ry": 60,
+          "energy_ev_per_atom": -24.63734330175,
+          "energy_observable": "zero_temp_extrapolated_energy",
+          "experiment_id": "S1-20260805-103",
+          "kmesh": [
+            20,
+            20,
+            12
+          ],
+          "material": "mg",
+          "pressure_gpa": -3.6762797999999997,
+          "series_id": "ksdft_next_cutoff",
+          "smearing_sigma_ry": 0.00734986,
+          "solver": "ksdft",
+          "stru_sha256": "98aa8e2bdcd877e9ec6d0397070f213c24c4b38fba559540fcdd1ebce02ea76d",
+          "volume_per_atom_angstrom3": 23.938115702497186,
+          "volume_ratio": 1.03
+        },
+        {
+          "abacus_sha256": "2d68a57c7b25608b3550854dabc2e63601eeca956bf185ad7d0967052bdbb4ba",
+          "code_commit": "9fffd2ed4cfb5d47f6e503a9fb790fc0533e3abd",
+          "converged": true,
+          "ecutrho_ry": 240,
+          "ecutwfc_ry": 60,
+          "energy_ev_per_atom": -24.6198282413,
+          "energy_observable": "zero_temp_extrapolated_energy",
+          "experiment_id": "S1-20260805-104",
+          "kmesh": [
+            20,
+            20,
+            12
+          ],
+          "material": "mg",
+          "pressure_gpa": -4.2875668,
+          "series_id": "ksdft_next_cutoff",
+          "smearing_sigma_ry": 0.00734986,
+          "solver": "ksdft",
+          "stru_sha256": "bb0d40d53f0e969384656b0757876d5ea489208aafd6fec7592e2549cd6db331",
+          "volume_per_atom_angstrom3": 24.635342373443706,
+          "volume_ratio": 1.06
+        },
+        {
+          "abacus_sha256": "2d68a57c7b25608b3550854dabc2e63601eeca956bf185ad7d0967052bdbb4ba",
+          "code_commit": "9512553f47dc59430bb2be11a3b903e07e7e33c3",
+          "converged": true,
+          "ecutrho_ry": 240,
+          "ecutwfc_ry": 60,
+          "energy_ev_per_atom": -24.5927299713,
+          "energy_observable": "zero_temp_extrapolated_energy",
+          "experiment_id": "S1-20260805-105",
+          "kmesh": [
+            20,
+            20,
+            12
+          ],
+          "material": "mg",
+          "pressure_gpa": -4.9558242,
+          "series_id": "ksdft_next_cutoff",
+          "smearing_sigma_ry": 0.00734986,
+          "solver": "ksdft",
+          "stru_sha256": "2830ba604f066a34709da8abb3fa32449372e05b41c2715e999ffd0eeafb8512",
+          "volume_per_atom_angstrom3": 25.56497793470574,
+          "volume_ratio": 1.1
+        }
+      ],
+      "provenance_failures": [],
+      "series_id": "ksdft_next_cutoff",
+      "status": "accepted"
+    },
+    "mg/ksdft_next_kmesh": {
+      "baseline_series_id": "ksdft_standard",
+      "comparison": {
+        "max_pressure_difference_gpa": 0.017168399999999973,
+        "max_relative_energy_difference_mev_per_atom": 0.40314955000297914,
+        "pressure_acceptance_role": "diagnostic_only",
+        "pressure_passed": true,
+        "relative_energy_passed": true,
+        "rows": [
+          {
+            "baseline_experiment_id": "S1-20260805-057",
+            "baseline_pressure_gpa": 0.5155628,
+            "baseline_relative_energy_mev_per_atom": -20.419718499997686,
+            "pressure_difference_gpa": -0.017168399999999973,
+            "refined_experiment_id": "S1-20260805-106",
+            "refined_pressure_gpa": 0.4983944,
+            "refined_relative_energy_mev_per_atom": -20.822868050000665,
+            "relative_energy_difference_mev_per_atom": -0.40314955000297914,
+            "volume_ratio": 0.9
+          },
+          {
+            "baseline_experiment_id": "S1-20260805-058",
+            "baseline_pressure_gpa": -1.1002629000000002,
+            "baseline_relative_energy_mev_per_atom": -18.36410469999805,
+            "pressure_difference_gpa": -0.015393299999999721,
+            "refined_experiment_id": "S1-20260805-107",
+            "refined_pressure_gpa": -1.1156561999999999,
+            "refined_relative_energy_mev_per_atom": -18.59513990000039,
+            "relative_energy_difference_mev_per_atom": -0.23103520000233857,
+            "volume_ratio": 0.94
+          },
+          {
+            "baseline_experiment_id": "S1-20260805-059",
+            "baseline_pressure_gpa": -2.1024108,
+            "baseline_relative_energy_mev_per_atom": -11.194921199997765,
+            "pressure_difference_gpa": -0.01366159999999983,
+            "refined_experiment_id": "S1-20260805-108",
+            "refined_pressure_gpa": -2.1160723999999997,
+            "refined_relative_energy_mev_per_atom": -11.304862450000286,
+            "relative_energy_difference_mev_per_atom": -0.10994125000252097,
+            "volume_ratio": 0.97
+          },
+          {
+            "baseline_experiment_id": "S1-20260805-060",
+            "baseline_pressure_gpa": -2.9538810000000004,
+            "baseline_relative_energy_mev_per_atom": 0.0,
+            "pressure_difference_gpa": -0.011765599999999932,
+            "refined_experiment_id": "S1-20260805-109",
+            "refined_pressure_gpa": -2.9656466000000004,
+            "refined_relative_energy_mev_per_atom": 0.0,
+            "relative_energy_difference_mev_per_atom": 0.0,
+            "volume_ratio": 1.0
+          },
+          {
+            "baseline_experiment_id": "S1-20260805-061",
+            "baseline_pressure_gpa": -3.6763387000000005,
+            "baseline_relative_energy_mev_per_atom": 14.615173850000218,
+            "pressure_difference_gpa": -0.009705699999999595,
+            "refined_experiment_id": "S1-20260805-110",
+            "refined_pressure_gpa": -3.6860444,
+            "refined_relative_energy_mev_per_atom": 14.710630049997064,
+            "relative_energy_difference_mev_per_atom": 0.09545619999684618,
+            "volume_ratio": 1.03
+          },
+          {
+            "baseline_experiment_id": "S1-20260805-062",
+            "baseline_pressure_gpa": -4.2876304,
+            "baseline_relative_energy_mev_per_atom": 32.13036870000252,
+            "pressure_difference_gpa": -0.007618400000000136,
+            "refined_experiment_id": "S1-20260805-111",
+            "refined_pressure_gpa": -4.2952488,
+            "refined_relative_energy_mev_per_atom": 32.304286049999575,
+            "relative_energy_difference_mev_per_atom": 0.17391734999705477,
+            "volume_ratio": 1.06
+          },
+          {
+            "baseline_experiment_id": "S1-20260805-063",
+            "baseline_pressure_gpa": -4.955926300000001,
+            "baseline_relative_energy_mev_per_atom": 59.228837850000104,
+            "pressure_difference_gpa": -0.0049152000000001195,
+            "refined_experiment_id": "S1-20260805-112",
+            "refined_pressure_gpa": -4.960841500000001,
+            "refined_relative_energy_mev_per_atom": 59.47850064999827,
+            "relative_energy_difference_mev_per_atom": 0.24966279999816265,
+            "volume_ratio": 1.1
+          }
+        ],
+        "status": "accepted",
+        "thresholds": {
+          "comparison": "strict_less_than",
+          "max_pressure_difference_gpa": null,
+          "max_relative_energy_difference_mev_per_atom": 2.0
+        }
+      },
+      "comparison_axis": "kmesh",
+      "failures": [],
+      "fit": {
+        "b0_ev_per_angstrom3": 0.2420302708726664,
+        "b0_gpa": 38.77752415180773,
+        "b0_prime": 4.050295427488166,
+        "e0_ev_per_atom": -24.673221434993177,
+        "max_abs_residual_mev_per_atom": 0.004079008174784349,
+        "rmse_mev_per_atom": 0.0026411358506135954,
+        "sampled_shape_diagnostic": {
+          "acceptance_role": "diagnostic_only",
+          "discrete_minimum_at_sampled_endpoint": true,
+          "discrete_minimum_volume_ratio": 0.9
+        },
+        "v0_angstrom3_per_atom": 21.158622800120472
+      },
+      "fit_failures": [],
+      "material": "mg",
+      "points": [
+        {
+          "abacus_sha256": "2d68a57c7b25608b3550854dabc2e63601eeca956bf185ad7d0967052bdbb4ba",
+          "code_commit": "7e6b04da11631e685380e7f83e9801dabe20ec7c",
+          "converged": true,
+          "ecutrho_ry": 160,
+          "ecutwfc_ry": 40,
+          "energy_ev_per_atom": -24.6728815422,
+          "energy_observable": "zero_temp_extrapolated_energy",
+          "experiment_id": "S1-20260805-106",
+          "kmesh": [
+            24,
+            24,
+            16
+          ],
+          "material": "mg",
+          "pressure_gpa": 0.4983944,
+          "series_id": "ksdft_next_kmesh",
+          "smearing_sigma_ry": 0.00734986,
+          "solver": "ksdft",
+          "stru_sha256": "0e7bfc23e322646ef9a3a3ab3f83d913c6116b293baf0e8982368679601ebbd6",
+          "volume_per_atom_angstrom3": 20.9168001283956,
+          "volume_ratio": 0.9
+        },
+        {
+          "abacus_sha256": "2d68a57c7b25608b3550854dabc2e63601eeca956bf185ad7d0967052bdbb4ba",
+          "code_commit": "fd4e681ecf4c858a62a9ea505246d205cab0b1b4",
+          "converged": true,
+          "ecutrho_ry": 160,
+          "ecutwfc_ry": 40,
+          "energy_ev_per_atom": -24.67065381405,
+          "energy_observable": "zero_temp_extrapolated_energy",
+          "experiment_id": "S1-20260805-107",
+          "kmesh": [
+            24,
+            24,
+            16
+          ],
+          "material": "mg",
+          "pressure_gpa": -1.1156561999999999,
+          "series_id": "ksdft_next_kmesh",
+          "smearing_sigma_ry": 0.00734986,
+          "solver": "ksdft",
+          "stru_sha256": "ed85bda9b5c17c0907fcadfa4840d546c4e069ae51be657c3b3a4649684ac353",
+          "volume_per_atom_angstrom3": 21.84643568965763,
+          "volume_ratio": 0.94
+        },
+        {
+          "abacus_sha256": "2d68a57c7b25608b3550854dabc2e63601eeca956bf185ad7d0967052bdbb4ba",
+          "code_commit": "7f917f80af5e70784be81438b5cb2f593d1bb9b9",
+          "converged": true,
+          "ecutrho_ry": 160,
+          "ecutwfc_ry": 40,
+          "energy_ev_per_atom": -24.6633635366,
+          "energy_observable": "zero_temp_extrapolated_energy",
+          "experiment_id": "S1-20260805-108",
+          "kmesh": [
+            24,
+            24,
+            16
+          ],
+          "material": "mg",
+          "pressure_gpa": -2.1160723999999997,
+          "series_id": "ksdft_next_kmesh",
+          "smearing_sigma_ry": 0.00734986,
+          "solver": "ksdft",
+          "stru_sha256": "265aadee1b70fc2f5c3cba85d30ac4b5b8f5a7dd88838c44f8cbfc5db97311af",
+          "volume_per_atom_angstrom3": 22.54366236060415,
+          "volume_ratio": 0.97
+        },
+        {
+          "abacus_sha256": "2d68a57c7b25608b3550854dabc2e63601eeca956bf185ad7d0967052bdbb4ba",
+          "code_commit": "03a82e2c4ac625d4be399b669fac004751ec62c1",
+          "converged": true,
+          "ecutrho_ry": 160,
+          "ecutwfc_ry": 40,
+          "energy_ev_per_atom": -24.65205867415,
+          "energy_observable": "zero_temp_extrapolated_energy",
+          "experiment_id": "S1-20260805-109",
+          "kmesh": [
+            24,
+            24,
+            16
+          ],
+          "material": "mg",
+          "pressure_gpa": -2.9656466000000004,
+          "series_id": "ksdft_next_kmesh",
+          "smearing_sigma_ry": 0.00734986,
+          "solver": "ksdft",
+          "stru_sha256": "f65d6ce58a2ccc15d9970a14ecfb40a800f4d7a27b325a4d9aae344999faf19c",
+          "volume_per_atom_angstrom3": 23.240889031550665,
+          "volume_ratio": 1.0
+        },
+        {
+          "abacus_sha256": "2d68a57c7b25608b3550854dabc2e63601eeca956bf185ad7d0967052bdbb4ba",
+          "code_commit": "4c0a7c9861000fce15a27eec7b5f8abb2395a40c",
+          "converged": true,
+          "ecutrho_ry": 160,
+          "ecutwfc_ry": 40,
+          "energy_ev_per_atom": -24.6373480441,
+          "energy_observable": "zero_temp_extrapolated_energy",
+          "experiment_id": "S1-20260805-110",
+          "kmesh": [
+            24,
+            24,
+            16
+          ],
+          "material": "mg",
+          "pressure_gpa": -3.6860444,
+          "series_id": "ksdft_next_kmesh",
+          "smearing_sigma_ry": 0.00734986,
+          "solver": "ksdft",
+          "stru_sha256": "98aa8e2bdcd877e9ec6d0397070f213c24c4b38fba559540fcdd1ebce02ea76d",
+          "volume_per_atom_angstrom3": 23.938115702497186,
+          "volume_ratio": 1.03
+        },
+        {
+          "abacus_sha256": "2d68a57c7b25608b3550854dabc2e63601eeca956bf185ad7d0967052bdbb4ba",
+          "code_commit": "d16e457634a119d58526833abb411422bddb1ff2",
+          "converged": true,
+          "ecutrho_ry": 160,
+          "ecutwfc_ry": 40,
+          "energy_ev_per_atom": -24.6197543881,
+          "energy_observable": "zero_temp_extrapolated_energy",
+          "experiment_id": "S1-20260805-111",
+          "kmesh": [
+            24,
+            24,
+            16
+          ],
+          "material": "mg",
+          "pressure_gpa": -4.2952488,
+          "series_id": "ksdft_next_kmesh",
+          "smearing_sigma_ry": 0.00734986,
+          "solver": "ksdft",
+          "stru_sha256": "bb0d40d53f0e969384656b0757876d5ea489208aafd6fec7592e2549cd6db331",
+          "volume_per_atom_angstrom3": 24.635342373443706,
+          "volume_ratio": 1.06
+        },
+        {
+          "abacus_sha256": "2d68a57c7b25608b3550854dabc2e63601eeca956bf185ad7d0967052bdbb4ba",
+          "code_commit": "991393098eb224e6e2f79ffda1517789d9c12a94",
+          "converged": true,
+          "ecutrho_ry": 160,
+          "ecutwfc_ry": 40,
+          "energy_ev_per_atom": -24.5925801735,
+          "energy_observable": "zero_temp_extrapolated_energy",
+          "experiment_id": "S1-20260805-112",
+          "kmesh": [
+            24,
+            24,
+            16
+          ],
+          "material": "mg",
+          "pressure_gpa": -4.960841500000001,
+          "series_id": "ksdft_next_kmesh",
+          "smearing_sigma_ry": 0.00734986,
+          "solver": "ksdft",
+          "stru_sha256": "2830ba604f066a34709da8abb3fa32449372e05b41c2715e999ffd0eeafb8512",
+          "volume_per_atom_angstrom3": 25.56497793470574,
+          "volume_ratio": 1.1
+        }
+      ],
+      "provenance_failures": [],
+      "series_id": "ksdft_next_kmesh",
+      "status": "accepted"
+    },
+    "mg/ofdft_next_cutoff": {
+      "baseline_series_id": "ofdft",
+      "comparison": {
+        "max_pressure_difference_gpa": 4.3100000000073635e-05,
+        "max_relative_energy_difference_mev_per_atom": 7.179245642419119e-06,
+        "pressure_acceptance_role": "hard_gate",
+        "pressure_passed": true,
+        "relative_energy_passed": true,
+        "rows": [
+          {
+            "baseline_experiment_id": "S1-20260805-050",
+            "baseline_pressure_gpa": 0.8065950000000002,
+            "baseline_relative_energy_mev_per_atom": -15.600388593217218,
+            "pressure_difference_gpa": -3.1100000000172656e-05,
+            "refined_experiment_id": "S1-20260805-092",
+            "refined_pressure_gpa": 0.8065639,
+            "refined_relative_energy_mev_per_atom": -15.600390429895583,
+            "relative_energy_difference_mev_per_atom": -1.8366783649526042e-06,
+            "volume_ratio": 0.9
+          },
+          {
+            "baseline_experiment_id": "S1-20260805-051",
+            "baseline_pressure_gpa": -0.8001879000000001,
+            "baseline_relative_energy_mev_per_atom": -15.45392370002574,
+            "pressure_difference_gpa": 4.3100000000073635e-05,
+            "refined_experiment_id": "S1-20260805-093",
+            "refined_pressure_gpa": -0.8001448,
+            "refined_relative_energy_mev_per_atom": -15.453930879271383,
+            "relative_energy_difference_mev_per_atom": -7.179245642419119e-06,
+            "volume_ratio": 0.94
+          },
+          {
+            "baseline_experiment_id": "S1-20260805-052",
+            "baseline_pressure_gpa": -1.8001139,
+            "baseline_relative_energy_mev_per_atom": -9.738444368519339,
+            "pressure_difference_gpa": 2.1799999999627673e-05,
+            "refined_experiment_id": "S1-20260805-094",
+            "refined_pressure_gpa": -1.8000921000000003,
+            "refined_relative_energy_mev_per_atom": -9.73844310675176,
+            "relative_energy_difference_mev_per_atom": 1.2617675793080707e-06,
+            "volume_ratio": 0.97
+          },
+          {
+            "baseline_experiment_id": "S1-20260805-053",
+            "baseline_pressure_gpa": -2.6528749000000005,
+            "baseline_relative_energy_mev_per_atom": 0.0,
+            "pressure_difference_gpa": -6.999999999646178e-06,
+            "refined_experiment_id": "S1-20260805-095",
+            "refined_pressure_gpa": -2.6528819,
+            "refined_relative_energy_mev_per_atom": 0.0,
+            "relative_energy_difference_mev_per_atom": 0.0,
+            "volume_ratio": 1.0
+          },
+          {
+            "baseline_experiment_id": "S1-20260805-054",
+            "baseline_pressure_gpa": -3.3795395,
+            "baseline_relative_energy_mev_per_atom": 13.168086887127117,
+            "pressure_difference_gpa": 5.299999999763827e-06,
+            "refined_experiment_id": "S1-20260805-096",
+            "refined_pressure_gpa": -3.3795342,
+            "refined_relative_energy_mev_per_atom": 13.168088938890321,
+            "relative_energy_difference_mev_per_atom": 2.0517632037808653e-06,
+            "volume_ratio": 1.03
+          },
+          {
+            "baseline_experiment_id": "S1-20260805-055",
+            "baseline_pressure_gpa": -3.9977306,
+            "baseline_relative_energy_mev_per_atom": 29.256552026843963,
+            "pressure_difference_gpa": -3.859999999988872e-05,
+            "refined_experiment_id": "S1-20260805-097",
+            "refined_pressure_gpa": -3.9977692,
+            "refined_relative_energy_mev_per_atom": 29.25655377135783,
+            "relative_energy_difference_mev_per_atom": 1.7445138666971616e-06,
+            "volume_ratio": 1.06
+          },
+          {
+            "baseline_experiment_id": "S1-20260805-056",
+            "baseline_pressure_gpa": -4.6788707,
+            "baseline_relative_energy_mev_per_atom": 54.50170125195086,
+            "pressure_difference_gpa": -2.1799999999849717e-05,
+            "refined_experiment_id": "S1-20260805-098",
+            "refined_pressure_gpa": -4.6788925,
+            "refined_relative_energy_mev_per_atom": 54.50170169071811,
+            "relative_energy_difference_mev_per_atom": 4.3876724475921947e-07,
+            "volume_ratio": 1.1
+          }
+        ],
+        "status": "accepted",
+        "thresholds": {
+          "comparison": "strict_less_than",
+          "max_pressure_difference_gpa": 0.02,
+          "max_relative_energy_difference_mev_per_atom": 1.0
+        }
+      },
+      "comparison_axis": "cutoff",
+      "failures": [],
+      "fit": {
+        "b0_ev_per_angstrom3": 0.23158413547653212,
+        "b0_gpa": 37.10386876086796,
+        "b0_prime": 3.942460119724276,
+        "e0_ev_per_atom": -24.65355677284282,
+        "max_abs_residual_mev_per_atom": 0.002466981968041182,
+        "rmse_mev_per_atom": 0.001588449869972633,
+        "sampled_shape_diagnostic": {
+          "acceptance_role": "diagnostic_only",
+          "discrete_minimum_at_sampled_endpoint": true,
+          "discrete_minimum_volume_ratio": 0.9
+        },
+        "v0_angstrom3_per_atom": 21.359027022319452
+      },
+      "fit_failures": [],
+      "material": "mg",
+      "points": [
+        {
+          "abacus_sha256": "2d68a57c7b25608b3550854dabc2e63601eeca956bf185ad7d0967052bdbb4ba",
+          "code_commit": "6376033b34dd7ff54ca5e3b2f1c1447021d24f28",
+          "converged": true,
+          "ecutrho_ry": 160,
+          "ecutwfc_ry": 40,
+          "energy_ev_per_atom": -24.652460079099264,
+          "energy_observable": "total_energy",
+          "experiment_id": "S1-20260805-092",
+          "kmesh": [
+            1,
+            1,
+            1
+          ],
+          "material": "mg",
+          "pressure_gpa": 0.8065639,
+          "series_id": "ofdft_next_cutoff",
+          "smearing_sigma_ry": null,
+          "solver": "ofdft",
+          "stru_sha256": "0e7bfc23e322646ef9a3a3ab3f83d913c6116b293baf0e8982368679601ebbd6",
+          "volume_per_atom_angstrom3": 20.9168001283956,
+          "volume_ratio": 0.9
+        },
+        {
+          "abacus_sha256": "2d68a57c7b25608b3550854dabc2e63601eeca956bf185ad7d0967052bdbb4ba",
+          "code_commit": "09dc2d6dbdda98217d94f9faf570d22e40d5877e",
+          "converged": true,
+          "ecutrho_ry": 160,
+          "ecutwfc_ry": 40,
+          "energy_ev_per_atom": -24.65231361954864,
+          "energy_observable": "total_energy",
+          "experiment_id": "S1-20260805-093",
+          "kmesh": [
+            1,
+            1,
+            1
+          ],
+          "material": "mg",
+          "pressure_gpa": -0.8001448,
+          "series_id": "ofdft_next_cutoff",
+          "smearing_sigma_ry": null,
+          "solver": "ofdft",
+          "stru_sha256": "ed85bda9b5c17c0907fcadfa4840d546c4e069ae51be657c3b3a4649684ac353",
+          "volume_per_atom_angstrom3": 21.84643568965763,
+          "volume_ratio": 0.94
+        },
+        {
+          "abacus_sha256": "2d68a57c7b25608b3550854dabc2e63601eeca956bf185ad7d0967052bdbb4ba",
+          "code_commit": "c5ca6518a3b8343d972fa2693a2cb7a1babf260f",
+          "converged": true,
+          "ecutrho_ry": 160,
+          "ecutwfc_ry": 40,
+          "energy_ev_per_atom": -24.64659813177612,
+          "energy_observable": "total_energy",
+          "experiment_id": "S1-20260805-094",
+          "kmesh": [
+            1,
+            1,
+            1
+          ],
+          "material": "mg",
+          "pressure_gpa": -1.8000921000000003,
+          "series_id": "ofdft_next_cutoff",
+          "smearing_sigma_ry": null,
+          "solver": "ofdft",
+          "stru_sha256": "265aadee1b70fc2f5c3cba85d30ac4b5b8f5a7dd88838c44f8cbfc5db97311af",
+          "volume_per_atom_angstrom3": 22.54366236060415,
+          "volume_ratio": 0.97
+        },
+        {
+          "abacus_sha256": "2d68a57c7b25608b3550854dabc2e63601eeca956bf185ad7d0967052bdbb4ba",
+          "code_commit": "c9d809a9d89f08b9f80a1fb0efffbd3b675e2b02",
+          "converged": true,
+          "ecutrho_ry": 160,
+          "ecutwfc_ry": 40,
+          "energy_ev_per_atom": -24.636859688669368,
+          "energy_observable": "total_energy",
+          "experiment_id": "S1-20260805-095",
+          "kmesh": [
+            1,
+            1,
+            1
+          ],
+          "material": "mg",
+          "pressure_gpa": -2.6528819,
+          "series_id": "ofdft_next_cutoff",
+          "smearing_sigma_ry": null,
+          "solver": "ofdft",
+          "stru_sha256": "f65d6ce58a2ccc15d9970a14ecfb40a800f4d7a27b325a4d9aae344999faf19c",
+          "volume_per_atom_angstrom3": 23.240889031550665,
+          "volume_ratio": 1.0
+        },
+        {
+          "abacus_sha256": "2d68a57c7b25608b3550854dabc2e63601eeca956bf185ad7d0967052bdbb4ba",
+          "code_commit": "ddac43b22934673cd8287cef33006d15c662f3ef",
+          "converged": true,
+          "ecutrho_ry": 160,
+          "ecutwfc_ry": 40,
+          "energy_ev_per_atom": -24.623691599730478,
+          "energy_observable": "total_energy",
+          "experiment_id": "S1-20260805-096",
+          "kmesh": [
+            1,
+            1,
+            1
+          ],
+          "material": "mg",
+          "pressure_gpa": -3.3795342,
+          "series_id": "ofdft_next_cutoff",
+          "smearing_sigma_ry": null,
+          "solver": "ofdft",
+          "stru_sha256": "98aa8e2bdcd877e9ec6d0397070f213c24c4b38fba559540fcdd1ebce02ea76d",
+          "volume_per_atom_angstrom3": 23.938115702497186,
+          "volume_ratio": 1.03
+        },
+        {
+          "abacus_sha256": "2d68a57c7b25608b3550854dabc2e63601eeca956bf185ad7d0967052bdbb4ba",
+          "code_commit": "c1739a59ef30c5212c6347be239e5e585b05a4c3",
+          "converged": true,
+          "ecutrho_ry": 160,
+          "ecutwfc_ry": 40,
+          "energy_ev_per_atom": -24.60760313489801,
+          "energy_observable": "total_energy",
+          "experiment_id": "S1-20260805-097",
+          "kmesh": [
+            1,
+            1,
+            1
+          ],
+          "material": "mg",
+          "pressure_gpa": -3.9977692,
+          "series_id": "ofdft_next_cutoff",
+          "smearing_sigma_ry": null,
+          "solver": "ofdft",
+          "stru_sha256": "bb0d40d53f0e969384656b0757876d5ea489208aafd6fec7592e2549cd6db331",
+          "volume_per_atom_angstrom3": 24.635342373443706,
+          "volume_ratio": 1.06
+        },
+        {
+          "abacus_sha256": "2d68a57c7b25608b3550854dabc2e63601eeca956bf185ad7d0967052bdbb4ba",
+          "code_commit": "0efdc629fb0c3bffbb2bfeb6e3b5a797fb3047b1",
+          "converged": true,
+          "ecutrho_ry": 160,
+          "ecutwfc_ry": 40,
+          "energy_ev_per_atom": -24.58235798697865,
+          "energy_observable": "total_energy",
+          "experiment_id": "S1-20260805-098",
+          "kmesh": [
+            1,
+            1,
+            1
+          ],
+          "material": "mg",
+          "pressure_gpa": -4.6788925,
+          "series_id": "ofdft_next_cutoff",
+          "smearing_sigma_ry": null,
+          "solver": "ofdft",
+          "stru_sha256": "2830ba604f066a34709da8abb3fa32449372e05b41c2715e999ffd0eeafb8512",
+          "volume_per_atom_angstrom3": 25.56497793470574,
+          "volume_ratio": 1.1
+        }
+      ],
+      "provenance_failures": [],
+      "series_id": "ofdft_next_cutoff",
+      "status": "accepted"
+    }
+  }
+}
