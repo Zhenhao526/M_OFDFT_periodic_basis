@@ -1,14 +1,14 @@
 {
   "atom_count": 1,
   "candidate_status": "candidate_not_converged",
-  "config_sha256": "ecf8f8159310adedc4d06d6961260218a3918d5419127b7aa67f361d419d61a0",
+  "config_sha256": "1f9a181cb95c70f230d674207d3aa4645849f64693c6895225cdfee091d886cb",
   "ecutrho_ry": 320,
   "ecutwfc_ry": 80,
   "expected_electrons": 3,
   "kmesh": [
-    16,
-    16,
-    16
+    20,
+    20,
+    20
   ],
   "material": "al",
   "pseudopotential": "al.gga.psp",

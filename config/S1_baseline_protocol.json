@@ -22,7 +22,7 @@
         "ecutwfc_ry": 40,
         "ecutrho_ry": 160,
         "cutoff_scan_ry": [40, 60, 80],
-        "kmesh": [16, 16, 16],
+        "kmesh": [20, 20, 20],
         "kmesh_scan": [[12, 12, 12], [16, 16, 16], [20, 20, 20], [24, 24, 24]],
         "smearing_sigma_ry": 0.00734986,
         "smearing_scan_ry": [0.00734986, 0.00367493]
@@ -48,7 +48,7 @@
         "ecutwfc_ry": 40,
         "ecutrho_ry": 160,
         "cutoff_scan_ry": [40, 60, 80],
-        "kmesh": [16, 16, 10],
+        "kmesh": [20, 20, 12],
         "kmesh_scan": [[12, 12, 8], [16, 16, 10], [20, 20, 12], [24, 24, 16]],
         "smearing_sigma_ry": 0.00734986,
         "smearing_scan_ry": [0.00734986, 0.00367493]

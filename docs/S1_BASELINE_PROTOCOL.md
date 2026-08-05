@@ -86,6 +86,10 @@ S2 must not start before every G1 acceptance item has evidence.
   isolated early pass from hiding later metallic k-point oscillation, a mesh
   is now recommended only if every subsequently sampled adjacent refinement
   also passes. A 24x24x16 confirmation mesh was added before analysis.
+- `S1-R5`, 2026-08-05: tail-stable k-point analysis selected 20³ for Al and
+  20x20x12 for Mg. These meshes replaced the initial 16³ and 16x16x10
+  references before generating smearing inputs. G1 remains open because the
+  smearing equilibrium-volume check and EOS are not complete.
 
 ## Completed convergence evidence
 
@@ -138,3 +142,27 @@ energy and pressure thresholds and is the reference for the Al k-point scan.
 
 All points converged. The minimum scanned value, 40 Ry, passes the adjacent
 energy and pressure thresholds and is the reference for the Mg k-point scan.
+
+### Al KSDFT k-point scan at `V/V0 = 1.00`
+
+| Mesh | Experiment | Delta to next (meV/atom) | Tail stable |
+|---|---|---:|---|
+| 12x12x12 | `S1-20260805-016` | 3.662659 | no |
+| 16x16x16 | `S1-20260805-017` | 4.432064 | no |
+| 20x20x20 | `S1-20260805-018` | 1.377592 | yes |
+| 24x24x24 | `S1-20260805-019` | — | confirmation |
+
+The original three-mesh plan failed. After the committed S1-R3 extension,
+20x20x20 is the first mesh whose complete sampled denser tail passes.
+
+### Mg KSDFT k-point scan at `V/V0 = 1.00`
+
+| Mesh | Experiment | Delta to next (meV/atom) | Tail stable |
+|---|---|---:|---|
+| 12x12x8 | `S1-20260805-020` | 0.225665 | no |
+| 16x16x10 | `S1-20260805-021` | 2.035276 | no |
+| 20x20x12 | `S1-20260805-022` | 0.059513 | yes |
+| 24x24x16 | `S1-20260805-023` | — | confirmation |
+
+The isolated first-pair pass is rejected by S1-R4. The accepted V0 reference
+for the Mg smearing scan is 20x20x12.
