@@ -98,6 +98,55 @@ class S1ElectronNumberAuditR2Test(unittest.TestCase):
             self.assertEqual(anchor["failed_attempt_commit"], failed)
             self.assertEqual(anchor["archive_commit"], archive_commit)
 
+    def test_archived_nonpilot_attempt_before_pilots_is_rejected(self) -> None:
+        with tempfile.TemporaryDirectory() as temporary:
+            repository = Path(temporary)
+            self._git(repository, "init")
+            self._git(repository, "config", "user.name", "Unit Test")
+            self._git(repository, "config", "user.email", "unit@example.invalid")
+            (repository / "README").write_text("base\n", encoding="utf-8")
+            self._git(repository, "add", ".")
+            self._git(repository, "commit", "-m", "base")
+            marker = repository / "config/r2-preregistered"
+            marker.parent.mkdir()
+            marker.write_text("frozen\n", encoding="utf-8")
+            self._git(repository, "add", str(marker))
+            self._git(repository, "commit", "-m", "preregister")
+            preregistration = self._git_output(repository, "rev-parse", "HEAD")
+
+            experiment_id = "S1-20260805-131"
+            run = repository / "runs" / experiment_id
+            run.mkdir(parents=True)
+            (run / "experiment_metadata.json").write_text(
+                "{\"status\": \"failed\"}\n", encoding="utf-8"
+            )
+            self._git(repository, "add", str(run))
+            self._git(repository, "commit", "-m", "early failed nonpilot")
+            failed = self._git_output(repository, "rev-parse", "HEAD")
+            archive = (
+                repository
+                / "failed_runs/runtime_relocation"
+                / experiment_id
+                / f"attempt-{failed[:12]}"
+            )
+            archive.parent.mkdir(parents=True)
+            self._git(repository, "mv", str(run), str(archive))
+            self._git(repository, "commit", "-m", "archive early nonpilot")
+
+            errors: list[str] = []
+            event_ids = R2._validate_execution_order(
+                repository, preregistration, errors
+            )
+            self.assertIn(experiment_id, event_ids)
+            self.assertTrue(
+                any("exists before accepted S1-20260805-130" in error for error in errors),
+                errors,
+            )
+            self.assertTrue(
+                any("exists before accepted S1-20260805-135" in error for error in errors),
+                errors,
+            )
+
     def test_runner_freezes_dual_pilot_gate_and_final_total(self) -> None:
         if not RUNNER.exists():
             self.skipTest("R2 runner is assembled by the parallel implementation task")

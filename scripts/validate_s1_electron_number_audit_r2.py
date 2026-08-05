@@ -13,6 +13,7 @@ import argparse
 import csv
 import json
 import os
+import re
 import subprocess
 from copy import deepcopy
 from pathlib import Path
@@ -317,8 +318,13 @@ def _validate_preregistration(
         errors.append(f"R2 preregistration binding failed: {error}")
 
 
-def _validate_execution_order(project_root: Path, prereg: str, errors: list[str]) -> None:
+def _validate_execution_order(
+    project_root: Path, prereg: str, errors: list[str]
+) -> set[str]:
     introductions: dict[str, str] = {}
+    events: dict[str, list[tuple[str, str]]] = {
+        experiment_id: [] for experiment_id in R2_IDS
+    }
     for experiment_id in R2_IDS:
         run_directory = project_root / "runs" / experiment_id
         metadata = project_root / "runs" / experiment_id / "experiment_metadata.json"
@@ -338,24 +344,74 @@ def _validate_execution_order(project_root: Path, prereg: str, errors: list[str]
                     project_root, f"runs/{experiment_id}/experiment_metadata.json"
                 )
                 introductions[experiment_id] = commit
+                events[experiment_id].append(("active", commit))
                 if not _is_ancestor(project_root, prereg, commit) or commit == prereg:
                     errors.append(f"R2 run is not introduced after preregistration: {experiment_id}")
             except (subprocess.CalledProcessError, ValueError) as error:
                 errors.append(f"cannot bind R2 run introduction for {experiment_id}: {error}")
-    for index, experiment_id in enumerate(R2_EXECUTION_ORDER):
-        if experiment_id not in introductions:
+
+        archive_root = (
+            project_root / "failed_runs" / "runtime_relocation" / experiment_id
+        )
+        if not archive_root.exists():
             continue
-        for predecessor in R2_EXECUTION_ORDER[:index]:
-            if predecessor not in introductions:
+        if not archive_root.is_dir() or archive_root.is_symlink():
+            errors.append(f"R2 failed-archive root is invalid: {experiment_id}")
+            continue
+        for attempt in sorted(archive_root.iterdir(), key=lambda item: item.name):
+            match = re.fullmatch(r"attempt-([0-9a-f]{12})", attempt.name)
+            if not attempt.is_dir() or attempt.is_symlink() or match is None:
                 errors.append(
-                    f"R2 execution order violation: {experiment_id} exists before {predecessor}"
+                    f"R2 failed-archive attempt is non-canonical: {experiment_id}/{attempt.name}"
                 )
-            elif not _is_ancestor(
-                project_root, introductions[predecessor], introductions[experiment_id]
-            ):
+                continue
+            try:
+                failure_commit = str(
+                    _git(project_root, "rev-parse", f"{match.group(1)}^{{commit}}")
+                )
+            except subprocess.CalledProcessError as error:
                 errors.append(
-                    f"R2 execution order ancestry violation: {predecessor} -> {experiment_id}"
+                    f"cannot resolve R2 failed-attempt commit for {experiment_id}: {error}"
                 )
+                continue
+            if not _is_ancestor(project_root, prereg, failure_commit):
+                if (
+                    experiment_id == "S1-20260805-130"
+                    and failure_commit == R1_FAILURE_COMMITS[experiment_id]
+                ):
+                    continue
+                errors.append(
+                    f"R2 failed attempt predates preregistration: "
+                    f"{experiment_id}/{attempt.name}"
+                )
+                continue
+            if failure_commit == prereg:
+                errors.append(
+                    f"R2 failed attempt is not after preregistration: "
+                    f"{experiment_id}/{attempt.name}"
+                )
+                continue
+            events[experiment_id].append((attempt.name, failure_commit))
+
+    for index, experiment_id in enumerate(R2_EXECUTION_ORDER):
+        for event_label, event_commit in events[experiment_id]:
+            for predecessor in R2_EXECUTION_ORDER[:index]:
+                if predecessor not in introductions:
+                    errors.append(
+                        f"R2 execution order violation: {experiment_id}/{event_label} "
+                        f"exists before accepted {predecessor}"
+                    )
+                elif not _is_ancestor(
+                    project_root, introductions[predecessor], event_commit
+                ):
+                    errors.append(
+                        f"R2 execution order ancestry violation: accepted {predecessor} "
+                        f"is not before {experiment_id}/{event_label}"
+                    )
+    return {
+        experiment_id for experiment_id, experiment_events in events.items()
+        if experiment_events
+    }
 
 
 def validate_registration(
@@ -495,13 +551,16 @@ def validate_registration(
         _validate_preregistration(project_root, config, errors)
         try:
             prereg = _introduction_commit(project_root, str(CONFIG_PATH))
-            _validate_execution_order(project_root, prereg, errors)
+            execution_event_ids = _validate_execution_order(
+                project_root, prereg, errors
+            )
             active_ids = {
                 experiment_id
                 for experiment_id in R2_IDS
                 if (project_root / "runs" / experiment_id).is_dir()
                 and not (project_root / "runs" / experiment_id).is_symlink()
             }
+            active_ids.update(execution_event_ids)
             required_pilots: tuple[str, ...] = ()
             if R2_PILOTS[1] in active_ids:
                 required_pilots = (R2_PILOTS[0],)
