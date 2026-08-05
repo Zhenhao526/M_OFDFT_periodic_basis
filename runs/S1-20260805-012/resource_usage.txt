@@ -1,0 +1,24 @@
+Info: Local MPI proc number: 4,OpenMP thread number: 1,Total thread number: 4,Local thread limit: 152
+	Command being timed: "/home/shenwei01/M_OFDFT_recovery_S0_20260805_001/conda_prefix/bin/mpirun --bind-to core -np 4 /home/shenwei01/M_OFDFT_recovery_S0_20260805_001/source/abacus_pw_para"
+	User time (seconds): 387.69
+	System time (seconds): 68.07
+	Percent of CPU this job got: 386%
+	Elapsed (wall clock) time (h:mm:ss or m:ss): 1:57.87
+	Average shared text size (kbytes): 0
+	Average unshared data size (kbytes): 0
+	Average stack size (kbytes): 0
+	Average total size (kbytes): 0
+	Maximum resident set size (kbytes): 298900
+	Average resident set size (kbytes): 0
+	Major (requiring I/O) page faults: 3099
+	Minor (reclaiming a frame) page faults: 1396391
+	Voluntary context switches: 17525
+	Involuntary context switches: 2924
+	Swaps: 0
+	File system inputs: 0
+	File system outputs: 7528
+	Socket messages sent: 0
+	Socket messages received: 0
+	Signals delivered: 0
+	Page size (bytes): 4096
+	Exit status: 0
