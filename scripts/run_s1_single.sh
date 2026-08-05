@@ -37,6 +37,11 @@ if [[ "$mpirun" != */* ]]; then
     mpirun=$(command -v "$mpirun")
 fi
 mpirun=$(realpath "$mpirun")
+provenance_mpirun=${M_OFDFT_PROVENANCE_MPIRUN:-$mpirun}
+if [[ "$provenance_mpirun" != */* ]]; then
+    provenance_mpirun=$(command -v "$provenance_mpirun")
+fi
+provenance_mpirun=$(realpath "$provenance_mpirun")
 mpi_ranks=${M_OFDFT_NPROCS:-4}
 pseudopotential=$(python3 -c 'import json,sys; print(json.load(open(sys.argv[1]))["pseudopotential"])' "$input_directory/metadata.json")
 
@@ -52,7 +57,8 @@ sed -i 's|^pseudo_dir .*|pseudo_dir .|' "$run_directory/INPUT"
 
 git_commit=$(git -C "$project_root" rev-parse HEAD)
 python3 - "$run_directory/experiment_metadata.json" "$experiment_id" "$git_commit" \
-    "$abacus" "$mpirun" "$mpi_ranks" "$OPAL_PREFIX" "$PRTE_PREFIX" "$PMIX_PREFIX" <<'PY'
+    "$abacus" "$provenance_mpirun" "$mpirun" "$mpi_ranks" \
+    "$OPAL_PREFIX" "$PRTE_PREFIX" "$PMIX_PREFIX" <<'PY'
 import datetime
 import hashlib
 import json
@@ -61,18 +67,21 @@ from pathlib import Path
 
 binary = Path(sys.argv[4])
 mpirun = Path(sys.argv[5])
+mpirun_invocation = Path(sys.argv[6])
 payload = {
     "abacus_path": str(binary),
     "abacus_sha256": hashlib.sha256(binary.read_bytes()).hexdigest(),
     "code_commit": sys.argv[3],
     "created_at": datetime.datetime.now(datetime.timezone.utc).isoformat(),
     "experiment_id": sys.argv[2],
-    "mpi_ranks": int(sys.argv[6]),
     "mpirun_path": str(mpirun),
     "mpirun_sha256": hashlib.sha256(mpirun.read_bytes()).hexdigest(),
-    "OPAL_PREFIX": sys.argv[7],
-    "PRTE_PREFIX": sys.argv[8],
-    "PMIX_PREFIX": sys.argv[9],
+    "mpirun_invocation_path": str(mpirun_invocation),
+    "mpirun_invocation_sha256": hashlib.sha256(mpirun_invocation.read_bytes()).hexdigest(),
+    "mpi_ranks": int(sys.argv[7]),
+    "OPAL_PREFIX": sys.argv[8],
+    "PRTE_PREFIX": sys.argv[9],
+    "PMIX_PREFIX": sys.argv[10],
     "stage": "S1",
     "worktree_dirty": False,
 }
