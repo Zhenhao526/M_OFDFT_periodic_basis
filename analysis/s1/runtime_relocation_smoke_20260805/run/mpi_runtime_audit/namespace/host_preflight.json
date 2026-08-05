@@ -1,0 +1,105 @@
+{
+  "audit_launcher_path": "/home/shenwei01/M_OFDFT_periodic_basis/scripts/runtime_relocation_audit_launcher.py",
+  "audit_launcher_sha256": "1791eb1a1e212e365258bfe5a64a7327ce085ee03838a3ee3416744fbdf5546c",
+  "command": [
+    "/usr/bin/unshare",
+    "--user",
+    "--map-root-user",
+    "--kill-child=KILL",
+    "--mount",
+    "--pid",
+    "--fork",
+    "--mount-proc",
+    "--propagation",
+    "private",
+    "/bin/bash",
+    "/home/shenwei01/M_OFDFT_periodic_basis/scripts/runtime_relocation_namespace_payload.sh",
+    "--bind-to",
+    "core",
+    "-np",
+    "4",
+    "/home/shenwei01/M_OFDFT_recovery_S0_20260805_001/source/abacus_pw_para_relocated_20260805"
+  ],
+  "host_old_runtime_before": {
+    "host_gid": 1001,
+    "host_uid": 1001,
+    "old_prefix": "/home/shenwei01/wt_melting_runtime_20260724/conda_prefix",
+    "old_prefix_exists": true,
+    "old_prefix_lstat": {
+      "device": 64768,
+      "gid": 1001,
+      "inode": 1613321538,
+      "is_symlink": false,
+      "mode": 16893,
+      "mode_type": 16384,
+      "mtime_ns": 1784863914716562007,
+      "realpath": "/home/shenwei01/wt_melting_runtime_20260724/conda_prefix",
+      "size": 150,
+      "uid": 1001
+    },
+    "old_root": "/home/shenwei01/wt_melting_runtime_20260724",
+    "old_root_exists": true,
+    "old_root_lstat": {
+      "device": 64768,
+      "gid": 1001,
+      "inode": 1074693069,
+      "is_symlink": false,
+      "mode": 16893,
+      "mode_type": 16384,
+      "mtime_ns": 1785241011263552162,
+      "realpath": "/home/shenwei01/wt_melting_runtime_20260724",
+      "size": 4096,
+      "uid": 1001
+    },
+    "old_root_mountinfo_lines": []
+  },
+  "namespace_payload_path": "/home/shenwei01/M_OFDFT_periodic_basis/scripts/runtime_relocation_namespace_payload.sh",
+  "namespace_payload_sha256": "a981540d6fef603577ab533c2fad4fbe9b77e071a398e595edcddd3bc49365a7",
+  "rank_wrapper_path": "/home/shenwei01/M_OFDFT_periodic_basis/scripts/runtime_relocation_rank_wrapper.py",
+  "rank_wrapper_sha256": "18b5dbed82a8f6cc3d1adfc331998e3211ad7b3a58a9e8e763ab24e4939f177e",
+  "schema_version": 1,
+  "status": "accepted",
+  "stdin": "/dev/null",
+  "tools": {
+    "bash": {
+      "path": "/bin/bash",
+      "realpath": "/usr/bin/bash",
+      "sha256": "59474588a312b6b6e73e5a42a59bf71e62b55416b6c9d5e4a6e1c630c2a9ecd4",
+      "version_arguments": [
+        "--version"
+      ],
+      "version_first_line": "GNU bash, version 5.1.16(1)-release (x86_64-pc-linux-gnu)",
+      "version_output_sha256": "51bd40ffa4710175920033d329a0e9e1667e6b7f56178e302432ff4610d554a7"
+    },
+    "mount": {
+      "path": "/usr/bin/mount",
+      "realpath": "/usr/bin/mount",
+      "sha256": "bad230d68e012eb1a2fcaa3b42688d912940f5c61f041ae9451eee7dfb858ff1",
+      "version_arguments": [
+        "--version"
+      ],
+      "version_first_line": "mount from util-linux 2.37.2 (libmount 2.37.2: selinux, smack, btrfs, verity, namespaces, assert, debug)",
+      "version_output_sha256": "0f39cf283734e19729339a127188aca796c00c49a8e5fc3ee38d8a5a91dffabf"
+    },
+    "python": {
+      "path": "/usr/bin/python3",
+      "realpath": "/usr/bin/python3.10",
+      "sha256": "7d51cd6b48b521277f5caa4610a82126e315fa2be4df069823a8b1eeb5bd4a86",
+      "version_arguments": [
+        "--version"
+      ],
+      "version_first_line": "Python 3.10.12",
+      "version_output_sha256": "f6b75e07f1488db28a89724a522725e3e01af3dc78f6fd365f17eb4059e41056"
+    },
+    "unshare": {
+      "path": "/usr/bin/unshare",
+      "realpath": "/usr/bin/unshare",
+      "sha256": "72a34e6ba98a59f1da0c7b4d8c9722b746b5ade54e4d7e8de8e519c2993858ad",
+      "version_arguments": [
+        "--version"
+      ],
+      "version_first_line": "unshare from util-linux 2.37.2",
+      "version_output_sha256": "5033a06a48f3a04eb5473577fa376f3a6c7b56becc2628a7e2b5c17d39e0e9b5"
+    }
+  }
+}

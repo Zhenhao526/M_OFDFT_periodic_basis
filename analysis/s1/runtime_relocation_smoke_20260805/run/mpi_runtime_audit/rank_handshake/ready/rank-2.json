@@ -1,0 +1,23 @@
+{
+  "expected_ranks": 4,
+  "pid": 20,
+  "prefix_environment": {
+    "OPAL_PREFIX": "/home/shenwei01/M_OFDFT_recovery_S0_20260805_001/conda_prefix",
+    "PMIX_PREFIX": "/home/shenwei01/M_OFDFT_recovery_S0_20260805_001/conda_prefix",
+    "PRTE_PREFIX": null,
+    "UCX_MODULE_DIR": "/home/shenwei01/M_OFDFT_recovery_S0_20260805_001/conda_prefix"
+  },
+  "rank": 2,
+  "runtime_environment": {
+    "CMAKE_PREFIX_PATH": "/home/shenwei01/M_OFDFT_recovery_S0_20260805_001/conda_prefix",
+    "HOME": "/home/shenwei01/M_OFDFT_periodic_basis/analysis/s1/runtime_relocation_smoke_20260805/run/runtime_home",
+    "LD_LIBRARY_PATH": "/home/shenwei01/M_OFDFT_recovery_S0_20260805_001/conda_prefix/lib:/home/shenwei01/M_OFDFT_recovery_S0_20260805_001/conda_prefix/lib:/home/shenwei01/M_OFDFT_recovery_S0_20260805_001/conda_prefix/lib:/home/shenwei01/M_OFDFT_recovery_S0_20260805_001/conda_prefix/lib",
+    "LD_PRELOAD": null,
+    "MKLROOT": "/home/shenwei01/M_OFDFT_recovery_S0_20260805_001/conda_prefix",
+    "OMP_NUM_THREADS": "1",
+    "PATH": "/home/shenwei01/M_OFDFT_recovery_S0_20260805_001/conda_prefix/bin:/usr/bin:/bin"
+  },
+  "schema_version": 1,
+  "target_abacus_realpath": "/home/shenwei01/M_OFDFT_recovery_S0_20260805_001/source/abacus_pw_para_relocated_20260805",
+  "wrapper_state": "ready_before_exec"
+}

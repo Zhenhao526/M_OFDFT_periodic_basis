@@ -1,0 +1,27 @@
+{
+  "code_commit": "e5455c3d39bd29009fb8530e5bd6e5b264a17fed",
+  "evidence_manifest_scope": "pre_validation_run_tree_before_failure_annotation",
+  "failure_reasons": [
+    "managed-smoke: rank 0 ready evidence mismatch",
+    "managed-smoke: rank 1 ready evidence mismatch",
+    "managed-smoke: rank 2 ready evidence mismatch",
+    "managed-smoke: rank 3 ready evidence mismatch",
+    "managed-smoke: controlled HOME contains unregistered user config"
+  ],
+  "failure_stage": "managed_smoke_precommit_validation",
+  "observations": {
+    "controlled_home_extra_entries": [
+      ".nv",
+      ".nv/ComputeCache"
+    ],
+    "expected_rank_ld_library_path": "/home/shenwei01/M_OFDFT_recovery_S0_20260805_001/conda_prefix/lib",
+    "observed_rank_ld_library_path": "/home/shenwei01/M_OFDFT_recovery_S0_20260805_001/conda_prefix/lib:/home/shenwei01/M_OFDFT_recovery_S0_20260805_001/conda_prefix/lib:/home/shenwei01/M_OFDFT_recovery_S0_20260805_001/conda_prefix/lib:/home/shenwei01/M_OFDFT_recovery_S0_20260805_001/conda_prefix/lib",
+    "physical_result_converged": true,
+    "runtime_audit_status": "accepted",
+    "scientific_equivalence_status": "accepted"
+  },
+  "schema_version": 1,
+  "status": "rejected",
+  "validation_exit_code": 97,
+  "workflow_exit_code": 0
+}

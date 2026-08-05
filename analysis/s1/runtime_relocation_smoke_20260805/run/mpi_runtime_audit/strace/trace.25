@@ -1,0 +1,3 @@
+openat(AT_FDCWD, "/tmp/ompi.15/1/pmix-gds-shmem2.node01-prterun-node01-15@1.jobdata.15", O_RDWR) = 13
+openat(AT_FDCWD, "/tmp/ompi.15/1/pmix-gds-shmem2.node01-prterun-node01-15@1.session.ffffffff.15", O_RDWR) = 13
+exit(0)                                 = ?
