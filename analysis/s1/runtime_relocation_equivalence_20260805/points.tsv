@@ -1,0 +1,7 @@
+replay_experiment_id	reference_experiment_id	material	series_id	solver	tier	delta_energy_mev_per_atom	delta_pressure_gpa	scientific_tolerance_passed	runtime_audit_status	old_prefix_access_attempt_count	old_prefix_successful_access_count	r8_conclusion_unchanged
+S1-20260805-113	S1-20260805-074	al	ofdft_next_cutoff	ofdft	storage_exact	0E-16	0E-7	True	accepted	22	0	True
+S1-20260805-114	S1-20260805-081	al	ksdft_next_cutoff	ksdft	storage_exact	0E-10	0E-7	True	accepted	22	0	True
+S1-20260805-115	S1-20260805-088	al	ksdft_next_kmesh	ksdft	storage_exact	0E-10	0E-7	True	accepted	22	0	True
+S1-20260805-116	S1-20260805-095	mg	ofdft_next_cutoff	ofdft	storage_exact	0E-17	0E-7	True	accepted	22	0	True
+S1-20260805-117	S1-20260805-102	mg	ksdft_next_cutoff	ksdft	storage_exact	0E-11	0E-7	True	accepted	22	0	True
+S1-20260805-118	S1-20260805-109	mg	ksdft_next_kmesh	ksdft	storage_exact	0E-11	0E-7	True	accepted	22	0	True

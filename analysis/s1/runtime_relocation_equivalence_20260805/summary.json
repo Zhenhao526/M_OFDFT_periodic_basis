@@ -1,0 +1,1147 @@
+{
+  "analysis_provenance": {
+    "analyzer_commit": "ce51927ff4fa1c75c6b5e4becd3d1711e495b38f",
+    "analyzer_sha256": "a818b091c96a0ec6edbd9e98107e0fc453fa8926933c6b30c9088863840f06d3",
+    "config_path": "/home/shenwei01/M_OFDFT_periodic_basis/config/S1_runtime_relocation_equivalence.json",
+    "config_sha256": "9130989fdcdde45b9f9324cdc6faa59e785467aa005ceef017d50002f6a0a4a7",
+    "core_summary_path": "/home/shenwei01/M_OFDFT_periodic_basis/analysis/s1/core_eos_20260805/summary.json",
+    "core_summary_sha256": "508b84a1f6f26edc2cd3de8c3b7d3970fbe2fabb6b6a646dca8ea87b7e2e771d",
+    "manifest_path": "/home/shenwei01/M_OFDFT_periodic_basis/config/S1_runtime_relocation_equivalence_manifest.tsv",
+    "manifest_sha256": "6cdaa3e63a6966df0fb8d7954fc31bb7901b0427abd0fd4f7925195f566195c1",
+    "r8_summary_path": "/home/shenwei01/M_OFDFT_periodic_basis/analysis/s1/non_equilibrium_convergence_20260805/summary.json",
+    "r8_summary_sha256": "94f947aa8db1c22c9ae26defc03ec516e5292c2c4ecdee9f373ce7a0056deb9f"
+  },
+  "analyzed_points": 6,
+  "decision_policy": {
+    "full_42_rerun_triggers": [
+      "elf_difference_outside_registered_runpath_slot",
+      "elf_needed_build_id_or_load_layout_changed",
+      "scientific_energy_or_pressure_gate_failed",
+      "r8_series_or_fit_hard_gate_changed",
+      "mapped_component_byte_equivalence_unprovable"
+    ],
+    "six_point_retry_after_fix_triggers": [
+      "pure_namespace_launcher_or_runtime_audit_failure"
+    ]
+  },
+  "energy_observables": {
+    "ksdft_interpretation": "entropy_corrected_estimator_not_exact_zero_temperature_label",
+    "ksdft_machine_field": "zero_temp_extrapolated_energy_ev_per_atom",
+    "ofdft": "total_energy_from_FINAL_ETOT_IS"
+  },
+  "expected_points": 6,
+  "failures": [],
+  "manifest_validation": {
+    "checked_core_ids": [],
+    "checked_failure_ids": [],
+    "checked_run_ids": [],
+    "config_sha256": "9130989fdcdde45b9f9324cdc6faa59e785467aa005ceef017d50002f6a0a4a7",
+    "experiment_count": 6,
+    "first_experiment_id": "S1-20260805-113",
+    "last_experiment_id": "S1-20260805-118",
+    "manifest_sha256": "6cdaa3e63a6966df0fb8d7954fc31bb7901b0427abd0fd4f7925195f566195c1",
+    "preregistration_commit": "9a0fd7d6a662ad566eb782e863ac2ce9588d650c",
+    "protocol_revision": "S1-R8-RUNTIME-RELOCATION-R2"
+  },
+  "old_prefix_access_interpretation": {
+    "claim_zero_attempts": false,
+    "registered_failed_probe_expected_count_per_point": 22,
+    "registered_failed_probes": [
+      {
+        "errno": "ENOENT",
+        "expected_count": 1,
+        "flags": null,
+        "path": "/home/shenwei01/wt_melting_runtime_20260724/conda_prefix/classid",
+        "probe_id": "launcher_classid_stat",
+        "rank": null,
+        "role": "launcher",
+        "syscall": "stat"
+      },
+      {
+        "errno": "ENOENT",
+        "expected_count": 1,
+        "flags": "O_RDONLY|O_CLOEXEC",
+        "path": "/home/shenwei01/wt_melting_runtime_20260724/conda_prefix/classid",
+        "probe_id": "launcher_classid_open",
+        "rank": null,
+        "role": "launcher",
+        "syscall": "openat"
+      },
+      {
+        "errno": "ENOENT",
+        "expected_count_per_rank": 1,
+        "flags": null,
+        "path": "/home/shenwei01/wt_melting_runtime_20260724/conda_prefix/classid",
+        "probe_id": "rank_classid_stat",
+        "rank": "each",
+        "role": "rank",
+        "syscall": "stat"
+      },
+      {
+        "errno": "ENOENT",
+        "expected_count_per_rank": 1,
+        "flags": "O_RDONLY|O_CLOEXEC",
+        "path": "/home/shenwei01/wt_melting_runtime_20260724/conda_prefix/classid",
+        "probe_id": "rank_classid_open",
+        "rank": "each",
+        "role": "rank",
+        "syscall": "openat"
+      },
+      {
+        "errno": "ENOENT",
+        "expected_count_per_rank": 1,
+        "flags": "O_RDONLY",
+        "path": "/home/shenwei01/wt_melting_runtime_20260724/conda_prefix/ucx.conf",
+        "probe_id": "rank_ucx_conf_open",
+        "rank": "each",
+        "role": "rank",
+        "syscall": "openat"
+      },
+      {
+        "errno": "ENOENT",
+        "expected_count_per_rank": 1,
+        "flags": "O_RDONLY",
+        "path": "/home/shenwei01/wt_melting_runtime_20260724/conda_prefix",
+        "probe_id": "rank_old_prefix_open",
+        "rank": "each",
+        "role": "rank",
+        "syscall": "openat"
+      },
+      {
+        "errno": "ENOENT",
+        "expected_count_per_rank": 1,
+        "flags": "O_RDONLY|O_NONBLOCK|O_CLOEXEC|O_DIRECTORY",
+        "path": "/home/shenwei01/wt_melting_runtime_20260724/conda_prefix",
+        "probe_id": "rank_old_prefix_directory_open",
+        "rank": "each",
+        "role": "rank",
+        "syscall": "openat"
+      }
+    ],
+    "successful_access_required": 0,
+    "successful_exec_required": 0,
+    "unknown_failed_probe_required": 0
+  },
+  "points": [
+    {
+      "energy_observable": "energy_ev_per_atom",
+      "equivalence": {
+        "delta_energy_mev_per_atom": "0E-16",
+        "delta_pressure_gpa": "0E-7",
+        "energy_storage_quantum_mev_per_atom": "1.000E-13",
+        "energy_strictly_below_0_1_mev_per_atom": true,
+        "pressure_storage_quantum_gpa": "1E-7",
+        "pressure_strictly_below_0_02_gpa": true,
+        "scientific_tolerance_passed": true,
+        "tier": "storage_exact"
+      },
+      "material": "al",
+      "r8_replacement": {
+        "conclusion_unchanged": true,
+        "modified_comparison": {
+          "max_pressure_difference_gpa": 0.00017029999999884637,
+          "max_relative_energy_difference_mev_per_atom": 0.001538732988137781,
+          "pressure_acceptance_role": "hard_gate",
+          "pressure_passed": true,
+          "relative_energy_passed": true,
+          "rows": [
+            {
+              "baseline_experiment_id": "S1-20260805-029",
+              "baseline_pressure_gpa": 11.8523237,
+              "baseline_relative_energy_mev_per_atom": 60.12868355586676,
+              "pressure_difference_gpa": -0.00017029999999884637,
+              "refined_experiment_id": "S1-20260805-071",
+              "refined_pressure_gpa": 11.8521534,
+              "refined_relative_energy_mev_per_atom": 60.12714482287862,
+              "relative_energy_difference_mev_per_atom": -0.001538732988137781,
+              "volume_ratio": 0.9
+            },
+            {
+              "baseline_experiment_id": "S1-20260805-030",
+              "baseline_pressure_gpa": 6.6691071,
+              "baseline_relative_energy_mev_per_atom": 22.131123224696125,
+              "pressure_difference_gpa": -0.00010109999999929897,
+              "refined_experiment_id": "S1-20260805-072",
+              "refined_pressure_gpa": 6.669006,
+              "refined_relative_energy_mev_per_atom": 22.130302077357555,
+              "relative_energy_difference_mev_per_atom": -0.0008211473385699719,
+              "volume_ratio": 0.94
+            },
+            {
+              "baseline_experiment_id": "S1-20260805-031",
+              "baseline_pressure_gpa": 3.4757366,
+              "baseline_relative_energy_mev_per_atom": 6.496714928928782,
+              "pressure_difference_gpa": -0.0001260999999996848,
+              "refined_experiment_id": "S1-20260805-073",
+              "refined_pressure_gpa": 3.4756105,
+              "refined_relative_energy_mev_per_atom": 6.496350495261538,
+              "relative_energy_difference_mev_per_atom": -0.0003644336672437021,
+              "volume_ratio": 0.97
+            },
+            {
+              "baseline_experiment_id": "S1-20260805-032",
+              "baseline_pressure_gpa": 0.7789224,
+              "baseline_relative_energy_mev_per_atom": 0.0,
+              "pressure_difference_gpa": -9.209999999992835e-05,
+              "refined_experiment_id": "S1-20260805-113",
+              "refined_pressure_gpa": 0.7788303000000001,
+              "refined_relative_energy_mev_per_atom": 0.0,
+              "relative_energy_difference_mev_per_atom": 0.0,
+              "volume_ratio": 1.0
+            },
+            {
+              "baseline_experiment_id": "S1-20260805-033",
+              "baseline_pressure_gpa": -1.4940346,
+              "baseline_relative_energy_mev_per_atom": 1.213276397081131,
+              "pressure_difference_gpa": -2.6500000000151402e-05,
+              "refined_experiment_id": "S1-20260805-075",
+              "refined_pressure_gpa": -1.4940611000000001,
+              "refined_relative_energy_mev_per_atom": 1.2135329655791338,
+              "relative_energy_difference_mev_per_atom": 0.0002565684980027072,
+              "volume_ratio": 1.03
+            },
+            {
+              "baseline_experiment_id": "S1-20260805-034",
+              "baseline_pressure_gpa": -3.4041643,
+              "baseline_relative_energy_mev_per_atom": 8.916120978980757,
+              "pressure_difference_gpa": -2.3699999999848842e-05,
+              "refined_experiment_id": "S1-20260805-076",
+              "refined_pressure_gpa": -3.404188,
+              "refined_relative_energy_mev_per_atom": 8.916517134217372,
+              "relative_energy_difference_mev_per_atom": 0.000396155236614959,
+              "volume_ratio": 1.06
+            },
+            {
+              "baseline_experiment_id": "S1-20260805-035",
+              "baseline_pressure_gpa": -5.4741692,
+              "baseline_relative_energy_mev_per_atom": 27.49481924799113,
+              "pressure_difference_gpa": 2.079999999970994e-05,
+              "refined_experiment_id": "S1-20260805-077",
+              "refined_pressure_gpa": -5.474148400000001,
+              "refined_relative_energy_mev_per_atom": 27.495219578696606,
+              "relative_energy_difference_mev_per_atom": 0.00040033070547451644,
+              "volume_ratio": 1.1
+            }
+          ],
+          "status": "accepted",
+          "thresholds": {
+            "comparison": "strict_less_than",
+            "max_pressure_difference_gpa": 0.02,
+            "max_relative_energy_difference_mev_per_atom": 1.0
+          }
+        },
+        "modified_fit": {
+          "b0_ev_per_angstrom3": 0.4902085070882967,
+          "b0_gpa": 78.54006093741401,
+          "b0_prime": 4.733343130280277,
+          "e0_ev_per_atom": -57.18377942005411,
+          "max_abs_residual_mev_per_atom": 0.017076344448696545,
+          "rmse_mev_per_atom": 0.011158044153373589,
+          "sampled_shape_diagnostic": {
+            "acceptance_role": "diagnostic_only",
+            "discrete_minimum_at_sampled_endpoint": false,
+            "discrete_minimum_volume_ratio": 1.0
+          },
+          "v0_angstrom3_per_atom": 16.769513395429115
+        },
+        "modified_fit_failures": [],
+        "modified_r8_status": "accepted",
+        "modified_series_status": "accepted",
+        "original_r8_status": "accepted",
+        "original_series_status": "accepted",
+        "series_key": "al/ofdft_next_cutoff"
+      },
+      "reference_experiment_id": "S1-20260805-074",
+      "reference_raw": {
+        "energy_ev_per_atom": "-57.1834030790890182",
+        "energy_quantum_mev_per_atom": "1.000E-13",
+        "energy_token": "-57.1834030790890182",
+        "energy_total_ev": "-57.1834030790890182",
+        "pressure_gpa": "0.7788303",
+        "pressure_kbar": "7.788303",
+        "pressure_quantum_gpa": "1E-7",
+        "pressure_token": "7.788303"
+      },
+      "replay_experiment_id": "S1-20260805-113",
+      "replay_raw": {
+        "energy_ev_per_atom": "-57.1834030790890182",
+        "energy_quantum_mev_per_atom": "1.000E-13",
+        "energy_token": "-57.1834030790890182",
+        "energy_total_ev": "-57.1834030790890182",
+        "pressure_gpa": "0.7788303",
+        "pressure_kbar": "7.788303",
+        "pressure_quantum_gpa": "1E-7",
+        "pressure_token": "7.788303"
+      },
+      "runtime_audit": {
+        "old_prefix_access_attempt_count": 22,
+        "old_prefix_exec_success_count": 0,
+        "old_prefix_mapped_object_count": 0,
+        "old_prefix_successful_access_count": 0,
+        "registered_old_prefix_failed_probe_count": 22,
+        "registered_probe_count_mismatch_count": 0,
+        "transient_system_mapped_object_count": 28,
+        "unexpected_mapped_object_count": 0,
+        "unknown_old_prefix_failed_probe_count": 0
+      },
+      "runtime_audit_status": "accepted",
+      "series_id": "ofdft_next_cutoff",
+      "solver": "ofdft"
+    },
+    {
+      "energy_observable": "zero_temp_extrapolated_energy_ev_per_atom",
+      "equivalence": {
+        "delta_energy_mev_per_atom": "0E-10",
+        "delta_pressure_gpa": "0E-7",
+        "energy_storage_quantum_mev_per_atom": "1.000E-7",
+        "energy_strictly_below_0_1_mev_per_atom": true,
+        "pressure_storage_quantum_gpa": "1E-7",
+        "pressure_strictly_below_0_02_gpa": true,
+        "scientific_tolerance_passed": true,
+        "tier": "storage_exact"
+      },
+      "material": "al",
+      "r8_replacement": {
+        "conclusion_unchanged": true,
+        "modified_comparison": {
+          "max_pressure_difference_gpa": 0.007118899999998263,
+          "max_relative_energy_difference_mev_per_atom": 0.006794399993736988,
+          "pressure_acceptance_role": "hard_gate",
+          "pressure_passed": true,
+          "relative_energy_passed": true,
+          "rows": [
+            {
+              "baseline_experiment_id": "S1-20260805-036",
+              "baseline_pressure_gpa": 10.270216000000001,
+              "baseline_relative_energy_mev_per_atom": 47.06376110000576,
+              "pressure_difference_gpa": 0.007118899999998263,
+              "refined_experiment_id": "S1-20260805-078",
+              "refined_pressure_gpa": 10.2773349,
+              "refined_relative_energy_mev_per_atom": 47.06423470000232,
+              "relative_energy_difference_mev_per_atom": 0.00047359999655327556,
+              "volume_ratio": 0.9
+            },
+            {
+              "baseline_experiment_id": "S1-20260805-037",
+              "baseline_pressure_gpa": 5.3773578,
+              "baseline_relative_energy_mev_per_atom": 15.180250200003798,
+              "pressure_difference_gpa": 0.006824299999999894,
+              "refined_experiment_id": "S1-20260805-079",
+              "refined_pressure_gpa": 5.3841821,
+              "refined_relative_energy_mev_per_atom": 15.179858400003354,
+              "relative_energy_difference_mev_per_atom": -0.00039180000044325425,
+              "volume_ratio": 0.94
+            },
+            {
+              "baseline_experiment_id": "S1-20260805-038",
+              "baseline_pressure_gpa": 2.3872755000000003,
+              "baseline_relative_energy_mev_per_atom": 3.337921800003585,
+              "pressure_difference_gpa": 0.006634099999999865,
+              "refined_experiment_id": "S1-20260805-080",
+              "refined_pressure_gpa": 2.3939096,
+              "refined_relative_energy_mev_per_atom": 3.337778800002411,
+              "relative_energy_difference_mev_per_atom": -0.00014300000117373202,
+              "volume_ratio": 0.97
+            },
+            {
+              "baseline_experiment_id": "S1-20260805-039",
+              "baseline_pressure_gpa": -0.1202419,
+              "baseline_relative_energy_mev_per_atom": 0.0,
+              "pressure_difference_gpa": 0.006419999999999981,
+              "refined_experiment_id": "S1-20260805-114",
+              "refined_pressure_gpa": -0.11382190000000002,
+              "refined_relative_energy_mev_per_atom": 0.0,
+              "relative_energy_difference_mev_per_atom": 0.0,
+              "volume_ratio": 1.0
+            },
+            {
+              "baseline_experiment_id": "S1-20260805-040",
+              "baseline_pressure_gpa": -2.2200985,
+              "baseline_relative_energy_mev_per_atom": 3.7917500000048676,
+              "pressure_difference_gpa": 0.006025700000000356,
+              "refined_experiment_id": "S1-20260805-082",
+              "refined_pressure_gpa": -2.2140728,
+              "refined_relative_energy_mev_per_atom": 3.7926583000000846,
+              "relative_energy_difference_mev_per_atom": 0.0009082999952170212,
+              "volume_ratio": 1.03
+            },
+            {
+              "baseline_experiment_id": "S1-20260805-041",
+              "baseline_pressure_gpa": -3.9742586000000006,
+              "baseline_relative_energy_mev_per_atom": 13.558772300001465,
+              "pressure_difference_gpa": 0.005822100000000496,
+              "refined_experiment_id": "S1-20260805-083",
+              "refined_pressure_gpa": -3.9684365,
+              "refined_relative_energy_mev_per_atom": 13.561473599999374,
+              "relative_energy_difference_mev_per_atom": 0.0027012999979092456,
+              "volume_ratio": 1.06
+            },
+            {
+              "baseline_experiment_id": "S1-20260805-042",
+              "baseline_pressure_gpa": -5.862386600000001,
+              "baseline_relative_energy_mev_per_atom": 34.19030160000602,
+              "pressure_difference_gpa": 0.005456099999999964,
+              "refined_experiment_id": "S1-20260805-084",
+              "refined_pressure_gpa": -5.856930500000001,
+              "refined_relative_energy_mev_per_atom": 34.19709599999976,
+              "relative_energy_difference_mev_per_atom": 0.006794399993736988,
+              "volume_ratio": 1.1
+            }
+          ],
+          "status": "accepted",
+          "thresholds": {
+            "comparison": "strict_less_than",
+            "max_pressure_difference_gpa": 0.02,
+            "max_relative_energy_difference_mev_per_atom": 1.0
+          }
+        },
+        "modified_fit": {
+          "b0_ev_per_angstrom3": 0.47948197453519226,
+          "b0_gpa": 76.8214809695306,
+          "b0_prime": 4.8682539038360195,
+          "e0_ev_per_atom": -57.19416493078168,
+          "max_abs_residual_mev_per_atom": 0.009295506288253819,
+          "rmse_mev_per_atom": 0.005606401114633684,
+          "sampled_shape_diagnostic": {
+            "acceptance_role": "diagnostic_only",
+            "discrete_minimum_at_sampled_endpoint": false,
+            "discrete_minimum_volume_ratio": 1.0
+          },
+          "v0_angstrom3_per_atom": 16.57711054527054
+        },
+        "modified_fit_failures": [],
+        "modified_r8_status": "accepted",
+        "modified_series_status": "accepted",
+        "original_r8_status": "accepted",
+        "original_series_status": "accepted",
+        "series_key": "al/ksdft_next_cutoff"
+      },
+      "reference_experiment_id": "S1-20260805-081",
+      "reference_raw": {
+        "energy_ev_per_atom": "-57.1941583014",
+        "energy_quantum_mev_per_atom": "1.000E-7",
+        "energy_token": "-57.1941583014",
+        "energy_total_ev": "-57.1941583014",
+        "pressure_gpa": "-0.1138219",
+        "pressure_kbar": "-1.138219",
+        "pressure_quantum_gpa": "1E-7",
+        "pressure_token": "-1.138219"
+      },
+      "replay_experiment_id": "S1-20260805-114",
+      "replay_raw": {
+        "energy_ev_per_atom": "-57.1941583014",
+        "energy_quantum_mev_per_atom": "1.000E-7",
+        "energy_token": "-57.1941583014",
+        "energy_total_ev": "-57.1941583014",
+        "pressure_gpa": "-0.1138219",
+        "pressure_kbar": "-1.138219",
+        "pressure_quantum_gpa": "1E-7",
+        "pressure_token": "-1.138219"
+      },
+      "runtime_audit": {
+        "old_prefix_access_attempt_count": 22,
+        "old_prefix_exec_success_count": 0,
+        "old_prefix_mapped_object_count": 0,
+        "old_prefix_successful_access_count": 0,
+        "registered_old_prefix_failed_probe_count": 22,
+        "registered_probe_count_mismatch_count": 0,
+        "transient_system_mapped_object_count": 28,
+        "unexpected_mapped_object_count": 0,
+        "unknown_old_prefix_failed_probe_count": 0
+      },
+      "runtime_audit_status": "accepted",
+      "series_id": "ksdft_next_cutoff",
+      "solver": "ksdft"
+    },
+    {
+      "energy_observable": "zero_temp_extrapolated_energy_ev_per_atom",
+      "equivalence": {
+        "delta_energy_mev_per_atom": "0E-10",
+        "delta_pressure_gpa": "0E-7",
+        "energy_storage_quantum_mev_per_atom": "1.000E-7",
+        "energy_strictly_below_0_1_mev_per_atom": true,
+        "pressure_storage_quantum_gpa": "1E-7",
+        "pressure_strictly_below_0_02_gpa": true,
+        "scientific_tolerance_passed": true,
+        "tier": "storage_exact"
+      },
+      "material": "al",
+      "r8_replacement": {
+        "conclusion_unchanged": true,
+        "modified_comparison": {
+          "max_pressure_difference_gpa": 0.030742799999999626,
+          "max_relative_energy_difference_mev_per_atom": 0.39250369999876966,
+          "pressure_acceptance_role": "diagnostic_only",
+          "pressure_passed": true,
+          "relative_energy_passed": true,
+          "rows": [
+            {
+              "baseline_experiment_id": "S1-20260805-036",
+              "baseline_pressure_gpa": 10.270216000000001,
+              "baseline_relative_energy_mev_per_atom": 47.06376110000576,
+              "pressure_difference_gpa": 0.0003530000000004918,
+              "refined_experiment_id": "S1-20260805-085",
+              "refined_pressure_gpa": 10.270569000000002,
+              "refined_relative_energy_mev_per_atom": 46.81733330000526,
+              "relative_energy_difference_mev_per_atom": -0.2464278000005038,
+              "volume_ratio": 0.9
+            },
+            {
+              "baseline_experiment_id": "S1-20260805-037",
+              "baseline_pressure_gpa": 5.3773578,
+              "baseline_relative_energy_mev_per_atom": 15.180250200003798,
+              "pressure_difference_gpa": -0.013616900000000598,
+              "refined_experiment_id": "S1-20260805-086",
+              "refined_pressure_gpa": 5.3637409,
+              "refined_relative_energy_mev_per_atom": 14.996913899999242,
+              "relative_energy_difference_mev_per_atom": -0.18333630000455514,
+              "volume_ratio": 0.94
+            },
+            {
+              "baseline_experiment_id": "S1-20260805-038",
+              "baseline_pressure_gpa": 2.3872755000000003,
+              "baseline_relative_energy_mev_per_atom": 3.337921800003585,
+              "pressure_difference_gpa": -0.020091800000000326,
+              "refined_experiment_id": "S1-20260805-087",
+              "refined_pressure_gpa": 2.3671837,
+              "refined_relative_energy_mev_per_atom": 3.2379648000002703,
+              "relative_energy_difference_mev_per_atom": -0.09995700000331453,
+              "volume_ratio": 0.97
+            },
+            {
+              "baseline_experiment_id": "S1-20260805-039",
+              "baseline_pressure_gpa": -0.1202419,
+              "baseline_relative_energy_mev_per_atom": 0.0,
+              "pressure_difference_gpa": -0.02483980000000001,
+              "refined_experiment_id": "S1-20260805-115",
+              "refined_pressure_gpa": -0.1450817,
+              "refined_relative_energy_mev_per_atom": 0.0,
+              "relative_energy_difference_mev_per_atom": 0.0,
+              "volume_ratio": 1.0
+            },
+            {
+              "baseline_experiment_id": "S1-20260805-040",
+              "baseline_pressure_gpa": -2.2200985,
+              "baseline_relative_energy_mev_per_atom": 3.7917500000048676,
+              "pressure_difference_gpa": -0.02799800000000019,
+              "refined_experiment_id": "S1-20260805-089",
+              "refined_pressure_gpa": -2.2480965000000004,
+              "refined_relative_energy_mev_per_atom": 3.903947200001312,
+              "relative_energy_difference_mev_per_atom": 0.1121971999964444,
+              "volume_ratio": 1.03
+            },
+            {
+              "baseline_experiment_id": "S1-20260805-041",
+              "baseline_pressure_gpa": -3.9742586000000006,
+              "baseline_relative_energy_mev_per_atom": 13.558772300001465,
+              "pressure_difference_gpa": -0.029729299999999625,
+              "refined_experiment_id": "S1-20260805-090",
+              "refined_pressure_gpa": -4.0039879,
+              "refined_relative_energy_mev_per_atom": 13.788751200003446,
+              "relative_energy_difference_mev_per_atom": 0.2299789000019814,
+              "volume_ratio": 1.06
+            },
+            {
+              "baseline_experiment_id": "S1-20260805-042",
+              "baseline_pressure_gpa": -5.862386600000001,
+              "baseline_relative_energy_mev_per_atom": 34.19030160000602,
+              "pressure_difference_gpa": -0.030742799999999626,
+              "refined_experiment_id": "S1-20260805-091",
+              "refined_pressure_gpa": -5.8931294,
+              "refined_relative_energy_mev_per_atom": 34.58280530000479,
+              "relative_energy_difference_mev_per_atom": 0.39250369999876966,
+              "volume_ratio": 1.1
+            }
+          ],
+          "status": "accepted",
+          "thresholds": {
+            "comparison": "strict_less_than",
+            "max_pressure_difference_gpa": null,
+            "max_relative_energy_difference_mev_per_atom": 2.0
+          }
+        },
+        "modified_fit": {
+          "b0_ev_per_angstrom3": 0.4812812751601532,
+          "b0_gpa": 77.10976070904091,
+          "b0_prime": 4.885532921551193,
+          "e0_ev_per_atom": -57.194868839012294,
+          "max_abs_residual_mev_per_atom": 0.008623252163886264,
+          "rmse_mev_per_atom": 0.005200607285165539,
+          "sampled_shape_diagnostic": {
+            "acceptance_role": "diagnostic_only",
+            "discrete_minimum_at_sampled_endpoint": false,
+            "discrete_minimum_volume_ratio": 1.0
+          },
+          "v0_angstrom3_per_atom": 16.569773680162996
+        },
+        "modified_fit_failures": [],
+        "modified_r8_status": "accepted",
+        "modified_series_status": "accepted",
+        "original_r8_status": "accepted",
+        "original_series_status": "accepted",
+        "series_key": "al/ksdft_next_kmesh"
+      },
+      "reference_experiment_id": "S1-20260805-088",
+      "reference_raw": {
+        "energy_ev_per_atom": "-57.1948547395",
+        "energy_quantum_mev_per_atom": "1.000E-7",
+        "energy_token": "-57.1948547395",
+        "energy_total_ev": "-57.1948547395",
+        "pressure_gpa": "-0.1450817",
+        "pressure_kbar": "-1.450817",
+        "pressure_quantum_gpa": "1E-7",
+        "pressure_token": "-1.450817"
+      },
+      "replay_experiment_id": "S1-20260805-115",
+      "replay_raw": {
+        "energy_ev_per_atom": "-57.1948547395",
+        "energy_quantum_mev_per_atom": "1.000E-7",
+        "energy_token": "-57.1948547395",
+        "energy_total_ev": "-57.1948547395",
+        "pressure_gpa": "-0.1450817",
+        "pressure_kbar": "-1.450817",
+        "pressure_quantum_gpa": "1E-7",
+        "pressure_token": "-1.450817"
+      },
+      "runtime_audit": {
+        "old_prefix_access_attempt_count": 22,
+        "old_prefix_exec_success_count": 0,
+        "old_prefix_mapped_object_count": 0,
+        "old_prefix_successful_access_count": 0,
+        "registered_old_prefix_failed_probe_count": 22,
+        "registered_probe_count_mismatch_count": 0,
+        "transient_system_mapped_object_count": 28,
+        "unexpected_mapped_object_count": 0,
+        "unknown_old_prefix_failed_probe_count": 0
+      },
+      "runtime_audit_status": "accepted",
+      "series_id": "ksdft_next_kmesh",
+      "solver": "ksdft"
+    },
+    {
+      "energy_observable": "energy_ev_per_atom",
+      "equivalence": {
+        "delta_energy_mev_per_atom": "0E-17",
+        "delta_pressure_gpa": "0E-7",
+        "energy_storage_quantum_mev_per_atom": "5.00E-14",
+        "energy_strictly_below_0_1_mev_per_atom": true,
+        "pressure_storage_quantum_gpa": "1E-7",
+        "pressure_strictly_below_0_02_gpa": true,
+        "scientific_tolerance_passed": true,
+        "tier": "storage_exact"
+      },
+      "material": "mg",
+      "r8_replacement": {
+        "conclusion_unchanged": true,
+        "modified_comparison": {
+          "max_pressure_difference_gpa": 4.3100000000073635e-05,
+          "max_relative_energy_difference_mev_per_atom": 7.179245642419119e-06,
+          "pressure_acceptance_role": "hard_gate",
+          "pressure_passed": true,
+          "relative_energy_passed": true,
+          "rows": [
+            {
+              "baseline_experiment_id": "S1-20260805-050",
+              "baseline_pressure_gpa": 0.8065950000000002,
+              "baseline_relative_energy_mev_per_atom": -15.600388593217218,
+              "pressure_difference_gpa": -3.1100000000172656e-05,
+              "refined_experiment_id": "S1-20260805-092",
+              "refined_pressure_gpa": 0.8065639,
+              "refined_relative_energy_mev_per_atom": -15.600390429895583,
+              "relative_energy_difference_mev_per_atom": -1.8366783649526042e-06,
+              "volume_ratio": 0.9
+            },
+            {
+              "baseline_experiment_id": "S1-20260805-051",
+              "baseline_pressure_gpa": -0.8001879000000001,
+              "baseline_relative_energy_mev_per_atom": -15.45392370002574,
+              "pressure_difference_gpa": 4.3100000000073635e-05,
+              "refined_experiment_id": "S1-20260805-093",
+              "refined_pressure_gpa": -0.8001448,
+              "refined_relative_energy_mev_per_atom": -15.453930879271383,
+              "relative_energy_difference_mev_per_atom": -7.179245642419119e-06,
+              "volume_ratio": 0.94
+            },
+            {
+              "baseline_experiment_id": "S1-20260805-052",
+              "baseline_pressure_gpa": -1.8001139,
+              "baseline_relative_energy_mev_per_atom": -9.738444368519339,
+              "pressure_difference_gpa": 2.1799999999627673e-05,
+              "refined_experiment_id": "S1-20260805-094",
+              "refined_pressure_gpa": -1.8000921000000003,
+              "refined_relative_energy_mev_per_atom": -9.73844310675176,
+              "relative_energy_difference_mev_per_atom": 1.2617675793080707e-06,
+              "volume_ratio": 0.97
+            },
+            {
+              "baseline_experiment_id": "S1-20260805-053",
+              "baseline_pressure_gpa": -2.6528749000000005,
+              "baseline_relative_energy_mev_per_atom": 0.0,
+              "pressure_difference_gpa": -6.999999999646178e-06,
+              "refined_experiment_id": "S1-20260805-116",
+              "refined_pressure_gpa": -2.6528819,
+              "refined_relative_energy_mev_per_atom": 0.0,
+              "relative_energy_difference_mev_per_atom": 0.0,
+              "volume_ratio": 1.0
+            },
+            {
+              "baseline_experiment_id": "S1-20260805-054",
+              "baseline_pressure_gpa": -3.3795395,
+              "baseline_relative_energy_mev_per_atom": 13.168086887127117,
+              "pressure_difference_gpa": 5.299999999763827e-06,
+              "refined_experiment_id": "S1-20260805-096",
+              "refined_pressure_gpa": -3.3795342,
+              "refined_relative_energy_mev_per_atom": 13.168088938890321,
+              "relative_energy_difference_mev_per_atom": 2.0517632037808653e-06,
+              "volume_ratio": 1.03
+            },
+            {
+              "baseline_experiment_id": "S1-20260805-055",
+              "baseline_pressure_gpa": -3.9977306,
+              "baseline_relative_energy_mev_per_atom": 29.256552026843963,
+              "pressure_difference_gpa": -3.859999999988872e-05,
+              "refined_experiment_id": "S1-20260805-097",
+              "refined_pressure_gpa": -3.9977692,
+              "refined_relative_energy_mev_per_atom": 29.25655377135783,
+              "relative_energy_difference_mev_per_atom": 1.7445138666971616e-06,
+              "volume_ratio": 1.06
+            },
+            {
+              "baseline_experiment_id": "S1-20260805-056",
+              "baseline_pressure_gpa": -4.6788707,
+              "baseline_relative_energy_mev_per_atom": 54.50170125195086,
+              "pressure_difference_gpa": -2.1799999999849717e-05,
+              "refined_experiment_id": "S1-20260805-098",
+              "refined_pressure_gpa": -4.6788925,
+              "refined_relative_energy_mev_per_atom": 54.50170169071811,
+              "relative_energy_difference_mev_per_atom": 4.3876724475921947e-07,
+              "volume_ratio": 1.1
+            }
+          ],
+          "status": "accepted",
+          "thresholds": {
+            "comparison": "strict_less_than",
+            "max_pressure_difference_gpa": 0.02,
+            "max_relative_energy_difference_mev_per_atom": 1.0
+          }
+        },
+        "modified_fit": {
+          "b0_ev_per_angstrom3": 0.23158413547653212,
+          "b0_gpa": 37.10386876086796,
+          "b0_prime": 3.942460119724276,
+          "e0_ev_per_atom": -24.65355677284282,
+          "max_abs_residual_mev_per_atom": 0.002466981968041182,
+          "rmse_mev_per_atom": 0.001588449869972633,
+          "sampled_shape_diagnostic": {
+            "acceptance_role": "diagnostic_only",
+            "discrete_minimum_at_sampled_endpoint": true,
+            "discrete_minimum_volume_ratio": 0.9
+          },
+          "v0_angstrom3_per_atom": 21.359027022319452
+        },
+        "modified_fit_failures": [],
+        "modified_r8_status": "accepted",
+        "modified_series_status": "accepted",
+        "original_r8_status": "accepted",
+        "original_series_status": "accepted",
+        "series_key": "mg/ofdft_next_cutoff"
+      },
+      "reference_experiment_id": "S1-20260805-095",
+      "reference_raw": {
+        "energy_ev_per_atom": "-24.63685968866936805",
+        "energy_quantum_mev_per_atom": "5.00E-14",
+        "energy_token": "-49.2737193773387361",
+        "energy_total_ev": "-49.2737193773387361",
+        "pressure_gpa": "-2.6528819",
+        "pressure_kbar": "-26.528819",
+        "pressure_quantum_gpa": "1E-7",
+        "pressure_token": "-26.528819"
+      },
+      "replay_experiment_id": "S1-20260805-116",
+      "replay_raw": {
+        "energy_ev_per_atom": "-24.63685968866936805",
+        "energy_quantum_mev_per_atom": "5.00E-14",
+        "energy_token": "-49.2737193773387361",
+        "energy_total_ev": "-49.2737193773387361",
+        "pressure_gpa": "-2.6528819",
+        "pressure_kbar": "-26.528819",
+        "pressure_quantum_gpa": "1E-7",
+        "pressure_token": "-26.528819"
+      },
+      "runtime_audit": {
+        "old_prefix_access_attempt_count": 22,
+        "old_prefix_exec_success_count": 0,
+        "old_prefix_mapped_object_count": 0,
+        "old_prefix_successful_access_count": 0,
+        "registered_old_prefix_failed_probe_count": 22,
+        "registered_probe_count_mismatch_count": 0,
+        "transient_system_mapped_object_count": 28,
+        "unexpected_mapped_object_count": 0,
+        "unknown_old_prefix_failed_probe_count": 0
+      },
+      "runtime_audit_status": "accepted",
+      "series_id": "ofdft_next_cutoff",
+      "solver": "ofdft"
+    },
+    {
+      "energy_observable": "zero_temp_extrapolated_energy_ev_per_atom",
+      "equivalence": {
+        "delta_energy_mev_per_atom": "0E-11",
+        "delta_pressure_gpa": "0E-7",
+        "energy_storage_quantum_mev_per_atom": "5.00E-8",
+        "energy_strictly_below_0_1_mev_per_atom": true,
+        "pressure_storage_quantum_gpa": "1E-7",
+        "pressure_strictly_below_0_02_gpa": true,
+        "scientific_tolerance_passed": true,
+        "tier": "storage_exact"
+      },
+      "material": "mg",
+      "r8_replacement": {
+        "conclusion_unchanged": true,
+        "modified_comparison": {
+          "max_pressure_difference_gpa": 0.00010210000000032693,
+          "max_relative_energy_difference_mev_per_atom": 0.0007054500024139543,
+          "pressure_acceptance_role": "hard_gate",
+          "pressure_passed": true,
+          "relative_energy_passed": true,
+          "rows": [
+            {
+              "baseline_experiment_id": "S1-20260805-057",
+              "baseline_pressure_gpa": 0.5155628,
+              "baseline_relative_energy_mev_per_atom": -20.419718499997686,
+              "pressure_difference_gpa": 1.3599999999946988e-05,
+              "refined_experiment_id": "S1-20260805-099",
+              "refined_pressure_gpa": 0.5155763999999999,
+              "refined_relative_energy_mev_per_atom": -20.4204239500001,
+              "relative_energy_difference_mev_per_atom": -0.0007054500024139543,
+              "volume_ratio": 0.9
+            },
+            {
+              "baseline_experiment_id": "S1-20260805-058",
+              "baseline_pressure_gpa": -1.1002629000000002,
+              "baseline_relative_energy_mev_per_atom": -18.36410469999805,
+              "pressure_difference_gpa": -3.0999999999892225e-05,
+              "refined_experiment_id": "S1-20260805-100",
+              "refined_pressure_gpa": -1.1002939,
+              "refined_relative_energy_mev_per_atom": -18.364418200000898,
+              "relative_energy_difference_mev_per_atom": -0.0003135000028464674,
+              "volume_ratio": 0.94
+            },
+            {
+              "baseline_experiment_id": "S1-20260805-059",
+              "baseline_pressure_gpa": -2.1024108,
+              "baseline_relative_energy_mev_per_atom": -11.194921199997765,
+              "pressure_difference_gpa": 1.6200000000132775e-05,
+              "refined_experiment_id": "S1-20260805-101",
+              "refined_pressure_gpa": -2.1023946,
+              "refined_relative_energy_mev_per_atom": -11.195016100000288,
+              "relative_energy_difference_mev_per_atom": -9.490000252299069e-05,
+              "volume_ratio": 0.97
+            },
+            {
+              "baseline_experiment_id": "S1-20260805-060",
+              "baseline_pressure_gpa": -2.9538810000000004,
+              "baseline_relative_energy_mev_per_atom": 0.0,
+              "pressure_difference_gpa": -7.69999999983284e-06,
+              "refined_experiment_id": "S1-20260805-117",
+              "refined_pressure_gpa": -2.9538887000000003,
+              "refined_relative_energy_mev_per_atom": 0.0,
+              "relative_energy_difference_mev_per_atom": 0.0,
+              "volume_ratio": 1.0
+            },
+            {
+              "baseline_experiment_id": "S1-20260805-061",
+              "baseline_pressure_gpa": -3.6763387000000005,
+              "baseline_relative_energy_mev_per_atom": 14.615173850000218,
+              "pressure_difference_gpa": 5.890000000086104e-05,
+              "refined_experiment_id": "S1-20260805-103",
+              "refined_pressure_gpa": -3.6762797999999997,
+              "refined_relative_energy_mev_per_atom": 14.615102699998772,
+              "relative_energy_difference_mev_per_atom": -7.11500014460853e-05,
+              "volume_ratio": 1.03
+            },
+            {
+              "baseline_experiment_id": "S1-20260805-062",
+              "baseline_pressure_gpa": -4.2876304,
+              "baseline_relative_energy_mev_per_atom": 32.13036870000252,
+              "pressure_difference_gpa": 6.360000000071864e-05,
+              "refined_experiment_id": "S1-20260805-104",
+              "refined_pressure_gpa": -4.2875668,
+              "refined_relative_energy_mev_per_atom": 32.13016315000061,
+              "relative_energy_difference_mev_per_atom": -0.00020555000190825012,
+              "volume_ratio": 1.06
+            },
+            {
+              "baseline_experiment_id": "S1-20260805-063",
+              "baseline_pressure_gpa": -4.955926300000001,
+              "baseline_relative_energy_mev_per_atom": 59.228837850000104,
+              "pressure_difference_gpa": 0.00010210000000032693,
+              "refined_experiment_id": "S1-20260805-105",
+              "refined_pressure_gpa": -4.9558242,
+              "refined_relative_energy_mev_per_atom": 59.22843315000037,
+              "relative_energy_difference_mev_per_atom": -0.0004046999997342482,
+              "volume_ratio": 1.1
+            }
+          ],
+          "status": "accepted",
+          "thresholds": {
+            "comparison": "strict_less_than",
+            "max_pressure_difference_gpa": 0.02,
+            "max_relative_energy_difference_mev_per_atom": 1.0
+          }
+        },
+        "modified_fit": {
+          "b0_ev_per_angstrom3": 0.2413107413464318,
+          "b0_gpa": 38.662242813316894,
+          "b0_prime": 4.0114519566297515,
+          "e0_ev_per_atom": -24.672765235402434,
+          "max_abs_residual_mev_per_atom": 0.003863243172474995,
+          "rmse_mev_per_atom": 0.002462626635917832,
+          "sampled_shape_diagnostic": {
+            "acceptance_role": "diagnostic_only",
+            "discrete_minimum_at_sampled_endpoint": true,
+            "discrete_minimum_volume_ratio": 0.9
+          },
+          "v0_angstrom3_per_atom": 21.174898296329907
+        },
+        "modified_fit_failures": [],
+        "modified_r8_status": "accepted",
+        "modified_series_status": "accepted",
+        "original_r8_status": "accepted",
+        "original_series_status": "accepted",
+        "series_key": "mg/ksdft_next_cutoff"
+      },
+      "reference_experiment_id": "S1-20260805-102",
+      "reference_raw": {
+        "energy_ev_per_atom": "-24.65195840445",
+        "energy_quantum_mev_per_atom": "5.00E-8",
+        "energy_token": "-49.3039168089",
+        "energy_total_ev": "-49.3039168089",
+        "pressure_gpa": "-2.9538887",
+        "pressure_kbar": "-29.538887",
+        "pressure_quantum_gpa": "1E-7",
+        "pressure_token": "-29.538887"
+      },
+      "replay_experiment_id": "S1-20260805-117",
+      "replay_raw": {
+        "energy_ev_per_atom": "-24.65195840445",
+        "energy_quantum_mev_per_atom": "5.00E-8",
+        "energy_token": "-49.3039168089",
+        "energy_total_ev": "-49.3039168089",
+        "pressure_gpa": "-2.9538887",
+        "pressure_kbar": "-29.538887",
+        "pressure_quantum_gpa": "1E-7",
+        "pressure_token": "-29.538887"
+      },
+      "runtime_audit": {
+        "old_prefix_access_attempt_count": 22,
+        "old_prefix_exec_success_count": 0,
+        "old_prefix_mapped_object_count": 0,
+        "old_prefix_successful_access_count": 0,
+        "registered_old_prefix_failed_probe_count": 22,
+        "registered_probe_count_mismatch_count": 0,
+        "transient_system_mapped_object_count": 28,
+        "unexpected_mapped_object_count": 0,
+        "unknown_old_prefix_failed_probe_count": 0
+      },
+      "runtime_audit_status": "accepted",
+      "series_id": "ksdft_next_cutoff",
+      "solver": "ksdft"
+    },
+    {
+      "energy_observable": "zero_temp_extrapolated_energy_ev_per_atom",
+      "equivalence": {
+        "delta_energy_mev_per_atom": "0E-11",
+        "delta_pressure_gpa": "0E-7",
+        "energy_storage_quantum_mev_per_atom": "5.00E-8",
+        "energy_strictly_below_0_1_mev_per_atom": true,
+        "pressure_storage_quantum_gpa": "1E-7",
+        "pressure_strictly_below_0_02_gpa": true,
+        "scientific_tolerance_passed": true,
+        "tier": "storage_exact"
+      },
+      "material": "mg",
+      "r8_replacement": {
+        "conclusion_unchanged": true,
+        "modified_comparison": {
+          "max_pressure_difference_gpa": 0.017168399999999973,
+          "max_relative_energy_difference_mev_per_atom": 0.40314955000297914,
+          "pressure_acceptance_role": "diagnostic_only",
+          "pressure_passed": true,
+          "relative_energy_passed": true,
+          "rows": [
+            {
+              "baseline_experiment_id": "S1-20260805-057",
+              "baseline_pressure_gpa": 0.5155628,
+              "baseline_relative_energy_mev_per_atom": -20.419718499997686,
+              "pressure_difference_gpa": -0.017168399999999973,
+              "refined_experiment_id": "S1-20260805-106",
+              "refined_pressure_gpa": 0.4983944,
+              "refined_relative_energy_mev_per_atom": -20.822868050000665,
+              "relative_energy_difference_mev_per_atom": -0.40314955000297914,
+              "volume_ratio": 0.9
+            },
+            {
+              "baseline_experiment_id": "S1-20260805-058",
+              "baseline_pressure_gpa": -1.1002629000000002,
+              "baseline_relative_energy_mev_per_atom": -18.36410469999805,
+              "pressure_difference_gpa": -0.015393299999999721,
+              "refined_experiment_id": "S1-20260805-107",
+              "refined_pressure_gpa": -1.1156561999999999,
+              "refined_relative_energy_mev_per_atom": -18.59513990000039,
+              "relative_energy_difference_mev_per_atom": -0.23103520000233857,
+              "volume_ratio": 0.94
+            },
+            {
+              "baseline_experiment_id": "S1-20260805-059",
+              "baseline_pressure_gpa": -2.1024108,
+              "baseline_relative_energy_mev_per_atom": -11.194921199997765,
+              "pressure_difference_gpa": -0.01366159999999983,
+              "refined_experiment_id": "S1-20260805-108",
+              "refined_pressure_gpa": -2.1160723999999997,
+              "refined_relative_energy_mev_per_atom": -11.304862450000286,
+              "relative_energy_difference_mev_per_atom": -0.10994125000252097,
+              "volume_ratio": 0.97
+            },
+            {
+              "baseline_experiment_id": "S1-20260805-060",
+              "baseline_pressure_gpa": -2.9538810000000004,
+              "baseline_relative_energy_mev_per_atom": 0.0,
+              "pressure_difference_gpa": -0.011765599999999932,
+              "refined_experiment_id": "S1-20260805-118",
+              "refined_pressure_gpa": -2.9656466000000004,
+              "refined_relative_energy_mev_per_atom": 0.0,
+              "relative_energy_difference_mev_per_atom": 0.0,
+              "volume_ratio": 1.0
+            },
+            {
+              "baseline_experiment_id": "S1-20260805-061",
+              "baseline_pressure_gpa": -3.6763387000000005,
+              "baseline_relative_energy_mev_per_atom": 14.615173850000218,
+              "pressure_difference_gpa": -0.009705699999999595,
+              "refined_experiment_id": "S1-20260805-110",
+              "refined_pressure_gpa": -3.6860444,
+              "refined_relative_energy_mev_per_atom": 14.710630049997064,
+              "relative_energy_difference_mev_per_atom": 0.09545619999684618,
+              "volume_ratio": 1.03
+            },
+            {
+              "baseline_experiment_id": "S1-20260805-062",
+              "baseline_pressure_gpa": -4.2876304,
+              "baseline_relative_energy_mev_per_atom": 32.13036870000252,
+              "pressure_difference_gpa": -0.007618400000000136,
+              "refined_experiment_id": "S1-20260805-111",
+              "refined_pressure_gpa": -4.2952488,
+              "refined_relative_energy_mev_per_atom": 32.304286049999575,
+              "relative_energy_difference_mev_per_atom": 0.17391734999705477,
+              "volume_ratio": 1.06
+            },
+            {
+              "baseline_experiment_id": "S1-20260805-063",
+              "baseline_pressure_gpa": -4.955926300000001,
+              "baseline_relative_energy_mev_per_atom": 59.228837850000104,
+              "pressure_difference_gpa": -0.0049152000000001195,
+              "refined_experiment_id": "S1-20260805-112",
+              "refined_pressure_gpa": -4.960841500000001,
+              "refined_relative_energy_mev_per_atom": 59.47850064999827,
+              "relative_energy_difference_mev_per_atom": 0.24966279999816265,
+              "volume_ratio": 1.1
+            }
+          ],
+          "status": "accepted",
+          "thresholds": {
+            "comparison": "strict_less_than",
+            "max_pressure_difference_gpa": null,
+            "max_relative_energy_difference_mev_per_atom": 2.0
+          }
+        },
+        "modified_fit": {
+          "b0_ev_per_angstrom3": 0.2420302708726664,
+          "b0_gpa": 38.77752415180773,
+          "b0_prime": 4.050295427488166,
+          "e0_ev_per_atom": -24.673221434993177,
+          "max_abs_residual_mev_per_atom": 0.004079008174784349,
+          "rmse_mev_per_atom": 0.0026411358506135954,
+          "sampled_shape_diagnostic": {
+            "acceptance_role": "diagnostic_only",
+            "discrete_minimum_at_sampled_endpoint": true,
+            "discrete_minimum_volume_ratio": 0.9
+          },
+          "v0_angstrom3_per_atom": 21.158622800120472
+        },
+        "modified_fit_failures": [],
+        "modified_r8_status": "accepted",
+        "modified_series_status": "accepted",
+        "original_r8_status": "accepted",
+        "original_series_status": "accepted",
+        "series_key": "mg/ksdft_next_kmesh"
+      },
+      "reference_experiment_id": "S1-20260805-109",
+      "reference_raw": {
+        "energy_ev_per_atom": "-24.65205867415",
+        "energy_quantum_mev_per_atom": "5.00E-8",
+        "energy_token": "-49.3041173483",
+        "energy_total_ev": "-49.3041173483",
+        "pressure_gpa": "-2.9656466",
+        "pressure_kbar": "-29.656466",
+        "pressure_quantum_gpa": "1E-7",
+        "pressure_token": "-29.656466"
+      },
+      "replay_experiment_id": "S1-20260805-118",
+      "replay_raw": {
+        "energy_ev_per_atom": "-24.65205867415",
+        "energy_quantum_mev_per_atom": "5.00E-8",
+        "energy_token": "-49.3041173483",
+        "energy_total_ev": "-49.3041173483",
+        "pressure_gpa": "-2.9656466",
+        "pressure_kbar": "-29.656466",
+        "pressure_quantum_gpa": "1E-7",
+        "pressure_token": "-29.656466"
+      },
+      "runtime_audit": {
+        "old_prefix_access_attempt_count": 22,
+        "old_prefix_exec_success_count": 0,
+        "old_prefix_mapped_object_count": 0,
+        "old_prefix_successful_access_count": 0,
+        "registered_old_prefix_failed_probe_count": 22,
+        "registered_probe_count_mismatch_count": 0,
+        "transient_system_mapped_object_count": 28,
+        "unexpected_mapped_object_count": 0,
+        "unknown_old_prefix_failed_probe_count": 0
+      },
+      "runtime_audit_status": "accepted",
+      "series_id": "ksdft_next_kmesh",
+      "solver": "ksdft"
+    }
+  ],
+  "protocol_revision": "S1-R8-RUNTIME-RELOCATION-R2",
+  "r8_conclusion_unchanged_count": 6,
+  "recommended_action": "close_runtime_relocation_equivalence_and_keep_s1_r8_conclusion",
+  "runtime_audit_accepted_count": 6,
+  "schema_version": 1,
+  "scientific_gate_passed_count": 6,
+  "scientific_tolerance_only_count": 0,
+  "six_point_status": "accepted",
+  "storage_closure_tier_count": 6,
+  "thresholds": {
+    "full_42_rerun_triggers": [
+      "elf_difference_outside_registered_runpath_slot",
+      "elf_needed_build_id_or_load_layout_changed",
+      "scientific_energy_or_pressure_gate_failed",
+      "r8_series_or_fit_hard_gate_changed",
+      "mapped_component_byte_equivalence_unprovable"
+    ],
+    "max_absolute_energy_difference_mev_per_atom": 0.1,
+    "max_absolute_pressure_difference_gpa": 0.02,
+    "r8_v100_replacement_must_preserve_conclusion": true,
+    "scientific_runtime_and_r8_gates_passed_action": "close_runtime_relocation_equivalence_and_keep_s1_r8_conclusion",
+    "six_point_retry_after_fix_triggers": [
+      "pure_namespace_launcher_or_runtime_audit_failure"
+    ],
+    "storage_equivalence_tiers_diagnostic_only": [
+      "storage_exact",
+      "storage_resolution_equal"
+    ],
+    "threshold_comparison": "strict_less_than"
+  }
+}
