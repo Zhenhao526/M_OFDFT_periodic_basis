@@ -1,12 +1,15 @@
 #!/usr/bin/env python3
-"""Strict byte/provenance validation for the S1-R8 six-point MPI replay."""
+"""Strict byte/provenance validation for S1-R8 runtime relocation."""
 
 from __future__ import annotations
 
 import argparse
+import collections
 import csv
 import json
+import os
 import re
+import stat
 import subprocess
 from pathlib import Path
 
@@ -16,21 +19,32 @@ from s1_mpi_prefix_equivalence_common import (
     CANONICAL_MANIFEST_PATH,
     FIXED_PAIRS,
     PROTOCOL_REVISION,
+    REGISTERED_DEVICE_MAPPING_PATTERNS,
     REQUIRED_SOURCE_FILES,
+    SYSTEM_MAPPING_EXACT_PATHS,
+    SYSTEM_MAPPING_ROOTS,
     TRANSIENT_MAPPING_PATTERNS,
+    equivalence_tier,
     is_within,
     normalized_run_input,
     path_from_project,
+    raw_observables,
     read_r8_manifest,
     read_tsv,
     reparse_run,
+    registered_old_prefix_failed_probes,
     require_tracked_at_head,
     sha256,
 )
-from mpi_prefix_audit_launcher import (
+from runtime_relocation_audit_launcher import (
     classify_mapping,
-    parse_execve_paths,
-    parse_strace_lines,
+    parse_execve_records,
+    parse_strace_records,
+)
+from s1_runtime_relocation_elf import (
+    file_identity,
+    relocation_equivalence_evidence,
+    versioned_tool_identity,
 )
 
 
@@ -51,31 +65,54 @@ TOP_LEVEL_KEYS = {
 RUNTIME_KEYS = {
     "recovery_root",
     "recovery_prefix",
+    "old_root",
     "old_prefix",
-    "abacus_path",
-    "abacus_sha256",
-    "mpirun_path",
-    "mpirun_sha256",
-    "launcher_path",
-    "launcher_sha256",
+    "reference",
+    "replay",
     "prefix_environment",
+    "tools",
+    "wrappers",
+    "elf_relocation",
+    "mpi_argv_prefix",
+    "namespace",
 }
 AUDIT_KEYS = {
     "launcher_count",
     "rank_count",
+    "runtime_wall_timeout_seconds",
+    "mapping_observation_scope",
+    "mpirun_and_support_daemon_maps_out_of_scope",
+    "rank_handshake_required",
+    "initial_maps_required_for_every_target",
     "old_prefix_mapped_object_count_max",
     "unexpected_mapped_object_count_max",
+    "all_captured_regular_mapped_objects_must_be_hashed",
+    "recovery_component_counterpart_byte_equality_required",
+    "counterpart_missing_count_max",
+    "counterpart_byte_mismatch_count_max",
+    "counterpart_exclusions",
+    "successful_exec_multiset",
+    "ambiguous_exec_result_count_max",
     "file_trace_required",
+    "strace_before_after_identity_required",
     "old_prefix_successful_access_count_max",
-    "allowed_failed_probe_path",
-    "allowed_failed_probe_errno",
-    "allowed_failed_probe_expected_count_per_run",
-    "other_old_prefix_attempt_count_max",
+    "old_prefix_exec_success_count_max",
+    "unknown_old_prefix_failed_probe_count_max",
+    "registered_probe_count_mismatch_count_max",
+    "registered_old_prefix_failed_probe_count",
+    "registered_old_prefix_failed_probes",
     "clean_environment_required",
+    "controlled_home_policy",
+    "required_path",
+    "required_cmake_prefix_path",
+    "required_mklroot",
     "required_ld_library_path",
     "ld_preload_must_be_unset",
     "transient_mapping_patterns",
     "system_mapping_roots",
+    "system_mapping_exact_paths",
+    "registered_device_mapping_patterns",
+    "namespace_evidence_required",
 }
 SOURCE_KEYS = {
     "r8_config_path",
@@ -112,13 +149,35 @@ OBJECT_HEADER = (
     "loaded_sha256",
     "classification",
 )
+COUNTERPART_HEADER = (
+    "recovery_path",
+    "recovery_realpath",
+    "recovery_relative_path",
+    "recovery_sha256",
+    "old_counterpart_path",
+    "old_counterpart_realpath",
+    "old_counterpart_sha256",
+    "byte_equal",
+    "verification_rule",
+)
 FROZEN_IMPLEMENTATION_PATHS = (
+    "environment/activate.sh",
     "scripts/generate_s1_mpi_prefix_equivalence.py",
+    "scripts/generate_s1_runtime_relocation_equivalence.py",
     "scripts/validate_s1_mpi_prefix_equivalence.py",
+    "scripts/validate_s1_runtime_relocation_equivalence.py",
     "scripts/run_s1_mpi_prefix_equivalence.sh",
+    "scripts/run_s1_runtime_relocation_equivalence.sh",
     "scripts/mpi_prefix_audit_launcher.py",
+    "scripts/runtime_relocation_audit_launcher.py",
+    "scripts/runtime_relocation_namespace_launcher.py",
+    "scripts/runtime_relocation_namespace_payload.sh",
+    "scripts/runtime_relocation_rank_wrapper.py",
+    "scripts/s1_runtime_relocation_elf.py",
     "scripts/analyze_s1_mpi_prefix_equivalence.py",
+    "scripts/analyze_s1_runtime_relocation_equivalence.py",
     "scripts/s1_mpi_prefix_equivalence_common.py",
+    "scripts/s1_runtime_relocation_equivalence_common.py",
     "scripts/run_s1_single.sh",
     "scripts/parse_s1_single.py",
     "scripts/analyze_s1_non_equilibrium.py",
@@ -146,6 +205,80 @@ def _check_hash(path: Path, expected: str, label: str, errors: list[str]) -> Non
         errors.append(f"{label}: missing or symbolic-link file {path}")
     elif sha256(path) != expected:
         errors.append(f"{label}: SHA-256 mismatch")
+
+
+def _check_identity(
+    identity: object,
+    label: str,
+    errors: list[str],
+    *,
+    require_elf: bool = True,
+) -> dict:
+    if not isinstance(identity, dict):
+        errors.append(f"{label}: identity must be an object")
+        return {}
+    if set(identity) != {"path", "realpath", "sha256"}:
+        errors.append(f"{label}: identity keys differ")
+        return identity
+    try:
+        actual = file_identity(Path(str(identity["path"])), label, require_elf=require_elf)
+    except ValueError as error:
+        errors.append(str(error))
+        return identity
+    if actual != identity:
+        errors.append(f"{label}: path/realpath/SHA-256 identity mismatch")
+    return identity
+
+
+def _check_versioned_tool(identity: object, label: str, errors: list[str]) -> dict:
+    if not isinstance(identity, dict):
+        errors.append(f"{label}: tool identity must be an object")
+        return {}
+    expected_keys = {
+        "path",
+        "realpath",
+        "sha256",
+        "version_arguments",
+        "version_first_line",
+        "version_output_sha256",
+    }
+    if set(identity) != expected_keys or identity.get("version_arguments") != ["--version"]:
+        errors.append(f"{label}: versioned tool identity fields differ")
+        return identity
+    try:
+        actual = versioned_tool_identity(Path(str(identity["path"])), label)
+    except ValueError as error:
+        errors.append(str(error))
+        return identity
+    if actual != identity:
+        errors.append(f"{label}: frozen tool identity/version mismatch")
+    return identity
+
+
+def _lstat_identity(path: Path) -> dict | None:
+    try:
+        value = path.lstat()
+    except FileNotFoundError:
+        return None
+    return {
+        "device": value.st_dev,
+        "gid": value.st_gid,
+        "inode": value.st_ino,
+        "mode": value.st_mode,
+        "mode_type": stat.S_IFMT(value.st_mode),
+        "mtime_ns": value.st_mtime_ns,
+        "size": value.st_size,
+        "uid": value.st_uid,
+        "is_symlink": path.is_symlink(),
+        "realpath": str(path.resolve(strict=False)),
+    }
+
+
+def _integer_fields(value: object) -> list[int]:
+    try:
+        return [int(item) for item in str(value).split()]
+    except ValueError:
+        return []
 
 
 def _git_bytes(project_root: Path, *arguments: str) -> bytes:
@@ -208,15 +341,25 @@ def _run_commit_chain_failure(
     output = _git_bytes(
         project_root,
         "log",
+        "--no-renames",
         "--diff-filter=A",
         "--format=%H",
         "--",
         relative,
     ).decode("ascii")
     additions = [line for line in output.splitlines() if line]
-    if len(additions) != 1:
-        return f"{experiment_id}: expected one run addition commit, found {len(additions)}"
-    parent = _git_bytes(project_root, "rev-parse", f"{additions[0]}^").decode("ascii").strip()
+    if not additions:
+        return f"{experiment_id}: current run has no addition commit"
+    current_addition = additions[0]
+    current_blob = _git_bytes(
+        project_root, "cat-file", "blob", f"HEAD:{relative}"
+    )
+    addition_blob = _git_bytes(
+        project_root, "cat-file", "blob", f"{current_addition}:{relative}"
+    )
+    if current_blob != addition_blob:
+        return f"{experiment_id}: current metadata differs from latest run introduction"
+    parent = _git_bytes(project_root, "rev-parse", f"{current_addition}^").decode("ascii").strip()
     if parent != code_commit:
         return (
             f"{experiment_id}: experiment code_commit {code_commit} is not the run "
@@ -231,6 +374,68 @@ def _run_commit_chain_failure(
     if ancestor.returncode != 0:
         return f"{experiment_id}: code_commit is not an ancestor of HEAD"
     return None
+
+
+def _failed_archive_chain_failures(project_root: Path, experiment_id: str) -> list[str]:
+    """Validate every preserved failed attempt independently of a same-ID retry."""
+
+    failures: list[str] = []
+    archive_root = project_root / "failed_runs" / "runtime_relocation" / experiment_id
+    if not archive_root.exists():
+        return failures
+    for attempt in sorted(archive_root.glob("attempt-*")):
+        prefix = f"{experiment_id}:{attempt.name}:"
+        if not attempt.is_dir() or attempt.is_symlink():
+            failures.append(f"{prefix} invalid archive directory")
+            continue
+        match = re.fullmatch(r"attempt-([0-9a-f]{12})", attempt.name)
+        if match is None:
+            failures.append(f"{prefix} invalid failure-commit suffix")
+            continue
+        try:
+            failure_commit = _git_bytes(
+                project_root, "rev-parse", f"{match.group(1)}^{{commit}}"
+            ).decode("ascii").strip()
+            metadata_path = attempt / "experiment_metadata.json"
+            metadata = json.loads(metadata_path.read_text(encoding="utf-8"))
+            code_commit = metadata.get("code_commit")
+            failure_parent = _git_bytes(
+                project_root, "rev-parse", f"{failure_commit}^"
+            ).decode("ascii").strip()
+            if failure_parent != code_commit:
+                failures.append(f"{prefix} failed-run commit parent/code_commit mismatch")
+            archived_relative = metadata_path.relative_to(project_root).as_posix()
+            additions = _git_bytes(
+                project_root,
+                "log",
+                "--no-renames",
+                "--diff-filter=A",
+                "--format=%H",
+                "--",
+                archived_relative,
+            ).decode("ascii").splitlines()
+            if not additions:
+                failures.append(f"{prefix} archive has no introduction commit")
+                continue
+            archive_commit = additions[0]
+            archive_parent = _git_bytes(
+                project_root, "rev-parse", f"{archive_commit}^"
+            ).decode("ascii").strip()
+            if archive_parent != failure_commit:
+                failures.append(f"{prefix} archive commit does not immediately follow failure")
+            for path in sorted(item for item in attempt.rglob("*") if item.is_file()):
+                suffix = path.relative_to(attempt).as_posix()
+                failure_blob = _git_bytes(
+                    project_root,
+                    "cat-file",
+                    "blob",
+                    f"{failure_commit}:runs/{experiment_id}/{suffix}",
+                )
+                if path.read_bytes() != failure_blob:
+                    failures.append(f"{prefix} archived blob differs: {suffix}")
+        except (FileNotFoundError, KeyError, ValueError, json.JSONDecodeError) as error:
+            failures.append(f"{prefix} archive chain validation failed: {error}")
+    return failures
 
 
 def _validate_runtime_audit_evidence(
@@ -411,12 +616,535 @@ def _validate_runtime_audit_evidence(
     return evidence_paths
 
 
+def _validate_runtime_relocation_audit_evidence(
+    run_directory: Path,
+    runtime: dict,
+    audit_spec: dict,
+    audit: dict,
+    errors: list[str],
+    prefix: str,
+) -> list[Path]:
+    audit_directory = run_directory / "mpi_runtime_audit"
+    objects_path = audit_directory / "objects.tsv"
+    trace_directory = audit_directory / "strace"
+    namespace_directory = audit_directory / "namespace"
+    evidence_paths = [objects_path]
+    try:
+        with objects_path.open(newline="", encoding="utf-8") as handle:
+            reader = csv.DictReader(handle, delimiter="\t")
+            if tuple(reader.fieldnames or ()) != OBJECT_HEADER:
+                errors.append(f"{prefix} invalid runtime object TSV header")
+                object_rows = []
+            else:
+                object_rows = list(reader)
+    except FileNotFoundError:
+        errors.append(f"{prefix} missing runtime object TSV")
+        object_rows = []
+
+    replay = runtime["replay"]
+    expected_executables = {
+        "launcher": replay["launcher"],
+        "rank": replay["abacus"],
+    }
+    processes = audit.get("processes")
+    if not isinstance(processes, list):
+        errors.append(f"{prefix} runtime audit processes must be a list")
+        processes = []
+    process_by_pid: dict[int, dict] = {}
+    launcher_rows = []
+    rank_rows = []
+    for process in processes:
+        if not isinstance(process, dict):
+            errors.append(f"{prefix} runtime process record must be an object")
+            continue
+        try:
+            pid = int(process["pid"])
+            role = str(process["role"])
+            rank = process.get("rank")
+            rank = None if rank is None else int(rank)
+        except (KeyError, TypeError, ValueError) as error:
+            errors.append(f"{prefix} invalid runtime process record: {error}")
+            continue
+        if pid in process_by_pid:
+            errors.append(f"{prefix} duplicate runtime process PID {pid}")
+        process_by_pid[pid] = process
+        if role not in expected_executables:
+            errors.append(f"{prefix} unexpected target process role {role}")
+            continue
+        expected = expected_executables[role]
+        if not _same_path(
+            Path(str(process.get("executable_realpath", ""))),
+            Path(expected["realpath"]),
+        ):
+            errors.append(f"{prefix} {role} executable realpath mismatch")
+        if process.get("executable_sha256") != expected["sha256"]:
+            errors.append(f"{prefix} {role} executable SHA-256 mismatch")
+        if not process.get("initial_map_capture_observed"):
+            errors.append(f"{prefix} {role} PID {pid} lacks deterministic initial maps")
+        if int(process.get("mapped_object_count", 0)) <= 0:
+            errors.append(f"{prefix} {role} PID {pid} has no captured mappings")
+        if role == "launcher":
+            launcher_rows.append(process)
+        else:
+            rank_rows.append(process)
+    try:
+        rank_values = sorted(int(row["rank"]) for row in rank_rows)
+    except (KeyError, TypeError, ValueError):
+        rank_values = []
+    if len(launcher_rows) != 1:
+        errors.append(f"{prefix} raw process evidence does not contain one launcher")
+    if rank_values != list(range(audit_spec["rank_count"])):
+        errors.append(f"{prefix} raw process evidence does not contain ranks 0..3")
+
+    seen_objects: set[tuple[int, str]] = set()
+    counts = {
+        "old_prefix": 0,
+        "unexpected": 0,
+        "transient_system": 0,
+        "registered_device": 0,
+    }
+    counts_by_pid: dict[int, int] = {}
+    for row in object_rows:
+        try:
+            pid = int(row["pid"])
+            mapped = Path(row["mapped_path"])
+            loaded = Path(row["loaded_realpath"])
+        except (KeyError, TypeError, ValueError) as error:
+            errors.append(f"{prefix} invalid mapped object record: {error}")
+            continue
+        key = (pid, str(mapped))
+        if key in seen_objects:
+            errors.append(f"{prefix} duplicate mapped object record {key}")
+        seen_objects.add(key)
+        counts_by_pid[pid] = counts_by_pid.get(pid, 0) + 1
+        process = process_by_pid.get(pid)
+        if process is None:
+            errors.append(f"{prefix} mapped object refers to unknown PID {pid}")
+        else:
+            expected_rank = "" if process.get("rank") is None else str(process.get("rank"))
+            if row.get("role") != process.get("role") or row.get("rank", "") != expected_rank:
+                errors.append(f"{prefix} mapped object PID {pid} role/rank mismatch")
+        expected_loaded = mapped.resolve(strict=False)
+        if loaded != expected_loaded:
+            errors.append(f"{prefix} mapped object realpath mismatch: {mapped}")
+        classification = classify_mapping(
+            mapped,
+            loaded,
+            Path(runtime["old_prefix"]),
+            Path(runtime["recovery_root"]),
+            tuple(audit_spec["system_mapping_roots"]),
+            tuple(audit_spec["system_mapping_exact_paths"]),
+            tuple(audit_spec["registered_device_mapping_patterns"]),
+            tuple(audit_spec["transient_mapping_patterns"]),
+        )
+        if row.get("classification") != classification:
+            errors.append(f"{prefix} mapped object classification mismatch: {mapped}")
+        if classification in counts:
+            counts[classification] += 1
+        if loaded.is_file() and classification != "transient_system":
+            registered_hash = row.get("loaded_sha256", "")
+            if not re.fullmatch(r"[0-9a-f]{64}", registered_hash):
+                errors.append(f"{prefix} mapped regular file lacks SHA-256: {loaded}")
+            elif sha256(loaded) != registered_hash:
+                errors.append(f"{prefix} mapped regular file SHA-256 mismatch: {loaded}")
+    for pid, process in process_by_pid.items():
+        if process.get("mapped_object_count") != counts_by_pid.get(pid, 0):
+            errors.append(f"{prefix} process {pid} mapped-object count differs from TSV")
+    audit_count_fields = {
+        "mapped_object_count": len(object_rows),
+        "old_prefix_mapped_object_count": counts["old_prefix"],
+        "unexpected_mapped_object_count": counts["unexpected"],
+        "transient_system_mapped_object_count": counts["transient_system"],
+        "registered_device_mapped_object_count": counts["registered_device"],
+    }
+    for key, expected in audit_count_fields.items():
+        if audit.get(key) != expected:
+            errors.append(f"{prefix} runtime audit {key} differs from object TSV")
+
+    counterpart_path = audit_directory / "counterparts.tsv"
+    counterpart_audit_path = audit_directory / "counterpart_audit.json"
+    evidence_paths.extend([counterpart_path, counterpart_audit_path])
+    try:
+        with counterpart_path.open(newline="", encoding="utf-8") as handle:
+            reader = csv.DictReader(handle, delimiter="\t")
+            if tuple(reader.fieldnames or ()) != COUNTERPART_HEADER:
+                errors.append(f"{prefix} invalid counterpart TSV header")
+                counterpart_rows = []
+            else:
+                counterpart_rows = list(reader)
+    except FileNotFoundError:
+        errors.append(f"{prefix} missing recovery counterpart TSV")
+        counterpart_rows = []
+    try:
+        counterpart_audit = json.loads(counterpart_audit_path.read_text(encoding="utf-8"))
+    except (FileNotFoundError, json.JSONDecodeError) as error:
+        errors.append(f"{prefix} invalid recovery counterpart audit: {error}")
+        counterpart_audit = {}
+    recovery_root = Path(runtime["recovery_root"]).resolve(strict=True)
+    old_root = Path(runtime["old_root"]).resolve(strict=True)
+    expected_recovery_paths = {
+        str(Path(os.path.abspath(row["mapped_path"])))
+        for row in object_rows
+        if row.get("classification") == "recovery_runtime"
+    }
+    seen_recovery_paths: set[str] = set()
+    missing_counterparts = 0
+    mismatched_counterparts = 0
+    exclusions = audit_spec["counterpart_exclusions"]
+    exclusion_by_replay = {
+        str(Path(spec["replay"]["realpath"]).resolve(strict=True)): (rule, spec)
+        for rule, spec in exclusions.items()
+    }
+    for row in counterpart_rows:
+        recovery_value = row.get("recovery_path", "")
+        if recovery_value in seen_recovery_paths:
+            errors.append(f"{prefix} duplicate counterpart row: {recovery_value}")
+        seen_recovery_paths.add(recovery_value)
+        recovery_path = Path(recovery_value)
+        recovery_realpath = Path(row.get("recovery_realpath", ""))
+        try:
+            resolved_recovery = recovery_realpath.resolve(strict=True)
+            try:
+                relative = Path(os.path.abspath(recovery_path)).relative_to(recovery_root)
+            except ValueError:
+                relative = resolved_recovery.relative_to(recovery_root)
+        except (FileNotFoundError, ValueError) as error:
+            errors.append(f"{prefix} invalid recovery counterpart path {recovery_value}: {error}")
+            continue
+        recovery_sha = sha256(resolved_recovery)
+        if row.get("recovery_realpath") != str(resolved_recovery):
+            errors.append(f"{prefix} recovery counterpart realpath mismatch")
+        if row.get("recovery_relative_path") != relative.as_posix():
+            errors.append(f"{prefix} recovery counterpart relative path mismatch")
+        if row.get("recovery_sha256") != recovery_sha:
+            errors.append(f"{prefix} recovery counterpart SHA-256 mismatch")
+        exclusion = exclusion_by_replay.get(str(resolved_recovery))
+        if exclusion is not None:
+            rule, spec = exclusion
+            expected_old_path = Path(spec["reference"]["path"])
+            expected_old_realpath = Path(spec["reference"]["realpath"]).resolve(
+                strict=True
+            )
+        else:
+            rule = "relative_path_counterpart_byte_equality"
+            spec = None
+            expected_old_path = old_root / relative
+            try:
+                expected_old_realpath = expected_old_path.resolve(strict=True)
+            except FileNotFoundError:
+                expected_old_realpath = expected_old_path.resolve(strict=False)
+        if row.get("verification_rule") != rule:
+            errors.append(f"{prefix} recovery counterpart verification rule mismatch")
+        if row.get("old_counterpart_path") != str(expected_old_path):
+            errors.append(f"{prefix} old counterpart relative-path mapping mismatch")
+        if row.get("old_counterpart_realpath") != str(expected_old_realpath):
+            errors.append(f"{prefix} old counterpart realpath mismatch")
+        if not expected_old_realpath.is_file():
+            old_sha = ""
+            byte_equal = False
+            missing_counterparts += 1
+        else:
+            old_sha = sha256(expected_old_realpath)
+            byte_equal = old_sha == recovery_sha
+            if not byte_equal and not (
+                spec is not None and not spec["byte_equality_required"]
+            ):
+                mismatched_counterparts += 1
+        if row.get("old_counterpart_sha256") != old_sha:
+            errors.append(f"{prefix} old counterpart SHA-256 mismatch")
+        if row.get("byte_equal") != ("true" if byte_equal else "false"):
+            errors.append(f"{prefix} counterpart byte-equality claim mismatch")
+    if seen_recovery_paths != expected_recovery_paths:
+        errors.append(f"{prefix} counterpart rows do not cover all captured recovery maps")
+    expected_counterpart_audit = {
+        "schema_version": 1,
+        "status": "accepted",
+        "failure_reasons": [],
+        "captured_recovery_component_count": len(counterpart_rows),
+        "counterpart_missing_count": missing_counterparts,
+        "counterpart_byte_mismatch_count": mismatched_counterparts,
+        "exclusion_rules": exclusions,
+    }
+    if counterpart_audit != expected_counterpart_audit:
+        errors.append(f"{prefix} recovery counterpart audit summary mismatch")
+    if missing_counterparts or mismatched_counterparts:
+        errors.append(f"{prefix} mapped_component_byte_equivalence_unprovable")
+
+    launcher_pid = audit.get("launcher_pid")
+    rank_pids_value = audit.get("rank_pids")
+    try:
+        rank_pids = {int(rank): int(pid) for rank, pid in rank_pids_value.items()}
+    except (AttributeError, TypeError, ValueError):
+        rank_pids = {}
+        errors.append(f"{prefix} invalid rank PID evidence")
+    handshake_directory = audit_directory / "rank_handshake"
+    ready_paths = sorted((handshake_directory / "ready").glob("*"))
+    release_paths = sorted((handshake_directory / "release").glob("*"))
+    failure_paths = sorted((handshake_directory / "failure").glob("*"))
+    abort_path = handshake_directory / "abort"
+    evidence_paths.extend(
+        path
+        for path in (*ready_paths, *release_paths, *failure_paths, abort_path)
+        if path.is_file()
+    )
+    expected_ready_names = [f"rank-{rank}.json" for rank in range(audit_spec["rank_count"])]
+    expected_release_names = [f"rank-{rank}" for rank in range(audit_spec["rank_count"])]
+    if [path.name for path in ready_paths] != expected_ready_names:
+        errors.append(f"{prefix} rank handshake ready-file set differs")
+    if [path.name for path in release_paths] != expected_release_names:
+        errors.append(f"{prefix} rank handshake release-file set differs")
+    if failure_paths or abort_path.exists() or abort_path.is_symlink():
+        errors.append(f"{prefix} accepted rank handshake has failure/abort evidence")
+    expected_prefix_environment = runtime["prefix_environment"]
+    expected_runtime_environment = {
+        "PATH": audit_spec["required_path"],
+        "LD_LIBRARY_PATH": audit_spec["required_ld_library_path"],
+        "LD_PRELOAD": None,
+        "CMAKE_PREFIX_PATH": audit_spec["required_cmake_prefix_path"],
+        "MKLROOT": audit_spec["required_mklroot"],
+        "HOME": str(run_directory / "runtime_home"),
+        "OMP_NUM_THREADS": "1",
+    }
+    for rank, path in enumerate(ready_paths):
+        try:
+            ready = json.loads(path.read_text(encoding="utf-8"))
+        except json.JSONDecodeError as error:
+            errors.append(f"{prefix} invalid rank ready JSON {path.name}: {error}")
+            continue
+        expected_ready = {
+            "schema_version": 1,
+            "pid": rank_pids.get(rank),
+            "rank": rank,
+            "expected_ranks": audit_spec["rank_count"],
+            "target_abacus_realpath": replay["abacus"]["realpath"],
+            "prefix_environment": expected_prefix_environment,
+            "runtime_environment": expected_runtime_environment,
+            "wrapper_state": "ready_before_exec",
+        }
+        if ready != expected_ready:
+            errors.append(f"{prefix} rank {rank} ready evidence mismatch")
+    for path in release_paths:
+        if path.is_symlink() or path.read_bytes() != b"release\n":
+            errors.append(f"{prefix} rank release evidence mismatch: {path.name}")
+    expected_terminal = {
+        "ready_files": expected_ready_names,
+        "release_files": expected_release_names,
+        "failure_files": [],
+        "abort_exists": False,
+    }
+    if audit.get("rank_handshake_terminal_state") != expected_terminal:
+        errors.append(f"{prefix} rank handshake terminal summary mismatch")
+    traces = sorted(trace_directory.glob("trace.*"))
+    evidence_paths.extend(path for path in traces if path.is_file())
+    trace_records = []
+    pid_roles = {pid: ("rank", rank) for rank, pid in rank_pids.items()}
+    if isinstance(launcher_pid, int):
+        pid_roles[launcher_pid] = ("launcher", None)
+    for path in traces:
+        try:
+            pid = int(path.name.rsplit(".", 1)[1])
+        except (IndexError, ValueError):
+            pid = -1
+        role, rank = pid_roles.get(pid, ("support", None))
+        for line in path.read_text(encoding="utf-8", errors="replace").splitlines():
+            trace_records.append({"pid": pid, "role": role, "rank": rank, "line": line})
+    policies = tuple(audit_spec["registered_old_prefix_failed_probes"])
+    reparsed = parse_strace_records(
+        trace_records,
+        Path(runtime["old_prefix"]),
+        policies,
+        audit_spec["rank_count"],
+    )
+    for key, value in reparsed.items():
+        if audit.get(key) != value:
+            errors.append(f"{prefix} runtime audit {key} differs from raw strace")
+    execve_records = parse_execve_records(trace_records)
+    if audit.get("observed_execve_records") != execve_records:
+        errors.append(f"{prefix} execve evidence differs from raw strace")
+    successful_execs = [row["path"] for row in execve_records if row.get("successful")]
+    expected_execs = {
+        replay["mpirun"]["realpath"]: 1,
+        replay["launcher"]["realpath"]: 1,
+        runtime["tools"]["python"]["realpath"]: audit_spec["rank_count"],
+        replay["abacus"]["realpath"]: audit_spec["rank_count"],
+    }
+    observed_execs = dict(sorted(collections.Counter(successful_execs).items()))
+    if observed_execs != dict(sorted(expected_execs.items())):
+        errors.append(f"{prefix} successful exec multiset differs from frozen chain")
+    if audit.get("successful_exec_multiset") != observed_execs:
+        errors.append(f"{prefix} successful exec multiset summary differs from strace")
+    ambiguous_execs = sum(
+        row.get("result") not in ("0", "-1") for row in execve_records
+    )
+    if audit.get("ambiguous_exec_result_count") != ambiguous_execs or ambiguous_execs:
+        errors.append(f"{prefix} ambiguous/truncated exec evidence is not zero")
+    command = audit.get("command")
+    if (
+        not isinstance(command, list)
+        or not command
+        or not _same_path(Path(str(command[0])), Path(replay["mpirun"]["path"]))
+        or command.count("--allow-run-as-root") != 1
+    ):
+        errors.append(f"{prefix} frozen MPI command/namespace root flag mismatch")
+
+    tools = runtime["tools"]
+    if audit.get("strace_identity_before") != tools["strace"]:
+        errors.append(f"{prefix} strace preflight identity mismatch")
+    if audit.get("strace_identity_after") != tools["strace"]:
+        errors.append(f"{prefix} strace postflight identity mismatch")
+    if audit.get("runtime_environment") != expected_runtime_environment:
+        errors.append(f"{prefix} final runtime environment differs from registration")
+    audit_cleanup = audit.get("process_group_cleanup", {})
+    if (
+        audit.get("runtime_wall_timeout_seconds") != 7200
+        or audit.get("timeout_triggered") is not False
+        or audit_cleanup.get("all_group_members_gone") is not True
+        or audit_cleanup.get("members_after_cleanup") != []
+        or audit_cleanup.get("tracee_pids_after_cleanup") != []
+    ):
+        errors.append(f"{prefix} runtime audit timeout/process cleanup evidence mismatch")
+    controlled_home = run_directory / "runtime_home"
+    controlled_marker = controlled_home / "CONTROLLED_HOME.txt"
+    if (
+        not controlled_home.is_dir()
+        or controlled_home.is_symlink()
+        or sorted(path.name for path in controlled_home.iterdir())
+        != [controlled_marker.name]
+        or controlled_marker.read_text(encoding="utf-8", errors="replace")
+        != "Controlled empty HOME for S1 runtime-relocation replay.\n"
+    ):
+        errors.append(f"{prefix} controlled HOME contains unregistered user config")
+    else:
+        evidence_paths.append(controlled_marker)
+    namespace_paths = {
+        name: namespace_directory / name
+        for name in (
+            "host_preflight.json",
+            "host_status.json",
+            "payload_status.json",
+            "state.before_mount.json",
+            "state.after_mount.json",
+            "state.after_run.json",
+            "mountinfo.before_mount",
+            "mountinfo.after_mount",
+            "mountinfo.after_run",
+        )
+    }
+    evidence_paths.extend(namespace_paths.values())
+    payloads = {}
+    for name, path in namespace_paths.items():
+        if not path.is_file() or path.is_symlink():
+            errors.append(f"{prefix} missing namespace evidence {name}")
+            continue
+        if name.endswith(".json"):
+            try:
+                payloads[name] = json.loads(path.read_text(encoding="utf-8"))
+            except json.JSONDecodeError as error:
+                errors.append(f"{prefix} invalid namespace evidence {name}: {error}")
+    host_status = payloads.get("host_status.json", {})
+    host_preflight = payloads.get("host_preflight.json", {})
+    if host_status.get("status") != "accepted" or host_status.get("tools_before") != (
+        host_status.get("tools_after")
+    ):
+        errors.append(f"{prefix} namespace host before/after tool gate failed")
+    cleanup = host_status.get("process_group_cleanup", {})
+    if (
+        host_status.get("total_wall_timeout_seconds") != 7260
+        or host_status.get("timeout_triggered") is not False
+        or cleanup.get("all_group_members_gone") is not True
+        or cleanup.get("members_after_cleanup") != []
+        or cleanup.get("tracee_pids_after_cleanup") != []
+    ):
+        errors.append(f"{prefix} namespace timeout/process cleanup evidence mismatch")
+    if host_status.get("counterpart_audit") != counterpart_audit:
+        errors.append(f"{prefix} host counterpart audit handoff mismatch")
+    if host_status.get("tools_before") != {
+        key: tools[key] for key in ("unshare", "bash", "mount", "python")
+    }:
+        errors.append(f"{prefix} namespace host tools differ from frozen config")
+    host_before = host_status.get("host_old_runtime_before")
+    host_after = host_status.get("host_old_runtime_after")
+    if (
+        host_before != host_after
+        or host_preflight.get("host_old_runtime_before") != host_before
+        or not isinstance(host_before, dict)
+        or host_before.get("host_uid") != runtime["namespace"]["host_uid"]
+        or host_before.get("host_gid") != runtime["namespace"]["host_gid"]
+        or host_before.get("old_root_mountinfo_lines") != []
+        or host_before.get("old_root_lstat") != _lstat_identity(Path(runtime["old_root"]))
+        or host_before.get("old_prefix_lstat")
+        != _lstat_identity(Path(runtime["old_prefix"]))
+    ):
+        errors.append(f"{prefix} host old-runtime isolation/non-propagation evidence mismatch")
+    if payloads.get("payload_status.json", {}).get("status") != "accepted":
+        errors.append(f"{prefix} namespace payload did not accept")
+    before_state = payloads.get("state.before_mount.json", {})
+    raw_before_lines = namespace_paths["mountinfo.before_mount"].read_text(
+        encoding="utf-8", errors="replace"
+    ).splitlines() if namespace_paths["mountinfo.before_mount"].is_file() else []
+    recomputed_before_old_lines = [
+        raw
+        for raw in raw_before_lines
+        if len(raw.split()) >= 5 and raw.split()[4] == runtime["old_root"]
+    ]
+    expected_uid_map = [0, runtime["namespace"]["host_uid"], 1]
+    expected_gid_map = [0, runtime["namespace"]["host_gid"], 1]
+    uid_map = _integer_fields(before_state.get("uid_map", ""))
+    gid_map = _integer_fields(before_state.get("gid_map", ""))
+    if (
+        before_state.get("effective_uid") != 0
+        or not before_state.get("old_root_exists")
+        or not before_state.get("old_prefix_exists")
+        or before_state.get("old_root_mountinfo_lines") != []
+        or before_state.get("old_root_mountinfo_lines") != recomputed_before_old_lines
+        or before_state.get("shared_mount_lines") != []
+        or uid_map != expected_uid_map
+        or gid_map != expected_gid_map
+    ):
+        errors.append(f"{prefix} namespace pre-mount state mismatch")
+    for phase in ("after_mount", "after_run"):
+        state = payloads.get(f"state.{phase}.json", {})
+        raw_mountinfo_path = namespace_paths[f"mountinfo.{phase}"]
+        raw_lines = raw_mountinfo_path.read_text(
+            encoding="utf-8", errors="replace"
+        ).splitlines() if raw_mountinfo_path.is_file() else []
+        recomputed_old_lines = [
+            raw
+            for raw in raw_lines
+            if len(raw.split()) >= 5 and raw.split()[4] == runtime["old_root"]
+        ]
+        lines = state.get("old_root_mountinfo_lines", [])
+        line = lines[0] if isinstance(lines, list) and len(lines) == 1 else ""
+        fields = line.split()
+        separator = fields.index("-") if "-" in fields else -1
+        options = set(fields[5].split(",")) if len(fields) > 5 else set()
+        mount_ok = (
+            separator >= 0
+            and fields[separator + 1 : separator + 3] == ["tmpfs", "tmpfs"]
+            and {"nosuid", "nodev", "noexec"}.issubset(options)
+        )
+        if (
+            not state.get("old_root_exists")
+            or state.get("old_prefix_exists")
+            or not mount_ok
+            or state.get("shared_mount_lines") != []
+            or lines != recomputed_old_lines
+            or _integer_fields(state.get("uid_map", "")) != expected_uid_map
+            or _integer_fields(state.get("gid_map", "")) != expected_gid_map
+        ):
+            errors.append(f"{prefix} namespace {phase} isolation evidence mismatch")
+    if not Path(runtime["old_root"]).is_dir() or not Path(runtime["old_prefix"]).is_dir():
+        errors.append(f"{prefix} host old runtime did not survive private namespace")
+    return evidence_paths
+
+
 def validate_replay_run(
     project_root: Path,
     config: dict,
     row: dict[str, str],
     *,
     require_committed: bool,
+    require_replay_status: bool = True,
 ) -> list[str]:
     experiment_id = row["replay_experiment_id"]
     prefix = f"{experiment_id}:"
@@ -440,7 +1168,10 @@ def validate_replay_run(
         "mpi_runtime_audit/objects.tsv": run_directory
         / "mpi_runtime_audit"
         / "objects.tsv",
+        "run_status.json": run_directory / "run_status.json",
     }
+    if require_replay_status:
+        required["replay_status.json"] = run_directory / "replay_status.json"
     for name, path in required.items():
         if not path.is_file() or path.is_symlink():
             errors.append(f"{prefix} missing or symbolic-link run artifact {name}")
@@ -479,8 +1210,40 @@ def validate_replay_run(
         for failure in _checksum_failures(run_directory, row["pseudopotential"])
     )
 
+    # The per-point runner invokes this validator before it accepts and commits a
+    # replay.  Keep the scientific hard gate here instead of deferring it to the
+    # final six-point reporting analyzer.
+    try:
+        reference_run = project_root / "runs" / row["reference_experiment_id"]
+        reference_metadata, reference_log, _ = reparse_run(reference_run)
+        reference_raw = raw_observables(
+            reference_log.read_text(encoding="utf-8", errors="replace"),
+            str(reference_metadata["solver"]),
+            int(reference_metadata["atom_count"]),
+        )
+        if log_path is None:
+            raise ValueError("replay raw log is unavailable")
+        replay_raw = raw_observables(
+            log_path.read_text(encoding="utf-8", errors="replace"),
+            str(metadata["solver"]),
+            int(metadata["atom_count"]),
+        )
+        equivalence = equivalence_tier(reference_raw, replay_raw)
+        if not equivalence["scientific_tolerance_passed"]:
+            errors.append(
+                f"{prefix} strict scientific equivalence failed: "
+                f"dE={equivalence['delta_energy_mev_per_atom']} meV/atom "
+                f"dP={equivalence['delta_pressure_gpa']} GPa"
+            )
+    except (FileNotFoundError, KeyError, TypeError, ValueError, json.JSONDecodeError) as error:
+        errors.append(f"{prefix} scientific equivalence reparse failed: {error}")
+
     runtime = config["runtime"]
-    audit_launcher = project_root / "scripts" / "mpi_prefix_audit_launcher.py"
+    replay_runtime = runtime["replay"]
+    wrappers = runtime["wrappers"]
+    tools = runtime["tools"]
+    audit_spec = config["runtime_audit"]
+    namespace_launcher = Path(wrappers["namespace_launcher"]["path"])
     try:
         experiment_metadata = json.loads(
             required["experiment_metadata.json"].read_text(encoding="utf-8")
@@ -491,12 +1254,27 @@ def validate_replay_run(
     expected_metadata = {
         "experiment_id": experiment_id,
         "mpi_ranks": 4,
-        "abacus_path": runtime["abacus_path"],
-        "abacus_sha256": runtime["abacus_sha256"],
-        "mpirun_path": runtime["mpirun_path"],
-        "mpirun_sha256": runtime["mpirun_sha256"],
-        "mpirun_invocation_path": str(audit_launcher),
-        "mpirun_invocation_sha256": sha256(audit_launcher),
+        "abacus_path": replay_runtime["abacus"]["path"],
+        "abacus_realpath": replay_runtime["abacus"]["realpath"],
+        "abacus_sha256": replay_runtime["abacus"]["sha256"],
+        "mpirun_path": replay_runtime["mpirun"]["path"],
+        "mpirun_realpath": replay_runtime["mpirun"]["realpath"],
+        "mpirun_sha256": replay_runtime["mpirun"]["sha256"],
+        "mpirun_invocation_path": str(namespace_launcher),
+        "mpirun_invocation_sha256": wrappers["namespace_launcher"]["sha256"],
+        "mpirun_invocation_interpreter_path": tools["python"]["path"],
+        "mpirun_invocation_interpreter_realpath": tools["python"]["realpath"],
+        "mpirun_invocation_interpreter_sha256": tools["python"]["sha256"],
+        "runtime_relocation_mode": True,
+        "runtime_environment": {
+            "PATH": audit_spec["required_path"],
+            "LD_LIBRARY_PATH": audit_spec["required_ld_library_path"],
+            "LD_PRELOAD": None,
+            "CMAKE_PREFIX_PATH": audit_spec["required_cmake_prefix_path"],
+            "MKLROOT": audit_spec["required_mklroot"],
+            "HOME": str(run_directory / "runtime_home"),
+            "OMP_NUM_THREADS": "1",
+        },
         **runtime["prefix_environment"],
         "worktree_dirty": False,
     }
@@ -510,51 +1288,91 @@ def validate_replay_run(
     except (FileNotFoundError, json.JSONDecodeError) as error:
         errors.append(f"{prefix} invalid MPI runtime audit: {error}")
         audit = {}
-    audit_spec = config["runtime_audit"]
     audit_expected = {
         "status": "accepted",
+        "runtime_wall_timeout_seconds": audit_spec[
+            "runtime_wall_timeout_seconds"
+        ],
+        "runtime_environment": expected_metadata["runtime_environment"],
         "old_prefix": runtime["old_prefix"],
         "recovery_prefix": runtime["recovery_prefix"],
-        "observed_launcher_count": audit_spec["launcher_count"],
-        "observed_ranks": list(range(audit_spec["rank_count"])),
+        "rank_handshake_status": "accepted",
         "old_prefix_mapped_object_count": 0,
         "unexpected_mapped_object_count": 0,
-        "expected_mpirun_path": runtime["mpirun_path"],
-        "expected_mpirun_sha256": runtime["mpirun_sha256"],
-        "expected_launcher_path": runtime["launcher_path"],
-        "expected_launcher_sha256": runtime["launcher_sha256"],
-        "expected_abacus_path": runtime["abacus_path"],
-        "expected_abacus_sha256": runtime["abacus_sha256"],
-        "launcher_executable_mismatch_count": 0,
-        "rank_executable_mismatch_count": 0,
-        "target_process_empty_maps_count": 0,
-        "target_process_missing_executable_sha_count": 0,
-        "target_executable_mapping_missing_count": 0,
-        "mpirun_invocation_execve_observed": True,
-        "launcher_execve_observed": True,
         "unhashed_regular_mapped_object_count": 0,
-        "unverifiable_recovery_mapped_object_count": 0,
         "ld_library_path": audit_spec["required_ld_library_path"],
         "ld_preload": None,
-        "file_trace_status": "completed",
         "old_prefix_access_attempt_count": audit_spec[
-            "allowed_failed_probe_expected_count_per_run"
+            "registered_old_prefix_failed_probe_count"
         ],
         "old_prefix_successful_access_count": 0,
-        "allowed_failed_probe_count": audit_spec[
-            "allowed_failed_probe_expected_count_per_run"
+        "old_prefix_exec_success_count": 0,
+        "registered_old_prefix_failed_probe_count": audit_spec[
+            "registered_old_prefix_failed_probe_count"
         ],
-        "other_old_prefix_attempt_count": 0,
+        "unknown_old_prefix_failed_probe_count": 0,
+        "registered_probe_count_mismatch_count": 0,
+        "registered_old_prefix_failed_probes": audit_spec[
+            "registered_old_prefix_failed_probes"
+        ],
+        "successful_exec_multiset": audit_spec["successful_exec_multiset"],
+        "ambiguous_exec_result_count": 0,
+        "prefix_environment": runtime["prefix_environment"],
     }
     for key, expected in audit_expected.items():
         if audit.get(key) != expected:
             errors.append(f"{prefix} runtime audit {key} mismatch")
-    if audit.get("allowed_failed_probe_path") != audit_spec["allowed_failed_probe_path"]:
-        errors.append(f"{prefix} runtime audit failed-probe path mismatch")
-    if audit.get("allowed_failed_probe_errno") != audit_spec["allowed_failed_probe_errno"]:
-        errors.append(f"{prefix} runtime audit failed-probe errno mismatch")
 
-    evidence_paths = _validate_runtime_audit_evidence(
+    try:
+        run_status = json.loads(required["run_status.json"].read_text(encoding="utf-8"))
+    except (FileNotFoundError, json.JSONDecodeError) as error:
+        errors.append(f"{prefix} invalid run_status.json: {error}")
+        run_status = {}
+    expected_run_status = {
+        "schema_version": 2,
+        "status": "accepted",
+        "runtime_relocation_mode": True,
+        "workflow_exit_code": 0,
+        "invocation_exit_code": 0,
+        "launcher_exit_code": 0,
+        "parser_exit_code": 0,
+        "result_json_present": True,
+        "result_converged": True,
+        "runtime_audit_json_present": True,
+        "runtime_audit_status": "accepted",
+        "namespace_host_status": "accepted",
+        "counterpart_audit_status": "accepted",
+    }
+    if run_status != expected_run_status:
+        errors.append(f"{prefix} run_status.json is not an accepted execution record")
+    if require_replay_status:
+        try:
+            replay_status = json.loads(
+                required["replay_status.json"].read_text(encoding="utf-8")
+            )
+        except (FileNotFoundError, json.JSONDecodeError) as error:
+            errors.append(f"{prefix} invalid replay_status.json: {error}")
+            replay_status = {}
+        expected_replay_status = {
+            "schema_version": 2,
+            "status": "accepted",
+            "workflow_exit_code": 0,
+            "invocation_exit_code": 0,
+            "launcher_exit_code": 0,
+            "parser_exit_code": 0,
+            "core_validation_exit_code": 0,
+            "run_status": run_status,
+            "runtime_audit_status": "accepted",
+            "runtime_audit_failure_reasons": [],
+            "safe_retry_policy": (
+                "archive_committed_failure_then_retry_same_registered_id"
+            ),
+        }
+        if replay_status != expected_replay_status:
+            errors.append(f"{prefix} replay_status.json is not an accepted validation record")
+        if (run_directory / "failure.json").exists():
+            errors.append(f"{prefix} accepted replay contains failure.json")
+    evidence_paths = _validate_runtime_relocation_audit_evidence(
         run_directory,
         runtime,
         audit_spec,
@@ -585,6 +1403,270 @@ def validate_replay_run(
             commit_failure = f"{experiment_id}: cannot validate run commit chain: {error}"
         if commit_failure:
             errors.append(commit_failure)
+        errors.extend(_failed_archive_chain_failures(project_root, experiment_id))
+    return errors
+
+
+def _failure_status_model_errors(
+    run_status: dict, replay_status: dict, failure_status: dict
+) -> list[str]:
+    errors: list[str] = []
+    workflow_exit = replay_status.get("workflow_exit_code")
+    invocation_exit = replay_status.get("invocation_exit_code")
+    launcher_exit = replay_status.get("launcher_exit_code")
+    parser_exit = replay_status.get("parser_exit_code")
+    core_validation_exit = replay_status.get("core_validation_exit_code")
+    exit_values = (
+        workflow_exit,
+        invocation_exit,
+        launcher_exit,
+        parser_exit,
+        core_validation_exit,
+    )
+    if (
+        replay_status.get("schema_version") != 2
+        or replay_status.get("status") != "rejected"
+        or not all(isinstance(value, int) for value in exit_values)
+        or replay_status.get("run_status") != run_status
+        or replay_status.get("safe_retry_policy")
+        != "archive_committed_failure_then_retry_same_registered_id"
+    ):
+        errors.append("replay_status.json is not a coherent rejected attempt")
+    mirrored_exit_fields = {
+        "workflow_exit_code": workflow_exit,
+        "invocation_exit_code": invocation_exit,
+        "launcher_exit_code": launcher_exit,
+        "parser_exit_code": parser_exit,
+    }
+    if (
+        run_status.get("schema_version") != 2
+        or run_status.get("runtime_relocation_mode") is not True
+        or any(run_status.get(key) != value for key, value in mirrored_exit_fields.items())
+    ):
+        errors.append("run_status.json is not a coherent runtime-relocation execution")
+    if isinstance(invocation_exit, int) and isinstance(parser_exit, int):
+        derived_workflow = invocation_exit if invocation_exit != 0 else parser_exit
+        if workflow_exit != derived_workflow:
+            errors.append("workflow exit does not derive from invocation/parser")
+    run_acceptance_fields = (
+        invocation_exit == 0
+        and parser_exit == 0
+        and run_status.get("result_json_present") is True
+        and run_status.get("result_converged") is True
+        and run_status.get("runtime_audit_json_present") is True
+        and run_status.get("runtime_audit_status") == "accepted"
+        and run_status.get("namespace_host_status") == "accepted"
+        and run_status.get("counterpart_audit_status") == "accepted"
+    )
+    expected_run_status_value = "accepted" if run_acceptance_fields else "rejected"
+    if run_status.get("status") != expected_run_status_value:
+        errors.append("run status does not derive from component statuses")
+    if (
+        workflow_exit == 0
+        and core_validation_exit == 0
+        and expected_run_status_value == "accepted"
+    ):
+        errors.append("rejected replay has no rejecting component")
+    expected_failure = {
+        "schema_version": 2,
+        "status": "failed_attempt_preserved",
+        **mirrored_exit_fields,
+        "core_validation_exit_code": core_validation_exit,
+        "runtime_audit_failure_reasons": replay_status.get(
+            "runtime_audit_failure_reasons", []
+        ),
+        "retry_requires_committed_archive": True,
+    }
+    if failure_status != expected_failure:
+        errors.append("failure.json differs from replay_status.json")
+    return errors
+
+
+def validate_failed_replay_run(
+    project_root: Path,
+    config: dict,
+    row: dict[str, str],
+    *,
+    require_committed: bool,
+) -> list[str]:
+    experiment_id = row["replay_experiment_id"]
+    prefix = f"{experiment_id}:"
+    errors: list[str] = []
+    run_directory = project_root / "runs" / experiment_id
+    if not run_directory.is_dir() or run_directory.is_symlink():
+        return [f"{prefix} missing failed-attempt directory"]
+    source_directory = path_from_project(project_root, row["input_directory"])
+    required = {
+        "INPUT": run_directory / "INPUT",
+        "STRU": run_directory / "STRU",
+        "KPT": run_directory / "KPT",
+        "input_metadata.json": run_directory / "input_metadata.json",
+        "experiment_metadata.json": run_directory / "experiment_metadata.json",
+        "INPUT_SHA256SUMS": run_directory / "INPUT_SHA256SUMS",
+        "run_status.json": run_directory / "run_status.json",
+        "replay_status.json": run_directory / "replay_status.json",
+        "failure.json": run_directory / "failure.json",
+        row["pseudopotential"]: run_directory / row["pseudopotential"],
+    }
+    for name, path in required.items():
+        if not path.is_file() or path.is_symlink():
+            errors.append(f"{prefix} missing or symbolic-link failure artifact {name}")
+    try:
+        if required["INPUT"].read_bytes() != normalized_run_input(
+            (source_directory / "INPUT").read_bytes()
+        ):
+            errors.append(f"{prefix} failed-attempt INPUT differs from frozen source")
+        for name in ("STRU", "KPT"):
+            if required[name].read_bytes() != (source_directory / name).read_bytes():
+                errors.append(f"{prefix} failed-attempt {name} differs from source")
+        if required["input_metadata.json"].read_bytes() != (
+            source_directory / "metadata.json"
+        ).read_bytes():
+            errors.append(f"{prefix} failed-attempt metadata differs from source")
+        if required[row["pseudopotential"]].read_bytes() != (
+            project_root / "assets" / "pseudo" / row["pseudopotential"]
+        ).read_bytes():
+            errors.append(f"{prefix} failed-attempt pseudopotential differs")
+    except (FileNotFoundError, ValueError) as error:
+        errors.append(f"{prefix} failed-attempt input comparison failed: {error}")
+    errors.extend(
+        f"{prefix} {failure}"
+        for failure in _checksum_failures(run_directory, row["pseudopotential"])
+    )
+
+    try:
+        run_status = json.loads(required["run_status.json"].read_text(encoding="utf-8"))
+        replay_status = json.loads(
+            required["replay_status.json"].read_text(encoding="utf-8")
+        )
+        failure_status = json.loads(required["failure.json"].read_text(encoding="utf-8"))
+    except (FileNotFoundError, json.JSONDecodeError) as error:
+        errors.append(f"{prefix} invalid failure status JSON: {error}")
+        run_status = {}
+        replay_status = {}
+        failure_status = {}
+    workflow_exit = replay_status.get("workflow_exit_code")
+    invocation_exit = replay_status.get("invocation_exit_code")
+    launcher_exit = replay_status.get("launcher_exit_code")
+    parser_exit = replay_status.get("parser_exit_code")
+    core_validation_exit = replay_status.get("core_validation_exit_code")
+    errors.extend(
+        f"{prefix} {failure}"
+        for failure in _failure_status_model_errors(
+            run_status, replay_status, failure_status
+        )
+    )
+
+    logs = sorted(run_directory.glob("OUT.*/running_scf.log"))
+    if len(logs) > 1:
+        errors.append(f"{prefix} failed attempt has multiple raw SCF logs")
+    result_path = run_directory / "result.json"
+    if logs and parser_exit == 0:
+        try:
+            _, parsed_log, _ = reparse_run(run_directory)
+            if parsed_log != logs[0]:
+                errors.append(f"{prefix} failed-attempt raw log path mismatch")
+        except (FileNotFoundError, KeyError, TypeError, ValueError, json.JSONDecodeError) as error:
+            errors.append(f"{prefix} failed-attempt parser claimed success but reparse failed: {error}")
+    if run_status.get("result_json_present") != result_path.is_file():
+        errors.append(f"{prefix} run status result-presence claim mismatch")
+
+    audit_path = run_directory / "mpi_runtime_audit" / "audit.json"
+    audit = {}
+    if audit_path.is_file() and not audit_path.is_symlink():
+        try:
+            audit = json.loads(audit_path.read_text(encoding="utf-8"))
+        except json.JSONDecodeError as error:
+            errors.append(f"{prefix} invalid rejected audit JSON: {error}")
+    if replay_status.get("runtime_audit_status") != audit.get("status"):
+        errors.append(f"{prefix} rejected audit status claim mismatch")
+    if replay_status.get("runtime_audit_failure_reasons", []) != audit.get(
+        "failure_reasons", []
+    ):
+        errors.append(f"{prefix} rejected audit failure reasons mismatch")
+    if audit and launcher_exit != audit.get("launcher_exit_code"):
+        errors.append(f"{prefix} launcher exit differs from raw runtime audit")
+    host_status_path = (
+        run_directory / "mpi_runtime_audit" / "namespace" / "host_status.json"
+    )
+    counterpart_path = run_directory / "mpi_runtime_audit" / "counterpart_audit.json"
+    try:
+        host_status = (
+            json.loads(host_status_path.read_text(encoding="utf-8"))
+            if host_status_path.is_file()
+            else {}
+        )
+        counterpart_status = (
+            json.loads(counterpart_path.read_text(encoding="utf-8"))
+            if counterpart_path.is_file()
+            else {}
+        )
+    except json.JSONDecodeError as error:
+        errors.append(f"{prefix} invalid rejected namespace/counterpart status: {error}")
+        host_status = {}
+        counterpart_status = {}
+    if run_status.get("namespace_host_status") != host_status.get("status"):
+        errors.append(f"{prefix} namespace host status claim mismatch")
+    if run_status.get("counterpart_audit_status") != counterpart_status.get("status"):
+        errors.append(f"{prefix} counterpart status claim mismatch")
+    trace_directory = run_directory / "mpi_runtime_audit" / "strace"
+    trace_paths = sorted(trace_directory.glob("trace.*"))
+    if audit and trace_paths:
+        try:
+            launcher_pid = audit.get("launcher_pid")
+            rank_pids = {
+                int(rank): int(pid) for rank, pid in audit.get("rank_pids", {}).items()
+            }
+            pid_roles = {pid: ("rank", rank) for rank, pid in rank_pids.items()}
+            if isinstance(launcher_pid, int):
+                pid_roles[launcher_pid] = ("launcher", None)
+            records = []
+            for path in trace_paths:
+                pid = int(path.name.rsplit(".", 1)[1])
+                role, rank = pid_roles.get(pid, ("support", None))
+                records.extend(
+                    {"pid": pid, "role": role, "rank": rank, "line": line}
+                    for line in path.read_text(
+                        encoding="utf-8", errors="replace"
+                    ).splitlines()
+                )
+            reparsed = parse_strace_records(
+                records,
+                Path(config["runtime"]["old_prefix"]),
+                tuple(config["runtime_audit"]["registered_old_prefix_failed_probes"]),
+                config["rank_count"],
+            )
+            for key, value in reparsed.items():
+                if audit.get(key) != value:
+                    errors.append(f"{prefix} rejected audit {key} differs from raw strace")
+            if audit.get("observed_execve_records") != parse_execve_records(records):
+                errors.append(f"{prefix} rejected audit exec evidence differs from strace")
+        except (KeyError, TypeError, ValueError) as error:
+            errors.append(f"{prefix} cannot reparse rejected strace evidence: {error}")
+
+    try:
+        experiment_metadata = json.loads(
+            required["experiment_metadata.json"].read_text(encoding="utf-8")
+        )
+    except (FileNotFoundError, json.JSONDecodeError):
+        experiment_metadata = {}
+    all_artifacts = [path for path in run_directory.rglob("*") if path.is_file()]
+    if any(path.is_symlink() for path in run_directory.rglob("*")):
+        errors.append(f"{prefix} failed-attempt tree contains a symbolic link")
+    if require_committed:
+        errors.extend(
+            f"{prefix} {failure}"
+            for failure in require_tracked_at_head(project_root, all_artifacts)
+        )
+        try:
+            commit_failure = _run_commit_chain_failure(
+                project_root, experiment_id, experiment_metadata.get("code_commit")
+            )
+        except ValueError as error:
+            commit_failure = f"{experiment_id}: cannot validate failure commit chain: {error}"
+        if commit_failure:
+            errors.append(commit_failure)
+        errors.extend(_failed_archive_chain_failures(project_root, experiment_id))
     return errors
 
 
@@ -595,6 +1677,8 @@ def validate(
     *,
     require_committed: bool = False,
     check_run_ids: tuple[str, ...] = (),
+    check_core_ids: tuple[str, ...] = (),
+    check_failure_ids: tuple[str, ...] = (),
 ) -> dict:
     project_root = project_root.resolve()
     config_path = config_path.resolve()
@@ -603,12 +1687,14 @@ def validate(
     rows = read_tsv(manifest_path)
     errors: list[str] = []
     _expect_keys(config, TOP_LEVEL_KEYS, "config", errors)
-    if config.get("schema_version") != 1:
-        errors.append("schema_version must equal 1")
-    if config.get("status") != "mpi_prefix_equivalence_frozen":
-        errors.append("config is not a formally frozen MPI equivalence protocol")
+    if config.get("schema_version") != 2:
+        errors.append("schema_version must equal 2")
+    if config.get("status") != "runtime_relocation_equivalence_frozen":
+        errors.append("config is not a formally frozen runtime relocation protocol")
     if config.get("protocol_revision") != PROTOCOL_REVISION:
         errors.append("protocol revision mismatch")
+    if os.getuid() == 0:
+        errors.append("runtime relocation validation must run as a non-root host user")
     if not re.fullmatch(r"[0-9a-f]{40}", str(config.get("generated_from_commit", ""))):
         errors.append("generated_from_commit must be a Git SHA-1")
     if config.get("rank_count") != 4:
@@ -635,48 +1721,200 @@ def validate(
 
     recovery_prefix = Path(str(runtime.get("recovery_prefix", "")))
     recovery_root = Path(str(runtime.get("recovery_root", "")))
+    old_root = Path(str(runtime.get("old_root", "")))
     old_prefix = Path(str(runtime.get("old_prefix", "")))
     if not recovery_prefix.is_absolute() or not recovery_root.is_absolute():
         errors.append("recovery root and prefix must be absolute")
-    if not old_prefix.is_absolute() or _same_path(old_prefix, recovery_prefix):
+    if (
+        not old_root.is_absolute()
+        or not old_prefix.is_absolute()
+        or old_prefix.parent != old_root
+        or _same_path(old_prefix, recovery_prefix)
+    ):
         errors.append("old prefix must be a distinct absolute path")
     prefixes = runtime.get("prefix_environment")
     if prefixes != {
         "OPAL_PREFIX": str(recovery_prefix),
         "PRTE_PREFIX": str(recovery_prefix),
         "PMIX_PREFIX": str(recovery_prefix),
+        "UCX_MODULE_DIR": str(recovery_prefix),
     }:
-        errors.append("OPAL_PREFIX/PRTE_PREFIX/PMIX_PREFIX must all equal recovery_prefix")
-    abacus = Path(str(runtime.get("abacus_path", "")))
-    mpirun = Path(str(runtime.get("mpirun_path", "")))
-    launcher = Path(str(runtime.get("launcher_path", "")))
-    _check_hash(abacus, str(runtime.get("abacus_sha256", "")), "ABACUS", errors)
-    _check_hash(mpirun, str(runtime.get("mpirun_sha256", "")), "mpirun", errors)
-    _check_hash(
-        launcher, str(runtime.get("launcher_sha256", "")), "final MPI launcher", errors
+        errors.append("all four MPI/UCX prefix variables must equal recovery_prefix")
+    reference_runtime = runtime.get("reference", {})
+    replay_runtime = runtime.get("replay", {})
+    if set(reference_runtime) != {"abacus", "mpirun", "launcher", "r8_launcher_observation"}:
+        errors.append("reference runtime identity fields differ")
+    if set(replay_runtime) != {"abacus", "mpirun", "launcher"}:
+        errors.append("replay runtime identity fields differ")
+    reference_abacus = _check_identity(
+        reference_runtime.get("abacus"), "reference ABACUS", errors
     )
-    if not is_within(abacus, recovery_root):
+    reference_mpirun = _check_identity(
+        reference_runtime.get("mpirun"), "reference mpirun", errors
+    )
+    reference_launcher = _check_identity(
+        reference_runtime.get("launcher"), "reference final launcher", errors
+    )
+    replay_abacus = _check_identity(replay_runtime.get("abacus"), "replay ABACUS", errors)
+    replay_mpirun = _check_identity(replay_runtime.get("mpirun"), "replay mpirun", errors)
+    replay_launcher = _check_identity(
+        replay_runtime.get("launcher"), "replay final launcher", errors
+    )
+    if not is_within(Path(str(replay_abacus.get("realpath", ""))), recovery_root):
         errors.append("ABACUS resolves outside recovery_root")
-    if not is_within(mpirun, recovery_prefix):
+    if not is_within(Path(str(replay_mpirun.get("realpath", ""))), recovery_prefix):
         errors.append("mpirun resolves outside recovery_prefix")
-    if not is_within(launcher, recovery_prefix):
+    if not is_within(Path(str(replay_launcher.get("realpath", ""))), recovery_prefix):
         errors.append("final MPI launcher resolves outside recovery_prefix")
+    if not is_within(Path(str(reference_launcher.get("realpath", ""))), old_prefix):
+        errors.append("reference final launcher does not resolve inside old prefix")
+    if reference_mpirun.get("sha256") != replay_mpirun.get("sha256"):
+        errors.append("reference/replay mpirun bytes differ")
+    if reference_launcher.get("sha256") != replay_launcher.get("sha256"):
+        errors.append("reference/replay final launcher bytes differ")
+    expected_launcher_observation = {
+        "claim": "original_42_used_old_prefix_prte",
+        "evidence_scope": "operator_remote_proc_observation_not_archived_per_reference_run",
+        "launcher_realpath_is_in_old_prefix": True,
+        "launcher_bytes_equal_replay_launcher": True,
+        "mpirun_claim": "original_42_invoked_registered_recovery_mpirun",
+        "mpirun_metadata_scope": (
+            "explicit_freeze_operator_observation_legacy_run_metadata_omits_mpirun"
+        ),
+    }
+    if reference_runtime.get("r8_launcher_observation") != expected_launcher_observation:
+        errors.append("R8 old-launcher observation/limitation differs")
+
+    tools = runtime.get("tools", {})
+    if set(tools) != {"strace", "unshare", "mount", "bash", "python"}:
+        errors.append("runtime tool set differs")
+    for name in ("strace", "unshare", "mount", "bash", "python"):
+        _check_versioned_tool(tools.get(name), name, errors)
+    wrappers = runtime.get("wrappers", {})
+    expected_wrapper_paths = {
+        "namespace_launcher": project_root
+        / "scripts"
+        / "runtime_relocation_namespace_launcher.py",
+        "namespace_payload": project_root
+        / "scripts"
+        / "runtime_relocation_namespace_payload.sh",
+        "audit_launcher": project_root
+        / "scripts"
+        / "runtime_relocation_audit_launcher.py",
+        "rank_wrapper": project_root
+        / "scripts"
+        / "runtime_relocation_rank_wrapper.py",
+    }
+    if set(wrappers) != set(expected_wrapper_paths):
+        errors.append("runtime wrapper set differs")
+    for name, expected_path in expected_wrapper_paths.items():
+        identity = wrappers.get(name, {})
+        if identity.get("path") != str(expected_path):
+            errors.append(f"runtime wrapper path mismatch: {name}")
+        _check_hash(expected_path, str(identity.get("sha256", "")), name, errors)
+    try:
+        current_elf = relocation_equivalence_evidence(
+            Path(reference_abacus["path"]),
+            Path(replay_abacus["path"]),
+            old_prefix,
+            Path(runtime["elf_relocation"]["readelf_tool"]["path"]),
+            Path(runtime["elf_relocation"]["chrpath_tool"]["path"]),
+        )
+        if current_elf != runtime.get("elf_relocation"):
+            errors.append("current byte-level ELF evidence differs from registration")
+    except (KeyError, TypeError, ValueError) as error:
+        errors.append(f"runtime relocation ELF validation failed: {error}")
+    expected_mpi_argv = ["--allow-run-as-root", "--bind-to", "core", "-np", "4"]
+    if runtime.get("mpi_argv_prefix") != expected_mpi_argv:
+        errors.append("frozen MPI argv must include the user-namespace root flag")
+    expected_namespace = {
+        "unshare_argv_prefix": [
+            tools.get("unshare", {}).get("path"),
+            "--user",
+            "--map-root-user",
+            "--kill-child=KILL",
+            "--mount",
+            "--propagation",
+            "private",
+            tools.get("bash", {}).get("path"),
+            wrappers.get("namespace_payload", {}).get("path"),
+        ],
+        "mount_target": str(old_root),
+        "mount_type": "tmpfs",
+        "mount_source": "tmpfs",
+        "mount_options": ["size=1m", "nosuid", "nodev", "noexec"],
+        "host_uid_remains_unprivileged": True,
+        "host_uid": os.getuid(),
+        "host_gid": os.getgid(),
+        "namespace_effective_uid": 0,
+        "external_old_root_must_survive": True,
+        "total_wall_timeout_seconds": 7260,
+        "timeout_requires_zero_residual_processes": True,
+    }
+    if runtime.get("namespace") != expected_namespace:
+        errors.append("namespace isolation contract differs from registration")
     expected_audit = {
         "launcher_count": 1,
         "rank_count": 4,
+        "runtime_wall_timeout_seconds": 7200,
+        "mapping_observation_scope": "final_prterun_and_four_abacus_ranks",
+        "mpirun_and_support_daemon_maps_out_of_scope": True,
+        "rank_handshake_required": True,
+        "initial_maps_required_for_every_target": True,
         "old_prefix_mapped_object_count_max": 0,
         "unexpected_mapped_object_count_max": 0,
+        "all_captured_regular_mapped_objects_must_be_hashed": True,
+        "recovery_component_counterpart_byte_equality_required": True,
+        "counterpart_missing_count_max": 0,
+        "counterpart_byte_mismatch_count_max": 0,
+        "counterpart_exclusions": {
+            "relocated_abacus_elf_gate": {
+                "reference": reference_abacus,
+                "replay": replay_abacus,
+                "byte_equality_required": False,
+            },
+            "mpirun_identity_gate": {
+                "reference": reference_mpirun,
+                "replay": replay_mpirun,
+                "byte_equality_required": True,
+            },
+            "launcher_identity_gate": {
+                "reference": reference_launcher,
+                "replay": replay_launcher,
+                "byte_equality_required": True,
+            },
+        },
+        "successful_exec_multiset": {
+            replay_mpirun["realpath"]: 1,
+            replay_launcher["realpath"]: 1,
+            tools["python"]["realpath"]: 4,
+            replay_abacus["realpath"]: 4,
+        },
+        "ambiguous_exec_result_count_max": 0,
         "file_trace_required": True,
+        "strace_before_after_identity_required": True,
         "old_prefix_successful_access_count_max": 0,
-        "allowed_failed_probe_path": str(old_prefix / "classid"),
-        "allowed_failed_probe_errno": "ENOENT",
-        "allowed_failed_probe_expected_count_per_run": 2,
-        "other_old_prefix_attempt_count_max": 0,
+        "old_prefix_exec_success_count_max": 0,
+        "unknown_old_prefix_failed_probe_count_max": 0,
+        "registered_probe_count_mismatch_count_max": 0,
+        "registered_old_prefix_failed_probe_count": 22,
+        "registered_old_prefix_failed_probes": list(
+            registered_old_prefix_failed_probes(old_prefix)
+        ),
         "clean_environment_required": True,
+        "controlled_home_policy": "per_run_marker_only_no_user_mpi_config",
+        "required_path": f"{recovery_prefix}/bin:/usr/bin:/bin",
+        "required_cmake_prefix_path": str(recovery_prefix),
+        "required_mklroot": str(recovery_prefix),
         "required_ld_library_path": str(recovery_prefix / "lib"),
         "ld_preload_must_be_unset": True,
         "transient_mapping_patterns": list(TRANSIENT_MAPPING_PATTERNS),
-        "system_mapping_roots": ["/usr", "/lib", "/lib64", "/dev", "/proc", "/sys"],
+        "system_mapping_roots": list(SYSTEM_MAPPING_ROOTS),
+        "system_mapping_exact_paths": list(SYSTEM_MAPPING_EXACT_PATHS),
+        "registered_device_mapping_patterns": list(
+            REGISTERED_DEVICE_MAPPING_PATTERNS
+        ),
+        "namespace_evidence_required": True,
     }
     if audit_spec != expected_audit:
         errors.append("runtime_audit fields differ from the registered hard gates")
@@ -686,9 +1924,24 @@ def validate(
         "max_absolute_energy_difference_mev_per_atom": 0.1,
         "max_absolute_pressure_difference_gpa": 0.02,
         "threshold_comparison": "strict_less_than",
-        "six_point_closure_tiers": ["storage_exact", "storage_resolution_equal"],
-        "scientific_tolerance_only_action": "expand_to_registered_eos_endpoints",
+        "storage_equivalence_tiers_diagnostic_only": [
+            "storage_exact",
+            "storage_resolution_equal",
+        ],
+        "scientific_runtime_and_r8_gates_passed_action": (
+            "close_runtime_relocation_equivalence_and_keep_s1_r8_conclusion"
+        ),
         "r8_v100_replacement_must_preserve_conclusion": True,
+        "full_42_rerun_triggers": [
+            "elf_difference_outside_registered_runpath_slot",
+            "elf_needed_build_id_or_load_layout_changed",
+            "scientific_energy_or_pressure_gate_failed",
+            "r8_series_or_fit_hard_gate_changed",
+            "mapped_component_byte_equivalence_unprovable",
+        ],
+        "six_point_retry_after_fix_triggers": [
+            "pure_namespace_launcher_or_runtime_audit_failure"
+        ],
     }
     if acceptance != expected_acceptance:
         errors.append("acceptance fields differ from the registered strict protocol")
@@ -847,6 +2100,14 @@ def validate(
             errors.append(f"{replay_id}: material/series mapping mismatch")
         if row["config_sha256"] != config_digest:
             errors.append(f"{replay_id}: config SHA-256 mismatch")
+        for name in ("abacus", "mpirun"):
+            row_identity = {
+                "path": row[f"reference_{name}_path"],
+                "realpath": row[f"reference_{name}_realpath"],
+                "sha256": row[f"reference_{name}_sha256"],
+            }
+            if row_identity != runtime.get("reference", {}).get(name):
+                errors.append(f"{replay_id}: reference {name} identity differs from config")
         r8_row = r8_by_id.get(reference_id)
         if r8_row is None:
             errors.append(f"{replay_id}: reference missing from S1-R8 manifest")
@@ -945,10 +2206,22 @@ def validate(
                 )
             if reference_experiment_metadata.get("mpi_ranks") != 4:
                 errors.append(f"{replay_id}: reference run did not use four MPI ranks")
-            if reference_experiment_metadata.get("abacus_sha256") != runtime.get(
-                "abacus_sha256"
-            ):
+            if reference_experiment_metadata.get("abacus_path") != row[
+                "reference_abacus_path"
+            ] or reference_experiment_metadata.get("abacus_sha256") != row[
+                "reference_abacus_sha256"
+            ]:
                 errors.append(f"{replay_id}: reference ABACUS SHA-256 mismatch")
+            recorded_mpirun = {
+                key: reference_experiment_metadata.get(key)
+                for key in ("mpirun_path", "mpirun_sha256")
+            }
+            if any(value is not None for value in recorded_mpirun.values()) and (
+                recorded_mpirun["mpirun_path"] != row["reference_mpirun_path"]
+                or recorded_mpirun["mpirun_sha256"]
+                != row["reference_mpirun_sha256"]
+            ):
+                errors.append(f"{replay_id}: recorded reference mpirun identity mismatch")
         except (FileNotFoundError, KeyError, TypeError, ValueError, json.JSONDecodeError) as error:
             errors.append(f"{replay_id}: reference raw-log validation failed: {error}")
 
@@ -981,21 +2254,44 @@ def validate(
         except ValueError as error:
             errors.append(str(error))
     selected_run_ids = check_run_ids or ()
-    if selected_run_ids:
+    selected_core_ids = check_core_ids or ()
+    selected_failure_ids = check_failure_ids or ()
+    if selected_run_ids or selected_core_ids or selected_failure_ids:
         rows_by_id = {row["replay_experiment_id"]: row for row in rows}
-        for experiment_id in selected_run_ids:
+        for experiment_id in (*selected_run_ids, *selected_core_ids, *selected_failure_ids):
+            if sum(
+                experiment_id in values
+                for values in (
+                    selected_run_ids,
+                    selected_core_ids,
+                    selected_failure_ids,
+                )
+            ) != 1:
+                errors.append(f"run check mode is ambiguous for {experiment_id}")
+                continue
             row = rows_by_id.get(experiment_id)
             if row is None:
                 errors.append(f"requested run check is outside manifest: {experiment_id}")
                 continue
-            errors.extend(
-                validate_replay_run(
-                    project_root,
-                    config,
-                    row,
-                    require_committed=require_committed,
+            if experiment_id in selected_failure_ids:
+                errors.extend(
+                    validate_failed_replay_run(
+                        project_root,
+                        config,
+                        row,
+                        require_committed=require_committed,
+                    )
                 )
-            )
+            else:
+                errors.extend(
+                    validate_replay_run(
+                        project_root,
+                        config,
+                        row,
+                        require_committed=require_committed,
+                        require_replay_status=experiment_id in selected_run_ids,
+                    )
+                )
     if errors:
         raise ValueError("S1 MPI-prefix equivalence validation failed:\n- " + "\n- ".join(errors))
     return {
@@ -1007,6 +2303,8 @@ def validate(
         "manifest_sha256": sha256(manifest_path),
         "preregistration_commit": preregistration_commit,
         "checked_run_ids": list(selected_run_ids),
+        "checked_core_ids": list(selected_core_ids),
+        "checked_failure_ids": list(selected_failure_ids),
     }
 
 
@@ -1024,6 +2322,8 @@ def main() -> int:
     )
     parser.add_argument("--require-committed", action="store_true")
     parser.add_argument("--check-run", action="append", default=[])
+    parser.add_argument("--check-run-core", action="append", default=[])
+    parser.add_argument("--check-failure-run", action="append", default=[])
     args = parser.parse_args()
     payload = validate(
         project_root,
@@ -1031,6 +2331,8 @@ def main() -> int:
         args.manifest.resolve(),
         require_committed=args.require_committed,
         check_run_ids=tuple(args.check_run),
+        check_core_ids=tuple(args.check_run_core),
+        check_failure_ids=tuple(args.check_failure_run),
     )
     print(json.dumps(payload, indent=2, sort_keys=True))
     return 0

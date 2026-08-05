@@ -21,9 +21,13 @@ from parse_s1_single import (
 )
 
 
-PROTOCOL_REVISION = "S1-R8-MPI-R1"
-CANONICAL_CONFIG_PATH = Path("config/S1_mpi_prefix_equivalence.json")
-CANONICAL_MANIFEST_PATH = Path("config/S1_mpi_prefix_equivalence_manifest.tsv")
+PROTOCOL_REVISION = "S1-R8-RUNTIME-RELOCATION-R1"
+CANONICAL_CONFIG_PATH = Path("config/S1_runtime_relocation_equivalence.json")
+CANONICAL_MANIFEST_PATH = Path(
+    "config/S1_runtime_relocation_equivalence_manifest.tsv"
+)
+LEGACY_CONFIG_PATH = Path("config/S1_mpi_prefix_equivalence.json")
+LEGACY_MANIFEST_PATH = Path("config/S1_mpi_prefix_equivalence_manifest.tsv")
 R8_CONFIG_PATH = Path("config/S1_non_equilibrium_convergence.json")
 R8_MANIFEST_PATH = Path("config/S1_non_equilibrium_run_manifest.tsv")
 DEFAULT_R8_SUMMARY_PATH = Path("analysis/s1/non_equilibrium_convergence_20260805/summary.json")
@@ -56,6 +60,12 @@ MANIFEST_HEADER = (
     "reference_log_sha256",
     "reference_experiment_metadata_path",
     "reference_experiment_metadata_sha256",
+    "reference_abacus_path",
+    "reference_abacus_realpath",
+    "reference_abacus_sha256",
+    "reference_mpirun_path",
+    "reference_mpirun_realpath",
+    "reference_mpirun_sha256",
     "config_sha256",
 )
 
@@ -70,7 +80,93 @@ TRANSIENT_MAPPING_PATTERNS = (
         r"(?:pmix-gds-shmem2|shared_mem_cuda_)[A-Za-z0-9._@-]*"
         r"(?:/[A-Za-z0-9._-]+)*$"
     ),
+    r"^/tmp/ompi\.[0-9]+/hwloc\.sm$",
 )
+SYSTEM_MAPPING_ROOTS = ("/usr", "/lib", "/lib64")
+SYSTEM_MAPPING_EXACT_PATHS = ("/etc/ld.so.cache",)
+REGISTERED_DEVICE_MAPPING_PATTERNS = (
+    r"^/dev/infiniband/(?:uverbs[0-9]+|rdma_cm)$",
+    r"^/dev/nvidia(?:[0-9]+|ctl|modeset|uvm|uvm-tools)$",
+    r"^/dev/nvidia-caps/nvidia-cap[0-9]+$",
+)
+
+
+def registered_old_prefix_failed_probes(old_prefix: Path) -> tuple[dict, ...]:
+    """Exact old-prefix ENOENT events allowed inside the isolation namespace."""
+
+    old_prefix = old_prefix.resolve(strict=False)
+    return (
+        {
+            "probe_id": "launcher_classid_stat",
+            "path": str(old_prefix / "classid"),
+            "syscall": "stat",
+            "flags": None,
+            "errno": "ENOENT",
+            "role": "launcher",
+            "rank": None,
+            "expected_count": 1,
+        },
+        {
+            "probe_id": "launcher_classid_open",
+            "path": str(old_prefix / "classid"),
+            "syscall": "openat",
+            "flags": "O_RDONLY|O_CLOEXEC",
+            "errno": "ENOENT",
+            "role": "launcher",
+            "rank": None,
+            "expected_count": 1,
+        },
+        {
+            "probe_id": "rank_classid_stat",
+            "path": str(old_prefix / "classid"),
+            "syscall": "stat",
+            "flags": None,
+            "errno": "ENOENT",
+            "role": "rank",
+            "rank": "each",
+            "expected_count_per_rank": 1,
+        },
+        {
+            "probe_id": "rank_classid_open",
+            "path": str(old_prefix / "classid"),
+            "syscall": "openat",
+            "flags": "O_RDONLY|O_CLOEXEC",
+            "errno": "ENOENT",
+            "role": "rank",
+            "rank": "each",
+            "expected_count_per_rank": 1,
+        },
+        {
+            "probe_id": "rank_ucx_conf_open",
+            "path": str(old_prefix / "ucx.conf"),
+            "syscall": "openat",
+            "flags": "O_RDONLY",
+            "errno": "ENOENT",
+            "role": "rank",
+            "rank": "each",
+            "expected_count_per_rank": 1,
+        },
+        {
+            "probe_id": "rank_old_prefix_open",
+            "path": str(old_prefix),
+            "syscall": "openat",
+            "flags": "O_RDONLY",
+            "errno": "ENOENT",
+            "role": "rank",
+            "rank": "each",
+            "expected_count_per_rank": 1,
+        },
+        {
+            "probe_id": "rank_old_prefix_directory_open",
+            "path": str(old_prefix),
+            "syscall": "openat",
+            "flags": "O_RDONLY|O_NONBLOCK|O_CLOEXEC|O_DIRECTORY",
+            "errno": "ENOENT",
+            "role": "rank",
+            "rank": "each",
+            "expected_count_per_rank": 1,
+        },
+    )
 
 
 def sha256(path: Path) -> str:

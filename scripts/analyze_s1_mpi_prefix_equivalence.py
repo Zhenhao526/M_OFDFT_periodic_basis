@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Reparse and assess the six S1-R8 MPI-prefix replay calculations."""
+"""Reparse and assess the six S1-R8 runtime-relocation replay calculations."""
 
 from __future__ import annotations
 
@@ -121,7 +121,7 @@ def replacement_conclusion(
 
 def _readme(payload: dict) -> str:
     lines = [
-        "# S1-R8 MPI-prefix six-point equivalence replay",
+        "# S1-R8 runtime-relocation six-point equivalence replay",
         "",
         f"- Status: `{payload['six_point_status']}`",
         f"- Recommended action: `{payload['recommended_action']}`",
@@ -133,10 +133,11 @@ def _readme(payload: dict) -> str:
         "`|dP| < 0.02 GPa`. KS energy uses the logged `E_KS(sigma->0)` "
         "entropy-corrected estimator; OF uses `!FINAL_ETOT_IS`.",
         "",
-        "Old-prefix access accounting does not claim zero attempts: exactly two "
-        "`<old_prefix>/classid` ENOENT probes per point are registered and reported. "
-        "Any successful old-prefix access, any other old-prefix attempt, any old-prefix "
-        "mapping, or any unexpected mapping rejects the replay.",
+        "Old-prefix accounting does not claim zero attempts. Inside the private mount "
+        "namespace, exactly 22 ENOENT events are preregistered per point: 10 classid "
+        "events (launcher plus four ranks), four rank ucx.conf probes, and eight rank "
+        "opens of the hidden old prefix. Successful old access/exec, an unknown failed "
+        "probe, an old mapping, or an unexpected mapping rejects the replay.",
         "",
         "## Points",
         "",
@@ -178,8 +179,11 @@ def analyze(
         analysis_code = [
             Path(__file__).resolve(),
             project_root / "scripts" / "s1_mpi_prefix_equivalence_common.py",
+            project_root / "scripts" / "s1_runtime_relocation_elf.py",
             project_root / "scripts" / "validate_s1_mpi_prefix_equivalence.py",
-            project_root / "scripts" / "mpi_prefix_audit_launcher.py",
+            project_root / "scripts" / "runtime_relocation_audit_launcher.py",
+            project_root / "scripts" / "runtime_relocation_namespace_launcher.py",
+            project_root / "scripts" / "runtime_relocation_rank_wrapper.py",
             project_root / "scripts" / "parse_s1_single.py",
             project_root / "scripts" / "analyze_s1_non_equilibrium.py",
             project_root / "scripts" / "analyze_s1_eos.py",
@@ -283,8 +287,10 @@ def analyze(
                         "transient_system_mapped_object_count",
                         "old_prefix_access_attempt_count",
                         "old_prefix_successful_access_count",
-                        "allowed_failed_probe_count",
-                        "other_old_prefix_attempt_count",
+                        "old_prefix_exec_success_count",
+                        "registered_old_prefix_failed_probe_count",
+                        "unknown_old_prefix_failed_probe_count",
+                        "registered_probe_count_mismatch_count",
                     )
                 },
                 "r8_replacement": replacement,
@@ -299,7 +305,9 @@ def analyze(
         point["r8_replacement"]["conclusion_unchanged"] for point in points
     )
     runtime_count = sum(point["runtime_audit_status"] == "accepted" for point in points)
-    closure_tiers = set(config["acceptance"]["six_point_closure_tiers"])
+    closure_tiers = set(
+        config["acceptance"]["storage_equivalence_tiers_diagnostic_only"]
+    )
     closure_count = sum(point["equivalence"]["tier"] in closure_tiers for point in points)
     scientific_only_count = sum(
         point["equivalence"]["tier"] == "scientific_tolerance_only" for point in points
@@ -311,15 +319,27 @@ def analyze(
         and conclusion_count == 6
         and runtime_count == 6
     )
-    if hard_gate_passed and closure_count == 6:
+    if hard_gate_passed:
         status = "accepted"
-        action = "close_mpi_prefix_equivalence_and_keep_s1_r8_conclusion"
-    elif hard_gate_passed and scientific_only_count:
-        status = "requires_endpoint_expansion"
-        action = "expand_to_registered_eos_endpoints_before_closure"
+        action = "close_runtime_relocation_equivalence_and_keep_s1_r8_conclusion"
     else:
         status = "rejected"
-        action = "rerun_full_42_point_s1_r8_matrix_under_recovery_prefix"
+        pure_audit_tokens = (
+            "namespace_launch_failed",
+            "namespace_payload_exit_code",
+            "required_strace_unavailable",
+            "strace_identity",
+            "rank_handshake",
+            "initial_map_capture",
+        )
+        pure_audit_failure = bool(failures) and all(
+            any(token in failure for token in pure_audit_tokens) for failure in failures
+        )
+        action = (
+            "fix_audit_operation_and_retry_only_six_registered_points"
+            if pure_audit_failure
+            else "rerun_full_42_point_s1_r8_matrix_under_recovery_prefix"
+        )
 
     payload = {
         "schema_version": 1,
@@ -341,12 +361,21 @@ def analyze(
         "thresholds": config["acceptance"],
         "old_prefix_access_interpretation": {
             "successful_access_required": 0,
-            "allowed_failed_probe_path": config["runtime_audit"][
-                "allowed_failed_probe_path"
+            "successful_exec_required": 0,
+            "unknown_failed_probe_required": 0,
+            "registered_failed_probe_expected_count_per_point": config[
+                "runtime_audit"
+            ]["registered_old_prefix_failed_probe_count"],
+            "registered_failed_probes": config["runtime_audit"][
+                "registered_old_prefix_failed_probes"
             ],
-            "allowed_failed_probe_errno": "ENOENT",
-            "allowed_failed_probe_expected_count_per_point": 2,
             "claim_zero_attempts": False,
+        },
+        "decision_policy": {
+            "full_42_rerun_triggers": config["acceptance"]["full_42_rerun_triggers"],
+            "six_point_retry_after_fix_triggers": config["acceptance"][
+                "six_point_retry_after_fix_triggers"
+            ],
         },
         "manifest_validation": manifest_validation,
         "analysis_provenance": {

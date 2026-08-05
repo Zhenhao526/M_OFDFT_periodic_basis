@@ -46,7 +46,7 @@ class S1RuntimeHardeningTest(unittest.TestCase):
         ):
             self.assertIn(field, script)
         checksum = script.index('sha256sum INPUT STRU KPT "$pseudopotential"')
-        execution = script.index('/usr/bin/time -v "$mpirun"')
+        execution = script.index('/usr/bin/time -v "${mpirun_command[@]}"')
         self.assertLess(checksum, execution)
         self.assertNotIn('sha256sum "$run_directory/INPUT"', script)
 

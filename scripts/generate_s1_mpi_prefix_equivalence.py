@@ -1,11 +1,12 @@
 #!/usr/bin/env python3
-"""Freeze the six S1-R8 MPI-prefix replay points after references exist."""
+"""Freeze the six S1-R8 runtime-relocation replay points after references exist."""
 
 from __future__ import annotations
 
 import argparse
 import hashlib
 import json
+import os
 import subprocess
 from pathlib import Path
 
@@ -18,7 +19,10 @@ from s1_mpi_prefix_equivalence_common import (
     PROTOCOL_REVISION,
     R8_CONFIG_PATH,
     R8_MANIFEST_PATH,
+    REGISTERED_DEVICE_MAPPING_PATTERNS,
     REQUIRED_SOURCE_FILES,
+    SYSTEM_MAPPING_EXACT_PATHS,
+    SYSTEM_MAPPING_ROOTS,
     TRANSIENT_MAPPING_PATTERNS,
     atomic_write,
     git_clean,
@@ -28,27 +32,16 @@ from s1_mpi_prefix_equivalence_common import (
     relative_or_absolute,
     render_tsv,
     reparse_run,
+    registered_old_prefix_failed_probes,
     require_tracked_at_head,
     sha256,
 )
 from validate_s1_non_equilibrium_manifest import validate as validate_r8_manifest
-
-
-def _resolved_executable(path: Path, label: str) -> Path:
-    try:
-        resolved = path.expanduser().resolve(strict=True)
-    except FileNotFoundError as error:
-        raise ValueError(f"missing {label}: {path}") from error
-    if not resolved.is_file() or not resolved.stat().st_mode & 0o111:
-        raise ValueError(f"{label} is not an executable regular file: {resolved}")
-    with resolved.open("rb") as handle:
-        elf_magic = handle.read(4)
-    if elf_magic != b"\x7fELF":
-        raise ValueError(
-            f"{label} must resolve directly to its Linux ELF executable for /proc auditing: "
-            f"{resolved}"
-        )
-    return resolved
+from s1_runtime_relocation_elf import (
+    file_identity,
+    relocation_equivalence_evidence,
+    versioned_tool_identity,
+)
 
 
 def _head(project_root: Path) -> str:
@@ -141,11 +134,22 @@ def build_frozen_payload(
     r8_summary_path: Path,
     output_manifest_path: Path,
     *,
+    readelf: Path = Path("/usr/bin/readelf"),
+    chrpath: Path = Path("/usr/bin/chrpath"),
+    strace: Path = Path("/usr/bin/strace"),
+    unshare: Path = Path("/usr/bin/unshare"),
+    mount: Path = Path("/usr/bin/mount"),
+    bash: Path = Path("/bin/bash"),
+    python: Path = Path("/usr/bin/python3"),
+    reference_mpirun: Path | None = None,
+    reference_launcher: Path | None = None,
     require_clean_worktree: bool = True,
 ) -> tuple[dict, list[dict[str, object]], list[Path]]:
     project_root = project_root.resolve()
     if require_clean_worktree and not git_clean(project_root):
-        raise ValueError("refusing to freeze MPI replay from a dirty worktree")
+        raise ValueError("refusing to freeze runtime-relocation replay from a dirty worktree")
+    if os.getuid() == 0:
+        raise ValueError("runtime relocation must be frozen by a non-root host user")
 
     recovery_prefix = recovery_prefix.expanduser()
     if not recovery_prefix.is_absolute():
@@ -160,23 +164,63 @@ def build_frozen_payload(
     old_prefix = old_prefix.resolve(strict=False)
     if old_prefix == recovery_prefix:
         raise ValueError("old prefix must be an absolute path different from recovery prefix")
-    for value, label in ((abacus, "ABACUS"), (mpirun, "mpirun")):
-        if not value.expanduser().is_absolute():
-            raise ValueError(f"{label} path must be absolute")
-    if launcher is not None and not launcher.expanduser().is_absolute():
-        raise ValueError("final MPI launcher path must be absolute")
-    abacus = _resolved_executable(abacus, "ABACUS")
-    mpirun = _resolved_executable(mpirun, "mpirun")
-    launcher = _resolved_executable(
-        launcher if launcher is not None else recovery_prefix / "bin" / "prterun",
-        "final MPI launcher",
+    old_root = old_prefix.parent
+    replay_abacus = file_identity(abacus, "relocated replay ABACUS", require_elf=True)
+    replay_mpirun = file_identity(mpirun, "replay mpirun", require_elf=True)
+    reference_mpirun_identity = file_identity(
+        reference_mpirun if reference_mpirun is not None else mpirun,
+        "reference mpirun invocation",
+        require_elf=True,
     )
-    if not is_within(mpirun, recovery_prefix):
+    replay_launcher = file_identity(
+        launcher if launcher is not None else recovery_prefix / "bin" / "prterun",
+        "replay final MPI launcher",
+        require_elf=True,
+    )
+    reference_launcher_identity = file_identity(
+        reference_launcher
+        if reference_launcher is not None
+        else old_prefix / "bin" / "prterun",
+        "reference final MPI launcher",
+        require_elf=True,
+    )
+    if not is_within(Path(replay_mpirun["realpath"]), recovery_prefix):
         raise ValueError("mpirun must resolve inside the recovery prefix")
-    if not is_within(launcher, recovery_prefix):
+    if not is_within(Path(replay_launcher["realpath"]), recovery_prefix):
         raise ValueError("final MPI launcher must resolve inside the recovery prefix")
-    if not is_within(abacus, recovery_root):
+    if not is_within(Path(replay_abacus["realpath"]), recovery_root):
         raise ValueError("ABACUS must resolve inside the recovery runtime root")
+    if not is_within(Path(reference_launcher_identity["realpath"]), old_prefix):
+        raise ValueError("reference final launcher must resolve inside the old prefix")
+    if reference_launcher_identity["sha256"] != replay_launcher["sha256"]:
+        raise ValueError("reference and replay launchers are not byte-identical")
+
+    runtime_tools = {
+        "strace": versioned_tool_identity(strace, "strace"),
+        "unshare": versioned_tool_identity(unshare, "unshare"),
+        "mount": versioned_tool_identity(mount, "mount"),
+        "bash": versioned_tool_identity(bash, "bash"),
+        "python": versioned_tool_identity(python, "python"),
+    }
+    wrapper_paths = {
+        "namespace_launcher": project_root
+        / "scripts"
+        / "runtime_relocation_namespace_launcher.py",
+        "namespace_payload": project_root
+        / "scripts"
+        / "runtime_relocation_namespace_payload.sh",
+        "audit_launcher": project_root
+        / "scripts"
+        / "runtime_relocation_audit_launcher.py",
+        "rank_wrapper": project_root
+        / "scripts"
+        / "runtime_relocation_rank_wrapper.py",
+    }
+    wrappers = {}
+    for name, path in wrapper_paths.items():
+        if not path.is_file() or path.is_symlink():
+            raise ValueError(f"missing or symbolic-link runtime wrapper: {path}")
+        wrappers[name] = {"path": str(path), "sha256": sha256(path)}
 
     for path, label in (
         (r8_config_path, "S1-R8 config"),
@@ -215,6 +259,8 @@ def build_frozen_payload(
     tracked_paths = [r8_config_path, r8_manifest_path, r8_summary_path]
     staged_rows: list[dict[str, object]] = []
     mappings = []
+    reference_abacus_identities: list[dict] = []
+    reference_mpirun_identities: list[dict] = []
     for replay_id, reference_id, material, series_id in FIXED_PAIRS:
         source_row = r8_rows.get(reference_id)
         if source_row is None:
@@ -278,10 +324,40 @@ def build_frozen_payload(
             )
         if reference_experiment_metadata.get("mpi_ranks") != 4:
             raise ValueError(f"{reference_id}: reference run did not use four MPI ranks")
-        if reference_experiment_metadata.get("abacus_sha256") != sha256(abacus):
-            raise ValueError(
-                f"{reference_id}: reference ABACUS bytes differ from replay ABACUS"
+        try:
+            reference_abacus_identity = file_identity(
+                Path(reference_experiment_metadata["abacus_path"]),
+                f"{reference_id} reference ABACUS",
+                require_elf=True,
             )
+        except KeyError as error:
+            raise ValueError(
+                f"{reference_id}: reference runtime metadata is missing {error}"
+            ) from error
+        if reference_experiment_metadata.get("abacus_sha256") != (
+            reference_abacus_identity["sha256"]
+        ):
+            raise ValueError(f"{reference_id}: reference ABACUS SHA-256 mismatch")
+        metadata_mpirun_fields = {
+            key: reference_experiment_metadata.get(key)
+            for key in ("mpirun_path", "mpirun_sha256")
+        }
+        if any(value is not None for value in metadata_mpirun_fields.values()):
+            if not all(value is not None for value in metadata_mpirun_fields.values()):
+                raise ValueError(f"{reference_id}: partial reference mpirun metadata")
+            observed_mpirun = file_identity(
+                Path(str(metadata_mpirun_fields["mpirun_path"])),
+                f"{reference_id} recorded reference mpirun",
+                require_elf=True,
+            )
+            if (
+                observed_mpirun != reference_mpirun_identity
+                or metadata_mpirun_fields["mpirun_sha256"]
+                != reference_mpirun_identity["sha256"]
+            ):
+                raise ValueError(f"{reference_id}: reference mpirun identity mismatch")
+        reference_abacus_identities.append(reference_abacus_identity)
+        reference_mpirun_identities.append(reference_mpirun_identity)
 
         tracked_paths.extend(
             [
@@ -319,6 +395,12 @@ def build_frozen_payload(
                 "reference_experiment_metadata_sha256": sha256(
                     reference_experiment_metadata_path
                 ),
+                "reference_abacus_path": reference_abacus_identity["path"],
+                "reference_abacus_realpath": reference_abacus_identity["realpath"],
+                "reference_abacus_sha256": reference_abacus_identity["sha256"],
+                "reference_mpirun_path": reference_mpirun_identity["path"],
+                "reference_mpirun_realpath": reference_mpirun_identity["realpath"],
+                "reference_mpirun_sha256": reference_mpirun_identity["sha256"],
             }
         )
         mappings.append(
@@ -331,6 +413,28 @@ def build_frozen_payload(
             }
         )
 
+    reference_abacus_values = {
+        json.dumps(identity, sort_keys=True) for identity in reference_abacus_identities
+    }
+    reference_mpirun_values = {
+        json.dumps(identity, sort_keys=True) for identity in reference_mpirun_identities
+    }
+    if len(reference_abacus_values) != 1:
+        raise ValueError("six reference points do not share one ABACUS identity")
+    if len(reference_mpirun_values) != 1:
+        raise ValueError("six reference points do not share one mpirun identity")
+    reference_abacus = reference_abacus_identities[0]
+    frozen_reference_mpirun = reference_mpirun_identities[0]
+    if frozen_reference_mpirun["sha256"] != replay_mpirun["sha256"]:
+        raise ValueError("reference and replay mpirun bytes are not identical")
+    elf_relocation = relocation_equivalence_evidence(
+        Path(reference_abacus["path"]),
+        Path(replay_abacus["path"]),
+        old_prefix,
+        readelf,
+        chrpath,
+    )
+
     tracked_failures = require_tracked_at_head(project_root, tracked_paths)
     if tracked_failures:
         raise ValueError(
@@ -342,10 +446,11 @@ def build_frozen_payload(
         "OPAL_PREFIX": str(recovery_prefix),
         "PRTE_PREFIX": str(recovery_prefix),
         "PMIX_PREFIX": str(recovery_prefix),
+        "UCX_MODULE_DIR": str(recovery_prefix),
     }
     config = {
-        "schema_version": 1,
-        "status": "mpi_prefix_equivalence_frozen",
+        "schema_version": 2,
+        "status": "runtime_relocation_equivalence_frozen",
         "protocol_revision": PROTOCOL_REVISION,
         "generated_from_commit": _head(project_root),
         "experiment_id_block": {
@@ -371,42 +476,151 @@ def build_frozen_payload(
         "runtime": {
             "recovery_root": str(recovery_root),
             "recovery_prefix": str(recovery_prefix),
+            "old_root": str(old_root),
             "old_prefix": str(old_prefix),
-            "abacus_path": str(abacus),
-            "abacus_sha256": sha256(abacus),
-            "mpirun_path": str(mpirun),
-            "mpirun_sha256": sha256(mpirun),
-            "launcher_path": str(launcher),
-            "launcher_sha256": sha256(launcher),
+            "reference": {
+                "abacus": reference_abacus,
+                "mpirun": frozen_reference_mpirun,
+                "launcher": reference_launcher_identity,
+                "r8_launcher_observation": {
+                    "claim": "original_42_used_old_prefix_prte",
+                    "evidence_scope": (
+                        "operator_remote_proc_observation_not_archived_per_reference_run"
+                    ),
+                    "launcher_realpath_is_in_old_prefix": True,
+                    "launcher_bytes_equal_replay_launcher": True,
+                    "mpirun_claim": "original_42_invoked_registered_recovery_mpirun",
+                    "mpirun_metadata_scope": (
+                        "explicit_freeze_operator_observation_legacy_run_metadata_omits_mpirun"
+                    ),
+                },
+            },
+            "replay": {
+                "abacus": replay_abacus,
+                "mpirun": replay_mpirun,
+                "launcher": replay_launcher,
+            },
             "prefix_environment": prefix_environment,
+            "tools": runtime_tools,
+            "wrappers": wrappers,
+            "elf_relocation": elf_relocation,
+            "mpi_argv_prefix": [
+                "--allow-run-as-root",
+                "--bind-to",
+                "core",
+                "-np",
+                "4",
+            ],
+            "namespace": {
+                "unshare_argv_prefix": [
+                    runtime_tools["unshare"]["path"],
+                    "--user",
+                    "--map-root-user",
+                    "--kill-child=KILL",
+                    "--mount",
+                    "--propagation",
+                    "private",
+                    runtime_tools["bash"]["path"],
+                    wrappers["namespace_payload"]["path"],
+                ],
+                "mount_target": str(old_root),
+                "mount_type": "tmpfs",
+                "mount_source": "tmpfs",
+                "mount_options": ["size=1m", "nosuid", "nodev", "noexec"],
+                "host_uid_remains_unprivileged": True,
+                "host_uid": os.getuid(),
+                "host_gid": os.getgid(),
+                "namespace_effective_uid": 0,
+                "external_old_root_must_survive": True,
+                "total_wall_timeout_seconds": 7260,
+                "timeout_requires_zero_residual_processes": True,
+            },
         },
         "runtime_audit": {
             "launcher_count": 1,
             "rank_count": 4,
+            "runtime_wall_timeout_seconds": 7200,
+            "mapping_observation_scope": "final_prterun_and_four_abacus_ranks",
+            "mpirun_and_support_daemon_maps_out_of_scope": True,
+            "rank_handshake_required": True,
+            "initial_maps_required_for_every_target": True,
             "old_prefix_mapped_object_count_max": 0,
             "unexpected_mapped_object_count_max": 0,
+            "all_captured_regular_mapped_objects_must_be_hashed": True,
+            "recovery_component_counterpart_byte_equality_required": True,
+            "counterpart_missing_count_max": 0,
+            "counterpart_byte_mismatch_count_max": 0,
+            "counterpart_exclusions": {
+                "relocated_abacus_elf_gate": {
+                    "reference": reference_abacus,
+                    "replay": replay_abacus,
+                    "byte_equality_required": False,
+                },
+                "mpirun_identity_gate": {
+                    "reference": frozen_reference_mpirun,
+                    "replay": replay_mpirun,
+                    "byte_equality_required": True,
+                },
+                "launcher_identity_gate": {
+                    "reference": reference_launcher_identity,
+                    "replay": replay_launcher,
+                    "byte_equality_required": True,
+                },
+            },
+            "successful_exec_multiset": {
+                replay_mpirun["realpath"]: 1,
+                replay_launcher["realpath"]: 1,
+                runtime_tools["python"]["realpath"]: 4,
+                replay_abacus["realpath"]: 4,
+            },
+            "ambiguous_exec_result_count_max": 0,
             "file_trace_required": True,
+            "strace_before_after_identity_required": True,
             "old_prefix_successful_access_count_max": 0,
-            "allowed_failed_probe_path": str(old_prefix / "classid"),
-            "allowed_failed_probe_errno": "ENOENT",
-            "allowed_failed_probe_expected_count_per_run": 2,
-            "other_old_prefix_attempt_count_max": 0,
+            "old_prefix_exec_success_count_max": 0,
+            "unknown_old_prefix_failed_probe_count_max": 0,
+            "registered_probe_count_mismatch_count_max": 0,
+            "registered_old_prefix_failed_probe_count": 22,
+            "registered_old_prefix_failed_probes": list(
+                registered_old_prefix_failed_probes(old_prefix)
+            ),
             "clean_environment_required": True,
+            "controlled_home_policy": "per_run_marker_only_no_user_mpi_config",
+            "required_path": f"{recovery_prefix}/bin:/usr/bin:/bin",
+            "required_cmake_prefix_path": str(recovery_prefix),
+            "required_mklroot": str(recovery_prefix),
             "required_ld_library_path": str(recovery_prefix / "lib"),
             "ld_preload_must_be_unset": True,
             "transient_mapping_patterns": list(TRANSIENT_MAPPING_PATTERNS),
-            "system_mapping_roots": ["/usr", "/lib", "/lib64", "/dev", "/proc", "/sys"],
+            "system_mapping_roots": list(SYSTEM_MAPPING_ROOTS),
+            "system_mapping_exact_paths": list(SYSTEM_MAPPING_EXACT_PATHS),
+            "registered_device_mapping_patterns": list(
+                REGISTERED_DEVICE_MAPPING_PATTERNS
+            ),
+            "namespace_evidence_required": True,
         },
         "acceptance": {
             "max_absolute_energy_difference_mev_per_atom": 0.1,
             "max_absolute_pressure_difference_gpa": 0.02,
             "threshold_comparison": "strict_less_than",
-            "six_point_closure_tiers": [
+            "storage_equivalence_tiers_diagnostic_only": [
                 "storage_exact",
                 "storage_resolution_equal",
             ],
-            "scientific_tolerance_only_action": "expand_to_registered_eos_endpoints",
+            "scientific_runtime_and_r8_gates_passed_action": (
+                "close_runtime_relocation_equivalence_and_keep_s1_r8_conclusion"
+            ),
             "r8_v100_replacement_must_preserve_conclusion": True,
+            "full_42_rerun_triggers": [
+                "elf_difference_outside_registered_runpath_slot",
+                "elf_needed_build_id_or_load_layout_changed",
+                "scientific_energy_or_pressure_gate_failed",
+                "r8_series_or_fit_hard_gate_changed",
+                "mapped_component_byte_equivalence_unprovable",
+            ],
+            "six_point_retry_after_fix_triggers": [
+                "pure_namespace_launcher_or_runtime_audit_failure"
+            ],
         },
         "manifest_path": relative_or_absolute(project_root, output_manifest_path),
         "mappings": mappings,
@@ -427,6 +641,15 @@ def generate(
     r8_summary_path: Path,
     *,
     launcher: Path | None = None,
+    readelf: Path = Path("/usr/bin/readelf"),
+    chrpath: Path = Path("/usr/bin/chrpath"),
+    strace: Path = Path("/usr/bin/strace"),
+    unshare: Path = Path("/usr/bin/unshare"),
+    mount: Path = Path("/usr/bin/mount"),
+    bash: Path = Path("/bin/bash"),
+    python: Path = Path("/usr/bin/python3"),
+    reference_mpirun: Path | None = None,
+    reference_launcher: Path | None = None,
     require_clean_worktree: bool = True,
 ) -> dict:
     for output in (config_path, manifest_path):
@@ -443,6 +666,15 @@ def generate(
         r8_manifest_path,
         r8_summary_path,
         manifest_path,
+        readelf=readelf,
+        chrpath=chrpath,
+        strace=strace,
+        unshare=unshare,
+        mount=mount,
+        bash=bash,
+        python=python,
+        reference_mpirun=reference_mpirun,
+        reference_launcher=reference_launcher,
         require_clean_worktree=require_clean_worktree,
     )
     config_text = json.dumps(config, indent=2, sort_keys=True) + "\n"
@@ -466,17 +698,37 @@ def generate(
 def main() -> int:
     project_root = Path(__file__).resolve().parents[1]
     parser = argparse.ArgumentParser(
-        description="Freeze S1-R8 MPI-prefix replay only after all reference artifacts exist."
+        description=(
+            "Freeze S1-R8 runtime-relocation replay only after all reference artifacts exist."
+        )
     )
     parser.add_argument("--recovery-prefix", type=Path, required=True)
     parser.add_argument("--old-prefix", type=Path, required=True)
-    parser.add_argument("--abacus", type=Path, required=True)
+    parser.add_argument(
+        "--abacus",
+        type=Path,
+        required=True,
+        help="relocated replay ABACUS (reference ABACUS is read from run metadata)",
+    )
     parser.add_argument("--mpirun", type=Path, required=True)
     parser.add_argument(
         "--launcher",
         type=Path,
         help="final launcher ELF; defaults to <recovery-prefix>/bin/prterun",
     )
+    parser.add_argument("--reference-launcher", type=Path)
+    parser.add_argument(
+        "--reference-mpirun",
+        type=Path,
+        help="R8 mpirun invocation; defaults to --mpirun for legacy run metadata",
+    )
+    parser.add_argument("--readelf", type=Path, default=Path("/usr/bin/readelf"))
+    parser.add_argument("--chrpath", type=Path, default=Path("/usr/bin/chrpath"))
+    parser.add_argument("--strace", type=Path, default=Path("/usr/bin/strace"))
+    parser.add_argument("--unshare", type=Path, default=Path("/usr/bin/unshare"))
+    parser.add_argument("--mount", type=Path, default=Path("/usr/bin/mount"))
+    parser.add_argument("--bash", type=Path, default=Path("/bin/bash"))
+    parser.add_argument("--python", type=Path, default=Path("/usr/bin/python3"))
     parser.add_argument(
         "--config",
         type=Path,
@@ -509,6 +761,15 @@ def main() -> int:
         args.r8_manifest.resolve(),
         args.r8_summary.resolve(),
         launcher=args.launcher,
+        readelf=args.readelf,
+        chrpath=args.chrpath,
+        strace=args.strace,
+        unshare=args.unshare,
+        mount=args.mount,
+        bash=args.bash,
+        python=args.python,
+        reference_mpirun=args.reference_mpirun,
+        reference_launcher=args.reference_launcher,
     )
     print(json.dumps(payload, indent=2, sort_keys=True))
     return 0

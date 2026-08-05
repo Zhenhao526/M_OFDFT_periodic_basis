@@ -6,6 +6,7 @@ import os
 import subprocess
 import sys
 import tempfile
+import time
 import unittest
 from pathlib import Path
 from unittest import mock
@@ -17,8 +18,10 @@ sys.path.insert(0, str(SCRIPTS))
 
 import analyze_s1_mpi_prefix_equivalence as ANALYZER  # noqa: E402
 import generate_s1_mpi_prefix_equivalence as GENERATOR  # noqa: E402
-import mpi_prefix_audit_launcher as AUDIT  # noqa: E402
+import runtime_relocation_audit_launcher as AUDIT  # noqa: E402
+import runtime_relocation_namespace_launcher as NAMESPACE  # noqa: E402
 import s1_mpi_prefix_equivalence_common as COMMON  # noqa: E402
+import s1_runtime_relocation_elf as ELF  # noqa: E402
 import validate_s1_mpi_prefix_equivalence as VALIDATOR  # noqa: E402
 from parse_s1_single import parse_log  # noqa: E402
 
@@ -89,42 +92,101 @@ class S1MpiPrefixEquivalenceTest(unittest.TestCase):
         )
         self.assertEqual(ks["energy_token"], "-1.234500")
 
-    def test_strace_allows_only_two_classid_enoent_probes(self) -> None:
+    def test_strace_requires_exact_22_role_rank_probe_matrix(self) -> None:
         old = Path("/old/prefix")
-        lines = [
-            'newfstatat(AT_FDCWD, "/old/prefix/classid", 0x1, 0) = -1 ENOENT (No such file)',
-            'openat(AT_FDCWD, "/old/prefix/classid", O_RDONLY) = -1 ENOENT (No such file)',
+        records = [
+            {
+                "pid": 100,
+                "role": "launcher",
+                "rank": None,
+                "line": 'stat("/old/prefix/classid", 0x1) = -1 ENOENT (No such file)',
+            },
+            {
+                "pid": 100,
+                "role": "launcher",
+                "rank": None,
+                "line": 'openat(AT_FDCWD, "/old/prefix/classid", O_RDONLY|O_CLOEXEC) = -1 ENOENT (No such file)',
+            },
         ]
-        payload = AUDIT.parse_strace_lines(lines, old, old / "classid", "ENOENT")
-        self.assertEqual(payload["old_prefix_access_attempt_count"], 2)
-        self.assertEqual(payload["allowed_failed_probe_count"], 2)
+        for rank in range(4):
+            records.extend(
+                {
+                    "pid": 200 + rank,
+                    "role": "rank",
+                    "rank": rank,
+                    "line": line,
+                }
+                for line in (
+                    'stat("/old/prefix/classid", 0x1) = -1 ENOENT (No such file)',
+                    'openat(AT_FDCWD, "/old/prefix/classid", O_RDONLY|O_CLOEXEC) = -1 ENOENT (No such file)',
+                    'openat(AT_FDCWD, "/old/prefix/ucx.conf", O_RDONLY) = -1 ENOENT (No such file)',
+                    'openat(AT_FDCWD, "/old/prefix", O_RDONLY) = -1 ENOENT (No such file)',
+                    'openat(AT_FDCWD, "/old/prefix", O_RDONLY|O_NONBLOCK|O_CLOEXEC|O_DIRECTORY) = -1 ENOENT (No such file)',
+                )
+            )
+        policies = COMMON.registered_old_prefix_failed_probes(old)
+        payload = AUDIT.parse_strace_records(records, old, policies, 4)
+        self.assertEqual(payload["old_prefix_access_attempt_count"], 22)
+        self.assertEqual(payload["registered_old_prefix_failed_probe_count"], 22)
         self.assertEqual(payload["old_prefix_successful_access_count"], 0)
-        self.assertEqual(payload["other_old_prefix_attempt_count"], 0)
+        self.assertEqual(payload["old_prefix_exec_success_count"], 0)
+        self.assertEqual(payload["unknown_old_prefix_failed_probe_count"], 0)
+        self.assertEqual(payload["registered_probe_count_mismatch_count"], 0)
 
-        rejected = AUDIT.parse_strace_lines(
-            lines
+        rejected = AUDIT.parse_strace_records(
+            records
             + [
-                'openat(AT_FDCWD, "/old/prefix/lib/libmpi.so", O_RDONLY) = 3',
-                'stat("/old/prefix/other", 0x1) = -1 ENOENT (No such file)',
+                {
+                    "pid": 200,
+                    "role": "rank",
+                    "rank": 0,
+                    "line": 'openat(AT_FDCWD, "/old/prefix/lib/libmpi.so", O_RDONLY) = 3',
+                },
+                {
+                    "pid": 200,
+                    "role": "rank",
+                    "rank": 0,
+                    "line": 'stat("/old/prefix/other", 0x1) = -1 ENOENT (No such file)',
+                },
+                {
+                    "pid": 200,
+                    "role": "rank",
+                    "rank": 0,
+                    "line": 'execve("/old/prefix/bin/prterun", ["prterun"], 0x1) = 0',
+                },
             ],
             old,
-            old / "classid",
-            "ENOENT",
+            policies,
+            4,
         )
-        self.assertEqual(rejected["old_prefix_successful_access_count"], 1)
-        self.assertEqual(rejected["other_old_prefix_attempt_count"], 2)
+        self.assertEqual(rejected["old_prefix_successful_access_count"], 2)
+        self.assertEqual(rejected["old_prefix_exec_success_count"], 1)
+        self.assertEqual(rejected["unknown_old_prefix_failed_probe_count"], 1)
         self.assertEqual(
-            AUDIT.parse_execve_paths(
+            AUDIT.parse_execve_records(
                 [
-                    'execve("/recovery/bin/mpirun", ["mpirun"], 0x1) = 0',
-                    'execve("/recovery/bin/prterun", ["prterun"], 0x1) = 0',
+                    {
+                        "pid": 1,
+                        "role": "support",
+                        "rank": None,
+                        "line": 'execve("/recovery/bin/mpirun", ["mpirun"], 0x1) = 0',
+                    },
                 ]
             ),
-            ["/recovery/bin/mpirun", "/recovery/bin/prterun"],
+            [
+                {
+                    "pid": 1,
+                    "role": "support",
+                    "rank": None,
+                    "path": "/recovery/bin/mpirun",
+                    "result": "0",
+                    "errno": None,
+                    "successful": True,
+                }
+            ],
         )
 
     def test_transient_mpi_maps_are_narrowly_classified(self) -> None:
-        roots = [Path(value) for value in ("/usr", "/lib", "/dev", "/proc", "/sys")]
         for value in (
             "/SYSV00000000",
             "/dev/shm/sm_segment.123",
@@ -133,6 +195,7 @@ class S1MpiPrefixEquivalenceTest(unittest.TestCase):
             "/tmp/ompi.2555634/1/pmix-gds-shmem2.node01-prterun-node01-2555634@1.jobdata.2555634",
             "/tmp/ompi.2555634/1/pmix-gds-shmem2.node01-prterun-node01-2555634@1.session.2555634",
             "/tmp/ompi.1234/1/rank.0/shared_mem_cuda_pool",
+            "/tmp/ompi.1234/hwloc.sm",
         ):
             path = Path(value)
             self.assertEqual(
@@ -141,22 +204,116 @@ class S1MpiPrefixEquivalenceTest(unittest.TestCase):
                     path,
                     Path("/old/prefix"),
                     Path("/recovery"),
-                    roots,
                 ),
                 "transient_system",
                 value,
             )
-        arbitrary = Path("/tmp/arbitrary/libmpi.so")
+        for value in (
+            "/tmp/arbitrary/libmpi.so",
+            "/dev/random",
+            "/proc/self/maps",
+            "/sys/kernel/notes",
+            "/etc/passwd",
+        ):
+            arbitrary = Path(value)
+            self.assertEqual(
+                AUDIT.classify_mapping(
+                    arbitrary,
+                    arbitrary,
+                    Path("/old/prefix"),
+                    Path("/recovery"),
+                ),
+                "unexpected",
+                value,
+            )
         self.assertEqual(
             AUDIT.classify_mapping(
-                arbitrary,
-                arbitrary,
+                Path("/etc/ld.so.cache"),
+                Path("/etc/ld.so.cache"),
                 Path("/old/prefix"),
                 Path("/recovery"),
-                roots,
             ),
-            "unexpected",
+            "system",
         )
+        self.assertEqual(
+            AUDIT.classify_mapping(
+                Path("/dev/infiniband/uverbs0"),
+                Path("/dev/infiniband/uverbs0"),
+                Path("/old/prefix"),
+                Path("/recovery"),
+            ),
+            "registered_device",
+        )
+
+    def test_recovery_mapped_components_require_old_counterpart_byte_equality(self) -> None:
+        with tempfile.TemporaryDirectory() as temporary:
+            root = Path(temporary)
+            recovery = root / "recovery"
+            old = root / "old"
+            recovery_library = recovery / "lib/libcomponent.so"
+            old_library = old / "lib/libcomponent.so"
+            recovery_library.parent.mkdir(parents=True)
+            old_library.parent.mkdir(parents=True)
+            recovery_library.write_bytes(b"identical component\n")
+            old_library.write_bytes(recovery_library.read_bytes())
+            identities = {}
+            for key, relative, content in (
+                ("REPLAY_ABACUS", "recovery/bin/abacus", b"relocated"),
+                ("REFERENCE_ABACUS", "old/bin/abacus", b"original"),
+                ("REPLAY_MPIRUN", "recovery/bin/mpirun", b"mpirun"),
+                ("REFERENCE_MPIRUN", "old/bin/mpirun", b"mpirun"),
+                ("REPLAY_LAUNCHER", "recovery/bin/prterun", b"launcher"),
+                ("REFERENCE_LAUNCHER", "old/bin/prterun", b"launcher"),
+            ):
+                path = root / relative
+                path.parent.mkdir(parents=True, exist_ok=True)
+                path.write_bytes(content)
+                path.chmod(0o755)
+                identities[key] = path
+
+            def audit_directory(name: str) -> Path:
+                directory = root / name
+                directory.mkdir()
+                digest = hashlib.sha256(recovery_library.read_bytes()).hexdigest()
+                (directory / "objects.tsv").write_text(
+                    "\t".join(VALIDATOR.OBJECT_HEADER)
+                    + "\n"
+                    + "\t".join(
+                        (
+                            "1",
+                            "rank",
+                            "0",
+                            str(recovery_library),
+                            str(recovery_library.resolve()),
+                            digest,
+                            "recovery_runtime",
+                        )
+                    )
+                    + "\n"
+                )
+                return directory
+
+            environment = {
+                "M_OFDFT_RECOVERY_ROOT": str(recovery),
+                "M_OFDFT_OLD_ROOT": str(old),
+            }
+            for key, path in identities.items():
+                environment[f"M_OFDFT_{key}_PATH"] = str(path)
+                environment[f"M_OFDFT_{key}_REALPATH"] = str(path.resolve())
+                environment[f"M_OFDFT_{key}_SHA256"] = hashlib.sha256(
+                    path.read_bytes()
+                ).hexdigest()
+            with mock.patch.dict(os.environ, environment, clear=False):
+                accepted = NAMESPACE._verify_recovery_counterparts(
+                    audit_directory("accepted-audit"), time.monotonic() + 10
+                )
+                self.assertEqual(accepted["status"], "accepted")
+                old_library.write_bytes(b"different component\n")
+                rejected = NAMESPACE._verify_recovery_counterparts(
+                    audit_directory("rejected-audit"), time.monotonic() + 10
+                )
+                self.assertEqual(rejected["status"], "rejected")
+                self.assertEqual(rejected["counterpart_byte_mismatch_count"], 1)
 
     def test_descendant_scan_is_confined_to_audit_tree_and_all_tasks(self) -> None:
         with tempfile.TemporaryDirectory() as temporary:
@@ -181,100 +338,274 @@ class S1MpiPrefixEquivalenceTest(unittest.TestCase):
             )
             self.assertNotIn(999, AUDIT._descendants(100, proc))
 
-    def test_runtime_evidence_is_reparsed_instead_of_trusting_summary(self) -> None:
+    def test_rank_wrapper_waits_for_explicit_release_before_exec(self) -> None:
         with tempfile.TemporaryDirectory() as temporary:
-            run = Path(temporary)
-            audit_directory = run / "mpi_runtime_audit"
-            trace_directory = audit_directory / "strace"
-            trace_directory.mkdir(parents=True)
-            executable = Path("/usr/bin/true").resolve()
-            executable_digest = hashlib.sha256(executable.read_bytes()).hexdigest()
-            processes = [
-                {
-                    "pid": 100,
-                    "role": "launcher",
-                    "rank": None,
-                    "executable_realpath": str(executable),
-                    "executable_sha256": executable_digest,
-                    "mapped_object_count": 1,
-                },
-                *[
-                    {
-                        "pid": 101 + rank,
-                        "role": "rank",
-                        "rank": rank,
-                        "executable_realpath": str(executable),
-                        "executable_sha256": executable_digest,
-                        "mapped_object_count": 1,
-                    }
-                    for rank in range(4)
+            handshake = Path(temporary) / "handshake"
+            (handshake / "release").mkdir(parents=True)
+            (handshake / "release/rank-0").write_text("release\n")
+            target = Path("/usr/bin/true").resolve()
+            completed = subprocess.run(
+                [
+                    sys.executable,
+                    str(SCRIPTS / "runtime_relocation_rank_wrapper.py"),
+                    str(target),
                 ],
-            ]
-            object_lines = ["\t".join(VALIDATOR.OBJECT_HEADER)]
-            for process in processes:
-                object_lines.append(
-                    "\t".join(
-                        (
-                            str(process["pid"]),
-                            str(process["role"]),
-                            "" if process["rank"] is None else str(process["rank"]),
-                            str(executable),
-                            str(executable),
-                            executable_digest,
-                            "recovery_runtime",
-                        )
-                    )
+                env={
+                    **os.environ,
+                    "OMPI_COMM_WORLD_RANK": "0",
+                    "PMIX_RANK": "0",
+                    "M_OFDFT_RANK_HANDSHAKE_DIR": str(handshake),
+                    "M_OFDFT_MPI_AUDIT_EXPECTED_RANKS": "4",
+                    "M_OFDFT_EXPECTED_ABACUS": str(target),
+                    "OPAL_PREFIX": "/recovery",
+                    "PRTE_PREFIX": "/recovery",
+                    "PMIX_PREFIX": "/recovery",
+                    "UCX_MODULE_DIR": "/recovery",
+                },
+                check=False,
+                text=True,
+                capture_output=True,
+            )
+            self.assertEqual(completed.returncode, 0, completed.stderr)
+            ready = json.loads((handshake / "ready/rank-0.json").read_text())
+            self.assertEqual(ready["wrapper_state"], "ready_before_exec")
+            self.assertEqual(ready["rank"], 0)
+            self.assertEqual(ready["target_abacus_realpath"], str(target))
+
+    def test_elf_gate_allows_only_registered_runpath_slot_bytes(self) -> None:
+        with tempfile.TemporaryDirectory(dir="/tmp", prefix="elf-") as temporary:
+            root = Path(temporary)
+            # A 60-byte old RUNPATH whose bytes are deliberately disjoint from
+            # "$ORIGIN/../conda_prefix/lib" makes the frozen 60-byte diff exact
+            # on every host, independent of the temporary-directory spelling.
+            old_prefix = Path("/" + "Z" * 55)
+            resolved_old_prefix = old_prefix.resolve(strict=False)
+            self.assertEqual(len(str(resolved_old_prefix / "lib")), 60)
+            reference = root / "reference-abacus"
+            replay = root / "replay-abacus"
+            original = bytearray(ELF.EXPECTED_FILE_SIZE)
+            relocated = bytearray(original)
+            dynstr_end = ELF.EXPECTED_DYNSTR_OFFSET + ELF.EXPECTED_DYNSTR_SIZE
+            old_value = (str(resolved_old_prefix / "lib")).encode() + b"\0"
+            new_value = ELF.EXPECTED_RELOCATED_RUNPATH.encode() + b"\0"
+            path_start = dynstr_end - len(old_value)
+            original[path_start:dynstr_end] = old_value
+            relocated[path_start : path_start + len(new_value)] = new_value
+            reference.write_bytes(original)
+            replay.write_bytes(relocated)
+            reference.chmod(0o755)
+            replay.chmod(0o755)
+
+            identities = {
+                str(reference): {
+                    "path": str(reference),
+                    "realpath": str(reference),
+                    "sha256": ELF.REFERENCE_ABACUS_SHA256,
+                },
+                str(replay): {
+                    "path": str(replay),
+                    "realpath": str(replay),
+                    "sha256": ELF.RELOCATED_ABACUS_SHA256,
+                },
+            }
+            common_elf = {
+                "file_size": ELF.EXPECTED_FILE_SIZE,
+                "build_id": ELF.EXPECTED_BUILD_ID,
+                "needed": ["libmpi.so.40", "libc.so.6"],
+                "rpath": [],
+                "load_segments": [{"offset": "0x0", "flags": "R"}],
+                "dynstr": {
+                    "file_offset": ELF.EXPECTED_DYNSTR_OFFSET,
+                    "size": ELF.EXPECTED_DYNSTR_SIZE,
+                },
+                "readelf_output_sha256": {name: "0" * 64 for name in ELF.READELF_COMMANDS},
+                "normalized_dynamic_sha256": "1" * 64,
+            }
+
+            def fake_identity(path: Path, _label: str, *, require_elf: bool = False) -> dict:
+                return identities[str(path)]
+
+            def fake_readelf(binary: dict, _tool: dict) -> tuple[dict, dict[str, bytes]]:
+                payload = dict(common_elf)
+                payload["runpath"] = [
+                    str(resolved_old_prefix / "lib")
+                    if binary["path"] == str(reference)
+                    else ELF.EXPECTED_RELOCATED_RUNPATH
+                ]
+                outputs = {name: b"same\n" for name in ELF.READELF_COMMANDS}
+                return payload, outputs
+
+            with mock.patch.object(ELF, "file_identity", side_effect=fake_identity), mock.patch.object(
+                ELF,
+                "versioned_tool_identity",
+                return_value={"path": "/tool", "realpath": "/tool", "sha256": "2" * 64},
+            ), mock.patch.object(ELF, "readelf_evidence", side_effect=fake_readelf):
+                evidence = ELF.relocation_equivalence_evidence(
+                    reference,
+                    replay,
+                    old_prefix,
+                    Path("/usr/bin/readelf"),
+                    Path("/usr/bin/chrpath"),
                 )
-            (audit_directory / "objects.tsv").write_text("\n".join(object_lines) + "\n")
-            lines = [
-                f'execve("{executable}", ["true"], 0x1) = 0',
-                'stat("/old/prefix/classid", 0x1) = -1 ENOENT (No such file)',
-                'openat(AT_FDCWD, "/old/prefix/classid", O_RDONLY) = -1 ENOENT (No such file)',
-            ]
-            trace = trace_directory / "trace.100"
-            trace.write_text("\n".join(lines) + "\n")
-            access = AUDIT.parse_strace_lines(
-                lines, Path("/old/prefix"), Path("/old/prefix/classid"), "ENOENT"
-            )
-            audit = {
-                "processes": processes,
-                "mapped_object_count": 5,
-                "old_prefix_mapped_object_count": 0,
-                "unexpected_mapped_object_count": 0,
-                "transient_system_mapped_object_count": 0,
-                "command": [str(executable)],
-                "observed_execve_realpaths": [str(executable)],
-                "mpirun_invocation_execve_observed": True,
-                "launcher_execve_observed": True,
-                **access,
+                self.assertEqual(
+                    evidence["comparison"]["byte_difference_count"],
+                    ELF.EXPECTED_DIFFERENCE_COUNT,
+                )
+                self.assertTrue(
+                    evidence["comparison"]["outside_runpath_slot_byte_identical"]
+                )
+                with replay.open("r+b") as handle:
+                    handle.seek(100)
+                    handle.write(b"X")
+                with self.assertRaisesRegex(ValueError, "outside the RUNPATH"):
+                    ELF.relocation_equivalence_evidence(
+                        reference,
+                        replay,
+                        old_prefix,
+                        Path("/usr/bin/readelf"),
+                        Path("/usr/bin/chrpath"),
+                    )
+
+    def test_runtime_access_summary_cannot_hide_raw_trace_tampering(self) -> None:
+        old = Path("/old/prefix")
+        policies = COMMON.registered_old_prefix_failed_probes(old)
+        clean_records = [
+            {
+                "pid": 100,
+                "role": "launcher",
+                "rank": None,
+                "line": 'stat("/old/prefix/classid", 0x1) = -1 ENOENT (No such file)',
             }
-            runtime = {
-                "old_prefix": "/old/prefix",
-                "recovery_root": "/usr",
-                "mpirun_path": str(executable),
-                "launcher_path": str(executable),
-                "abacus_path": str(executable),
+        ]
+        frozen_summary = AUDIT.parse_strace_records(clean_records, old, policies, 4)
+        tampered_records = clean_records + [
+            {
+                "pid": 200,
+                "role": "rank",
+                "rank": 0,
+                "line": 'openat(AT_FDCWD, "/old/prefix/libmpi.so", O_RDONLY) = 3',
             }
-            audit_spec = {
-                "rank_count": 4,
-                "system_mapping_roots": ["/usr", "/lib", "/lib64", "/dev", "/proc", "/sys"],
-                "allowed_failed_probe_path": "/old/prefix/classid",
-                "allowed_failed_probe_errno": "ENOENT",
+        ]
+        reparsed = AUDIT.parse_strace_records(tampered_records, old, policies, 4)
+        self.assertNotEqual(reparsed, frozen_summary)
+        self.assertEqual(reparsed["old_prefix_successful_access_count"], 1)
+
+    def test_failure_status_model_accepts_parser_only_and_core_only_failures(self) -> None:
+        accepted_run = {
+            "schema_version": 2,
+            "status": "accepted",
+            "runtime_relocation_mode": True,
+            "workflow_exit_code": 0,
+            "invocation_exit_code": 0,
+            "launcher_exit_code": 0,
+            "parser_exit_code": 0,
+            "result_json_present": True,
+            "result_converged": True,
+            "runtime_audit_json_present": True,
+            "runtime_audit_status": "accepted",
+            "namespace_host_status": "accepted",
+            "counterpart_audit_status": "accepted",
+        }
+
+        def statuses(run_status: dict, core_exit: int) -> tuple[dict, dict]:
+            replay = {
+                "schema_version": 2,
+                "status": "rejected",
+                "workflow_exit_code": run_status["workflow_exit_code"],
+                "invocation_exit_code": run_status["invocation_exit_code"],
+                "launcher_exit_code": run_status["launcher_exit_code"],
+                "parser_exit_code": run_status["parser_exit_code"],
+                "core_validation_exit_code": core_exit,
+                "run_status": run_status,
+                "runtime_audit_status": run_status["runtime_audit_status"],
+                "runtime_audit_failure_reasons": [],
+                "safe_retry_policy": "archive_committed_failure_then_retry_same_registered_id",
             }
-            errors: list[str] = []
-            VALIDATOR._validate_runtime_audit_evidence(
-                run, runtime, audit_spec, audit, errors, "fixture:"
+            failure = {
+                "schema_version": 2,
+                "status": "failed_attempt_preserved",
+                "workflow_exit_code": run_status["workflow_exit_code"],
+                "invocation_exit_code": run_status["invocation_exit_code"],
+                "launcher_exit_code": run_status["launcher_exit_code"],
+                "parser_exit_code": run_status["parser_exit_code"],
+                "core_validation_exit_code": core_exit,
+                "runtime_audit_failure_reasons": [],
+                "retry_requires_committed_archive": True,
+            }
+            return replay, failure
+
+        replay, failure = statuses(accepted_run, 1)
+        self.assertEqual(
+            VALIDATOR._failure_status_model_errors(accepted_run, replay, failure), []
+        )
+
+        parser_failed = dict(accepted_run)
+        parser_failed.update(
+            {
+                "status": "rejected",
+                "workflow_exit_code": 7,
+                "parser_exit_code": 7,
+                "result_json_present": False,
+                "result_converged": None,
+            }
+        )
+        replay, failure = statuses(parser_failed, 1)
+        self.assertEqual(
+            VALIDATOR._failure_status_model_errors(parser_failed, replay, failure), []
+        )
+
+    def test_same_id_retry_commit_chain_uses_latest_introduction(self) -> None:
+        experiment_id = "S1-20260805-113"
+        with tempfile.TemporaryDirectory() as temporary:
+            repository = Path(temporary)
+            self._git(repository, "init")
+            self._git(repository, "config", "user.name", "Unit Test")
+            self._git(repository, "config", "user.email", "unit@example.invalid")
+            (repository / "base.txt").write_text("base\n")
+            self._git(repository, "add", ".")
+            self._git(repository, "commit", "-m", "base")
+            base = subprocess.check_output(
+                ["git", "rev-parse", "HEAD"], cwd=repository, text=True
+            ).strip()
+            first_run = repository / "runs" / experiment_id
+            first_run.mkdir(parents=True)
+            (first_run / "experiment_metadata.json").write_text(
+                json.dumps({"code_commit": base}) + "\n"
             )
-            self.assertEqual(errors, [])
-            trace.write_text(
-                "\n".join(lines + ['openat(AT_FDCWD, "/old/prefix/libmpi.so", O_RDONLY) = 3'])
-                + "\n"
+            (first_run / "failure.json").write_text("{}\n")
+            self._git(repository, "add", "runs")
+            self._git(repository, "commit", "-m", "failed attempt")
+            failure_commit = subprocess.check_output(
+                ["git", "rev-parse", "HEAD"], cwd=repository, text=True
+            ).strip()
+            archive = (
+                repository
+                / "failed_runs/runtime_relocation"
+                / experiment_id
+                / f"attempt-{failure_commit[:12]}"
             )
-            errors = []
-            VALIDATOR._validate_runtime_audit_evidence(
-                run, runtime, audit_spec, audit, errors, "fixture:"
+            archive.parent.mkdir(parents=True)
+            self._git(repository, "mv", str(first_run), str(archive))
+            self._git(repository, "commit", "-m", "archive failed attempt")
+            archive_commit = subprocess.check_output(
+                ["git", "rev-parse", "HEAD"], cwd=repository, text=True
+            ).strip()
+            retry = repository / "runs" / experiment_id
+            retry.mkdir(parents=True)
+            (retry / "experiment_metadata.json").write_text(
+                json.dumps({"code_commit": archive_commit}) + "\n"
             )
-            self.assertTrue(any("differs from raw strace" in error for error in errors))
+            (retry / "accepted.json").write_text("{}\n")
+            self._git(repository, "add", "runs")
+            self._git(repository, "commit", "-m", "accepted retry")
+            self.assertIsNone(
+                VALIDATOR._run_commit_chain_failure(
+                    repository, experiment_id, archive_commit
+                )
+            )
+            self.assertEqual(
+                VALIDATOR._failed_archive_chain_failures(repository, experiment_id), []
+            )
 
     def test_generator_and_validator_freeze_complete_synthetic_references(self) -> None:
         with tempfile.TemporaryDirectory() as temporary:
@@ -290,6 +621,22 @@ class S1MpiPrefixEquivalenceTest(unittest.TestCase):
                 GENERATOR,
                 "validate_r8_summary_provenance",
                 return_value=self._r8_algorithm_payload(repository),
+            ), mock.patch.object(
+                GENERATOR,
+                "versioned_tool_identity",
+                side_effect=self._fake_tool_identity,
+            ), mock.patch.object(
+                GENERATOR,
+                "relocation_equivalence_evidence",
+                side_effect=self._fake_elf_evidence,
+            ), mock.patch.object(
+                VALIDATOR,
+                "versioned_tool_identity",
+                side_effect=self._fake_tool_identity,
+            ), mock.patch.object(
+                VALIDATOR,
+                "relocation_equivalence_evidence",
+                side_effect=self._fake_elf_evidence,
             ):
                 payload = GENERATOR.generate(
                     repository,
@@ -302,27 +649,55 @@ class S1MpiPrefixEquivalenceTest(unittest.TestCase):
                     fixture["r8_config"],
                     fixture["r8_manifest"],
                     fixture["r8_summary"],
+                    reference_mpirun=fixture["reference_mpirun"],
                 )
             self.assertEqual(payload["experiment_count"], 6)
             frozen_config = json.loads(config_path.read_text())
-            self.assertEqual(Path(frozen_config["runtime"]["mpirun_path"]).name, "mpirun")
+            replay_runtime = frozen_config["runtime"]["replay"]
+            reference_runtime = frozen_config["runtime"]["reference"]
+            self.assertEqual(Path(replay_runtime["mpirun"]["path"]).name, "mpirun")
             self.assertEqual(
-                Path(frozen_config["runtime"]["launcher_path"]).name, "prterun"
+                Path(replay_runtime["launcher"]["path"]).name, "prterun"
             )
             self.assertNotEqual(
-                frozen_config["runtime"]["mpirun_path"],
-                frozen_config["runtime"]["launcher_path"],
+                replay_runtime["mpirun"]["path"],
+                replay_runtime["launcher"]["path"],
             )
-            validation = VALIDATOR.validate(repository, config_path, manifest_path)
+            self.assertNotEqual(
+                reference_runtime["abacus"]["path"], replay_runtime["abacus"]["path"]
+            )
+            self.assertEqual(
+                frozen_config["runtime"]["prefix_environment"]["UCX_MODULE_DIR"],
+                str(fixture["recovery_prefix"].resolve()),
+            )
+            with mock.patch.object(
+                VALIDATOR,
+                "versioned_tool_identity",
+                side_effect=self._fake_tool_identity,
+            ), mock.patch.object(
+                VALIDATOR,
+                "relocation_equivalence_evidence",
+                side_effect=self._fake_elf_evidence,
+            ):
+                validation = VALIDATOR.validate(repository, config_path, manifest_path)
             self.assertEqual(validation["first_experiment_id"], "S1-20260805-113")
             self._git(repository, "add", "config")
             self._git(repository, "commit", "-m", "preregister MPI replay")
-            committed_validation = VALIDATOR.validate(
-                repository,
-                config_path,
-                manifest_path,
-                require_committed=True,
-            )
+            with mock.patch.object(
+                VALIDATOR,
+                "versioned_tool_identity",
+                side_effect=self._fake_tool_identity,
+            ), mock.patch.object(
+                VALIDATOR,
+                "relocation_equivalence_evidence",
+                side_effect=self._fake_elf_evidence,
+            ):
+                committed_validation = VALIDATOR.validate(
+                    repository,
+                    config_path,
+                    manifest_path,
+                    require_committed=True,
+                )
             self.assertIsNotNone(committed_validation["preregistration_commit"])
             rows = COMMON.read_tsv(manifest_path)
             r8_rows = COMMON.read_r8_manifest(fixture["r8_manifest"])
@@ -333,7 +708,15 @@ class S1MpiPrefixEquivalenceTest(unittest.TestCase):
                 )
             source_input = repository / rows[0]["input_directory"] / "INPUT"
             source_input.write_text(source_input.read_text() + "tamper\n")
-            with self.assertRaisesRegex(ValueError, "INPUT: SHA-256 mismatch"):
+            with mock.patch.object(
+                VALIDATOR,
+                "versioned_tool_identity",
+                side_effect=self._fake_tool_identity,
+            ), mock.patch.object(
+                VALIDATOR,
+                "relocation_equivalence_evidence",
+                side_effect=self._fake_elf_evidence,
+            ), self.assertRaisesRegex(ValueError, "INPUT: SHA-256 mismatch"):
                 VALIDATOR.validate(repository, config_path, manifest_path)
 
     def test_generator_writes_nothing_when_a_reference_result_is_missing(self) -> None:
@@ -351,6 +734,10 @@ class S1MpiPrefixEquivalenceTest(unittest.TestCase):
                 GENERATOR,
                 "validate_r8_summary_provenance",
                 return_value=self._r8_algorithm_payload(repository),
+            ), mock.patch.object(
+                GENERATOR,
+                "versioned_tool_identity",
+                side_effect=self._fake_tool_identity,
             ), self.assertRaisesRegex(ValueError, "reference result is incomplete"):
                 GENERATOR.generate(
                     repository,
@@ -442,25 +829,35 @@ class S1MpiPrefixEquivalenceTest(unittest.TestCase):
         self.assertEqual(result["modified_r8_status"], "accepted")
 
     def test_shell_runner_enforces_frozen_prefixes_and_independent_fd(self) -> None:
-        runner = (SCRIPTS / "run_s1_mpi_prefix_equivalence.sh").read_text()
+        runner_path = SCRIPTS / "run_s1_runtime_relocation_equivalence.sh"
+        runner = runner_path.read_text()
         for assignment in (
             'OPAL_PREFIX="$recovery_prefix"',
             'PRTE_PREFIX="$recovery_prefix"',
             'PMIX_PREFIX="$recovery_prefix"',
-            "M_OFDFT_MPI_AUDIT_STRACE_MODE=require",
+            'UCX_MODULE_DIR="$recovery_prefix"',
+            'M_OFDFT_STRACE_TOOL="${tool_path[strace]}"',
             "M_OFDFT_EXPECTED_LAUNCHER=",
             "env -i",
         ):
             self.assertIn(assignment, runner)
         self.assertIn('exec 9<"$manifest"', runner)
         self.assertIn('<&9', runner)
-        self.assertIn('</dev/null', runner)
+        self.assertIn('9<&- </dev/null', runner)
+        self.assertIn("write_replay_status", runner)
+        self.assertIn("--check-failure-run", runner)
+        self.assertIn("assert_clean_and_commit_scope", runner)
+        self.assertIn("archive_failed_attempt", runner)
+        legacy = (SCRIPTS / "run_s1_mpi_prefix_equivalence.sh").read_text()
+        self.assertIn("run_s1_runtime_relocation_equivalence.sh", legacy)
         subprocess.run(
             [
                 "/bin/bash",
                 "-n",
                 str(SCRIPTS / "run_s1_single.sh"),
                 str(SCRIPTS / "run_s1_mpi_prefix_equivalence.sh"),
+                str(runner_path),
+                str(SCRIPTS / "runtime_relocation_namespace_payload.sh"),
             ],
             check=True,
             capture_output=True,
@@ -476,7 +873,21 @@ class S1MpiPrefixEquivalenceTest(unittest.TestCase):
         abacus = runtime / "source/abacus_pw_para"
         mpirun = recovery_prefix / "bin/mpirun"
         launcher = recovery_prefix / "bin/prterun"
-        for path in (r8_config, r8_manifest, r8_summary, abacus, mpirun, launcher):
+        retired_root = repository / "retired"
+        reference_abacus = retired_root / "source/abacus_pw_para"
+        reference_mpirun = retired_root / "conda_prefix/bin/mpirun"
+        reference_launcher = retired_root / "conda_prefix/bin/prterun"
+        for path in (
+            r8_config,
+            r8_manifest,
+            r8_summary,
+            abacus,
+            mpirun,
+            launcher,
+            reference_abacus,
+            reference_mpirun,
+            reference_launcher,
+        ):
             path.parent.mkdir(parents=True, exist_ok=True)
         r8_config.write_text("{}\n")
         for relative in VALIDATOR.FROZEN_IMPLEMENTATION_PATHS:
@@ -487,10 +898,20 @@ class S1MpiPrefixEquivalenceTest(unittest.TestCase):
         abacus.write_bytes(executable_fixture)
         mpirun.write_bytes(executable_fixture)
         launcher.write_bytes(executable_fixture)
-        abacus.chmod(0o755)
-        mpirun.chmod(0o755)
-        launcher.chmod(0o755)
-        abacus_digest = hashlib.sha256(abacus.read_bytes()).hexdigest()
+        reference_abacus.write_bytes(executable_fixture + b"reference\n")
+        reference_mpirun.write_bytes(executable_fixture)
+        reference_launcher.write_bytes(executable_fixture)
+        for path in (
+            abacus,
+            mpirun,
+            launcher,
+            reference_abacus,
+            reference_mpirun,
+            reference_launcher,
+        ):
+            path.chmod(0o755)
+        reference_abacus_digest = hashlib.sha256(reference_abacus.read_bytes()).hexdigest()
+        reference_mpirun_digest = hashlib.sha256(reference_mpirun.read_bytes()).hexdigest()
 
         manifest_header = (
             "experiment_id\tinput_directory\tmaterial\tseries_id\tcomparison_axis\t"
@@ -577,7 +998,14 @@ class S1MpiPrefixEquivalenceTest(unittest.TestCase):
             )
             (run / "experiment_metadata.json").write_text(
                 json.dumps(
-                    {"abacus_sha256": abacus_digest, "mpi_ranks": 4}, indent=2
+                    {
+                        "abacus_path": str(reference_abacus),
+                        "abacus_sha256": reference_abacus_digest,
+                        "mpirun_path": str(reference_mpirun),
+                        "mpirun_sha256": reference_mpirun_digest,
+                        "mpi_ranks": 4,
+                    },
+                    indent=2,
                 )
                 + "\n"
             )
@@ -625,6 +1053,56 @@ class S1MpiPrefixEquivalenceTest(unittest.TestCase):
             "recovery_prefix": recovery_prefix,
             "abacus": abacus,
             "mpirun": mpirun,
+            "reference_abacus": reference_abacus,
+            "reference_mpirun": reference_mpirun,
+            "reference_launcher": reference_launcher,
+        }
+
+    @staticmethod
+    def _fake_tool_identity(path: Path, _label: str, **_kwargs) -> dict:
+        path = Path(path)
+        token = hashlib.sha256(str(path).encode()).hexdigest()
+        return {
+            "path": str(path),
+            "realpath": str(path),
+            "sha256": token,
+            "version_arguments": ["--version"],
+            "version_first_line": f"synthetic {path.name} 1.0",
+            "version_output_sha256": hashlib.sha256(
+                f"synthetic {path.name} 1.0\n".encode()
+            ).hexdigest(),
+        }
+
+    @staticmethod
+    def _fake_elf_evidence(
+        reference: Path,
+        replay: Path,
+        old_prefix: Path,
+        readelf: Path,
+        chrpath: Path,
+    ) -> dict:
+        reference = Path(reference)
+        replay = Path(replay)
+        return {
+            "schema_version": 1,
+            "reference_binary": {
+                "path": str(reference),
+                "realpath": str(reference.resolve()),
+                "sha256": hashlib.sha256(reference.read_bytes()).hexdigest(),
+            },
+            "replay_binary": {
+                "path": str(replay),
+                "realpath": str(replay.resolve()),
+                "sha256": hashlib.sha256(replay.read_bytes()).hexdigest(),
+            },
+            "old_prefix": str(old_prefix),
+            "readelf_tool": S1MpiPrefixEquivalenceTest._fake_tool_identity(
+                readelf, "readelf"
+            ),
+            "chrpath_tool": S1MpiPrefixEquivalenceTest._fake_tool_identity(
+                chrpath, "chrpath"
+            ),
+            "comparison": {"outside_runpath_slot_byte_identical": True},
         }
 
     @staticmethod
