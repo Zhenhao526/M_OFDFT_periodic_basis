@@ -136,6 +136,7 @@ if [[ "$runtime_relocation_mode" == 1 ]]; then
     mkdir -m 700 "$HOME"
     printf '%s\n' 'Controlled empty HOME for S1 runtime-relocation replay.' \
         > "$HOME/CONTROLLED_HOME.txt"
+    chmod 500 "$HOME"
 fi
 failure_stage=input_archive_setup
 cp "$input_directory/INPUT" "$input_directory/STRU" "$input_directory/KPT" "$run_directory/"
@@ -196,6 +197,7 @@ payload = {
             "MKLROOT",
             "HOME",
             "OMP_NUM_THREADS",
+            "CUDA_CACHE_DISABLE",
         )
     },
     "stage": "S1",

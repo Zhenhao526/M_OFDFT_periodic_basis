@@ -278,6 +278,7 @@ while IFS=$'\t' read -r replay_id reference_id input_directory material series_i
     TZ=UTC \
     TMPDIR=/tmp \
     OMP_NUM_THREADS=1 \
+    CUDA_CACHE_DISABLE=1 \
     M_OFDFT_RUNTIME_RELOCATION_MODE=1 \
     M_OFDFT_RUNTIME="$recovery_root" \
     M_OFDFT_PREFIX="$recovery_prefix" \

@@ -20,6 +20,7 @@ import analyze_s1_mpi_prefix_equivalence as ANALYZER  # noqa: E402
 import generate_s1_mpi_prefix_equivalence as GENERATOR  # noqa: E402
 import runtime_relocation_audit_launcher as AUDIT  # noqa: E402
 import runtime_relocation_namespace_launcher as NAMESPACE  # noqa: E402
+import runtime_relocation_rank_wrapper as RANK_WRAPPER  # noqa: E402
 import run_s1_runtime_relocation_smoke as SMOKE_RUNNER  # noqa: E402
 import s1_mpi_prefix_equivalence_common as COMMON  # noqa: E402
 import s1_runtime_relocation_smoke as SMOKE  # noqa: E402
@@ -860,10 +861,13 @@ class S1MpiPrefixEquivalenceTest(unittest.TestCase):
                     "M_OFDFT_RANK_HANDSHAKE_DIR": str(handshake),
                     "M_OFDFT_MPI_AUDIT_EXPECTED_RANKS": "4",
                     "M_OFDFT_EXPECTED_ABACUS": str(target),
+                    "M_OFDFT_RECOVERY_PREFIX": "/recovery",
                     "OPAL_PREFIX": "/recovery",
-                    "PRTE_PREFIX": "/recovery",
+                    "PRTE_PREFIX": "",
                     "PMIX_PREFIX": "/recovery",
                     "UCX_MODULE_DIR": "/recovery",
+                    "LD_LIBRARY_PATH": "/recovery/lib:/recovery/lib:/recovery/lib",
+                    "CUDA_CACHE_DISABLE": "1",
                 },
                 check=False,
                 text=True,
@@ -874,6 +878,109 @@ class S1MpiPrefixEquivalenceTest(unittest.TestCase):
             self.assertEqual(ready["wrapper_state"], "ready_before_exec")
             self.assertEqual(ready["rank"], 0)
             self.assertEqual(ready["target_abacus_realpath"], str(target))
+            self.assertEqual(ready["prefix_environment"]["PRTE_PREFIX"], "/recovery")
+            self.assertEqual(
+                ready["runtime_environment"]["LD_LIBRARY_PATH"],
+                "/recovery/lib",
+            )
+            self.assertEqual(
+                ready["runtime_environment"]["CUDA_CACHE_DISABLE"], "1"
+            )
+            incoming = ready["incoming_environment_normalization"]
+            self.assertEqual(incoming["prefix_environment"]["PRTE_PREFIX"], "")
+            self.assertEqual(
+                incoming["ld_library_path_entries"],
+                ["/recovery/lib", "/recovery/lib", "/recovery/lib"],
+            )
+            self.assertTrue(
+                VALIDATOR._rank_incoming_environment_contract_matches(
+                    incoming, "/recovery", "/recovery/lib"
+                )
+            )
+
+    def test_rank_wrapper_rejects_foreign_library_components(self) -> None:
+        environment = {
+            "M_OFDFT_RECOVERY_PREFIX": "/recovery",
+            "OPAL_PREFIX": "/recovery",
+            "PMIX_PREFIX": "/recovery",
+            "UCX_MODULE_DIR": "/recovery",
+            "LD_LIBRARY_PATH": "/recovery/lib:/old/lib",
+            "CUDA_CACHE_DISABLE": "1",
+        }
+        with mock.patch.dict(os.environ, environment, clear=True), self.assertRaisesRegex(
+            ValueError, "non-recovery component"
+        ):
+            RANK_WRAPPER._canonicalize_spawned_rank_environment()
+        invalid_evidence = {
+            "schema_version": 1,
+            "prefix_environment": {
+                "OPAL_PREFIX": "/recovery",
+                "PRTE_PREFIX": None,
+                "PMIX_PREFIX": "/recovery",
+                "UCX_MODULE_DIR": "/recovery",
+            },
+            "ld_library_path_raw": "/recovery/lib::/recovery/lib",
+            "ld_library_path_entries": ["/recovery/lib", "", "/recovery/lib"],
+            "cuda_cache_disable": "1",
+            "normalization_action": (
+                "restore_four_recovery_prefixes_and_collapse_identical_library_entries"
+            ),
+        }
+        self.assertFalse(
+            VALIDATOR._rank_incoming_environment_contract_matches(
+                invalid_evidence, "/recovery", "/recovery/lib"
+            )
+        )
+
+    def test_controlled_home_requires_one_readonly_private_mount(self) -> None:
+        home = "/run/evidence/runtime_home"
+        marker_sha = (
+            "eff12e20044f5411f511d7f32f76fd51dc0cd96b30863381f8e4916d5dd48ab0"
+        )
+        lstat = {"is_symlink": False, "mode": 0o40500, "inode": 10}
+        base = {
+            "controlled_home": home,
+            "controlled_home_exists": True,
+            "controlled_home_lstat": lstat,
+            "controlled_home_entries": ["CONTROLLED_HOME.txt"],
+            "controlled_home_marker_sha256": marker_sha,
+            "controlled_home_mountinfo_lines": [],
+        }
+        self.assertTrue(
+            VALIDATOR._controlled_home_namespace_contract_matches(
+                base, home, [], require_readonly_mount=False
+            )
+        )
+        readonly_line = (
+            f"123 1 8:1 / {home} ro,nosuid,nodev,noexec - ext4 /dev/sda ro"
+        )
+        mounted = dict(base)
+        mounted["controlled_home_mountinfo_lines"] = [readonly_line]
+        self.assertTrue(
+            VALIDATOR._controlled_home_namespace_contract_matches(
+                mounted,
+                home,
+                [readonly_line],
+                require_readonly_mount=True,
+                expected_lstat=lstat,
+            )
+        )
+        for raw_lines in (
+            [],
+            [readonly_line, readonly_line],
+            [readonly_line.replace("ro,nosuid", "rw,nosuid")],
+        ):
+            mutated = dict(mounted)
+            mutated["controlled_home_mountinfo_lines"] = list(raw_lines)
+            self.assertFalse(
+                VALIDATOR._controlled_home_namespace_contract_matches(
+                    mutated,
+                    home,
+                    list(raw_lines),
+                    require_readonly_mount=True,
+                    expected_lstat=lstat,
+                )
+            )
 
     def test_elf_gate_allows_only_registered_runpath_slot_bytes(self) -> None:
         with tempfile.TemporaryDirectory(dir="/tmp", prefix="elf-") as temporary:
@@ -1222,6 +1329,96 @@ class S1MpiPrefixEquivalenceTest(unittest.TestCase):
                 ),
                 "",
             )
+
+    def test_managed_smoke_precommit_failure_becomes_archivable(self) -> None:
+        with tempfile.TemporaryDirectory() as temporary:
+            project = Path(temporary)
+            smoke_root = project / COMMON.RUNTIME_SMOKE_ROOT
+            run = smoke_root / "run"
+            (run / "mpi_runtime_audit/namespace").mkdir(parents=True)
+            (run / "experiment_metadata.json").write_text(
+                json.dumps({"code_commit": "a" * 40}) + "\n"
+            )
+            (run / "result.json").write_text(
+                json.dumps({"converged": True}) + "\n"
+            )
+            (run / "mpi_runtime_audit/audit.json").write_text(
+                json.dumps(
+                    {
+                        "status": "accepted",
+                        "launcher_exit_code": 0,
+                        "failure_reasons": [],
+                    }
+                )
+                + "\n"
+            )
+            (run / "mpi_runtime_audit/namespace/host_status.json").write_text(
+                json.dumps({"status": "accepted"}) + "\n"
+            )
+            (run / "mpi_runtime_audit/counterpart_audit.json").write_text(
+                json.dumps({"status": "accepted"}) + "\n"
+            )
+            (run / "run_status.json").write_text(
+                json.dumps(
+                    {
+                        "schema_version": 2,
+                        "status": "accepted",
+                        "runtime_relocation_mode": True,
+                        "setup_completed": True,
+                        "failure_stage": None,
+                        "workflow_exit_code": 0,
+                        "invocation_exit_code": 0,
+                        "launcher_exit_code": 0,
+                        "parser_exit_code": 0,
+                        "result_json_present": True,
+                        "result_converged": True,
+                        "runtime_audit_json_present": True,
+                        "runtime_audit_status": "accepted",
+                        "namespace_host_status": "accepted",
+                        "counterpart_audit_status": "accepted",
+                    }
+                )
+                + "\n"
+            )
+            (smoke_root / "summary.json").write_text(
+                json.dumps({"status": "accepted"}) + "\n"
+            )
+            (smoke_root / "evidence_manifest.tsv").write_text(
+                "synthetic precommit manifest\n"
+            )
+
+            SMOKE_RUNNER._preserve_precommit_validation_failure(
+                smoke_root, run, ValueError("synthetic precommit mismatch")
+            )
+
+            self.assertFalse((smoke_root / "summary.json").exists())
+            self.assertFalse((smoke_root / "evidence_manifest.tsv").exists())
+            self.assertEqual(
+                json.loads(
+                    (run / "precommit_candidate_summary.json").read_text()
+                )["status"],
+                "accepted",
+            )
+            self.assertTrue(
+                (run / "precommit_candidate_evidence_manifest.tsv").is_file()
+            )
+            replay = json.loads((run / "replay_status.json").read_text())
+            self.assertEqual(replay["status"], "rejected")
+            self.assertEqual(replay["core_validation_exit_code"], 97)
+            self.assertTrue((run / "failure.json").is_file())
+            failure = json.loads((run / "failure.json").read_text())
+            self.assertEqual(
+                failure["failure_stage"], "managed_smoke_precommit_validation"
+            )
+            self.assertIn(
+                "synthetic precommit mismatch",
+                failure["precommit_validation_error"],
+            )
+            annotation = json.loads(
+                (run / "precommit_validation_failure.json").read_text()
+            )
+            self.assertEqual(annotation["status"], "rejected")
+            self.assertIn("synthetic precommit mismatch", annotation["error"])
 
     def test_failed_smoke_retry_precommit_commit_and_formal_chain(self) -> None:
         with tempfile.TemporaryDirectory() as temporary:

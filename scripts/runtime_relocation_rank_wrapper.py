@@ -11,6 +11,7 @@ from pathlib import Path
 
 
 RANK_ENV_KEYS = ("OMPI_COMM_WORLD_RANK", "PMIX_RANK", "PMI_RANK")
+PREFIX_ENV_KEYS = ("OPAL_PREFIX", "PRTE_PREFIX", "PMIX_PREFIX", "UCX_MODULE_DIR")
 
 
 def _rank() -> int:
@@ -41,6 +42,49 @@ def _atomic_json(path: Path, payload: dict) -> None:
     os.replace(temporary, path)
 
 
+def _canonicalize_spawned_rank_environment() -> dict:
+    """Collapse MPI-injected duplicates without admitting any foreign prefix."""
+
+    recovery_prefix = os.environ.get("M_OFDFT_RECOVERY_PREFIX")
+    if not recovery_prefix or not Path(recovery_prefix).is_absolute():
+        raise ValueError("frozen recovery prefix is missing or not absolute")
+    expected_library = str(Path(recovery_prefix) / "lib")
+    library_value = os.environ.get("LD_LIBRARY_PATH")
+    library_entries = library_value.split(":") if library_value else []
+    if not library_entries or any(
+        entry != expected_library for entry in library_entries
+    ):
+        raise ValueError(
+            "spawned rank LD_LIBRARY_PATH contains a non-recovery component"
+        )
+    for key in ("OPAL_PREFIX", "PMIX_PREFIX", "UCX_MODULE_DIR"):
+        if os.environ.get(key) != recovery_prefix:
+            raise ValueError(f"spawned rank {key} differs from recovery prefix")
+    # PRRTE deliberately removes PRTE_PREFIX while spawning an application.
+    # Restore the frozen value before evidence capture and ABACUS exec, but
+    # reject any nonempty alternative value.
+    if os.environ.get("PRTE_PREFIX") not in (None, "", recovery_prefix):
+        raise ValueError("spawned rank PRTE_PREFIX differs from recovery prefix")
+    if os.environ.get("CUDA_CACHE_DISABLE") != "1":
+        raise ValueError("spawned rank CUDA JIT cache is not disabled")
+    incoming = {
+        "schema_version": 1,
+        "prefix_environment": {
+            key: os.environ.get(key) for key in PREFIX_ENV_KEYS
+        },
+        "ld_library_path_raw": library_value,
+        "ld_library_path_entries": library_entries,
+        "cuda_cache_disable": os.environ.get("CUDA_CACHE_DISABLE"),
+        "normalization_action": (
+            "restore_four_recovery_prefixes_and_collapse_identical_library_entries"
+        ),
+    }
+    for key in PREFIX_ENV_KEYS:
+        os.environ[key] = recovery_prefix
+    os.environ["LD_LIBRARY_PATH"] = expected_library
+    return incoming
+
+
 def main() -> int:
     if len(sys.argv) < 2:
         print("rank wrapper requires the frozen ABACUS path", file=sys.stderr)
@@ -55,6 +99,7 @@ def main() -> int:
     requested_abacus = Path(sys.argv[1]).resolve(strict=True)
     if requested_abacus != expected_abacus:
         raise ValueError("rank wrapper target differs from frozen ABACUS")
+    incoming_environment = _canonicalize_spawned_rank_environment()
 
     ready_directory = handshake / "ready"
     release_directory = handshake / "release"
@@ -72,6 +117,7 @@ def main() -> int:
             "rank": rank,
             "expected_ranks": expected_ranks,
             "target_abacus_realpath": str(expected_abacus),
+            "incoming_environment_normalization": incoming_environment,
             "prefix_environment": {
                 key: os.environ.get(key)
                 for key in ("OPAL_PREFIX", "PRTE_PREFIX", "PMIX_PREFIX", "UCX_MODULE_DIR")
@@ -86,6 +132,7 @@ def main() -> int:
                     "MKLROOT",
                     "HOME",
                     "OMP_NUM_THREADS",
+                    "CUDA_CACHE_DISABLE",
                 )
             },
             "wrapper_state": "ready_before_exec",

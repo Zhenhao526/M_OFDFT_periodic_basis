@@ -536,6 +536,7 @@ def _validate_experiment_metadata(
             "MKLROOT": audit["required_mklroot"],
             "HOME": str(run_directory / "runtime_home"),
             "OMP_NUM_THREADS": "1",
+            "CUDA_CACHE_DISABLE": audit["required_cuda_cache_disable"],
         },
         **runtime["prefix_environment"],
         "worktree_dirty": False,

@@ -109,10 +109,12 @@ AUDIT_KEYS = {
     "registered_old_prefix_failed_probes",
     "clean_environment_required",
     "controlled_home_policy",
+    "controlled_home_readonly_bind_mount_required",
     "required_path",
     "required_cmake_prefix_path",
     "required_mklroot",
     "required_ld_library_path",
+    "required_cuda_cache_disable",
     "ld_preload_must_be_unset",
     "transient_mapping_patterns",
     "system_mapping_roots",
@@ -590,6 +592,96 @@ def _accessible_host_scan_contract_matches(scan: object) -> bool:
             return False
         sample_pids.append(row["host_pid"])
     return sample_pids == sorted(set(sample_pids))
+
+
+def _rank_incoming_environment_contract_matches(
+    evidence: object,
+    recovery_prefix: str,
+    recovery_library: str,
+) -> bool:
+    """Accept only PRRTE's known unset/duplicate transformations before normalization."""
+
+    expected_keys = {
+        "schema_version",
+        "prefix_environment",
+        "ld_library_path_raw",
+        "ld_library_path_entries",
+        "cuda_cache_disable",
+        "normalization_action",
+    }
+    if not isinstance(evidence, dict) or set(evidence) != expected_keys:
+        return False
+    prefixes = evidence.get("prefix_environment")
+    expected_prefix_keys = {
+        "OPAL_PREFIX",
+        "PRTE_PREFIX",
+        "PMIX_PREFIX",
+        "UCX_MODULE_DIR",
+    }
+    if not isinstance(prefixes, dict) or set(prefixes) != expected_prefix_keys:
+        return False
+    if any(
+        prefixes.get(key) != recovery_prefix
+        for key in ("OPAL_PREFIX", "PMIX_PREFIX", "UCX_MODULE_DIR")
+    ) or prefixes.get("PRTE_PREFIX") not in (None, "", recovery_prefix):
+        return False
+    raw = evidence.get("ld_library_path_raw")
+    entries = evidence.get("ld_library_path_entries")
+    return (
+        evidence.get("schema_version") == 1
+        and isinstance(raw, str)
+        and bool(raw)
+        and isinstance(entries, list)
+        and bool(entries)
+        and entries == raw.split(":")
+        and all(entry == recovery_library for entry in entries)
+        and evidence.get("cuda_cache_disable") == "1"
+        and evidence.get("normalization_action")
+        == "restore_four_recovery_prefixes_and_collapse_identical_library_entries"
+    )
+
+
+def _controlled_home_namespace_contract_matches(
+    state: object,
+    expected_home: str,
+    raw_mountinfo_lines: list[str],
+    *,
+    require_readonly_mount: bool,
+    expected_lstat: object = None,
+) -> bool:
+    """Bind the marker-only HOME policy to raw private-namespace mountinfo."""
+
+    if not isinstance(state, dict):
+        return False
+    lstat = state.get("controlled_home_lstat")
+    home_lines = state.get("controlled_home_mountinfo_lines")
+    recomputed = [
+        raw
+        for raw in raw_mountinfo_lines
+        if len(raw.split()) >= 5 and raw.split()[4] == expected_home
+    ]
+    base_ok = (
+        state.get("controlled_home") == expected_home
+        and state.get("controlled_home_exists") is True
+        and isinstance(lstat, dict)
+        and lstat.get("is_symlink") is False
+        and state.get("controlled_home_entries") == ["CONTROLLED_HOME.txt"]
+        and state.get("controlled_home_marker_sha256")
+        == "eff12e20044f5411f511d7f32f76fd51dc0cd96b30863381f8e4916d5dd48ab0"
+        and isinstance(home_lines, list)
+        and home_lines == recomputed
+    )
+    if not base_ok:
+        return False
+    if not require_readonly_mount:
+        return home_lines == [] and lstat.get("mode", 0) & 0o777 == 0o500
+    if expected_lstat is not None and lstat != expected_lstat:
+        return False
+    if len(home_lines) != 1:
+        return False
+    fields = home_lines[0].split()
+    options = set(fields[5].split(",")) if len(fields) > 5 else set()
+    return {"ro", "nosuid", "nodev", "noexec"}.issubset(options)
 
 
 def _pid1_kernel_reap_contract_matches(
@@ -1455,6 +1547,7 @@ def _validate_runtime_relocation_audit_evidence(
         "MKLROOT": audit_spec["required_mklroot"],
         "HOME": str(run_directory / "runtime_home"),
         "OMP_NUM_THREADS": "1",
+        "CUDA_CACHE_DISABLE": audit_spec["required_cuda_cache_disable"],
     }
     for rank, path in enumerate(ready_paths):
         try:
@@ -1462,12 +1555,20 @@ def _validate_runtime_relocation_audit_evidence(
         except json.JSONDecodeError as error:
             errors.append(f"{prefix} invalid rank ready JSON {path.name}: {error}")
             continue
+        incoming_environment = ready.get("incoming_environment_normalization")
+        if not _rank_incoming_environment_contract_matches(
+            incoming_environment,
+            runtime["recovery_prefix"],
+            audit_spec["required_ld_library_path"],
+        ):
+            errors.append(f"{prefix} rank {rank} incoming environment is invalid")
         expected_ready = {
             "schema_version": 1,
             "pid": rank_pids.get(rank),
             "rank": rank,
             "expected_ranks": audit_spec["rank_count"],
             "target_abacus_realpath": replay["abacus"]["realpath"],
+            "incoming_environment_normalization": incoming_environment,
             "prefix_environment": expected_prefix_environment,
             "runtime_environment": expected_runtime_environment,
             "wrapper_state": "ready_before_exec",
@@ -1684,6 +1785,7 @@ def _validate_runtime_relocation_audit_evidence(
         errors.append(f"{prefix} namespace payload did not accept")
     before_state = payloads.get("state.before_mount.json", {})
     namespace_inode = before_state.get("pid_namespace_inode")
+    expected_controlled_home = str(run_directory / "runtime_home")
     raw_before_lines = namespace_paths["mountinfo.before_mount"].read_text(
         encoding="utf-8", errors="replace"
     ).splitlines() if namespace_paths["mountinfo.before_mount"].is_file() else []
@@ -1702,6 +1804,12 @@ def _validate_runtime_relocation_audit_evidence(
         or not before_state.get("old_prefix_exists")
         or before_state.get("old_root_mountinfo_lines") != []
         or before_state.get("old_root_mountinfo_lines") != recomputed_before_old_lines
+        or not _controlled_home_namespace_contract_matches(
+            before_state,
+            expected_controlled_home,
+            raw_before_lines,
+            require_readonly_mount=False,
+        )
         or before_state.get("shared_mount_lines") != []
         or before_state.get("namespace_init_pid") != 1
         or not isinstance(namespace_inode, int)
@@ -1736,6 +1844,13 @@ def _validate_runtime_relocation_audit_evidence(
             not state.get("old_root_exists")
             or state.get("old_prefix_exists")
             or not mount_ok
+            or not _controlled_home_namespace_contract_matches(
+                state,
+                expected_controlled_home,
+                raw_lines,
+                require_readonly_mount=True,
+                expected_lstat=before_state.get("controlled_home_lstat"),
+            )
             or state.get("shared_mount_lines") != []
             or state.get("namespace_init_pid") != 1
             or state.get("pid_namespace_inode") != namespace_inode
@@ -1745,6 +1860,12 @@ def _validate_runtime_relocation_audit_evidence(
             or _integer_fields(state.get("gid_map", "")) != expected_gid_map
         ):
             errors.append(f"{prefix} namespace {phase} isolation evidence mismatch")
+    if payloads.get("state.after_mount.json", {}).get(
+        "controlled_home_mountinfo_lines"
+    ) != payloads.get("state.after_run.json", {}).get(
+        "controlled_home_mountinfo_lines"
+    ):
+        errors.append(f"{prefix} controlled HOME read-only mount changed during run")
     if not Path(runtime["old_root"]).is_dir() or not Path(runtime["old_prefix"]).is_dir():
         errors.append(f"{prefix} host old runtime did not survive private namespace")
     payload_status = payloads.get("payload_status.json", {})
@@ -1923,6 +2044,7 @@ def validate_replay_run(
             "MKLROOT": audit_spec["required_mklroot"],
             "HOME": str(run_directory / "runtime_home"),
             "OMP_NUM_THREADS": "1",
+            "CUDA_CACHE_DISABLE": audit_spec["required_cuda_cache_disable"],
         },
         **runtime["prefix_environment"],
         "worktree_dirty": False,
@@ -2603,10 +2725,12 @@ def validate(
         ),
         "clean_environment_required": True,
         "controlled_home_policy": "per_run_marker_only_no_user_mpi_config",
+        "controlled_home_readonly_bind_mount_required": True,
         "required_path": f"{recovery_prefix}/bin:/usr/bin:/bin",
         "required_cmake_prefix_path": str(recovery_prefix),
         "required_mklroot": str(recovery_prefix),
         "required_ld_library_path": str(recovery_prefix / "lib"),
+        "required_cuda_cache_disable": "1",
         "ld_preload_must_be_unset": True,
         "transient_mapping_patterns": list(TRANSIENT_MAPPING_PATTERNS),
         "system_mapping_roots": list(SYSTEM_MAPPING_ROOTS),

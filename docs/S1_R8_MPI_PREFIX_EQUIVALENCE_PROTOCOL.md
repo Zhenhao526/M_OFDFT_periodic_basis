@@ -103,8 +103,10 @@ generator/validator 只接受这一 committed 结果；未提交的 `pending_com
 失败 smoke 不删除、不原地覆盖。先提交完整失败根；下次专用入口自动移动到
 `failed_runs/runtime_relocation_smoke/attempt-<failure-commit-prefix>/` 并单独提交，随后
 以同一 smoke ID 创建新 attempt。未提交或缺 machine-readable rejected status 的失败根
-拒绝自动归档；未提交的 accepted 根只幂等重做 precommit validation 并提示提交，已提交
-accepted 根只幂等验证。所有历史 failed-smoke archive 都是正式硬门：archive commit 的
+拒绝自动归档。若执行及科学量已通过、但 precommit validation 拒绝，入口必须把 optimistic
+summary/manifest 原样移动为 `run/precommit_candidate_*`，并原子写出 rejected replay、
+`failure.json` 和完整 validation error，不能留下表面 accepted 根；已提交 accepted 根只
+幂等验证。所有历史 failed-smoke archive 都是正式硬门：archive commit 的
 parent 必须等于目录名登记的 failure commit，failure/copy/current HEAD 的完整 leaf 集合、
 mode、type、blob 必须一致；任何历史 archive 的删除、增加、篡改或工作树漂移都使
 generator 和 validator 拒绝。
@@ -192,15 +194,19 @@ accepted。
 - `PATH=<recovery_prefix>/bin:/usr/bin:/bin`；
 - `CMAKE_PREFIX_PATH` 和 `MKLROOT` 精确等于 recovery prefix；
 - `OMP_NUM_THREADS=1`；
-- `HOME=runs/<ID>/runtime_home`，目录中只能有登记的 `CONTROLLED_HOME.txt`，不得读取
-  用户 `.openmpi` 等配置；
+- `CUDA_CACHE_DISABLE=1`；`HOME=runs/<ID>/runtime_home` 初始为 `0500`，并在 private
+  mount namespace 中 self-bind 后以 `ro,nosuid,nodev,noexec` 重挂载；before/after raw
+  mountinfo 必须证明唯一的只读 HOME mount。目录中只能有登记的 `CONTROLLED_HOME.txt`，
+  既不得读取用户 `.openmpi` 等配置，也不得写入默认 `~/.nv/ComputeCache`；
 - `environment/activate.sh` 属于冻结的实现闭包。
 
 runner 使用独立 FD 9 读取清单；子任务关闭 FD 9，stdin 接 `/dev/null`。每个 rank
 先运行冻结的 Python rank wrapper，写出原子 ready JSON 后等待逐 rank release。审计
 器读取并复核恰好 4 个 ready（0–3）、PID、target ABACUS、四个 prefix 和最终环境，
 再依次 release、`SIGSTOP`、读取 `/proc/<pid>/maps`、`SIGCONT`。不得用 20 ms 抽样式
-PID 猜测替代 handshake。
+PID 猜测替代 handshake。PRRTE 启动 rank 时可能清空 `PRTE_PREFIX` 并重复前置同一个
+recovery `LD_LIBRARY_PATH`；rank wrapper 只在所有非空分量均精确属于 recovery 时，
+把四个 prefix 与库路径收敛为冻结的唯一值，任何外来分量仍硬拒绝。
 
 `/usr/bin/strace` 固定使用与服务器 5.16 兼容的
 `-ff -qq -I 1 -s 4096 -e trace=file,process`，且命令前缀、trace 输出前缀和后续 MPI

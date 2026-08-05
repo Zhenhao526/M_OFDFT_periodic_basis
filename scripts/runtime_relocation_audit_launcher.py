@@ -920,6 +920,7 @@ def _main_impl(
             "CMAKE_PREFIX_PATH": str(recovery_prefix),
             "MKLROOT": str(recovery_prefix),
             "OMP_NUM_THREADS": "1",
+            "CUDA_CACHE_DISABLE": "1",
             "HOME": str(audit_directory.parent / "runtime_home"),
         }
         actual_runtime_environment = {
@@ -932,6 +933,7 @@ def _main_impl(
         if (
             not home.is_dir()
             or home.is_symlink()
+            or (home.stat().st_mode & 0o777) != 0o500
             or sorted(path.name for path in home.iterdir()) != [marker.name]
             or marker.read_text(encoding="utf-8")
             != "Controlled empty HOME for S1 runtime-relocation replay.\n"

@@ -12,6 +12,7 @@ import json
 import os
 import re
 import subprocess
+from datetime import datetime, timezone
 from pathlib import Path
 
 from generate_s1_mpi_prefix_equivalence import build_frozen_payload
@@ -34,6 +35,86 @@ from s1_runtime_relocation_smoke import (
 from write_s1_runtime_relocation_status import write_status
 
 
+def _atomic_json(path: Path, payload: dict) -> None:
+    temporary = path.with_name(f".{path.name}.tmp-{os.getpid()}")
+    temporary.write_text(
+        json.dumps(payload, indent=2, sort_keys=True) + "\n", encoding="utf-8"
+    )
+    os.replace(temporary, path)
+
+
+def _preserve_precommit_validation_failure(
+    smoke_root: Path,
+    run_directory: Path,
+    error: Exception,
+) -> None:
+    """Convert an accepted execution/rejected validation into an archivable attempt."""
+
+    summary_path = smoke_root / "summary.json"
+    manifest_path = smoke_root / "evidence_manifest.tsv"
+    candidate_summary = run_directory / "precommit_candidate_summary.json"
+    candidate_manifest = run_directory / "precommit_candidate_evidence_manifest.tsv"
+    if (
+        not summary_path.is_file()
+        or not manifest_path.is_file()
+        or candidate_summary.exists()
+        or candidate_manifest.exists()
+    ):
+        raise ValueError("precommit failure candidate files are incomplete or reused")
+    summary = json.loads(summary_path.read_text(encoding="utf-8"))
+    if summary.get("status") != "accepted":
+        raise ValueError("precommit failure candidate summary was not accepted")
+    metadata = json.loads(
+        (run_directory / "experiment_metadata.json").read_text(encoding="utf-8")
+    )
+    run_status = json.loads(
+        (run_directory / "run_status.json").read_text(encoding="utf-8")
+    )
+    workflow_exit = int(run_status.get("workflow_exit_code", 97))
+    invocation_exit = int(run_status.get("invocation_exit_code", 97))
+    parser_exit = int(run_status.get("parser_exit_code", 97))
+    write_status(
+        run_directory,
+        experiment_id=RUNTIME_SMOKE_ID,
+        code_commit=metadata["code_commit"],
+        workflow_exit=workflow_exit,
+        invocation_exit=invocation_exit,
+        parser_exit=parser_exit,
+        core_validation_exit=97,
+        setup_completed=run_status.get("setup_completed") is True,
+        failure_stage="managed_smoke_precommit_validation",
+    )
+    failure_status_path = run_directory / "failure.json"
+    failure_status = json.loads(failure_status_path.read_text(encoding="utf-8"))
+    failure_status["failure_stage"] = "managed_smoke_precommit_validation"
+    failure_status["precommit_validation_error_type"] = type(error).__name__
+    failure_status["precommit_validation_error"] = str(error)
+    _atomic_json(failure_status_path, failure_status)
+    _atomic_json(
+        run_directory / "precommit_validation_failure.json",
+        {
+            "schema_version": 1,
+            "status": "rejected",
+            "failure_stage": "managed_smoke_precommit_validation",
+            "error_type": type(error).__name__,
+            "error": str(error),
+            "code_commit": metadata["code_commit"],
+            "generated_at_utc": datetime.now(timezone.utc).isoformat(),
+            "candidate_summary_status": "accepted",
+            "candidate_summary_path": "run/precommit_candidate_summary.json",
+            "candidate_evidence_manifest_path": (
+                "run/precommit_candidate_evidence_manifest.tsv"
+            ),
+            "evidence_manifest_scope": (
+                "pre_validation_run_tree_before_failure_annotation"
+            ),
+            "retry_requires_committed_archive": True,
+        },
+    )
+    os.replace(summary_path, candidate_summary)
+    os.replace(manifest_path, candidate_manifest)
+
+
 def _environment(config: dict, run_directory: Path) -> dict[str, str]:
     runtime = config["runtime"]
     replay = runtime["replay"]
@@ -50,6 +131,7 @@ def _environment(config: dict, run_directory: Path) -> dict[str, str]:
         "TZ": "UTC",
         "TMPDIR": "/tmp",
         "OMP_NUM_THREADS": "1",
+        "CUDA_CACHE_DISABLE": "1",
         "M_OFDFT_RUNTIME_RELOCATION_MODE": "1",
         "M_OFDFT_RUNTIME_RELOCATION_SMOKE_MODE": "1",
         "M_OFDFT_RUN_DIRECTORY_OVERRIDE": str(run_directory),
@@ -260,9 +342,17 @@ def run_smoke(project_root: Path, config: dict, row: dict[str, str]) -> dict:
                     "message": "managed 074 smoke is already committed and fully validated",
                     "validation": validation,
                 }
-            validation = validate_smoke_precommit(
-                project_root, config, row, summary_path
-            )
+            try:
+                validation = validate_smoke_precommit(
+                    project_root, config, row, summary_path
+                )
+            except Exception as error:
+                _preserve_precommit_validation_failure(
+                    smoke_root, run_directory, error
+                )
+                raise ValueError(
+                    "managed smoke precommit validation failed; rejection evidence preserved"
+                ) from error
             return _pending_commit_result(validation)
         _archive_existing_failed_smoke(project_root, smoke_root)
     elif not git_clean(project_root):
@@ -307,7 +397,13 @@ def run_smoke(project_root: Path, config: dict, row: dict[str, str]) -> dict:
         )
     summary_path = smoke_root / "summary.json"
     finalize_smoke(project_root, config, row, summary_path)
-    validation = validate_smoke_precommit(project_root, config, row, summary_path)
+    try:
+        validation = validate_smoke_precommit(project_root, config, row, summary_path)
+    except Exception as error:
+        _preserve_precommit_validation_failure(smoke_root, run_directory, error)
+        raise ValueError(
+            "managed smoke precommit validation failed; rejection evidence preserved"
+        ) from error
     return _pending_commit_result(validation)
 
 

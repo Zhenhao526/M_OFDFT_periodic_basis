@@ -10,6 +10,7 @@ audit_directory=${M_OFDFT_MPI_AUDIT_DIR:?}
 namespace_directory="$audit_directory/namespace"
 old_root=${M_OFDFT_OLD_ROOT:?}
 old_prefix=${M_OFDFT_OLD_PREFIX:?}
+controlled_home=${HOME:?}
 mount_tool=${M_OFDFT_MOUNT_TOOL:?}
 audit_launcher=${M_OFDFT_AUDIT_LAUNCHER:?}
 python_tool=${M_OFDFT_PYTHON_TOOL:?}
@@ -28,16 +29,18 @@ record_state() {
     local phase=$1
     local mountinfo_path="$namespace_directory/mountinfo.$phase"
     local state_path="$namespace_directory/state.$phase.json"
-    "$python_tool" - "$phase" "$old_root" "$old_prefix" "$mountinfo_path" "$state_path" "$BASHPID" <<'PY'
+    "$python_tool" - "$phase" "$old_root" "$old_prefix" "$controlled_home" "$mountinfo_path" "$state_path" "$BASHPID" <<'PY'
+import hashlib
 import json
 import os
 import stat
 import sys
 from pathlib import Path
 
-phase, old_root_value, old_prefix_value, mountinfo_value, output_value, init_pid_value = sys.argv[1:]
+phase, old_root_value, old_prefix_value, home_value, mountinfo_value, output_value, init_pid_value = sys.argv[1:]
 old_root = Path(old_root_value)
 old_prefix = Path(old_prefix_value)
+controlled_home = Path(home_value)
 mountinfo = Path(mountinfo_value)
 mountinfo.write_bytes(Path("/proc/self/mountinfo").read_bytes())
 
@@ -61,11 +64,14 @@ def identity(path: Path):
 
 lines = mountinfo.read_text(encoding="utf-8", errors="replace").splitlines()
 mount_lines = []
+home_mount_lines = []
 shared_mount_lines = []
 for line in lines:
     fields = line.split()
     if len(fields) >= 5 and fields[4] == str(old_root):
         mount_lines.append(line)
+    if len(fields) >= 5 and fields[4] == str(controlled_home):
+        home_mount_lines.append(line)
     separator = fields.index("-") if "-" in fields else -1
     if separator >= 0 and any(field.startswith("shared:") for field in fields[6:separator]):
         shared_mount_lines.append(line)
@@ -93,6 +99,20 @@ payload = {
     "old_root_lstat": identity(old_root),
     "old_prefix_lstat": identity(old_prefix),
     "old_root_mountinfo_lines": mount_lines,
+    "controlled_home": str(controlled_home),
+    "controlled_home_exists": controlled_home.is_dir(),
+    "controlled_home_lstat": identity(controlled_home),
+    "controlled_home_entries": (
+        sorted(path.name for path in controlled_home.iterdir())
+        if controlled_home.is_dir()
+        else []
+    ),
+    "controlled_home_mountinfo_lines": home_mount_lines,
+    "controlled_home_marker_sha256": (
+        hashlib.sha256((controlled_home / "CONTROLLED_HOME.txt").read_bytes()).hexdigest()
+        if (controlled_home / "CONTROLLED_HOME.txt").is_file()
+        else None
+    ),
     "shared_mount_lines": shared_mount_lines,
     "mountinfo_path": str(mountinfo),
     "uid_map": Path("/proc/self/uid_map").read_text(encoding="ascii"),
@@ -132,13 +152,16 @@ PY
 
 record_state before_mount
 preflight_status=0
-if [[ $EUID -ne 0 || ! -d "$old_root" || ! -d "$old_prefix" ]]; then
+if [[ $EUID -ne 0 || ! -d "$old_root" || ! -d "$old_prefix" || ! -d "$controlled_home" || -L "$controlled_home" ]]; then
     preflight_status=97
 fi
 if [[ $("$python_tool" - "$namespace_directory/state.before_mount.json" <<'PY'
 import json, sys
 payload = json.load(open(sys.argv[1], encoding="utf-8"))
-print(len(payload["old_root_mountinfo_lines"]))
+ok = len(payload["old_root_mountinfo_lines"]) == 0
+ok = ok and len(payload["controlled_home_mountinfo_lines"]) == 0
+ok = ok and payload["controlled_home_entries"] == ["CONTROLLED_HOME.txt"]
+print(0 if ok else 1)
 PY
 ) -ne 0 ]]; then
     preflight_status=97
@@ -150,6 +173,10 @@ fi
 
 mount_status=0
 "$mount_tool" -t tmpfs -o size=1m,nosuid,nodev,noexec tmpfs "$old_root" || mount_status=$?
+home_bind_status=0
+"$mount_tool" --bind "$controlled_home" "$controlled_home" || home_bind_status=$?
+home_readonly_status=0
+"$mount_tool" -o remount,bind,ro,nosuid,nodev,noexec "$controlled_home" || home_readonly_status=$?
 record_state after_mount
 mount_evidence_ok=$("$python_tool" - "$namespace_directory/state.after_mount.json" <<'PY'
 import json, sys
@@ -163,11 +190,19 @@ else:
     options = set(fields[5].split(",")) if len(fields) > 5 else set()
     ok = separator >= 0 and fields[separator + 1:separator + 3] == ["tmpfs", "tmpfs"]
     ok = ok and {"nosuid", "nodev", "noexec"}.issubset(options)
-    print(1 if ok else 0)
+home_lines = payload["controlled_home_mountinfo_lines"]
+if len(home_lines) != 1:
+    ok = False
+else:
+    home_fields = home_lines[0].split()
+    home_options = set(home_fields[5].split(",")) if len(home_fields) > 5 else set()
+    ok = ok and {"ro", "nosuid", "nodev", "noexec"}.issubset(home_options)
+ok = ok and payload["controlled_home_entries"] == ["CONTROLLED_HOME.txt"]
+print(1 if ok else 0)
 PY
 )
-if [[ $mount_status -ne 0 || $mount_evidence_ok -ne 1 || -e "$old_prefix" || -L "$old_prefix" ]]; then
-    record_payload_status namespace_mount_rejected "$mount_status"
+if [[ $mount_status -ne 0 || $home_bind_status -ne 0 || $home_readonly_status -ne 0 || $mount_evidence_ok -ne 1 || -e "$old_prefix" || -L "$old_prefix" ]]; then
+    record_payload_status namespace_mount_rejected 97
     exit 97
 fi
 
@@ -177,7 +212,19 @@ audit_pid=$!
 wait "$audit_pid" || audit_status=$?
 audit_pid=
 record_state after_run
-if [[ -e "$old_prefix" || -L "$old_prefix" ]]; then
+postflight_evidence_ok=$("$python_tool" - "$namespace_directory/state.after_run.json" <<'PY'
+import json, sys
+payload = json.load(open(sys.argv[1], encoding="utf-8"))
+home_lines = payload["controlled_home_mountinfo_lines"]
+home_options = set(home_lines[0].split()[5].split(",")) if len(home_lines) == 1 else set()
+ok = len(payload["old_root_mountinfo_lines"]) == 1
+ok = ok and len(home_lines) == 1
+ok = ok and {"ro", "nosuid", "nodev", "noexec"}.issubset(home_options)
+ok = ok and payload["controlled_home_entries"] == ["CONTROLLED_HOME.txt"]
+print(1 if ok else 0)
+PY
+)
+if [[ -e "$old_prefix" || -L "$old_prefix" || $postflight_evidence_ok -ne 1 ]]; then
     record_payload_status namespace_isolation_lost 97
     exit 97
 fi
