@@ -6,6 +6,7 @@ import hashlib
 import json
 import math
 import os
+from copy import deepcopy
 from pathlib import Path
 from typing import Iterable, Sequence
 
@@ -53,6 +54,19 @@ def scaled_cell(cell: Sequence[Sequence[float]], volume_ratio: float) -> list[li
 
 def ratio_label(volume_ratio: float) -> str:
     return f"v{round(volume_ratio * 100):03d}"
+
+
+def eos_series(material: dict) -> list[tuple[str, str, str, float | None]]:
+    sigma_values = [float(value) for value in material["ksdft"]["smearing_scan_ry"]]
+    if len(sigma_values) != 2 or not math.isclose(
+        sigma_values[1], sigma_values[0] / 2.0, rel_tol=0.0, abs_tol=1e-12
+    ):
+        raise ValueError("KS EOS requires standard sigma followed by its exact half")
+    return [
+        ("ofdft", "ofdft", "ofdft", None),
+        ("ksdft", "ksdft", "ksdft_standard", sigma_values[0]),
+        ("ksdft", "ksdft_half", "ksdft_half", sigma_values[1]),
+    ]
 
 
 def vector_text(vector: Iterable[float]) -> str:
@@ -150,16 +164,19 @@ def generate(project_root: Path, config_path: Path, output_root: Path) -> int:
         for volume_ratio in config["volume_ratios"]:
             cell = scaled_cell(base_cell, float(volume_ratio))
             label = ratio_label(float(volume_ratio))
-            for solver in ("ofdft", "ksdft"):
-                job_dir = output_root / material_id / label / solver
+            for solver, directory_name, series_id, sigma in eos_series(material):
+                variant = deepcopy(material)
+                if solver == "ksdft":
+                    variant[solver]["smearing_sigma_ry"] = sigma
+                job_dir = output_root / material_id / label / directory_name
                 job_dir.mkdir(parents=True, exist_ok=True)
                 pseudo_dir = os.path.relpath(project_root / "assets" / "pseudo", job_dir)
-                suffix = f"s1_{material_id}_{label}_{solver}"
+                suffix = f"s1_{material_id}_{label}_{series_id}"
                 (job_dir / "INPUT").write_text(
-                    input_text(material, solver, pseudo_dir, suffix), encoding="utf-8"
+                    input_text(variant, solver, pseudo_dir, suffix), encoding="utf-8"
                 )
                 (job_dir / "STRU").write_text(stru_text(material, cell, positions), encoding="utf-8")
-                (job_dir / "KPT").write_text(kpt_text(material[solver]["kmesh"]), encoding="utf-8")
+                (job_dir / "KPT").write_text(kpt_text(variant[solver]["kmesh"]), encoding="utf-8")
                 volume = abs(determinant(cell))
                 write_json(
                     job_dir / "metadata.json",
@@ -168,18 +185,35 @@ def generate(project_root: Path, config_path: Path, output_root: Path) -> int:
                         "candidate_status": config["status"],
                         "cell_angstrom": cell,
                         "config_sha256": config_digest,
-                        "ecutrho_ry": material[solver]["ecutrho_ry"],
-                        "ecutwfc_ry": material[solver]["ecutwfc_ry"],
+                        "dataset_kind": "eos",
+                        "ecutrho_ry": variant[solver]["ecutrho_ry"],
+                        "ecutwfc_ry": variant[solver]["ecutwfc_ry"],
+                        "energy_observable": (
+                            config["eos_acceptance"]["ks_energy_observable"]
+                            if solver == "ksdft"
+                            else "total_energy"
+                        ),
                         "expected_electrons": material["valence_electrons"] * len(positions),
-                        "kmesh": material[solver]["kmesh"],
+                        "fit_model": config["eos_acceptance"]["fit_model"],
+                        "kmesh": variant[solver]["kmesh"],
                         "material": material_id,
                         "pseudopotential": material["pseudopotential"],
                         "pseudopotential_sha256": actual_pseudo_sha,
+                        "protocol_revision": config["protocol_revision"],
+                        "relative_energy_reference_volume_ratio": config["eos_acceptance"][
+                            "relative_energy_reference_volume_ratio"
+                        ],
+                        "series_id": series_id,
+                        "smearing_method": "fd" if solver == "ksdft" else None,
+                        "smearing_sigma_ry": sigma,
                         "solver": solver,
                         "structure": material["structure"],
+                        "structure_id": f"{material_id}_{label}",
+                        "stru_sha256": sha256(job_dir / "STRU"),
                         "volume_angstrom3": volume,
                         "volume_per_atom_angstrom3": volume / len(positions),
                         "volume_ratio": volume / base_volume,
+                        "xc": material["xc"],
                     },
                 )
                 count += 1

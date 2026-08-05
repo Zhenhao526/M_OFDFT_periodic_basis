@@ -1,7 +1,8 @@
 # S1 plane-wave baseline protocol
 
-Status: `candidate_not_converged`. Values in the configuration are starting
-points for convergence scans, not accepted production parameters.
+Status: `eos_candidate_parameters_frozen` at S1-R7. Values are frozen for the
+pre-registered EOS matrix but are not final production parameters until
+non-equilibrium convergence and G1 checks pass.
 
 ## Scope and structures
 
@@ -52,10 +53,22 @@ equilibrium volume by `<0.2%` and relative energy by `<2 meV/atom`.
 3. Run Mg WT cutoff scan.
 4. Run Al and Mg KS cutoff/k-point/smearing scans.
 5. Freeze accepted settings in a new configuration revision before EOS runs.
-6. Run the fourteen EOS points, then fit and validate metadata completeness.
+6. Run fourteen unique structures (Al/Mg x seven volumes), with OFDFT,
+   standard-sigma KSDFT, and half-sigma KSDFT at each structure: 42 calculations
+   and six seven-point curves in total. Then fit and validate metadata.
 7. Cross-check one Al and one Mg point with an independent program or
    implementation. No such second program is currently installed on node01;
    this is a recorded G1 dependency, not silently waived.
+
+The pre-registered core matrix is `config/S1_eos_run_manifest.tsv`. Execute it
+from a clean worktree with
+`scripts/run_s1_manifest.sh config/S1_eos_run_manifest.tsv`; every point is
+committed independently and the runner stops after preserving the first failed
+point. After all 42 points converge, run `scripts/analyze_s1_eos.py` on the 42
+run directories. The analyzer requires six complete seven-point BM3 fits,
+`<1 meV/atom` maximum fit residual, and the strict double-sigma limits above.
+Finite-smearing pressure is retained as a diagnostic because the primary KS
+fit observable is the zero-temperature extrapolated energy.
 
 Generated inputs are candidates until the convergence results are committed.
 S2 must not start before every G1 acceptance item has evidence.
@@ -100,6 +113,17 @@ S2 must not start before every G1 acceptance item has evidence.
   data with this observable gives 2.024876 meV/atom for Al 20³→24³, just above
   the strict `<2` gate, so the prior Al recommendation is reopened and 28³ is
   added before EOS. Mg remains tail-stable at 20x20x12.
+- `S1-R7`, 2026-08-05: Al 28³ (`S1-20260805-028`) converged and changed the
+  zero-temperature extrapolated energy by 0.822250 meV/atom relative to 24³;
+  Al therefore freezes at 24³ and Mg at 20x20x12 for EOS candidates. Candidate
+  cutoffs are Al/Mg WT 20/30 Ry and Al/Mg KS 40 Ry. The EOS matrix contains 14
+  OFDFT, 14 standard-sigma KSDFT, and 14 half-sigma KSDFT calculations. The
+  primary KS observable is `E_KS(sigma->0)`; raw free energy, `-TS`, internal
+  energy, and finite-smearing pressure remain audit fields. For each sigma,
+  relative energies are anchored at `V/V0=1.00`; the maximum pointwise curve
+  difference must be `<2 meV/atom`, and fitted equilibrium volumes must differ
+  by `<0.2%`. This core EOS does not by itself close the later non-equilibrium
+  cutoff/k-mesh, density-integral, or independent-program G1 checks.
 
 ## Completed convergence evidence
 
@@ -160,13 +184,13 @@ energy and pressure thresholds and is the reference for the Mg k-point scan.
 | 12x12x12 | `S1-20260805-016` | 3.393612 | no |
 | 16x16x16 | `S1-20260805-017` | 5.082681 | no |
 | 20x20x20 | `S1-20260805-018` | 2.024876 | no |
-| 24x24x24 | `S1-20260805-019` | — | pending 28³ confirmation |
-| 28x28x28 | planned | — | not run |
+| 24x24x24 | `S1-20260805-019` | 0.822250 | yes |
+| 28x28x28 | `S1-20260805-028` | — | confirmation |
 
 The original three-mesh plan failed. S1-R3 initially accepted 20x20x20 using
 the finite-smearing free energy. S1-R6 freezes the zero-temperature
-extrapolated energy for 0 K work; under that observable 20³→24³ narrowly fails,
-so no Al mesh is currently accepted and 28³ must be run before EOS.
+extrapolated energy for 0 K work; under that observable 20³→24³ narrowly fails.
+The S1-R7 28³ confirmation passes, so 24³ is the first tail-stable Al mesh.
 
 ### Mg KSDFT k-point scan at `V/V0 = 1.00`
 

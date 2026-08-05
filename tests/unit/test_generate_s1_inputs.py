@@ -52,6 +52,24 @@ class GenerateS1InputsTest(unittest.TestCase):
             CONVERGENCE_MODULE.sigma_label(0.00734986), "sigma0p00734986"
         )
 
+    def test_eos_series_contains_of_and_two_ks_sigmas(self) -> None:
+        material = {
+            "ksdft": {"smearing_scan_ry": [0.00734986, 0.00367493]}
+        }
+        self.assertEqual(
+            MODULE.eos_series(material),
+            [
+                ("ofdft", "ofdft", "ofdft", None),
+                ("ksdft", "ksdft", "ksdft_standard", 0.00734986),
+                ("ksdft", "ksdft_half", "ksdft_half", 0.00367493),
+            ],
+        )
+
+    def test_eos_series_rejects_nonhalved_sigma(self) -> None:
+        material = {"ksdft": {"smearing_scan_ry": [0.01, 0.006]}}
+        with self.assertRaisesRegex(ValueError, "exact half"):
+            MODULE.eos_series(material)
+
 
 if __name__ == "__main__":
     unittest.main()

@@ -7,8 +7,8 @@ dft_functional XC_LDA_X+XC_LDA_C_PZ
 symmetry 0
 pseudo_dir ../../../../../../assets/pseudo
 pseudo_rcut 16
-ecutwfc 40
-ecutrho 160
+ecutwfc 30
+ecutrho 120
 scf_nmax 200
 cal_force 1
 cal_stress 1

@@ -1,5 +1,5 @@
 INPUT_PARAMETERS
-suffix s1_al_v100_ksdft
+suffix s1_al_v100_ksdft_standard
 calculation scf
 esolver_type ksdft
 basis_type pw
@@ -7,8 +7,8 @@ dft_functional XC_GGA_X_PBE+XC_GGA_C_PBE
 symmetry 0
 pseudo_dir ../../../../../../assets/pseudo
 pseudo_rcut 16
-ecutwfc 60
-ecutrho 240
+ecutwfc 40
+ecutrho 160
 scf_nmax 200
 cal_force 1
 cal_stress 1

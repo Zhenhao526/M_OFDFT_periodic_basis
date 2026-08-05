@@ -1,6 +1,6 @@
 {
   "atom_count": 2,
-  "candidate_status": "candidate_not_converged",
+  "candidate_status": "eos_candidate_parameters_frozen",
   "cell_angstrom": [
     [
       3.1769796016101557,
@@ -18,21 +18,32 @@
       5.158162057727363
     ]
   ],
-  "config_sha256": "9e1fed198e368b4970344b3b06a2c11614539a971717cfd43727439802ec6755",
-  "ecutrho_ry": 240,
-  "ecutwfc_ry": 60,
+  "config_sha256": "1b781794c54c3642c08ebc333a12bcc732810d97eb90970e604fb9b57f3a947a",
+  "dataset_kind": "eos",
+  "ecutrho_ry": 160,
+  "ecutwfc_ry": 40,
+  "energy_observable": "zero_temp_extrapolated_energy",
   "expected_electrons": 4,
+  "fit_model": "birch_murnaghan_3",
   "kmesh": [
-    16,
-    16,
-    10
+    20,
+    20,
+    12
   ],
   "material": "mg",
+  "protocol_revision": "S1-R7",
   "pseudopotential": "mg.lda.lps",
   "pseudopotential_sha256": "4b964580cfbd798708299bb0e0baef2f437983d29e6d7040f63b7532038b4259",
+  "relative_energy_reference_volume_ratio": 1.0,
+  "series_id": "ksdft_standard",
+  "smearing_method": "fd",
+  "smearing_sigma_ry": 0.00734986,
   "solver": "ksdft",
+  "stru_sha256": "265aadee1b70fc2f5c3cba85d30ac4b5b8f5a7dd88838c44f8cbfc5db97311af",
   "structure": "hcp_primitive",
+  "structure_id": "mg_v097",
   "volume_angstrom3": 45.0873247212083,
   "volume_per_atom_angstrom3": 22.54366236060415,
-  "volume_ratio": 0.9700000000000002
+  "volume_ratio": 0.9700000000000002,
+  "xc": "XC_LDA_X+XC_LDA_C_PZ"
 }
