@@ -86,3 +86,16 @@ minimum passing candidate at the equilibrium point. `S1-20260805-004` is a
 retained nonconverged 60 Ry attempt preceding S1-R1. The 20 Ry recommendation
 remains candidate status until EOS and pressure behavior away from `V0` are
 checked; no production parameter is silently frozen from a single point.
+
+### Mg WT cutoff at `V/V0 = 1.00`
+
+| Cutoff (Ry) | Experiment | Converged | Delta to next (meV/atom) | Pressure delta to next (GPa) |
+|---:|---|---|---:|---:|
+| 30 | `S1-20260805-006` | yes | 0.00000651 | 0.0000070 |
+| 40 | `S1-20260805-007` | yes | 0.00000140 | 0.0000071 |
+| 60 | `S1-20260805-008` | yes | 0.00000145 | 0.0000512 |
+| 80 | `S1-20260805-009` | yes | — | — |
+
+All four Mg attempts converged and every adjacent comparison passes. The
+minimum scanned value, 30 Ry, is the V0 candidate. As for Al, this remains
+provisional until non-equilibrium EOS points confirm relative-energy behavior.

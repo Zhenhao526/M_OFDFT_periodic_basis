@@ -2,8 +2,8 @@
 
 > 本文件是项目状态的唯一人工入口。任何人接手前先读本文件，再读项目书和当前阶段 README。  
 > 状态词仅使用：`not_started`、`in_progress`、`blocked`、`accepted`、`rejected`、`paused`。  
-> 更新时间：2026-08-05 14:32 CST
-> 文档版本：V1.8
+> 更新时间：2026-08-05 14:38 CST
+> 文档版本：V1.9
 
 ## 0. 十分钟上手摘要
 
@@ -14,10 +14,10 @@
 | 当前闸门 | G1，执行中 |
 | 当前负责人 | 远端账户 `shenwei01`；本轮执行与记录：Codex |
 | 当前工作分支 | `main`，工作树干净；`origin` 为 GitHub 仓库 |
-| 最近可用提交 | 标签 `s1-al-wt-cutoff-20260805`（G0 验收、S1 协议及 Al WT 截断扫描） |
+| 最近可用提交 | 标签 `s1-wt-cutoffs-20260805`（G0 验收、S1 协议及 Al/Mg WT 截断扫描） |
 | 最近通过的 smoke test | `S0-20260805-003`：新恢复前缀中单测 2/2；两次 SCF 均收敛，能量差 0.0 meV/atom |
 | 当前阻塞 | node01 无第二套独立 OFDFT/KSDFT 程序；许可证与 LPP 条款仍限制发布 |
-| 下一项唯一动作 | 执行 Mg `V/V0=1.00` 的 WT 截断扫描并冻结候选截断 |
+| 下一项唯一动作 | 执行 Al/Mg KSDFT 截断、k 点和展宽收敛扫描 |
 
 ### 必读文件
 
@@ -70,16 +70,17 @@ cd /home/shenwei01/M_OFDFT_periodic_basis
 - [x] 建立 S1 候选协议、28 个 EOS 输入、14 个截断扫描输入和 7/7 单元测试；
 - [x] 完成 Al WT 20/30/40/60 Ry 扫描，20 Ry 已满足相邻加密阈值；
 - [x] 保留 `S1-20260805-004` 未收敛结果，并在提交 S1-R1 后以 `S1-20260805-005` 成功复核；
+- [x] 完成 Mg WT 30/40/60/80 Ry 扫描，四点全部收敛，30 Ry 为 V0 最小通过候选；
 - [ ] 选择项目对外发布许可证；
 
 ### 下次开始位置
 
 从 S1 基准闭环开始，不要进入 S2 混合基或 ML：
 
-1. 阅读 `docs/S1_BASELINE_PROTOCOL.md` 及 Al WT 截断摘要；
-2. 运行 Mg WT 30/40/60/80 Ry 单点并保留全部失败；
-3. 执行 Al/Mg KS 截断、k 点和展宽扫描；
-4. 冻结参数后运行十四个 EOS 点；
+1. 阅读 `docs/S1_BASELINE_PROTOCOL.md` 及 Al/Mg WT 截断摘要；
+2. 执行 Al/Mg KS 截断、k 点和展宽扫描；
+3. 冻结参数后运行十四个 EOS 点；
+4. 对非平衡体积复核 WT 相对能量与压力；
 5. 许可证、LPP 再分发和第二程序依赖继续跟踪。
 
 ## 2. 阶段总览
@@ -87,7 +88,7 @@ cd /home/shenwei01/M_OFDFT_periodic_basis
 | 阶段 | 名称 | 状态 | 开始日期 | 结束日期 | 闸门 | 证据链接 | 下一动作 |
 |---|---|---|---|---|---|---|---|
 | S0 | 初始化与复现协议 | `accepted` | 2026-08-05 | 2026-08-05 | G0 | `docs/G0_ACCEPTANCE.md`; `S0-20260805-003` | 技术验收完成；发布限制移交 S7 |
-| S1 | 平面波基准闭环 | `in_progress` | 2026-08-05 | — | G1 | `analysis/s1/al_ofdft_cutoff_20260805/` | 执行 Mg WT 截断扫描 |
+| S1 | 平面波基准闭环 | `in_progress` | 2026-08-05 | — | G1 | `analysis/s1/al_ofdft_cutoff_20260805/`; `analysis/s1/mg_ofdft_cutoff_20260805/` | 执行 KSDFT 收敛扫描 |
 | S2 | 混合密度基表示 | `not_started` | — | — | G2 | — | 等待 G1 |
 | S3 | 固定 KEDF 自洽求解 | `not_started` | — | — | G3 | — | 等待 G2 |
 | S4A | 固定晶胞解析力 | `not_started` | — | — | G4A | — | 等待 G3 |
@@ -133,7 +134,8 @@ cd /home/shenwei01/M_OFDFT_periodic_basis
 - 核心材料：fcc Al、hcp Mg；每种至少七个体积点 `0.90, 0.94, 0.97, 1.00, 1.03, 1.06, 1.10 V0`。
 - 当前工作仅限基准协议、输入生成、收敛扫描、EOS 与交叉核验；不得提前进入 S2 或 ML。
 - 当前结果：Al WT 在 V0 的 20→30 Ry 变化为 0.011269 meV/atom、0.0000990 GPa；20 Ry 为最小通过候选。
-- 当前唯一动作：执行 Mg WT 30/40/60/80 Ry 截断扫描。
+- 当前结果：Mg WT 30→40 Ry 变化为 0.00000651 meV/atom、0.0000070 GPa；30 Ry 为 V0 最小通过候选。
+- 当前唯一动作：执行 Al/Mg KSDFT 截断、k 点和展宽扫描。
 
 ## 4. 闸门决策记录
 
@@ -161,6 +163,10 @@ cd /home/shenwei01/M_OFDFT_periodic_basis
 | S1-20260805-003 | 2026-08-05 | S1 | Al WT V0 40 Ry 截断点 | `d151e2819678d9220f92b6d694eb71d4f06806f8` | `inputs/s1/convergence_candidates/al/ofdft/cutoff/ecut040/` | `runs/S1-20260805-003/` | 相对 60 Ry：0.000108 meV/atom；0.0000148 GPa | 通过 | 单次 |
 | S1-20260805-004 | 2026-08-05 | S1 | Al WT V0 60 Ry 初始严格阈值 | `026931d176e5c914551293b606fc3d8409df1ca0` | `inputs/s1/convergence_candidates/al/ofdft/cutoff/ecut060/` | `runs/S1-20260805-004/` | 200 步未收敛；势范数停于 1.9681e-7 | 失败，保留 | 否 |
 | S1-20260805-005 | 2026-08-05 | S1 | S1-R1 后复核 Al WT V0 60 Ry | `f58e3d9346ca1754975625c29d3aec58448807c4` | 同上，已提交阈值修订 | `runs/S1-20260805-005/` | 收敛；-57.1834018508 eV/atom；0.7788049 GPa | 通过 | 是 |
+| S1-20260805-006 | 2026-08-05 | S1 | Mg WT V0 30 Ry 截断点 | `3c74231991701b36cd4276b82589dbaa1f3aa2a2` | `inputs/s1/convergence_candidates/mg/ofdft/cutoff/ecut030/` | `runs/S1-20260805-006/` | -24.6368596822 eV/atom；-2.6528749 GPa | 通过 | 单次 |
+| S1-20260805-007 | 2026-08-05 | S1 | Mg WT V0 40 Ry 截断点 | `bd86a79115453d180b9f47c4a2200b5c4f1d9cc2` | `inputs/s1/convergence_candidates/mg/ofdft/cutoff/ecut040/` | `runs/S1-20260805-007/` | 相对 30 Ry：0.00000651 meV/atom；0.0000070 GPa | 通过 | 单次 |
+| S1-20260805-008 | 2026-08-05 | S1 | Mg WT V0 60 Ry 截断点 | `1f9eca6c9de88e4853505ae3f0061df106ed6d5f` | `inputs/s1/convergence_candidates/mg/ofdft/cutoff/ecut060/` | `runs/S1-20260805-008/` | 收敛；相邻加密通过 | 通过 | 单次 |
+| S1-20260805-009 | 2026-08-05 | S1 | Mg WT V0 80 Ry 截断点 | `2d83f2e08858e06981e2559de94ef831a9b13335` | `inputs/s1/convergence_candidates/mg/ofdft/cutoff/ecut080/` | `runs/S1-20260805-009/` | 收敛；-24.6368596887 eV/atom | 通过 | 单次 |
 
 ## 6. 当前指标看板
 
@@ -174,6 +180,8 @@ cd /home/shenwei01/M_OFDFT_periodic_basis
 | smoke test 重复能量差 | 0.0 meV/atom | <0.1 meV/atom | S0-20260805-001 | 通过 |
 | Al WT V0 截断加密能量变化 | 0.011269 meV/atom（20→30 Ry） | <1 meV/atom | S1-20260805-001/002 | 通过 |
 | Al WT V0 截断加密压力变化 | 0.0000990 GPa（20→30 Ry） | <0.02 GPa | S1-20260805-001/002 | 通过 |
+| Mg WT V0 截断加密能量变化 | 0.00000651 meV/atom（30→40 Ry） | <1 meV/atom | S1-20260805-006/007 | 通过 |
+| Mg WT V0 截断加密压力变化 | 0.0000070 GPa（30→40 Ry） | <0.02 GPa | S1-20260805-006/007 | 通过 |
 | Al/Mg EOS 完成率 | — | 100% | — | 未测 |
 | 密度投影 L2 | — | 平衡 <1% | — | 未测 |
 | 固定 KEDF 能量差 P95 | — | <10 meV/atom | — | 未测 |
@@ -224,12 +232,13 @@ cd /home/shenwei01/M_OFDFT_periodic_basis
 | 2026-08-05 | D-010 | G0 技术验收通过，许可证和 LPP 再分发限制移交 S7 | G0 六项量化标准全部通过；未选择许可证不影响内部数值基准 | 因发布条款无限期阻塞 S1 | 允许启动内部 S1，禁止未经许可的公开发布 |
 | 2026-08-05 | D-011 | Al WT V0 的最小候选截断保留为 20 Ry | 20→30 Ry 能量变化 0.011269 meV/atom、压力变化 0.0000990 GPa，后续加密变化更小 | 未扫描直接沿用 20 Ry | 仍须以非平衡体积 EOS 验证相对能量后才可冻结生产参数 |
 | 2026-08-05 | D-012 | 记录 60 Ry 严格阈值失败后，将 WT 停止阈值恢复为审计基线 1e-7/1e-6 | S1-004 在稳定能量/压力下势范数平台为 1.9681e-7；阈值修改先提交后复跑 | 删除失败或事后放宽 G1 精度指标 | S1-005 收敛；G1 能量/压力阈值未改变 |
+| 2026-08-05 | D-013 | Mg WT V0 的最小候选截断设为 30 Ry | 30→40 Ry 能量变化 0.00000651 meV/atom、压力变化 0.0000070 GPa，四个扫描点全部收敛 | 直接沿用旧 40 Ry 而不验证 | 须在非平衡 EOS 点复核后才能冻结生产参数 |
 
 ## 9. 最近可用状态
 
 此节必须始终指向一个可运行、可复现的状态；若暂无则明确写“无”。
 
-- 最近可用状态：标签 `s1-al-wt-cutoff-20260805`；包含 G0 clean recovery、S1 候选输入、Al WT 截断结果和保留失败。
+- 最近可用状态：标签 `s1-wt-cutoffs-20260805`；包含 G0 clean recovery、S1 候选输入、Al/Mg WT 截断结果和保留失败。
 - 对应环境：`environment/`，ABACUS v3.11.0-beta.5 CPU + OpenMPI 5.0.10 + LibXC 7.0.0。
 - 已通过测试：新恢复前缀中 2/2 单元测试；`S0-20260805-001/002/003` 的双重复 SCF 均收敛，重复差均为 0.0 meV/atom。
 - 已知失败：`S1-20260805-004` 在初始严格阈值下 200 步未收敛，已由提交后的 S1-R1 和 `S1-20260805-005` 复核；发布限制和 GitHub 出口问题仍在。
@@ -272,6 +281,7 @@ cd /home/shenwei01/M_OFDFT_periodic_basis
 | 2026-08-05 14:11 CST | 上传验收 | Codex | S0 | `s0-upload-complete-20260805` | S0-20260805-002 通过 | GitHub HEAD、`main` 和全部标签已远端核验；登记 node01 出口限制与 bundle 中转方法 |
 | 2026-08-05 14:18 CST | G0 验收 | Codex | S1 | `s0-clean-recovery-20260805` | S0-20260805-003 通过 | clean-prefix 恢复与测试 23.46 秒；G0 accepted，进入内部 S1 |
 | 2026-08-05 14:32 CST | S1 更新 | Codex | S1 | `s1-al-wt-cutoff-20260805` | S1-005 通过；S1-004 失败保留 | 28 个 EOS 与 14 个截断候选已生成；Al WT V0 推荐 20 Ry 候选 |
+| 2026-08-05 14:38 CST | S1 更新 | Codex | S1 | `s1-wt-cutoffs-20260805` | S1-006 至 009 全部通过 | Mg WT V0 推荐 30 Ry 候选；下一步转入 KSDFT 收敛扫描 |
 
 ## 11. 文档变更记录
 
@@ -286,3 +296,4 @@ cd /home/shenwei01/M_OFDFT_periodic_basis
 | 2026-08-05 | V1.6 | Codex | 记录 GitHub 引用验收、node01 出口限制及经校验 bundle 中转的标准同步路径 |
 | 2026-08-05 | V1.7 | Codex | 记录 clean-prefix 恢复、S0-003、G0 accepted 结论及 S1 启动位置 |
 | 2026-08-05 | V1.8 | Codex | 记录 S1 协议、候选输入、Al WT 截断扫描、失败保留和 Mg 下一动作 |
+| 2026-08-05 | V1.9 | Codex | 记录 Mg WT 截断扫描、Al/Mg 候选截断及 KSDFT 下一动作 |
