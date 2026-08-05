@@ -1,0 +1,53 @@
+{
+  "atom_count": 2,
+  "baseline_config_sha256": "1b781794c54c3642c08ebc333a12bcc732810d97eb90970e604fb9b57f3a947a",
+  "baseline_experiment_id": "S1-20260805-054",
+  "baseline_series_id": "ofdft",
+  "candidate_status": "non_equilibrium_convergence_matrix_frozen",
+  "cell_angstrom": [
+    [
+      3.2411783043199445,
+      0.0,
+      0.0
+    ],
+    [
+      -1.6205891521599722,
+      2.806942749736042,
+      0.0
+    ],
+    [
+      0.0,
+      0.0,
+      5.262395434707536
+    ]
+  ],
+  "comparison_axis": "cutoff",
+  "config_sha256": "17e511669893cf8c4b7d4512da8b96d0bde42ac0f71c5e4daaacf03c747482dc",
+  "core_summary_sha256": "508b84a1f6f26edc2cd3de8c3b7d3970fbe2fabb6b6a646dca8ea87b7e2e771d",
+  "dataset_kind": "eos_non_equilibrium_convergence",
+  "ecutrho_ry": 160,
+  "ecutwfc_ry": 40,
+  "energy_observable": "total_energy",
+  "expected_electrons": 4,
+  "kmesh": [
+    1,
+    1,
+    1
+  ],
+  "material": "mg",
+  "protocol_revision": "S1-R8",
+  "pseudopotential": "mg.lda.lps",
+  "pseudopotential_sha256": "4b964580cfbd798708299bb0e0baef2f437983d29e6d7040f63b7532038b4259",
+  "relative_energy_reference_volume_ratio": 1.0,
+  "series_id": "ofdft_next_cutoff",
+  "smearing_method": null,
+  "smearing_sigma_ry": null,
+  "solver": "ofdft",
+  "stru_sha256": "98aa8e2bdcd877e9ec6d0397070f213c24c4b38fba559540fcdd1ebce02ea76d",
+  "structure": "hcp_primitive",
+  "structure_id": "mg_v103",
+  "volume_angstrom3": 47.87623140499437,
+  "volume_per_atom_angstrom3": 23.938115702497186,
+  "volume_ratio": 1.03,
+  "xc": "XC_LDA_X+XC_LDA_C_PZ"
+}
