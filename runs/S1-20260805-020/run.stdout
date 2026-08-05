@@ -1,0 +1,108 @@
+
+                     ▄████▄ █████▄ ▄████▄ ▄█████ ██  ██ ▄█████ 
+                     ██▄▄██ ██▄▄██ ██▄▄██ ██     ██  ██ ▀▀▀▄▄▄ 
+                     ██  ██ ██▄▄█▀ ██  ██ ▀█████ ▀████▀ █████▀ 
+
+                                                                                     
+                                v3.11.0-beta.5
+
+               Atomic-orbital Based Ab-initio Computation at UStc                    
+
+                     Website: http://abacus.ustc.edu.cn/                             
+               Documentation: https://abacus.deepmodeling.com/                       
+                  Repository: https://github.com/abacusmodeling/abacus-develop       
+                              https://github.com/deepmodeling/abacus-develop         
+                      Commit: unknown
+
+ Wed Aug  5 15:06:40 2026
+ MAKE THE DIR         : OUT.s1_mg_ksdft_k012x012x008/
+ RUNNING WITH DEVICE  : CPU / Intel(R) Xeon(R) Platinum 8368Q CPU @ 2.60GHz (x2)
+ NAME OF ELEMENT      : Mg
+ DFT FUNC. (PSEUDO)   : PZ
+ DFT FUNC. (SET TO)   : XC_LDA_X+XC_LDA_C_PZ
+ MAKE SURE THIS DFT FUNCTIONAL IS WHAT YOU NEED
+ UNIFORM GRID DIM     : 25 * 25 * 40
+ UNIFORM GRID DIM(BIG): 25 * 25 * 40
+ DONE(0.0355124  SEC) : SETUP UNITCELL
+ DONE(0.0436004  SEC) : INIT K-POINTS
+ ----------------------------------------------------------------
+ Self-consistent calculations for electrons
+ ----------------------------------------------------------------
+ SPIN    KPOINTS         PROCESSES   THREADS/PROC  THREADS/TOTAL 
+ 1       580             4           1             4             
+ ----------------------------------------------------------------
+ Use plane wave basis
+ ----------------------------------------------------------------
+ ELEMENT NATOM       
+ Mg      2           
+ ----------------------------------------------------------------
+ Initial plane wave basis and FFT box
+ ----------------------------------------------------------------
+ DONE(0.0555838  SEC) : INIT PLANEWAVE
+ START CHARGE         : ATOMIC
+ DONE(0.078235   SEC) : LOCAL POTENTIAL
+not allowed!
+i1*i2*i3 must be positive! i1*i2*i3 is 0
+i2 must be positive! i2 is 0
+i3 must be positive! i3 is 0
+ DONE(0.0782592  SEC) : NON-LOCAL POTENTIAL
+ MEMORY FOR PSI (MB)  : 36.2146
+ WARNING: init_wfc = atomic requires atomic pseudo wavefunctions(PP_PSWFC),
+ but none available. Automatically switch to random initialization.
+ DONE(0.0782935  SEC) : INIT BASIS
+
+ ================================================================
+ SELF-CONSISTENT: 
+ ================================================================
+ DONE(0.826447   SEC) : INIT SCF
+ ITER       ETOT/eV          EDIFF/eV         DRHO     TIME/s
+ CG1     -4.90455225e+01   0.00000000e+00   9.1185e-02   5.85
+ CG2     -4.92992624e+01  -2.53739835e-01   3.6905e-02   2.25
+ CG3     -4.93106111e+01  -1.13487071e-02   3.9186e-05   2.12
+ CG4     -4.93132301e+01  -2.61901885e-03   9.9904e-06   4.47
+ CG5     -4.93132871e+01  -5.69653043e-05   5.6990e-07   2.26
+ CG6     -4.93132890e+01  -1.87950634e-06   1.7629e-08   2.82
+ CG7     -4.93132892e+01  -2.70236459e-07   3.5036e-09   2.97
+ CG8     -4.93132892e+01  -1.13300586e-08   3.5030e-10   2.31
+ CG9     -4.93132892e+01  -9.74543395e-10   1.6845e-12   2.75
+ ----------------------------------------------------------------
+              Stress_x             Stress_y             Stress_z 
+ ----------------------------------------------------------------
+        -27.7863044190         0.0000016968        -0.0000000549 
+          0.0000016968       -27.7863038524        -0.0000007753 
+         -0.0000000549        -0.0000007753       -34.3437778602 
+ ----------------------------------------------------------------
+ TOTAL-PRESSURE (EXCLUDE KINETIC PART OF IONS): -29.972129 kbar
+
+ TIME STATISTICS
+-------------------------------------------------------------------
+   CLASS_NAME           NAME         TIME/s  CALLS   AVG/s  PER/%  
+-------------------------------------------------------------------
+                 total               28.70  15       1.91   100.00 
+ Driver          atomic_world        28.70  1        28.70  100.00 
+ Relax_Driver    relax_driver        28.61  1        28.61  99.72  
+ ESolver_KS      runner              28.55  1        28.55  99.51  
+ ESolver_KS_PW   before_scf          0.75   1        0.75   2.61   
+ PSIPrepare      initialize_psi      0.75   1        0.75   2.60   
+ DiagoIterAssist diag_subspace       5.00   5220     0.00   17.42  
+ Operator        hPsi                21.26  233273   0.00   74.10  
+ Operator        veff_pw             20.98  233273   0.00   73.10  
+ PW_Basis_K      recip2real          12.40  353333   0.00   43.19  
+ PW_Basis_K      gathers_copy_pack   0.52   353333   0.00   1.82   
+ PW_Basis_K      gathers_zero_mpi    1.04   353333   0.00   3.62   
+ PW_Basis_K      gathers_copy_unpack 0.53   353333   0.00   1.85   
+ PW_Basis_K      real2recip          9.48   290693   0.00   33.05  
+ PW_Basis_K      gatherp_copy_pack   0.42   290693   0.00   1.48   
+ PW_Basis_K      gatherp_copy_unpack 0.74   290693   0.00   2.59   
+ ESolver_KS_PW   hamilt2rho_single   27.77  9        3.09   96.76  
+ HSolverPW       solve               27.77  9        3.09   96.76  
+ HSolverPW       solve_psik          25.36  5220     0.00   88.38  
+ DiagoCG         diag_once           20.77  5220     0.00   72.38  
+ ElecStatePW     psiToRho            2.36   9        0.26   8.23   
+-------------------------------------------------------------------
+
+
+ START  Time  : Wed Aug  5 15:06:40 2026
+ FINISH Time  : Wed Aug  5 15:07:09 2026
+ TOTAL  Time  : 29
+ SEE INFORMATION IN : OUT.s1_mg_ksdft_k012x012x008/
