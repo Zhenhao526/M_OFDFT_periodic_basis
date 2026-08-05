@@ -1,0 +1,105 @@
+
+                     ▄████▄ █████▄ ▄████▄ ▄█████ ██  ██ ▄█████ 
+                     ██▄▄██ ██▄▄██ ██▄▄██ ██     ██  ██ ▀▀▀▄▄▄ 
+                     ██  ██ ██▄▄█▀ ██  ██ ▀█████ ▀████▀ █████▀ 
+
+                                                                                     
+                                v3.11.0-beta.5
+
+               Atomic-orbital Based Ab-initio Computation at UStc                    
+
+                     Website: http://abacus.ustc.edu.cn/                             
+               Documentation: https://abacus.deepmodeling.com/                       
+                  Repository: https://github.com/abacusmodeling/abacus-develop       
+                              https://github.com/deepmodeling/abacus-develop         
+                      Commit: unknown
+
+ Wed Aug  5 14:32:34 2026
+ MAKE THE DIR         : OUT.s1_mg_ofdft_ecut030/
+ RUNNING WITH DEVICE  : CPU / Intel(R) Xeon(R) Platinum 8368Q CPU @ 2.60GHz (x2)
+ NAME OF ELEMENT      : Mg
+ DFT FUNC. (PSEUDO)   : PZ
+ DFT FUNC. (SET TO)   : XC_LDA_X+XC_LDA_C_PZ
+ MAKE SURE THIS DFT FUNCTIONAL IS WHAT YOU NEED
+ UNIFORM GRID DIM     : 24 * 24 * 36
+ UNIFORM GRID DIM(BIG): 24 * 24 * 36
+ DONE(0.0409243  SEC) : SETUP UNITCELL
+ DONE(0.0411798  SEC) : INIT K-POINTS
+ ----------------------------------------------------------------
+ Self-consistent calculations for electrons
+ ----------------------------------------------------------------
+ SPIN    KPOINTS         PROCESSES   THREADS/PROC  THREADS/TOTAL 
+ 1       1               4           1             4             
+ ----------------------------------------------------------------
+ Use plane wave basis
+ ----------------------------------------------------------------
+ ELEMENT NATOM       
+ Mg      2           
+ ----------------------------------------------------------------
+ Initial plane wave basis and FFT box
+ ----------------------------------------------------------------
+ DONE(0.0420052  SEC) : SETUP UNITCELL
+ START CHARGE         : ATOMIC
+ DONE(0.112342   SEC) : LOCAL POTENTIAL
+ DONE(0.116526   SEC) : INIT POTENTIAL
+ DONE(0.116696   SEC) : INIT KEDF
+ DONE(0.116705   SEC) : INIT OPTIMIZATION
+ DONE(0.116714   SEC) : INIT PHI
+
+ ================================================================
+ SELF-CONSISTENT: 
+ ================================================================
+ ============================= Running OFDFT ==============================
+ ITER       ETOT/eV           EDIFF/eV        EFERMI/eV    POTNORM   TIME/s
+ TN0     -4.67322043e+01   -4.67322043e+01   3.9945e+00   1.1990e-01   0.00  
+ TN1     -4.91225492e+01   -2.39034489e+00   3.3625e+00   7.1890e-02   0.05  
+ TN2     -4.92686301e+01   -1.46080856e-01   3.3287e+00   1.3412e-02   0.06  
+ TN3     -4.92735699e+01   -4.93982012e-03   3.3279e+00   2.4273e-03   0.06  
+ TN4     -4.92737125e+01   -1.42647684e-04   3.3278e+00   4.8490e-04   0.04  
+ TN5     -4.92737192e+01   -6.61964917e-06   3.3279e+00   8.5779e-05   0.07  
+ TN6     -4.92737194e+01   -1.95400957e-07   3.3279e+00   1.7358e-05   0.05  
+ TN7     -4.92737194e+01   -7.97291069e-09   3.3279e+00   3.2822e-06   0.06  
+ TN8     -4.92737194e+01   -2.84597051e-10   3.3279e+00   5.8941e-07   0.07  
+ ----------------------------------------------------------------
+              Stress_x             Stress_y             Stress_z 
+ ----------------------------------------------------------------
+        -27.3428315782         0.0000003567        -0.0000000031 
+          0.0000003567       -27.3428311664        -0.0000000054 
+         -0.0000000031        -0.0000000054       -24.9005838243 
+ ----------------------------------------------------------------
+ TOTAL-PRESSURE (EXCLUDE KINETIC PART OF IONS): -26.528749 kbar
+
+ TIME STATISTICS
+-----------------------------------------------------------------------
+     CLASS_NAME             NAME         TIME/s  CALLS   AVG/s  PER/%  
+-----------------------------------------------------------------------
+                     total               0.65   17       0.04   100.00 
+ Driver              atomic_world        0.65   1        0.65   100.00 
+ Driver              reading             0.02   1        0.02   2.86   
+ Charge              atomic_rho          0.07   2        0.03   10.49  
+ PW_Basis_Sup        recip2real          0.06   896      0.00   9.72   
+ PW_Basis_Sup        recip2real_copy_g   0.01   896      0.00   1.32   
+ ppcell_vl           init_vloc           0.02   1        0.02   3.75   
+ Potential           cal_veff            0.16   223      0.00   25.11  
+ H_Hartree_pw        v_hartree           0.04   223      0.00   5.44   
+ PW_Basis_Sup        real2recip          0.08   892      0.00   12.19  
+ PW_Basis_Sup        gatherp_copy_unpack 0.01   892      0.00   1.28   
+ PotXC               cal_veff            0.13   223      0.00   19.47  
+ XC_Functional_Libxc v_xc_libxc          0.13   223      0.00   19.39  
+ Libxc               xc_lda/gga_exc_vxc  0.11   446      0.00   16.82  
+ Relax_Driver        relax_driver        0.54   1        0.54   82.14  
+ ESolver_OF          runner              0.49   1        0.49   75.44  
+ KEDF_Manager        get_potential       0.29   221      0.00   44.68  
+ KEDF_TF             tf_potential        0.06   221      0.00   8.46   
+ KEDF_WT             wt_potential        0.20   221      0.00   31.14  
+ KEDF_vW             vw_potential        0.03   221      0.00   4.98   
+ ESolver_OF          after_opt           0.02   1        0.02   3.52   
+ OF_Stress_PW        cal_stress          0.04   1        0.04   6.42   
+ Stress              stress_loc          0.04   1        0.04   6.32   
+-----------------------------------------------------------------------
+
+
+ START  Time  : Wed Aug  5 14:32:34 2026
+ FINISH Time  : Wed Aug  5 14:32:35 2026
+ TOTAL  Time  : 1
+ SEE INFORMATION IN : OUT.s1_mg_ofdft_ecut030/
