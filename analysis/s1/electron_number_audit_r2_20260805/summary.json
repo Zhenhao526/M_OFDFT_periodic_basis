@@ -1,0 +1,78 @@
+{
+  "acceptance_limit_strict": 1e-10,
+  "accepted_count": 90,
+  "analyzer_commit": "c722c813363b4856d61db198319fa2f6074f19dd",
+  "coverage": {
+    "accepted": 90,
+    "breakdown": {
+      "ks_existing_density": 60,
+      "primary_baseline": 84,
+      "r1_reused_ofdft": 11,
+      "r2_executed_ofdft": 19,
+      "supplemental_runtime_replay": 6
+    },
+    "coverage_exact": true,
+    "observed": 90,
+    "ofdft_split": {
+      "r1_reused_observed": 11,
+      "r1_reused_required": 11,
+      "r2_executed_observed": 19,
+      "r2_executed_required": 19,
+      "total_observed": 30,
+      "total_required": 30
+    },
+    "required": 90,
+    "required_breakdown": {
+      "ks_existing_density": 60,
+      "primary_baseline": 84,
+      "r1_reused_ofdft": 11,
+      "r2_executed_ofdft": 19,
+      "supplemental_runtime_replay": 6
+    }
+  },
+  "density_failure_ids": [],
+  "generated_at": "2026-08-05T18:52:23.448794+00:00",
+  "historical_failure_archive": {
+    "accepted_current_run_counted": 1,
+    "denominator_contribution": 0,
+    "excluded_from_acceptance_denominator": true,
+    "experiment_id": "S1-20260805-130",
+    "provenance": {
+      "archive_commit": "8eb9231cd4500c4bb2d6a4d84aa822ba234374d8",
+      "archive_path": "failed_runs/runtime_relocation/S1-20260805-130/attempt-a894c735d95c",
+      "failed_attempt_commit": "a894c735d95c3fc8d74f3cdb7fb8b16d1fd2c075",
+      "tree_oid": "1fc6f5dbc7cf282df5a8f6646b48d61ff27cb0f3"
+    },
+    "root_cause_only": true
+  },
+  "kmp_contract_failure_ids": [],
+  "kmp_runtime_contract": {
+    "accepted_ofdft_runs_observed": 30,
+    "accepted_ofdft_runs_required": 30,
+    "rank_lifecycles_observed": 120,
+    "rank_lifecycles_required": 120,
+    "successful_syscalls_observed": 360,
+    "successful_syscalls_required": 360,
+    "totals_exact": true
+  },
+  "maximum_certified_relative_error": 1.0127696865884852e-11,
+  "maximum_error_source_experiment_id": "S1-20260805-044",
+  "point_failure_ids": [],
+  "protocol_revision": "S1-G1-ELECTRON-NUMBER-R2",
+  "r1_config_path": "config/S1_electron_number_audit.json",
+  "r1_config_sha256": "b87e0ca7ce089c529849468e2437b96a019f096a9be327627d1954a4f20d3010",
+  "r1_manifest_path": "config/S1_electron_number_audit_manifest.tsv",
+  "r1_manifest_sha256": "128ac010f20dd236068503cce2ddb704facd41ed9dd9fe040e15d218799fbd66",
+  "r2_config_path": "config/S1_electron_number_audit_r2.json",
+  "r2_config_sha256": "bfed0e87451ccf60ff8239b5ad25d6a4e62e52e037d560ffa3dcdb4d08a83624",
+  "r2_manifest_path": "config/S1_electron_number_audit_r2_manifest.tsv",
+  "r2_manifest_sha256": "961eded6054f5382ce156754b98b1a0bc4b837cfb1b8491fc8ecf120566b43ce",
+  "recommended_action": "close_only_g1_electron_number_item_keep_other_five_g1_items_pending",
+  "registration_revalidation": {
+    "r1_reused_payload_count": 11,
+    "r2_row_count": 19
+  },
+  "schema_version": 2,
+  "scientific_equivalence_failure_ids": [],
+  "status": "accepted"
+}
