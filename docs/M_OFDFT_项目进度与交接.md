@@ -2,8 +2,8 @@
 
 > 本文件是项目状态的唯一人工入口。任何人接手前先读本文件，再读项目书和当前阶段 README。  
 > 状态词仅使用：`not_started`、`in_progress`、`blocked`、`accepted`、`rejected`、`paused`。  
-> 更新时间：2026-08-05 17:27 CST
-> 文档版本：V2.4
+> 更新时间：2026-08-05 17:43 CST
+> 文档版本：V2.7
 
 ## 0. 十分钟上手摘要
 
@@ -21,10 +21,13 @@
 
 ### 必读文件
 
-1. [V2.0 项目书](/Users/xia/Documents/合金/M_OFDFT_周期金属原子密度基组研究计划书.md)
-2. [可行性复核](/Users/xia/Documents/合金/M_OFDFT_任务书可行性复核.md)
-3. [参考文献精读报告](/Users/xia/Documents/合金/references/M_OFDFT/M_OFDFT_参考文献逐篇精读报告.md)
-4. [参考文献包索引](/Users/xia/Documents/合金/references/M_OFDFT/README.md)
+1. [V2.1 项目书](M_OFDFT_周期金属原子密度基组研究计划书.md)
+2. [扩大文献调研与可行性再评估](M_OFDFT_扩大文献调研与可行性再评估_2026-08.md)
+3. [扩展文献逐篇研判](references/M_OFDFT_extended/M_OFDFT_扩展文献逐篇研判.md)
+4. [扩展参考文献包索引](references/M_OFDFT_extended/README.md)
+5. [初次可行性复核](M_OFDFT_任务书可行性复核.md)
+6. [原参考文献精读报告](references/M_OFDFT/M_OFDFT_参考文献逐篇精读报告.md)
+7. [原参考文献包索引](references/M_OFDFT/README.md)
 
 ### 最近可运行命令
 
@@ -81,6 +84,11 @@ cd /home/shenwei01/M_OFDFT_periodic_basis
 - [x] 完成并扩展 Mg k 点扫描至 24x24x16，尾部稳定判据选择 20x20x12；
 - [x] 完成 Al/Mg 标准与半展宽 V0 诊断，四点全部收敛；明确单点绝对能量位移不能替代 EOS 相对能量验收；
 - [x] 单元测试扩展至 25/25，通过输入、解析、清单 stdin 隔离、BM3 拟合、端点诊断、OF/KS 基准与双展宽严格门槛检查；
+- [x] 扩大调研至原包 8 篇核心文献、扩展包 13 篇全文/241 页、1 篇网页全文及 20 余篇方法/软件补充证据；
+- [x] 识别 AMD-OFDFT 2014 直接先例，收窄“原子中心密度 + 变分 + Pulay 力”的创新主张；
+- [x] 完成闸门式项目再评估：整体 66/100、S0–S4A 核心 73/100、全范围 S0–S7 约 43/100；
+- [x] 将项目书更新为 V2.1：新增三层赝势/KEDF 验证、展宽标签审计、S2 架构竞赛、低 G/egg-box/性能闸门和独立 S4C；
+- [x] 建立扩展文献索引、逐篇研判和综合再评估报告；
 - [ ] 选择项目对外发布许可证；
 
 ### 下次开始位置
@@ -102,7 +110,8 @@ cd /home/shenwei01/M_OFDFT_periodic_basis
 | S2 | 混合密度基表示 | `not_started` | — | — | G2 | — | 等待 G1 |
 | S3 | 固定 KEDF 自洽求解 | `not_started` | — | — | G3 | — | 等待 G2 |
 | S4A | 固定晶胞解析力 | `not_started` | — | — | G4A | — | 等待 G3 |
-| S4B | 晶胞应力与 NVE | `not_started` | — | — | G4B | — | 等待 G4A |
+| S4B | 晶胞应力 | `not_started` | — | — | G4B | — | 等待 G4A |
+| S4C | 短时 NVE | `not_started` | — | — | G4C | — | 等待 G4A；建议等待 G4B |
 | S5 | ML-KEDF | `not_started` | — | — | G5 | — | 等待 G3，建议等待 G4A |
 | S6 | 合金、缺陷、动力学 | `not_started` | — | — | G6 | — | 等待 G4A；ML 分支另需 G5 |
 | S7 | 性能、发布与论文 | `not_started` | — | — | G7 | — | 持续准备，最终验收 |
@@ -127,9 +136,10 @@ cd /home/shenwei01/M_OFDFT_periodic_basis
 
 | 类型 | 路径/链接 | 状态 | 说明 |
 |---|---|---|---|
-| 任务书 | `/Users/xia/Documents/合金/M_OFDFT_周期金属原子密度基组研究计划书.md` | 已完成 | V2.0 |
-| 可行性复核 | `/Users/xia/Documents/合金/M_OFDFT_任务书可行性复核.md` | 已完成 | 立项复核依据 |
-| 参考文献 | `/Users/xia/Documents/合金/references/M_OFDFT/` | 已完成 | 7 份全文 PDF + 逐篇笔记 |
+| 任务书 | [V2.1 项目书](M_OFDFT_周期金属原子密度基组研究计划书.md) | 已完成 | V2.1 |
+| 扩大可行性再评估 | [综合报告](M_OFDFT_扩大文献调研与可行性再评估_2026-08.md) | 已完成 | 66/100；核心 S0–S4A 为 73/100 |
+| 初次可行性复核 | [初次报告](M_OFDFT_任务书可行性复核.md) | 已完成 | 初次立项依据，保留用于审计演变 |
+| 参考文献证据 | [原包索引](references/M_OFDFT/README.md)；[扩展包索引](references/M_OFDFT_extended/README.md) | 已完成 | 原创研判与索引入库；PDF/全文抽取保留在受控本地包，不公开再分发 |
 | 代码仓库 | `https://github.com/Zhenhao526/M_OFDFT_periodic_basis` | 已同步 | 服务器路径 `/home/shenwei01/M_OFDFT_periodic_basis`；`main` 已提交且干净 |
 | 环境锁 | `/home/shenwei01/M_OFDFT_periodic_basis/environment/` | 已建立 | 包清单、CMake、系统快照 |
 | 软件清单 | `/home/shenwei01/M_OFDFT_periodic_basis/manifests/` | 已建立 | 二进制、源码包与 LPP 哈希 |
@@ -227,7 +237,7 @@ cd /home/shenwei01/M_OFDFT_periodic_basis
 | ID | 发现日期 | 阻塞描述 | 影响阶段 | 负责人 | 下一动作 | 需要外部决策 | 状态 |
 |---|---|---|---|---|---|---|---|
 | B-001 | 2026-08-05 | 远端 Git URL 已确定并完成首次同步 | S0/S7 | Codex | 后续提交同步至 GitHub `main` | 否 | `accepted` |
-| B-002 | 2026-08-05 | Al/Mg LPP 已有来源与校验和，但再分发许可证仍需核对 | S0/S7 | 待填写 | 核对第三方再分发条件 | 是 | `in_progress` |
+| B-002 | 2026-08-05 | BLPS 已确认 CC BY-ND 4.0；原样共享、格式转换和 HQLPP/OEPP 的许可链仍需分别审计 | S0/S7 | 待填写 | 采用上游下载+固定 commit/SHA-256+归属；公开前核对转换/其他 LPP | 是 | `in_progress` |
 | B-003 | 2026-08-05 | 项目许可证尚未选择 | S0/S7 | 项目负责人 | 选择许可证或维持内部研究限制 | 是 | `blocked` |
 | B-004 | 2026-08-05 | 已在全新空目录恢复锁定二进制前缀并完成单测/smoke | S0 | Codex | 结果固定于 `S0-20260805-003` | 否 | `accepted` |
 | B-005 | 2026-08-05 | node01 直连 GitHub HTTPS 超时，不能在计算节点直接推送 | S0–S7 | Codex | 暂用完整 Git bundle 经跳板机传回本机后原子推送；后续可配置可审计的出口代理 | 否 | `paused` |
@@ -238,8 +248,11 @@ cd /home/shenwei01/M_OFDFT_periodic_basis
 | 风险 | 概率 | 影响 | 早期信号 | 缓解措施 | 当前状态 |
 |---|---|---|---|---|---|
 | 混合基无自由度/性能优势 | 中 | 高 | G2 达标需大量低 G | 分级低 G、补偿基、允许转向网格 | 未验证 |
+| AMD-OFDFT 先例使宽泛创新主张失效 | 高 | 高 | 仍以“首次原子中心 OFDFT/Pulay 力”立论 | 聚焦全空间系统收敛、互补低 G、同 KEDF 极限和连续导数 | 已识别，定位已修订 |
+| 显式 Gaussian⊕PW 病态或偏慢 | 高 | 高 | 原子/PW 近线性相关、端到端慢于 FFT | 四路线 G2 竞赛；优先原子基+FFT/范围分离；性能闸门淘汰 | 未验证 |
 | 系数规范不唯一 | 中 | 高 | 同密度不同能量 | 固定最小范数规范、零空间测试 | 未验证 |
 | LPP 不可迁移 | 中 | 高 | EOS/相能系统偏差 | 先 Al/Mg、固定同 LPP 对照 | 未验证 |
+| 金属展宽标签热力学不一致 | 高 | 高 | 标量能量稳定但密度/势随 sigma 改变 | 三宽度或密 k 参考；F/TS/估计量/密度/导数同口径 | S1B 待验证 |
 | ML 离线准确但自洽失败 | 高 | 高 | 优化逃离训练流形 | 导数/轨迹/响应联合训练 | 未启动 |
 | Pulay 导数不连续 | 中 | 高 | FD 无二阶收敛区 | 固定基维数和可微裁剪 | 未启动 |
 
@@ -271,6 +284,13 @@ cd /home/shenwei01/M_OFDFT_periodic_basis
 | 2026-08-05 | D-020 | 清单使用独立文件描述符且单点 stdin 接 `/dev/null` | 首次只运行 S1-029；MPI 继承管道 stdin 吞掉后续 TSV 行；S1-029 结果正常并保留 | 反复单点手工重启 | 回归测试模拟工作进程消耗 stdin，仍完整执行两行清单 |
 | 2026-08-05 | D-021 | Mg v090 离散最低点作形状诊断，不作额外硬门槛 | 三条 Mg BM3 Veq 均严格位于 v090–v094，压力跨零，残差 0.0025–0.0039 meV/atom，独立审计复现 | 用未预注册的“离散最小不得在端点”否决连续区间内极小 | 保留拟合 Veq 在范围内、B0>0 和残差门槛 |
 | 2026-08-05 | D-022 | S1-R7 核心 EOS 与双展宽验收 `accepted`，G1 保持 pending | 42/42 收敛；Al/Mg 最大曲线差 0.135259/0.205258 meV/atom，Veq 差 0.027655%/0.031817% | 将核心 EOS 通过误报为完整 G1 通过 | 下一步非平衡截断/k 网格复核，仍需积分电子数、第二程序和 0/10 重生证据 |
+| 2026-08-05 | D-023 | 基础创新主张收窄为全空间系统收敛、互补低 G/范围分离、同 KEDF 平面波极限和连续导数 | Ke et al. 2014 AMD-OFDFT 已实现周期原子中心密度、变分优化和 Pulay 力 | 继续宣称“首次原子中心周期 OFDFT/Pulay 力” | 项目书升为 V2.1；论文必须建立 claim-evidence matrix |
+| 2026-08-05 | D-024 | 显式原子⊕低 G 不再是预设最终架构 | Sun 2017 与 PySCF 当前指南给出偏慢和严重线性相关反例；range separation 是更强工程类比 | 只实现一条显式混合路线再事后评估 | S2 改为纯 PW、原子+FFT、显式混合、互补/范围分离四路线竞赛 |
+| 2026-08-05 | D-025 | 修订 D-018 的命名：`E_KS(sigma->0)` 仅作为 `entropy-corrected estimator`，不称严格 0 K 标签 | Mermin 自由能与展宽分析表明两宽度标量外推不能证明密度/势/力的零温一致性 | 直接把 S1-R7 的 E0 字段用于 ML 标签 | S1-R7 双展宽 EOS 结论仍有效；ML 前必须增加第三宽度或密 k 参考并审计密度/导数 |
+| 2026-08-05 | D-026 | G1 增加 KS-NL→KS-L→OF-L 三层验证 | 同 LPP 的 OF-L/KS-L 只能量 KEDF 偏差，会隐藏 LPP 对标准 KS 的物理误差 | 用单一 local PP 对照同时声称实现与物理正确 | DFTpy 作第二 OF、QE 作第二 KS；相对 EOS 为跨代码主量 |
+| 2026-08-05 | D-027 | S5 拆为 G5a 可积性/自洽稳定与 G5b 物理增益 | MPN 形成能可优于 WT，但绝对能和密度未一致胜出；多篇大数据工作主要为 post-SCF | 用离线能量 RMSE直接接受 ML-KEDF | G5a 任一硬门失败即终止 ML；Na 降为最终外部验证 |
+| 2026-08-05 | D-028 | NVE 从晶胞应力拆成独立 S4C | 能量漂移同时依赖力、SCF 容差和积分器；应力通过不能自动证明 NVE | 在 G4B 以 1 ps 单一漂移数合并验收 | S4C 要求 2–5 ps 及步长减半后的二阶漂移检验 |
+| 2026-08-05 | D-029 | optimizer-specific surrogate 只作为物理 ML-KEDF 失败后的独立转向 | Remme & Hamprecht 2026 只保证固定优化器得到参考密度，可避开 \(O(N^3)\) Löwdin，但不保证真实能量、力或压力 | 把密度 surrogate 计作 G5 物理 KEDF 成功 | 独立命名并只验密度/OOD/缩放；不改变 S1-R8 和固定 KEDF 主线 |
 
 ## 9. 最近可用状态
 
@@ -325,6 +345,7 @@ cd /home/shenwei01/M_OFDFT_periodic_basis
 | 2026-08-05 15:57 CST | S1-R7 | Codex | S1 | `e91fbf7` | S1-028 收敛；24³→28³ 为 0.822250 meV/atom | Al 选择 24³；42 次 EOS 矩阵已生成，待提交运行 |
 | 2026-08-05 16:06 CST | S1-R7 执行准备 | Codex | S1 | `c53e030` | 22/22 单测；42 输入独立重生一致；空数据负路径正确拒绝 | 输入、清单、运行器和验收器已冻结；下一步远端执行 S1-029–070 |
 | 2026-08-05 17:27 CST | S1-R7 核心 EOS | Codex | S1 | `76dbf43` | 25/25 单测；42/42 收敛；6/6 BM3；168/168 输入校验 | 核心 EOS 和双展宽 accepted；G1 pending；下一步 S1-R8 非平衡收敛复核 |
+| 2026-08-05 17:40 CST | 扩大文献与可行性复核 | Codex | S1 | `76dbf43`（仅本地文档更新） | 沿用最近 25/25；本轮无新数值运行 | 13 篇/241 页扩展全文精读；项目书 V2.1；新增 G1/S2/S5/S4C 与 surrogate 转向决策；S1-R8 唯一下一动作不变 |
 
 ## 11. 文档变更记录
 
@@ -345,3 +366,6 @@ cd /home/shenwei01/M_OFDFT_periodic_basis
 | 2026-08-05 | V2.2 | Codex | 记录 Al 28³ 通过、24³ 最终选择、S1-R7 参数和 42 次核心 EOS 固定清单 |
 | 2026-08-05 | V2.3 | Codex | 记录 S1-R7 可执行提交、22/22 单测、内容寻址校验及服务器唯一下一动作 |
 | 2026-08-05 | V2.4 | Codex | 记录 42/42 核心 EOS、六曲线拟合、双展宽验收、独立复核、G1 剩余缺口和 S1-R8 唯一下一动作 |
+| 2026-08-05 | V2.5 | Codex | 接入扩大文献调研、AMD-OFDFT 先例、V2.1 项目书、三层基准、展宽标签、S2 架构竞赛及 S5/S4C 新闸门；保持 S1-R8 下一动作 |
+| 2026-08-05 | V2.6 | Codex | 补入 2026 surrogate functional 全文、PDF/文本/QA、D-029 转向边界并更新扩展文献统计；保持 S1-R8 下一动作 |
+| 2026-08-05 | V2.7 | Codex | 将 V2.1 项目书、两轮复核及两套原创文献研判整理为可移植仓库文档；PDF、全文抽取和 QA 产物因许可与历史体积不入库 |
