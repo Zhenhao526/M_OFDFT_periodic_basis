@@ -1,10 +1,37 @@
 # G0 acceptance record
 
-- Decision: `accepted`
+- Decision: `accepted` for locked-archive recovery and internal numerical use
+- Runtime-isolation subdecision: `paused`
 - Date: 2026-08-05
 - Scope: internal numerical research
 - Evidence experiment: `S0-20260805-003`
 - Reproducible-state tag: `s0-clean-recovery-20260805`
+
+## Runtime-isolation erratum (2026-08-05)
+
+The original acceptance record used the recovered ABACUS executable's `ldd`
+resolution report as evidence for “zero old-prefix references.” That observation
+was real but narrower than the claim made from it: it covered the ABACUS dynamic
+libraries resolved by `ldd`, not the complete MPI/PRRTE/UCX process and file-access
+chain.
+
+Later whole-runtime tracing found that the recovered `mpirun` can invoke the
+old-prefix `prterun` through its compiled prefix, and a stricter runtime probe
+also observed successful accesses to the old runtime root while that root
+remained visible. Consequently:
+
+- the claims that `S0-20260805-003` proved whole-runtime isolation or a hermetic
+  archive are withdrawn;
+- the runtime-isolation subcriterion is `paused`;
+- the archive hash, restore time, ABACUS `ldd` observation, converged energies,
+  and 0.0 meV/atom repeated-run difference remain valid observations;
+- no runtime-relocation replay had passed at the time of this correction.
+
+The isolation subcriterion may be reconsidered only after the protocol is fixed
+and frozen, the relocated ABACUS passes an S1-074 smoke inside a private
+user/mount namespace that hides the old runtime root, and mapped experiments
+S1-20260805-113 through 118 pass both strict runtime tracing and numerical/R8
+replacement gates.
 
 ## Decision table
 
@@ -12,10 +39,11 @@
 |---|---:|---:|---|
 | Environment lock, versions, and Git record | 100% | Version/package/CMake/system snapshots and Git history present | pass |
 | Pseudopotential and benchmark-input SHA-256 | 100% | Al/Mg LPP and smoke inputs covered | pass |
-| Clean environment restore plus smoke | <60 min, first attempt | 23.46 s from locked archive through tests | pass |
+| Locked-archive restore plus numerical smoke | <60 min, first attempt | 23.46 s from locked archive through tests | pass |
 | Repeated-run energy difference | <0.1 meV/atom | 0.0 meV/atom | pass |
 | Automated test entry point | zero errors | 2/2 unit tests passed | pass |
 | Progress handoff fields | complete | state, next action, tag, experiment, and blockers recorded | pass |
+| Whole-runtime old-prefix isolation | zero successful old-prefix access, execution, or mapping | ABACUS `ldd` mapped zero old-prefix libraries, but later tracing found old `prterun` execution and successful old-root accesses | paused |
 
 ## Clean recovery evidence
 
@@ -28,12 +56,16 @@
 - Unit tests plus two-repeat smoke wall time: 12.33 s.
 - Conservative restore-plus-test total: 23.46 s.
 - Recovered ABACUS SHA-256: `2d68a57c7b25608b3550854dabc2e63601eeca956bf185ad7d0967052bdbb4ba`.
-- Dynamic-library audit: 32 libraries resolved from the new prefix and zero from the original baseline prefix.
+- ABACUS `ldd` audit: 32 libraries resolved from the new prefix and zero from the original baseline prefix.
 - Existing-target overwrite test: refused with exit code 2 as required.
 
 The baseline prefix has no Conda metadata. This gate therefore validates a locked
 binary recovery, not a source rebuild or a fresh dependency solve. The distinction
 is explicit in the README and must be retained in publications.
+
+The `ldd` count above must not be described as a whole-runtime access audit.
+It did not cover the launcher selected by OpenMPI/PRRTE, runtime file probes,
+memory maps made after process startup, or failed/successful path accesses.
 
 ## Numerical evidence
 
@@ -48,9 +80,29 @@ Evidence files are stored under `runs/S0-20260805-003/`, including input hashes,
 metadata, parsed result, restore result, archive checksum, and the dynamic-library
 resolution report.
 
+## Correction protocol in progress
+
+- Original ABACUS SHA-256:
+  `2d68a57c7b25608b3550854dabc2e63601eeca956bf185ad7d0967052bdbb4ba`.
+- Relocated candidate SHA-256:
+  `438c74b9ada4c8df15ffbb66da6755907dfd2a3812ecf868fafd4d7dc4db62e1`.
+- The candidate keeps the same ELF Build ID, `NEEDED` entries, and load layout;
+  the observed byte differences are confined to the RUNPATH string/padding slot,
+  changing the absolute old-prefix RUNPATH to `$ORIGIN/../conda_prefix/lib`.
+- The planned launcher uses an unprivileged private user/mount namespace and
+  masks `/home/shenwei01/wt_melting_runtime_20260724` inside that namespace.
+- Acceptance requires zero successful old-prefix accesses, zero old-prefix
+  execution, zero old-prefix mappings, zero unknown failed probes, and exact
+  registered-probe counts under strict tracing.
+- Sequence is fixed: repair/freeze protocol → S1-074 namespace smoke →
+  S1-20260805-113–118 mapped replays. At this document state, neither the smoke
+  nor the six official replays has passed.
+
 ## Restrictions carried forward
 
-G0 acceptance permits internal S1 work. It does not grant redistribution rights.
+The retained numerical/recovery portion of G0 permits internal S1 analysis, but
+the archive must not be called whole-runtime isolated or hermetic while the
+runtime-isolation subdecision is `paused`. G0 does not grant redistribution rights.
 The project license and third-party LPP redistribution terms remain unresolved;
 public release is prohibited until those items are accepted. The node01 host also
 cannot currently reach GitHub directly, so the verified Git-bundle relay remains
