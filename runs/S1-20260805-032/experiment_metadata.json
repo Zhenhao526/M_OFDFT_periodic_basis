@@ -1,0 +1,10 @@
+{
+  "abacus_path": "/home/shenwei01/M_OFDFT_recovery_S0_20260805_001/source/abacus_pw_para",
+  "abacus_sha256": "2d68a57c7b25608b3550854dabc2e63601eeca956bf185ad7d0967052bdbb4ba",
+  "code_commit": "f4c23ffce89f7ec0c119e805862d130d8910cf00",
+  "created_at": "2026-08-05T08:10:58.178214+00:00",
+  "experiment_id": "S1-20260805-032",
+  "mpi_ranks": 4,
+  "stage": "S1",
+  "worktree_dirty": false
+}
