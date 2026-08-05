@@ -1,0 +1,12 @@
+{
+  "atom_count": 1,
+  "converged": true,
+  "electron_count_expected": 3.0,
+  "electron_count_nominal_relative_error": 0.0,
+  "electron_count_reported": 3.0,
+  "energy_ev": -57.19762061442216,
+  "energy_ev_per_atom": -57.19762061442216,
+  "failure_reason": null,
+  "pressure_gpa": -0.0739916,
+  "pressure_kbar": -0.739916
+}
