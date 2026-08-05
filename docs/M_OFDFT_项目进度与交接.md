@@ -2,8 +2,8 @@
 
 > 本文件是项目状态的唯一人工入口。任何人接手前先读本文件，再读项目书和当前阶段 README。  
 > 状态词仅使用：`not_started`、`in_progress`、`blocked`、`accepted`、`rejected`、`paused`。  
-> 更新时间：2026-08-05 17:43 CST
-> 文档版本：V2.7
+> 更新时间：2026-08-05 17:57 CST
+> 文档版本：V2.8
 
 ## 0. 十分钟上手摘要
 
@@ -14,10 +14,10 @@
 | 当前闸门 | G1，执行中 |
 | 当前负责人 | 远端账户 `shenwei01`；本轮执行与记录：Codex |
 | 当前工作分支 | `main`；受管文件干净；本地未跟踪 `tmp/pdfs/extended_qa/` 属其他 PDF QA 产物，保留未动 |
-| 最近可用提交 | `76dbf43`（S1-R7 42 点原始结果、六曲线 BM3 拟合与核心 EOS 验收） |
+| 最近可用提交 | `d6ffe59`（S1-R8 六条七点加密曲线、固定 ID、输入、运行器与严格验收器） |
 | 最近通过的 smoke test | `S0-20260805-003`：新恢复前缀中单测 2/2；两次 SCF 均收敛，能量差 0.0 meV/atom |
 | 当前阻塞 | node01 无第二套独立 OFDFT/KSDFT 程序；许可证与 LPP 条款仍限制发布 |
-| 下一项唯一动作 | 预注册 S1-R8 非平衡收敛复核矩阵：Al/Mg 七点的 OF 下一截断、KS 下一截断和 KS 下一 k 网格，共 42 次 |
+| 下一项唯一动作 | 同步 `d6ffe59` 到服务器并执行 `config/S1_non_equilibrium_run_manifest.tsv` 的 42 次 S1-R8 计算 |
 
 ### 必读文件
 
@@ -84,6 +84,8 @@ cd /home/shenwei01/M_OFDFT_periodic_basis
 - [x] 完成并扩展 Mg k 点扫描至 24x24x16，尾部稳定判据选择 20x20x12；
 - [x] 完成 Al/Mg 标准与半展宽 V0 诊断，四点全部收敛；明确单点绝对能量位移不能替代 EOS 相对能量验收；
 - [x] 单元测试扩展至 25/25，通过输入、解析、清单 stdin 隔离、BM3 拟合、端点诊断、OF/KS 基准与双展宽严格门槛检查；
+- [x] 冻结 S1-R8：六条七点加密曲线、42 个新计算、S1-071 至 112 固定 ID；不重跑 28 个 S1-R7 唯一基线点；
+- [x] 新增 R8 内容寻址配置、输入/manifest 预检、恢复安全运行器和原始七点严格验收器；34/34 单测及空结果负路径通过；
 - [x] 扩大调研至原包 8 篇核心文献、扩展包 13 篇全文/241 页、1 篇网页全文及 20 余篇方法/软件补充证据；
 - [x] 识别 AMD-OFDFT 2014 直接先例，收窄“原子中心密度 + 变分 + Pulay 力”的创新主张；
 - [x] 完成闸门式项目再评估：整体 66/100、S0–S4A 核心 73/100、全范围 S0–S7 约 43/100；
@@ -95,10 +97,10 @@ cd /home/shenwei01/M_OFDFT_periodic_basis
 
 从 S1 基准闭环开始，不要进入 S2 混合基或 ML：
 
-1. 阅读 `analysis/s1/core_eos_20260805/README.md` 和 `summary.json`，确认核心 EOS `accepted` 不等于 G1 通过；
-2. 先提交 S1-R8 配置、输入和固定 ID 清单，再运行非平衡收敛复核：OF 下一截断 Al/Mg=30/40 Ry（14 次）、KS 下一截断=60 Ry（14 次）、KS 下一 k 网格 Al=28³/Mg=24x24x16（14 次）；
-3. 每组都以 v100 为锚比较候选/加密的七点相对能，不得用 V0 绝对能代替；
-4. 完成积分电子数、第二程序交叉核验和 0/10 重生失败率后才能决定 G1；
+1. 阅读 `docs/S1_BASELINE_PROTOCOL.md` 的 S1-R8 和 `config/S1_non_equilibrium_convergence.json`；
+2. 在服务器显式使用 clean-recovery 运行时，先执行 `scripts/validate_s1_non_equilibrium_manifest.py`，再顺序运行 `scripts/run_s1_non_equilibrium_manifest.sh config/S1_non_equilibrium_run_manifest.tsv`；
+3. 42 点完成后运行 `scripts/analyze_s1_non_equilibrium.py analysis/s1/non_equilibrium_convergence_20260805`；每组都以 v100 为锚比较原始七点，不得用 V0 单点或 BM3 平滑替代；
+4. 即使 R8 通过，仍须完成积分电子数、第三展宽/密 k 标签审计、第二 OF、三层 KS-NL→KS-L→OF-L、位移/应变和 0/10 重生证据后才能决定 G1；
 5. 许可证和 LPP 再分发条款继续跟踪。
 
 ## 2. 阶段总览
@@ -106,7 +108,7 @@ cd /home/shenwei01/M_OFDFT_periodic_basis
 | 阶段 | 名称 | 状态 | 开始日期 | 结束日期 | 闸门 | 证据链接 | 下一动作 |
 |---|---|---|---|---|---|---|---|
 | S0 | 初始化与复现协议 | `accepted` | 2026-08-05 | 2026-08-05 | G0 | `docs/G0_ACCEPTANCE.md`; `S0-20260805-003` | 技术验收完成；发布限制移交 S7 |
-| S1 | 平面波基准闭环 | `in_progress` | 2026-08-05 | — | G1 | `analysis/s1/core_eos_20260805/`; `analysis/s1/*_cutoff_20260805/`; `analysis/s1/*_kpoint_20260805/` | 预注册 42 次非平衡截断/k 网格复核 |
+| S1 | 平面波基准闭环 | `in_progress` | 2026-08-05 | — | G1 | `analysis/s1/core_eos_20260805/`; `config/S1_non_equilibrium_convergence.json` | 执行 S1-071 至 112 的 42 次非平衡收敛复核 |
 | S2 | 混合密度基表示 | `not_started` | — | — | G2 | — | 等待 G1 |
 | S3 | 固定 KEDF 自洽求解 | `not_started` | — | — | G3 | — | 等待 G2 |
 | S4A | 固定晶胞解析力 | `not_started` | — | — | G4A | — | 等待 G3 |
@@ -158,7 +160,8 @@ cd /home/shenwei01/M_OFDFT_periodic_basis
 - 当前结果：Al/Mg KS 截断均选择 40 Ry；Al k 网格选择 24³，Mg 选择 20x20x12。
 - 当前结果：42/42 核心 EOS 收敛且六曲线验收通过；Al/Mg 展宽减半的最大相对能差为 0.135259/0.205258 meV/atom，Veq 差为 0.027655%/0.031817%。
 - 当前结果：OFDFT 相对标准展宽 KSDFT 的最大锚定曲线差为 Al 13.064922、Mg 4.819330 meV/atom，为基准诊断，无 G1 通过阈值。
-- 当前唯一动作：预注册 S1-R8 的 42 次非平衡截断/k 网格收敛复核。
+- 当前结果：S1-R8 的 42 个输入、固定 ID、基线引用和严格门槛已在 `d6ffe59` 预注册；34/34 单测与 42/42 manifest 预检通过。
+- 当前唯一动作：同步并执行 S1-071 至 112；预计纯计算约 112 分钟，顺序运行约 2.25 小时预算。
 
 ## 4. 闸门决策记录
 
@@ -198,6 +201,7 @@ cd /home/shenwei01/M_OFDFT_periodic_basis
 | S1-20260805-026–027 | 2026-08-05 | S1 | Mg KS 标准/半展宽 V0 诊断 | 各运行目录记录 | `inputs/s1/convergence_candidates/mg/ksdft/smearing/` | 对应 `runs/` | 两点收敛；绝对能量位移 4.824088 meV/atom | 诊断完成，G1 待 EOS | 两点 |
 | S1-20260805-028 | 2026-08-05 | S1 | Al KS 28³ 零温能量确认 | `e1b414e` | `inputs/s1/convergence_candidates/al/ksdft/kpoint/k028x028x028/` | `runs/S1-20260805-028/` | 24³→28³：0.822250 meV/atom | 通过，选择 24³ | 单次 |
 | S1-20260805-029–070 | 2026-08-05 | S1 | Al/Mg OFDFT、标准/半展宽 KSDFT 七点 EOS | 逐点提交；分析 `76dbf43` | `config/S1_eos_run_manifest.tsv` | 对应 `runs/` | 42/42 收敛；6/6 BM3；展宽能量/Veq 双门槛通过 | 核心 EOS `accepted`；G1 仍 pending | 42 次 |
+| S1-20260805-071–112 | 2026-08-05 | S1 | Al/Mg OF/KS 下一截断及 KS 下一 k 网格七点复核 | `d6ffe59` | `config/S1_non_equilibrium_run_manifest.tsv` | 待生成 | 42/42 输入和基线引用预检通过；数值待运行 | 已预注册，待执行 | 42 次 |
 
 ## 6. 当前指标看板
 
@@ -222,6 +226,7 @@ cd /home/shenwei01/M_OFDFT_periodic_basis
 | Al 双展宽最大相对能差 / Veq 差 | 0.135259 meV/atom / 0.027655% | <2 meV/atom / <0.2% | 同上 | 通过 |
 | Mg 双展宽最大相对能差 / Veq 差 | 0.205258 meV/atom / 0.031817% | <2 meV/atom / <0.2% | 同上 | 通过 |
 | 独立原始输入校验 | 168/168 | 100% | S1-20260805-029–070 | 通过 |
+| S1-R8 预注册矩阵校验 | 42/42；168 个输入文件；34/34 单测 | 100% | S1-20260805-071–112 | 通过，待数值运行 |
 | 密度投影 L2 | — | 平衡 <1% | — | 未测 |
 | 固定 KEDF 能量差 P95 | — | <10 meV/atom | — | 未测 |
 | 自洽成功率 | — | >95% | — | 未测 |
@@ -291,15 +296,16 @@ cd /home/shenwei01/M_OFDFT_periodic_basis
 | 2026-08-05 | D-027 | S5 拆为 G5a 可积性/自洽稳定与 G5b 物理增益 | MPN 形成能可优于 WT，但绝对能和密度未一致胜出；多篇大数据工作主要为 post-SCF | 用离线能量 RMSE直接接受 ML-KEDF | G5a 任一硬门失败即终止 ML；Na 降为最终外部验证 |
 | 2026-08-05 | D-028 | NVE 从晶胞应力拆成独立 S4C | 能量漂移同时依赖力、SCF 容差和积分器；应力通过不能自动证明 NVE | 在 G4B 以 1 ps 单一漂移数合并验收 | S4C 要求 2–5 ps 及步长减半后的二阶漂移检验 |
 | 2026-08-05 | D-029 | optimizer-specific surrogate 只作为物理 ML-KEDF 失败后的独立转向 | Remme & Hamprecht 2026 只保证固定优化器得到参考密度，可避开 \(O(N^3)\) Löwdin，但不保证真实能量、力或压力 | 把密度 surrogate 计作 G5 物理 KEDF 成功 | 独立命名并只验密度/OOD/缩放；不改变 S1-R8 和固定 KEDF 主线 |
+| 2026-08-05 | D-030 | S1-R8 固定为 42 个加密点并复用 S1-R7 的 28 个唯一基线点 | 每材料分别比较 OF cutoff、KS cutoff、KS kmesh 六条七点曲线；早期 V100 扫描口径不一致 | 重跑 84 次或混用旧扫描点 | cutoff 原始锚定能差 <1 meV/atom 且压力差 <0.02 GPa；kmesh 能差 <2；均为严格门槛 |
 
 ## 9. 最近可用状态
 
 此节必须始终指向一个可运行、可复现的状态；若暂无则明确写“无”。
 
-- 最近可用状态：提交 `76dbf43`；包含 S1-029–070 全部原始日志/解析结果、六曲线 BM3、双展宽验收、OF/KS 基准诊断与机器可读摘要。
+- 最近可用状态：提交 `d6ffe59`；包含 S1-R8 内容寻址配置、42 个固定 ID、168 个输入文件、基线引用预检、恢复安全运行器和独立分析器。
 - 对应环境：`environment/`，ABACUS v3.11.0-beta.5 CPU + OpenMPI 5.0.10 + LibXC 7.0.0。
-- 已通过测试：25/25 单元测试；42/42 核心 EOS 收敛；168/168 归档输入校验和通过；独立审计复现六条 BM3 曲线与双展宽结论。
-- 已知失败：`S1-20260805-004` 的初始严格阈值失败已复核；S1-029 后的清单 stdin 执行缺陷已修复且无数值损失；G1 非平衡收敛、积分电子数、第二程序和发布限制仍未解决。
+- 已通过测试：34/34 单元测试；42/42 R8 manifest 与基线引用预检；空结果分析正确返回 `indeterminate`；S1-R7 独立审计结论保持不变。
+- 已知失败：`S1-20260805-004` 的初始严格阈值失败已复核；S1-029 后的清单 stdin 缺陷已修复；S1-R8 尚未数值运行，且 G1 的积分电子数、标签审计、第二程序、三层对照和发布限制仍未解决。
 - 恢复方法：按“最近可运行命令”登录，进入仓库并运行单元测试；新 smoke 必须使用新的实验 ID。
 - 同步方法：node01 执行 `git bundle create ... --all` 并 `git bundle verify`，经跳板机传至本机；三端 SHA-256 一致后，从临时 clone 使用 `git push --atomic origin main --tags`，最后以 `git ls-remote` 核验。
 
@@ -346,6 +352,7 @@ cd /home/shenwei01/M_OFDFT_periodic_basis
 | 2026-08-05 16:06 CST | S1-R7 执行准备 | Codex | S1 | `c53e030` | 22/22 单测；42 输入独立重生一致；空数据负路径正确拒绝 | 输入、清单、运行器和验收器已冻结；下一步远端执行 S1-029–070 |
 | 2026-08-05 17:27 CST | S1-R7 核心 EOS | Codex | S1 | `76dbf43` | 25/25 单测；42/42 收敛；6/6 BM3；168/168 输入校验 | 核心 EOS 和双展宽 accepted；G1 pending；下一步 S1-R8 非平衡收敛复核 |
 | 2026-08-05 17:40 CST | 扩大文献与可行性复核 | Codex | S1 | `76dbf43`（仅本地文档更新） | 沿用最近 25/25；本轮无新数值运行 | 13 篇/241 页扩展全文精读；项目书 V2.1；新增 G1/S2/S5/S4C 与 surrogate 转向决策；S1-R8 唯一下一动作不变 |
+| 2026-08-05 17:57 CST | S1-R8 预注册 | Codex | S1 | `d6ffe59` | 34/34 单测；42/42 manifest 预检；空结果负路径正确 | 六条七点加密曲线与 S1-071–112 已冻结；下一步远端顺序执行约 2.25 小时 |
 
 ## 11. 文档变更记录
 
@@ -369,3 +376,4 @@ cd /home/shenwei01/M_OFDFT_periodic_basis
 | 2026-08-05 | V2.5 | Codex | 接入扩大文献调研、AMD-OFDFT 先例、V2.1 项目书、三层基准、展宽标签、S2 架构竞赛及 S5/S4C 新闸门；保持 S1-R8 下一动作 |
 | 2026-08-05 | V2.6 | Codex | 补入 2026 surrogate functional 全文、PDF/文本/QA、D-029 转向边界并更新扩展文献统计；保持 S1-R8 下一动作 |
 | 2026-08-05 | V2.7 | Codex | 将 V2.1 项目书、两轮复核及两套原创文献研判整理为可移植仓库文档；PDF、全文抽取和 QA 产物因许可与历史体积不入库 |
+| 2026-08-05 | V2.8 | Codex | 记录 S1-R8 42 点预注册、固定 ID/基线引用、34/34 单测、严格门槛和服务器唯一执行动作 |
