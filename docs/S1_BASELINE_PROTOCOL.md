@@ -35,7 +35,7 @@ equilibrium volume by `<0.2%` and relative energy by `<2 meV/atom`.
 
 - ABACUS `v3.11.0-beta.5`, plane-wave basis, symmetry disabled.
 - WT parameters: `alpha = beta = 5/6`, `rho0 = 0`, `of_method = tn`,
-  `of_conv = both`, `of_tole = 1e-8`, `of_tolp = 1e-7`.
+  `of_conv = both`, `of_tole = 1e-7`, `of_tolp = 1e-6`.
 - KSDFT: `scf_thr = 1e-10`, `scf_nmax = 200`, CG eigensolver, Fermi-Dirac
   smearing, Broyden mixing with beta `0.4`.
 - `ecutrho = 4 * ecutwfc` in every candidate.
@@ -59,3 +59,13 @@ equilibrium volume by `<0.2%` and relative energy by `<2 meV/atom`.
 
 Generated inputs are candidates until the convergence results are committed.
 S2 must not start before every G1 acceptance item has evidence.
+
+## Protocol revisions
+
+- `S1-R1`, 2026-08-05: the initial 60 Ry Al WT run (`S1-20260805-004`)
+  reached the 200-iteration limit with a stationary potential norm
+  `1.9681e-7`, while energy and pressure were stable. The initial candidate
+  tolerances (`1e-8`, `1e-7`) were stricter than the audited S0/legacy WT
+  settings and produced a numerical plateau. Before any retry, tolerances were
+  changed to `of_tole=1e-7`, `of_tolp=1e-6`; G1 energy and pressure acceptance
+  thresholds were not changed. The failed run remains in the experiment ledger.

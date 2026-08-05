@@ -15,8 +15,8 @@ cal_stress 1
 of_kinetic wt
 of_method tn
 of_conv both
-of_tole 1e-8
-of_tolp 1e-7
+of_tole 1e-7
+of_tolp 1e-6
 of_wt_alpha 0.8333333333333334
 of_wt_beta 0.8333333333333334
 of_wt_rho0 0.0
