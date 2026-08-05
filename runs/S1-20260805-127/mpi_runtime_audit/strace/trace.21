@@ -1,0 +1,750 @@
+openat(AT_FDCWD, "/dev/null", O_RDONLY) = 20
+openat(AT_FDCWD, "/proc/self/task", O_RDONLY|O_NONBLOCK|O_CLOEXEC|O_DIRECTORY) = 20
+newfstatat(20, "", {st_mode=S_IFDIR|0555, st_size=0, ...}, AT_EMPTY_PATH) = 0
+openat(AT_FDCWD, "/proc/self/task", O_RDONLY|O_NONBLOCK|O_CLOEXEC|O_DIRECTORY) = 20
+newfstatat(20, "", {st_mode=S_IFDIR|0555, st_size=0, ...}, AT_EMPTY_PATH) = 0
+openat(AT_FDCWD, "/proc/self/fd", O_RDONLY|O_NONBLOCK|O_CLOEXEC|O_DIRECTORY) = 20
+newfstatat(20, "", {st_mode=S_IFDIR|0500, st_size=0, ...}, AT_EMPTY_PATH) = 0
+chdir("/home/shenwei01/M_OFDFT_periodic_basis/runs/S1-20260805-127") = 0
+execve("/usr/bin/python3.10", ["/usr/bin/python3.10", "/home/shenwei01/M_OFDFT_periodic_basis/scripts/runtime_relocation_rank_wrapper.py", "/home/shenwei01/M_OFDFT_recovery_S0_20260805_001/source/abacus_pw_para_relocated_20260805"], 0x5644e58471c0 /* 133 vars */) = 0
+access("/etc/ld.so.preload", R_OK)      = -1 ENOENT (No such file or directory)
+openat(AT_FDCWD, "/home/shenwei01/M_OFDFT_recovery_S0_20260805_001/conda_prefix/lib/glibc-hwcaps/x86-64-v4/libm.so.6", O_RDONLY|O_CLOEXEC) = -1 ENOENT (No such file or directory)
+newfstatat(AT_FDCWD, "/home/shenwei01/M_OFDFT_recovery_S0_20260805_001/conda_prefix/lib/glibc-hwcaps/x86-64-v4", 0x7ffc4d2eda30, 0) = -1 ENOENT (No such file or directory)
+openat(AT_FDCWD, "/home/shenwei01/M_OFDFT_recovery_S0_20260805_001/conda_prefix/lib/glibc-hwcaps/x86-64-v3/libm.so.6", O_RDONLY|O_CLOEXEC) = -1 ENOENT (No such file or directory)
+newfstatat(AT_FDCWD, "/home/shenwei01/M_OFDFT_recovery_S0_20260805_001/conda_prefix/lib/glibc-hwcaps/x86-64-v3", 0x7ffc4d2eda30, 0) = -1 ENOENT (No such file or directory)
+openat(AT_FDCWD, "/home/shenwei01/M_OFDFT_recovery_S0_20260805_001/conda_prefix/lib/glibc-hwcaps/x86-64-v2/libm.so.6", O_RDONLY|O_CLOEXEC) = -1 ENOENT (No such file or directory)
+newfstatat(AT_FDCWD, "/home/shenwei01/M_OFDFT_recovery_S0_20260805_001/conda_prefix/lib/glibc-hwcaps/x86-64-v2", 0x7ffc4d2eda30, 0) = -1 ENOENT (No such file or directory)
+openat(AT_FDCWD, "/home/shenwei01/M_OFDFT_recovery_S0_20260805_001/conda_prefix/lib/tls/haswell/avx512_1/x86_64/libm.so.6", O_RDONLY|O_CLOEXEC) = -1 ENOENT (No such file or directory)
+newfstatat(AT_FDCWD, "/home/shenwei01/M_OFDFT_recovery_S0_20260805_001/conda_prefix/lib/tls/haswell/avx512_1/x86_64", 0x7ffc4d2eda30, 0) = -1 ENOENT (No such file or directory)
+openat(AT_FDCWD, "/home/shenwei01/M_OFDFT_recovery_S0_20260805_001/conda_prefix/lib/tls/haswell/avx512_1/libm.so.6", O_RDONLY|O_CLOEXEC) = -1 ENOENT (No such file or directory)
+newfstatat(AT_FDCWD, "/home/shenwei01/M_OFDFT_recovery_S0_20260805_001/conda_prefix/lib/tls/haswell/avx512_1", 0x7ffc4d2eda30, 0) = -1 ENOENT (No such file or directory)
+openat(AT_FDCWD, "/home/shenwei01/M_OFDFT_recovery_S0_20260805_001/conda_prefix/lib/tls/haswell/x86_64/libm.so.6", O_RDONLY|O_CLOEXEC) = -1 ENOENT (No such file or directory)
+newfstatat(AT_FDCWD, "/home/shenwei01/M_OFDFT_recovery_S0_20260805_001/conda_prefix/lib/tls/haswell/x86_64", 0x7ffc4d2eda30, 0) = -1 ENOENT (No such file or directory)
+openat(AT_FDCWD, "/home/shenwei01/M_OFDFT_recovery_S0_20260805_001/conda_prefix/lib/tls/haswell/libm.so.6", O_RDONLY|O_CLOEXEC) = -1 ENOENT (No such file or directory)
+newfstatat(AT_FDCWD, "/home/shenwei01/M_OFDFT_recovery_S0_20260805_001/conda_prefix/lib/tls/haswell", 0x7ffc4d2eda30, 0) = -1 ENOENT (No such file or directory)
+openat(AT_FDCWD, "/home/shenwei01/M_OFDFT_recovery_S0_20260805_001/conda_prefix/lib/tls/avx512_1/x86_64/libm.so.6", O_RDONLY|O_CLOEXEC) = -1 ENOENT (No such file or directory)
+newfstatat(AT_FDCWD, "/home/shenwei01/M_OFDFT_recovery_S0_20260805_001/conda_prefix/lib/tls/avx512_1/x86_64", 0x7ffc4d2eda30, 0) = -1 ENOENT (No such file or directory)
+openat(AT_FDCWD, "/home/shenwei01/M_OFDFT_recovery_S0_20260805_001/conda_prefix/lib/tls/avx512_1/libm.so.6", O_RDONLY|O_CLOEXEC) = -1 ENOENT (No such file or directory)
+newfstatat(AT_FDCWD, "/home/shenwei01/M_OFDFT_recovery_S0_20260805_001/conda_prefix/lib/tls/avx512_1", 0x7ffc4d2eda30, 0) = -1 ENOENT (No such file or directory)
+openat(AT_FDCWD, "/home/shenwei01/M_OFDFT_recovery_S0_20260805_001/conda_prefix/lib/tls/x86_64/libm.so.6", O_RDONLY|O_CLOEXEC) = -1 ENOENT (No such file or directory)
+newfstatat(AT_FDCWD, "/home/shenwei01/M_OFDFT_recovery_S0_20260805_001/conda_prefix/lib/tls/x86_64", 0x7ffc4d2eda30, 0) = -1 ENOENT (No such file or directory)
+openat(AT_FDCWD, "/home/shenwei01/M_OFDFT_recovery_S0_20260805_001/conda_prefix/lib/tls/libm.so.6", O_RDONLY|O_CLOEXEC) = -1 ENOENT (No such file or directory)
+newfstatat(AT_FDCWD, "/home/shenwei01/M_OFDFT_recovery_S0_20260805_001/conda_prefix/lib/tls", 0x7ffc4d2eda30, 0) = -1 ENOENT (No such file or directory)
+openat(AT_FDCWD, "/home/shenwei01/M_OFDFT_recovery_S0_20260805_001/conda_prefix/lib/haswell/avx512_1/x86_64/libm.so.6", O_RDONLY|O_CLOEXEC) = -1 ENOENT (No such file or directory)
+newfstatat(AT_FDCWD, "/home/shenwei01/M_OFDFT_recovery_S0_20260805_001/conda_prefix/lib/haswell/avx512_1/x86_64", 0x7ffc4d2eda30, 0) = -1 ENOENT (No such file or directory)
+openat(AT_FDCWD, "/home/shenwei01/M_OFDFT_recovery_S0_20260805_001/conda_prefix/lib/haswell/avx512_1/libm.so.6", O_RDONLY|O_CLOEXEC) = -1 ENOENT (No such file or directory)
+newfstatat(AT_FDCWD, "/home/shenwei01/M_OFDFT_recovery_S0_20260805_001/conda_prefix/lib/haswell/avx512_1", 0x7ffc4d2eda30, 0) = -1 ENOENT (No such file or directory)
+openat(AT_FDCWD, "/home/shenwei01/M_OFDFT_recovery_S0_20260805_001/conda_prefix/lib/haswell/x86_64/libm.so.6", O_RDONLY|O_CLOEXEC) = -1 ENOENT (No such file or directory)
+newfstatat(AT_FDCWD, "/home/shenwei01/M_OFDFT_recovery_S0_20260805_001/conda_prefix/lib/haswell/x86_64", 0x7ffc4d2eda30, 0) = -1 ENOENT (No such file or directory)
+openat(AT_FDCWD, "/home/shenwei01/M_OFDFT_recovery_S0_20260805_001/conda_prefix/lib/haswell/libm.so.6", O_RDONLY|O_CLOEXEC) = -1 ENOENT (No such file or directory)
+newfstatat(AT_FDCWD, "/home/shenwei01/M_OFDFT_recovery_S0_20260805_001/conda_prefix/lib/haswell", 0x7ffc4d2eda30, 0) = -1 ENOENT (No such file or directory)
+openat(AT_FDCWD, "/home/shenwei01/M_OFDFT_recovery_S0_20260805_001/conda_prefix/lib/avx512_1/x86_64/libm.so.6", O_RDONLY|O_CLOEXEC) = -1 ENOENT (No such file or directory)
+newfstatat(AT_FDCWD, "/home/shenwei01/M_OFDFT_recovery_S0_20260805_001/conda_prefix/lib/avx512_1/x86_64", 0x7ffc4d2eda30, 0) = -1 ENOENT (No such file or directory)
+openat(AT_FDCWD, "/home/shenwei01/M_OFDFT_recovery_S0_20260805_001/conda_prefix/lib/avx512_1/libm.so.6", O_RDONLY|O_CLOEXEC) = -1 ENOENT (No such file or directory)
+newfstatat(AT_FDCWD, "/home/shenwei01/M_OFDFT_recovery_S0_20260805_001/conda_prefix/lib/avx512_1", 0x7ffc4d2eda30, 0) = -1 ENOENT (No such file or directory)
+openat(AT_FDCWD, "/home/shenwei01/M_OFDFT_recovery_S0_20260805_001/conda_prefix/lib/x86_64/libm.so.6", O_RDONLY|O_CLOEXEC) = -1 ENOENT (No such file or directory)
+newfstatat(AT_FDCWD, "/home/shenwei01/M_OFDFT_recovery_S0_20260805_001/conda_prefix/lib/x86_64", 0x7ffc4d2eda30, 0) = -1 ENOENT (No such file or directory)
+openat(AT_FDCWD, "/home/shenwei01/M_OFDFT_recovery_S0_20260805_001/conda_prefix/lib/libm.so.6", O_RDONLY|O_CLOEXEC) = -1 ENOENT (No such file or directory)
+newfstatat(AT_FDCWD, "/home/shenwei01/M_OFDFT_recovery_S0_20260805_001/conda_prefix/lib", {st_mode=S_IFDIR|0775, st_size=16384, ...}, 0) = 0
+openat(AT_FDCWD, "/etc/ld.so.cache", O_RDONLY|O_CLOEXEC) = 3
+newfstatat(3, "", {st_mode=S_IFREG|0644, st_size=47288, ...}, AT_EMPTY_PATH) = 0
+openat(AT_FDCWD, "/lib/x86_64-linux-gnu/libm.so.6", O_RDONLY|O_CLOEXEC) = 3
+newfstatat(3, "", {st_mode=S_IFREG|0644, st_size=940560, ...}, AT_EMPTY_PATH) = 0
+openat(AT_FDCWD, "/home/shenwei01/M_OFDFT_recovery_S0_20260805_001/conda_prefix/lib/libexpat.so.1", O_RDONLY|O_CLOEXEC) = 3
+newfstatat(3, "", {st_mode=S_IFREG|0775, st_size=195520, ...}, AT_EMPTY_PATH) = 0
+openat(AT_FDCWD, "/home/shenwei01/M_OFDFT_recovery_S0_20260805_001/conda_prefix/lib/libz.so.1", O_RDONLY|O_CLOEXEC) = 3
+newfstatat(3, "", {st_mode=S_IFREG|0775, st_size=117128, ...}, AT_EMPTY_PATH) = 0
+openat(AT_FDCWD, "/home/shenwei01/M_OFDFT_recovery_S0_20260805_001/conda_prefix/lib/libc.so.6", O_RDONLY|O_CLOEXEC) = -1 ENOENT (No such file or directory)
+openat(AT_FDCWD, "/lib/x86_64-linux-gnu/libc.so.6", O_RDONLY|O_CLOEXEC) = 3
+newfstatat(3, "", {st_mode=S_IFREG|0755, st_size=2220400, ...}, AT_EMPTY_PATH) = 0
+readlink("/usr/bin/python3.10", 0x7ffc4d2e9170, 4096) = -1 EINVAL (Invalid argument)
+openat(AT_FDCWD, "/usr/bin/pyvenv.cfg", O_RDONLY) = -1 ENOENT (No such file or directory)
+openat(AT_FDCWD, "/usr/pyvenv.cfg", O_RDONLY) = -1 ENOENT (No such file or directory)
+newfstatat(AT_FDCWD, "/usr/bin/Modules/Setup.local", 0x7ffc4d2ea140, 0) = -1 ENOENT (No such file or directory)
+newfstatat(AT_FDCWD, "/usr/bin/lib/python3.10/os.py", 0x7ffc4d2ea040, 0) = -1 ENOENT (No such file or directory)
+newfstatat(AT_FDCWD, "/usr/bin/lib/python3.10/os.pyc", 0x7ffc4d2ea040, 0) = -1 ENOENT (No such file or directory)
+newfstatat(AT_FDCWD, "/usr/lib/python3.10/os.py", {st_mode=S_IFREG|0644, st_size=39557, ...}, 0) = 0
+openat(AT_FDCWD, "/usr/bin/pybuilddir.txt", O_RDONLY) = -1 ENOENT (No such file or directory)
+newfstatat(AT_FDCWD, "/usr/bin/lib/python3.10/lib-dynload", 0x7ffc4d2e91c0, 0) = -1 ENOENT (No such file or directory)
+newfstatat(AT_FDCWD, "/usr/lib/python3.10/lib-dynload", {st_mode=S_IFDIR|0755, st_size=4096, ...}, 0) = 0
+openat(AT_FDCWD, "/usr/share/zoneinfo/UTC", O_RDONLY|O_CLOEXEC) = 3
+newfstatat(3, "", {st_mode=S_IFREG|0644, st_size=114, ...}, AT_EMPTY_PATH) = 0
+newfstatat(3, "", {st_mode=S_IFREG|0644, st_size=114, ...}, AT_EMPTY_PATH) = 0
+newfstatat(AT_FDCWD, "/usr/lib/python310.zip", 0x7ffc4d2eca00, 0) = -1 ENOENT (No such file or directory)
+newfstatat(AT_FDCWD, "/usr/lib", {st_mode=S_IFDIR|0755, st_size=8192, ...}, 0) = 0
+newfstatat(AT_FDCWD, "/usr/lib/python310.zip", 0x7ffc4d2ec770, 0) = -1 ENOENT (No such file or directory)
+newfstatat(AT_FDCWD, "/usr/lib/python3.10", {st_mode=S_IFDIR|0755, st_size=8192, ...}, 0) = 0
+newfstatat(AT_FDCWD, "/usr/lib/python3.10", {st_mode=S_IFDIR|0755, st_size=8192, ...}, 0) = 0
+newfstatat(AT_FDCWD, "/usr/lib/python3.10", {st_mode=S_IFDIR|0755, st_size=8192, ...}, 0) = 0
+openat(AT_FDCWD, "/usr/lib/python3.10", O_RDONLY|O_NONBLOCK|O_CLOEXEC|O_DIRECTORY) = 3
+newfstatat(3, "", {st_mode=S_IFDIR|0755, st_size=8192, ...}, AT_EMPTY_PATH) = 0
+newfstatat(AT_FDCWD, "/usr/lib/python3.10/encodings/__init__.cpython-310-x86_64-linux-gnu.so", 0x7ffc4d2ecb90, 0) = -1 ENOENT (No such file or directory)
+newfstatat(AT_FDCWD, "/usr/lib/python3.10/encodings/__init__.abi3.so", 0x7ffc4d2ecb90, 0) = -1 ENOENT (No such file or directory)
+newfstatat(AT_FDCWD, "/usr/lib/python3.10/encodings/__init__.so", 0x7ffc4d2ecb90, 0) = -1 ENOENT (No such file or directory)
+newfstatat(AT_FDCWD, "/usr/lib/python3.10/encodings/__init__.py", {st_mode=S_IFREG|0644, st_size=5620, ...}, 0) = 0
+newfstatat(AT_FDCWD, "/usr/lib/python3.10/encodings/__init__.py", {st_mode=S_IFREG|0644, st_size=5620, ...}, 0) = 0
+openat(AT_FDCWD, "/usr/lib/python3.10/encodings/__pycache__/__init__.cpython-310.pyc", O_RDONLY|O_CLOEXEC) = 3
+newfstatat(3, "", {st_mode=S_IFREG|0644, st_size=3875, ...}, AT_EMPTY_PATH) = 0
+newfstatat(3, "", {st_mode=S_IFREG|0644, st_size=3875, ...}, AT_EMPTY_PATH) = 0
+newfstatat(AT_FDCWD, "/usr/lib/python3.10", {st_mode=S_IFDIR|0755, st_size=8192, ...}, 0) = 0
+newfstatat(AT_FDCWD, "/usr/lib/python3.10/codecs.py", {st_mode=S_IFREG|0644, st_size=36714, ...}, 0) = 0
+newfstatat(AT_FDCWD, "/usr/lib/python3.10/codecs.py", {st_mode=S_IFREG|0644, st_size=36714, ...}, 0) = 0
+openat(AT_FDCWD, "/usr/lib/python3.10/__pycache__/codecs.cpython-310.pyc", O_RDONLY|O_CLOEXEC) = 3
+newfstatat(3, "", {st_mode=S_IFREG|0644, st_size=33219, ...}, AT_EMPTY_PATH) = 0
+newfstatat(3, "", {st_mode=S_IFREG|0644, st_size=33219, ...}, AT_EMPTY_PATH) = 0
+newfstatat(AT_FDCWD, "/usr/lib/python3.10/encodings", {st_mode=S_IFDIR|0755, st_size=4096, ...}, 0) = 0
+newfstatat(AT_FDCWD, "/usr/lib/python3.10/encodings", {st_mode=S_IFDIR|0755, st_size=4096, ...}, 0) = 0
+newfstatat(AT_FDCWD, "/usr/lib/python3.10/encodings", {st_mode=S_IFDIR|0755, st_size=4096, ...}, 0) = 0
+openat(AT_FDCWD, "/usr/lib/python3.10/encodings", O_RDONLY|O_NONBLOCK|O_CLOEXEC|O_DIRECTORY) = 3
+newfstatat(3, "", {st_mode=S_IFDIR|0755, st_size=4096, ...}, AT_EMPTY_PATH) = 0
+newfstatat(AT_FDCWD, "/usr/lib/python3.10/encodings/aliases.py", {st_mode=S_IFREG|0644, st_size=15677, ...}, 0) = 0
+newfstatat(AT_FDCWD, "/usr/lib/python3.10/encodings/aliases.py", {st_mode=S_IFREG|0644, st_size=15677, ...}, 0) = 0
+openat(AT_FDCWD, "/usr/lib/python3.10/encodings/__pycache__/aliases.cpython-310.pyc", O_RDONLY|O_CLOEXEC) = 3
+newfstatat(3, "", {st_mode=S_IFREG|0644, st_size=10921, ...}, AT_EMPTY_PATH) = 0
+newfstatat(3, "", {st_mode=S_IFREG|0644, st_size=10921, ...}, AT_EMPTY_PATH) = 0
+newfstatat(AT_FDCWD, "/usr/lib/python3.10/encodings", {st_mode=S_IFDIR|0755, st_size=4096, ...}, 0) = 0
+newfstatat(AT_FDCWD, "/usr/lib/python3.10/encodings/utf_8.py", {st_mode=S_IFREG|0644, st_size=1005, ...}, 0) = 0
+newfstatat(AT_FDCWD, "/usr/lib/python3.10/encodings/utf_8.py", {st_mode=S_IFREG|0644, st_size=1005, ...}, 0) = 0
+openat(AT_FDCWD, "/usr/lib/python3.10/encodings/__pycache__/utf_8.cpython-310.pyc", O_RDONLY|O_CLOEXEC) = 3
+newfstatat(3, "", {st_mode=S_IFREG|0644, st_size=1597, ...}, AT_EMPTY_PATH) = 0
+newfstatat(3, "", {st_mode=S_IFREG|0644, st_size=1597, ...}, AT_EMPTY_PATH) = 0
+newfstatat(0, "", {st_mode=S_IFCHR|0666, st_rdev=makedev(0x1, 0x3), ...}, AT_EMPTY_PATH) = 0
+newfstatat(AT_FDCWD, "/usr/lib/python3.10", {st_mode=S_IFDIR|0755, st_size=8192, ...}, 0) = 0
+newfstatat(AT_FDCWD, "/usr/lib/python3.10/io.py", {st_mode=S_IFREG|0644, st_size=4196, ...}, 0) = 0
+newfstatat(AT_FDCWD, "/usr/lib/python3.10/io.py", {st_mode=S_IFREG|0644, st_size=4196, ...}, 0) = 0
+openat(AT_FDCWD, "/usr/lib/python3.10/__pycache__/io.cpython-310.pyc", O_RDONLY|O_CLOEXEC) = 3
+newfstatat(3, "", {st_mode=S_IFREG|0644, st_size=3663, ...}, AT_EMPTY_PATH) = 0
+newfstatat(3, "", {st_mode=S_IFREG|0644, st_size=3663, ...}, AT_EMPTY_PATH) = 0
+newfstatat(AT_FDCWD, "/usr/lib/python3.10", {st_mode=S_IFDIR|0755, st_size=8192, ...}, 0) = 0
+newfstatat(AT_FDCWD, "/usr/lib/python3.10/abc.py", {st_mode=S_IFREG|0644, st_size=6522, ...}, 0) = 0
+newfstatat(AT_FDCWD, "/usr/lib/python3.10/abc.py", {st_mode=S_IFREG|0644, st_size=6522, ...}, 0) = 0
+openat(AT_FDCWD, "/usr/lib/python3.10/__pycache__/abc.cpython-310.pyc", O_RDONLY|O_CLOEXEC) = 3
+newfstatat(3, "", {st_mode=S_IFREG|0644, st_size=6751, ...}, AT_EMPTY_PATH) = 0
+newfstatat(3, "", {st_mode=S_IFREG|0644, st_size=6751, ...}, AT_EMPTY_PATH) = 0
+newfstatat(0, "", {st_mode=S_IFCHR|0666, st_rdev=makedev(0x1, 0x3), ...}, AT_EMPTY_PATH) = 0
+newfstatat(1, "", {st_mode=S_IFCHR|0620, st_rdev=makedev(0x88, 0x3), ...}, AT_EMPTY_PATH) = 0
+newfstatat(2, "", {st_mode=S_IFIFO|0600, st_size=0, ...}, AT_EMPTY_PATH) = 0
+newfstatat(AT_FDCWD, "/usr/lib/python3.10", {st_mode=S_IFDIR|0755, st_size=8192, ...}, 0) = 0
+newfstatat(AT_FDCWD, "/usr/lib/python3.10/site.py", {st_mode=S_IFREG|0644, st_size=23667, ...}, 0) = 0
+newfstatat(AT_FDCWD, "/usr/lib/python3.10/site.py", {st_mode=S_IFREG|0644, st_size=23667, ...}, 0) = 0
+openat(AT_FDCWD, "/usr/lib/python3.10/__pycache__/site.cpython-310.pyc", O_RDONLY|O_CLOEXEC) = 3
+newfstatat(3, "", {st_mode=S_IFREG|0644, st_size=17922, ...}, AT_EMPTY_PATH) = 0
+newfstatat(3, "", {st_mode=S_IFREG|0644, st_size=17922, ...}, AT_EMPTY_PATH) = 0
+newfstatat(AT_FDCWD, "/usr/lib/python3.10", {st_mode=S_IFDIR|0755, st_size=8192, ...}, 0) = 0
+newfstatat(AT_FDCWD, "/usr/lib/python3.10/os.py", {st_mode=S_IFREG|0644, st_size=39557, ...}, 0) = 0
+newfstatat(AT_FDCWD, "/usr/lib/python3.10/os.py", {st_mode=S_IFREG|0644, st_size=39557, ...}, 0) = 0
+openat(AT_FDCWD, "/usr/lib/python3.10/__pycache__/os.cpython-310.pyc", O_RDONLY|O_CLOEXEC) = 3
+newfstatat(3, "", {st_mode=S_IFREG|0644, st_size=31599, ...}, AT_EMPTY_PATH) = 0
+newfstatat(3, "", {st_mode=S_IFREG|0644, st_size=31599, ...}, AT_EMPTY_PATH) = 0
+newfstatat(AT_FDCWD, "/usr/lib/python3.10", {st_mode=S_IFDIR|0755, st_size=8192, ...}, 0) = 0
+newfstatat(AT_FDCWD, "/usr/lib/python3.10/stat.py", {st_mode=S_IFREG|0644, st_size=5485, ...}, 0) = 0
+newfstatat(AT_FDCWD, "/usr/lib/python3.10/stat.py", {st_mode=S_IFREG|0644, st_size=5485, ...}, 0) = 0
+openat(AT_FDCWD, "/usr/lib/python3.10/__pycache__/stat.cpython-310.pyc", O_RDONLY|O_CLOEXEC) = 3
+newfstatat(3, "", {st_mode=S_IFREG|0644, st_size=4273, ...}, AT_EMPTY_PATH) = 0
+newfstatat(3, "", {st_mode=S_IFREG|0644, st_size=4273, ...}, AT_EMPTY_PATH) = 0
+newfstatat(AT_FDCWD, "/usr/lib/python3.10", {st_mode=S_IFDIR|0755, st_size=8192, ...}, 0) = 0
+newfstatat(AT_FDCWD, "/usr/lib/python3.10/_collections_abc.py", {st_mode=S_IFREG|0644, st_size=32284, ...}, 0) = 0
+newfstatat(AT_FDCWD, "/usr/lib/python3.10/_collections_abc.py", {st_mode=S_IFREG|0644, st_size=32284, ...}, 0) = 0
+openat(AT_FDCWD, "/usr/lib/python3.10/__pycache__/_collections_abc.cpython-310.pyc", O_RDONLY|O_CLOEXEC) = 3
+newfstatat(3, "", {st_mode=S_IFREG|0644, st_size=32925, ...}, AT_EMPTY_PATH) = 0
+newfstatat(3, "", {st_mode=S_IFREG|0644, st_size=32925, ...}, AT_EMPTY_PATH) = 0
+newfstatat(AT_FDCWD, "/usr/lib/python3.10", {st_mode=S_IFDIR|0755, st_size=8192, ...}, 0) = 0
+newfstatat(AT_FDCWD, "/usr/lib/python3.10/posixpath.py", {st_mode=S_IFREG|0644, st_size=16123, ...}, 0) = 0
+newfstatat(AT_FDCWD, "/usr/lib/python3.10/posixpath.py", {st_mode=S_IFREG|0644, st_size=16123, ...}, 0) = 0
+openat(AT_FDCWD, "/usr/lib/python3.10/__pycache__/posixpath.cpython-310.pyc", O_RDONLY|O_CLOEXEC) = 3
+newfstatat(3, "", {st_mode=S_IFREG|0644, st_size=10560, ...}, AT_EMPTY_PATH) = 0
+newfstatat(3, "", {st_mode=S_IFREG|0644, st_size=10560, ...}, AT_EMPTY_PATH) = 0
+newfstatat(AT_FDCWD, "/usr/lib/python3.10", {st_mode=S_IFDIR|0755, st_size=8192, ...}, 0) = 0
+newfstatat(AT_FDCWD, "/usr/lib/python3.10/genericpath.py", {st_mode=S_IFREG|0644, st_size=4975, ...}, 0) = 0
+newfstatat(AT_FDCWD, "/usr/lib/python3.10/genericpath.py", {st_mode=S_IFREG|0644, st_size=4975, ...}, 0) = 0
+openat(AT_FDCWD, "/usr/lib/python3.10/__pycache__/genericpath.cpython-310.pyc", O_RDONLY|O_CLOEXEC) = 3
+newfstatat(3, "", {st_mode=S_IFREG|0644, st_size=3907, ...}, AT_EMPTY_PATH) = 0
+newfstatat(3, "", {st_mode=S_IFREG|0644, st_size=3907, ...}, AT_EMPTY_PATH) = 0
+newfstatat(AT_FDCWD, "/usr/lib/python3.10", {st_mode=S_IFDIR|0755, st_size=8192, ...}, 0) = 0
+newfstatat(AT_FDCWD, "/usr/lib/python3.10/_sitebuiltins.py", {st_mode=S_IFREG|0644, st_size=3128, ...}, 0) = 0
+newfstatat(AT_FDCWD, "/usr/lib/python3.10/_sitebuiltins.py", {st_mode=S_IFREG|0644, st_size=3128, ...}, 0) = 0
+openat(AT_FDCWD, "/usr/lib/python3.10/__pycache__/_sitebuiltins.cpython-310.pyc", O_RDONLY|O_CLOEXEC) = 3
+newfstatat(3, "", {st_mode=S_IFREG|0644, st_size=3547, ...}, AT_EMPTY_PATH) = 0
+newfstatat(3, "", {st_mode=S_IFREG|0644, st_size=3547, ...}, AT_EMPTY_PATH) = 0
+newfstatat(AT_FDCWD, "/usr/bin/pyvenv.cfg", 0x7ffc4d2eca80, 0) = -1 ENOENT (No such file or directory)
+newfstatat(AT_FDCWD, "/usr/pyvenv.cfg", 0x7ffc4d2eca80, 0) = -1 ENOENT (No such file or directory)
+newfstatat(AT_FDCWD, "/home/shenwei01/M_OFDFT_periodic_basis/runs/S1-20260805-127/runtime_home/.local/lib/python3.10/site-packages", 0x7ffc4d2ecc60, 0) = -1 ENOENT (No such file or directory)
+newfstatat(AT_FDCWD, "/usr/local/lib/python3.10/dist-packages", {st_mode=S_IFDIR|0755, st_size=6, ...}, 0) = 0
+openat(AT_FDCWD, "/usr/local/lib/python3.10/dist-packages", O_RDONLY|O_NONBLOCK|O_CLOEXEC|O_DIRECTORY) = 3
+newfstatat(3, "", {st_mode=S_IFDIR|0755, st_size=6, ...}, AT_EMPTY_PATH) = 0
+newfstatat(AT_FDCWD, "/usr/lib/python3/dist-packages", {st_mode=S_IFDIR|0755, st_size=12288, ...}, 0) = 0
+openat(AT_FDCWD, "/usr/lib/python3/dist-packages", O_RDONLY|O_NONBLOCK|O_CLOEXEC|O_DIRECTORY) = 3
+newfstatat(3, "", {st_mode=S_IFDIR|0755, st_size=12288, ...}, AT_EMPTY_PATH) = 0
+openat(AT_FDCWD, "/usr/lib/python3/dist-packages/zope.interface-5.4.0-nspkg.pth", O_RDONLY|O_CLOEXEC) = 3
+newfstatat(3, "", {st_mode=S_IFREG|0644, st_size=529, ...}, AT_EMPTY_PATH) = 0
+newfstatat(AT_FDCWD, "/usr/lib/python3.10", {st_mode=S_IFDIR|0755, st_size=8192, ...}, 0) = 0
+newfstatat(AT_FDCWD, "/usr/lib/python3.10/types.py", {st_mode=S_IFREG|0644, st_size=10117, ...}, 0) = 0
+newfstatat(AT_FDCWD, "/usr/lib/python3.10/types.py", {st_mode=S_IFREG|0644, st_size=10117, ...}, 0) = 0
+openat(AT_FDCWD, "/usr/lib/python3.10/__pycache__/types.cpython-310.pyc", O_RDONLY|O_CLOEXEC) = 4
+newfstatat(4, "", {st_mode=S_IFREG|0644, st_size=9525, ...}, AT_EMPTY_PATH) = 0
+newfstatat(4, "", {st_mode=S_IFREG|0644, st_size=9525, ...}, AT_EMPTY_PATH) = 0
+newfstatat(AT_FDCWD, "/usr/lib/python3.10", {st_mode=S_IFDIR|0755, st_size=8192, ...}, 0) = 0
+newfstatat(AT_FDCWD, "/usr/lib/python3.10/importlib/__init__.cpython-310-x86_64-linux-gnu.so", 0x7ffc4d2ea970, 0) = -1 ENOENT (No such file or directory)
+newfstatat(AT_FDCWD, "/usr/lib/python3.10/importlib/__init__.abi3.so", 0x7ffc4d2ea970, 0) = -1 ENOENT (No such file or directory)
+newfstatat(AT_FDCWD, "/usr/lib/python3.10/importlib/__init__.so", 0x7ffc4d2ea970, 0) = -1 ENOENT (No such file or directory)
+newfstatat(AT_FDCWD, "/usr/lib/python3.10/importlib/__init__.py", {st_mode=S_IFREG|0644, st_size=6089, ...}, 0) = 0
+newfstatat(AT_FDCWD, "/usr/lib/python3.10/importlib/__init__.py", {st_mode=S_IFREG|0644, st_size=6089, ...}, 0) = 0
+openat(AT_FDCWD, "/usr/lib/python3.10/importlib/__pycache__/__init__.cpython-310.pyc", O_RDONLY|O_CLOEXEC) = 4
+newfstatat(4, "", {st_mode=S_IFREG|0644, st_size=3805, ...}, AT_EMPTY_PATH) = 0
+newfstatat(4, "", {st_mode=S_IFREG|0644, st_size=3805, ...}, AT_EMPTY_PATH) = 0
+newfstatat(AT_FDCWD, "/usr/lib/python3.10", {st_mode=S_IFDIR|0755, st_size=8192, ...}, 0) = 0
+newfstatat(AT_FDCWD, "/usr/lib/python3.10/warnings.py", {st_mode=S_IFREG|0644, st_size=19688, ...}, 0) = 0
+newfstatat(AT_FDCWD, "/usr/lib/python3.10/warnings.py", {st_mode=S_IFREG|0644, st_size=19688, ...}, 0) = 0
+openat(AT_FDCWD, "/usr/lib/python3.10/__pycache__/warnings.cpython-310.pyc", O_RDONLY|O_CLOEXEC) = 4
+newfstatat(4, "", {st_mode=S_IFREG|0644, st_size=13646, ...}, AT_EMPTY_PATH) = 0
+newfstatat(4, "", {st_mode=S_IFREG|0644, st_size=13646, ...}, AT_EMPTY_PATH) = 0
+newfstatat(AT_FDCWD, "/usr/lib/python3.10/importlib", {st_mode=S_IFDIR|0755, st_size=251, ...}, 0) = 0
+newfstatat(AT_FDCWD, "/usr/lib/python3.10/importlib", {st_mode=S_IFDIR|0755, st_size=251, ...}, 0) = 0
+newfstatat(AT_FDCWD, "/usr/lib/python3.10/importlib", {st_mode=S_IFDIR|0755, st_size=251, ...}, 0) = 0
+openat(AT_FDCWD, "/usr/lib/python3.10/importlib", O_RDONLY|O_NONBLOCK|O_CLOEXEC|O_DIRECTORY) = 4
+newfstatat(4, "", {st_mode=S_IFDIR|0755, st_size=251, ...}, AT_EMPTY_PATH) = 0
+newfstatat(AT_FDCWD, "/usr/lib/python3.10/importlib/util.py", {st_mode=S_IFREG|0644, st_size=11487, ...}, 0) = 0
+newfstatat(AT_FDCWD, "/usr/lib/python3.10/importlib/util.py", {st_mode=S_IFREG|0644, st_size=11487, ...}, 0) = 0
+openat(AT_FDCWD, "/usr/lib/python3.10/importlib/__pycache__/util.cpython-310.pyc", O_RDONLY|O_CLOEXEC) = 4
+newfstatat(4, "", {st_mode=S_IFREG|0644, st_size=9329, ...}, AT_EMPTY_PATH) = 0
+newfstatat(4, "", {st_mode=S_IFREG|0644, st_size=9329, ...}, AT_EMPTY_PATH) = 0
+newfstatat(AT_FDCWD, "/usr/lib/python3.10/importlib", {st_mode=S_IFDIR|0755, st_size=251, ...}, 0) = 0
+newfstatat(AT_FDCWD, "/usr/lib/python3.10/importlib/_abc.py", {st_mode=S_IFREG|0644, st_size=1852, ...}, 0) = 0
+newfstatat(AT_FDCWD, "/usr/lib/python3.10/importlib/_abc.py", {st_mode=S_IFREG|0644, st_size=1852, ...}, 0) = 0
+openat(AT_FDCWD, "/usr/lib/python3.10/importlib/__pycache__/_abc.cpython-310.pyc", O_RDONLY|O_CLOEXEC) = 4
+newfstatat(4, "", {st_mode=S_IFREG|0644, st_size=1971, ...}, AT_EMPTY_PATH) = 0
+newfstatat(4, "", {st_mode=S_IFREG|0644, st_size=1971, ...}, AT_EMPTY_PATH) = 0
+newfstatat(AT_FDCWD, "/usr/lib/python3.10", {st_mode=S_IFDIR|0755, st_size=8192, ...}, 0) = 0
+newfstatat(AT_FDCWD, "/usr/lib/python3.10/contextlib.py", {st_mode=S_IFREG|0644, st_size=25882, ...}, 0) = 0
+newfstatat(AT_FDCWD, "/usr/lib/python3.10/contextlib.py", {st_mode=S_IFREG|0644, st_size=25882, ...}, 0) = 0
+openat(AT_FDCWD, "/usr/lib/python3.10/__pycache__/contextlib.cpython-310.pyc", O_RDONLY|O_CLOEXEC) = 4
+newfstatat(4, "", {st_mode=S_IFREG|0644, st_size=20895, ...}, AT_EMPTY_PATH) = 0
+newfstatat(4, "", {st_mode=S_IFREG|0644, st_size=20895, ...}, AT_EMPTY_PATH) = 0
+newfstatat(AT_FDCWD, "/usr/lib/python3.10", {st_mode=S_IFDIR|0755, st_size=8192, ...}, 0) = 0
+newfstatat(AT_FDCWD, "/usr/lib/python3.10/collections/__init__.cpython-310-x86_64-linux-gnu.so", 0x7ffc4d2e9510, 0) = -1 ENOENT (No such file or directory)
+newfstatat(AT_FDCWD, "/usr/lib/python3.10/collections/__init__.abi3.so", 0x7ffc4d2e9510, 0) = -1 ENOENT (No such file or directory)
+newfstatat(AT_FDCWD, "/usr/lib/python3.10/collections/__init__.so", 0x7ffc4d2e9510, 0) = -1 ENOENT (No such file or directory)
+newfstatat(AT_FDCWD, "/usr/lib/python3.10/collections/__init__.py", {st_mode=S_IFREG|0644, st_size=51398, ...}, 0) = 0
+newfstatat(AT_FDCWD, "/usr/lib/python3.10/collections/__init__.py", {st_mode=S_IFREG|0644, st_size=51398, ...}, 0) = 0
+openat(AT_FDCWD, "/usr/lib/python3.10/collections/__pycache__/__init__.cpython-310.pyc", O_RDONLY|O_CLOEXEC) = 4
+newfstatat(4, "", {st_mode=S_IFREG|0644, st_size=48453, ...}, AT_EMPTY_PATH) = 0
+newfstatat(4, "", {st_mode=S_IFREG|0644, st_size=48453, ...}, AT_EMPTY_PATH) = 0
+newfstatat(AT_FDCWD, "/usr/lib/python3.10", {st_mode=S_IFDIR|0755, st_size=8192, ...}, 0) = 0
+newfstatat(AT_FDCWD, "/usr/lib/python3.10/keyword.py", {st_mode=S_IFREG|0644, st_size=1061, ...}, 0) = 0
+newfstatat(AT_FDCWD, "/usr/lib/python3.10/keyword.py", {st_mode=S_IFREG|0644, st_size=1061, ...}, 0) = 0
+openat(AT_FDCWD, "/usr/lib/python3.10/__pycache__/keyword.cpython-310.pyc", O_RDONLY|O_CLOEXEC) = 4
+newfstatat(4, "", {st_mode=S_IFREG|0644, st_size=927, ...}, AT_EMPTY_PATH) = 0
+newfstatat(4, "", {st_mode=S_IFREG|0644, st_size=927, ...}, AT_EMPTY_PATH) = 0
+newfstatat(AT_FDCWD, "/usr/lib/python3.10", {st_mode=S_IFDIR|0755, st_size=8192, ...}, 0) = 0
+newfstatat(AT_FDCWD, "/usr/lib/python3.10/operator.py", {st_mode=S_IFREG|0644, st_size=10751, ...}, 0) = 0
+newfstatat(AT_FDCWD, "/usr/lib/python3.10/operator.py", {st_mode=S_IFREG|0644, st_size=10751, ...}, 0) = 0
+openat(AT_FDCWD, "/usr/lib/python3.10/__pycache__/operator.cpython-310.pyc", O_RDONLY|O_CLOEXEC) = 4
+newfstatat(4, "", {st_mode=S_IFREG|0644, st_size=13508, ...}, AT_EMPTY_PATH) = 0
+newfstatat(4, "", {st_mode=S_IFREG|0644, st_size=13508, ...}, AT_EMPTY_PATH) = 0
+newfstatat(AT_FDCWD, "/usr/lib/python3.10", {st_mode=S_IFDIR|0755, st_size=8192, ...}, 0) = 0
+newfstatat(AT_FDCWD, "/usr/lib/python3.10/reprlib.py", {st_mode=S_IFREG|0644, st_size=5267, ...}, 0) = 0
+newfstatat(AT_FDCWD, "/usr/lib/python3.10/reprlib.py", {st_mode=S_IFREG|0644, st_size=5267, ...}, 0) = 0
+openat(AT_FDCWD, "/usr/lib/python3.10/__pycache__/reprlib.cpython-310.pyc", O_RDONLY|O_CLOEXEC) = 4
+newfstatat(4, "", {st_mode=S_IFREG|0644, st_size=5250, ...}, AT_EMPTY_PATH) = 0
+newfstatat(4, "", {st_mode=S_IFREG|0644, st_size=5250, ...}, AT_EMPTY_PATH) = 0
+newfstatat(AT_FDCWD, "/usr/lib/python3.10", {st_mode=S_IFDIR|0755, st_size=8192, ...}, 0) = 0
+newfstatat(AT_FDCWD, "/usr/lib/python3.10/functools.py", {st_mode=S_IFREG|0644, st_size=38076, ...}, 0) = 0
+newfstatat(AT_FDCWD, "/usr/lib/python3.10/functools.py", {st_mode=S_IFREG|0644, st_size=38076, ...}, 0) = 0
+openat(AT_FDCWD, "/usr/lib/python3.10/__pycache__/functools.cpython-310.pyc", O_RDONLY|O_CLOEXEC) = 4
+newfstatat(4, "", {st_mode=S_IFREG|0644, st_size=28335, ...}, AT_EMPTY_PATH) = 0
+newfstatat(4, "", {st_mode=S_IFREG|0644, st_size=28335, ...}, AT_EMPTY_PATH) = 0
+newfstatat(AT_FDCWD, "/usr/lib/python3.10/importlib", {st_mode=S_IFDIR|0755, st_size=251, ...}, 0) = 0
+newfstatat(AT_FDCWD, "/usr/lib/python3.10/importlib/machinery.py", {st_mode=S_IFREG|0644, st_size=831, ...}, 0) = 0
+newfstatat(AT_FDCWD, "/usr/lib/python3.10/importlib/machinery.py", {st_mode=S_IFREG|0644, st_size=831, ...}, 0) = 0
+openat(AT_FDCWD, "/usr/lib/python3.10/importlib/__pycache__/machinery.cpython-310.pyc", O_RDONLY|O_CLOEXEC) = 4
+newfstatat(4, "", {st_mode=S_IFREG|0644, st_size=944, ...}, AT_EMPTY_PATH) = 0
+newfstatat(4, "", {st_mode=S_IFREG|0644, st_size=944, ...}, AT_EMPTY_PATH) = 0
+newfstatat(AT_FDCWD, "/usr/lib/python3/dist-packages", {st_mode=S_IFDIR|0755, st_size=12288, ...}, 0) = 0
+newfstatat(AT_FDCWD, "/usr/lib/python3/dist-packages", {st_mode=S_IFDIR|0755, st_size=12288, ...}, 0) = 0
+newfstatat(AT_FDCWD, "/usr/lib/python3/dist-packages", {st_mode=S_IFDIR|0755, st_size=12288, ...}, 0) = 0
+openat(AT_FDCWD, "/usr/lib/python3/dist-packages", O_RDONLY|O_NONBLOCK|O_CLOEXEC|O_DIRECTORY) = 4
+newfstatat(4, "", {st_mode=S_IFDIR|0755, st_size=12288, ...}, AT_EMPTY_PATH) = 0
+newfstatat(AT_FDCWD, "/usr/lib/python3/dist-packages/zope/__init__.cpython-310-x86_64-linux-gnu.so", 0x7ffc4d2ebb00, 0) = -1 ENOENT (No such file or directory)
+newfstatat(AT_FDCWD, "/usr/lib/python3/dist-packages/zope/__init__.abi3.so", 0x7ffc4d2ebb00, 0) = -1 ENOENT (No such file or directory)
+newfstatat(AT_FDCWD, "/usr/lib/python3/dist-packages/zope/__init__.so", 0x7ffc4d2ebb00, 0) = -1 ENOENT (No such file or directory)
+newfstatat(AT_FDCWD, "/usr/lib/python3/dist-packages/zope/__init__.py", {st_mode=S_IFREG|0644, st_size=56, ...}, 0) = 0
+newfstatat(AT_FDCWD, "/usr/lib/python3.10/dist-packages", 0x7ffc4d2ecc60, 0) = -1 ENOENT (No such file or directory)
+newfstatat(AT_FDCWD, "/usr/lib/python3.10", {st_mode=S_IFDIR|0755, st_size=8192, ...}, 0) = 0
+newfstatat(AT_FDCWD, "/usr/lib/python3.10/sitecustomize.py", {st_mode=S_IFREG|0644, st_size=155, ...}, 0) = 0
+newfstatat(AT_FDCWD, "/usr/lib/python3.10/sitecustomize.py", {st_mode=S_IFREG|0644, st_size=155, ...}, 0) = 0
+openat(AT_FDCWD, "/usr/lib/python3.10/__pycache__/sitecustomize.cpython-310.pyc", O_RDONLY|O_CLOEXEC) = 3
+newfstatat(3, "", {st_mode=S_IFREG|0644, st_size=225, ...}, AT_EMPTY_PATH) = 0
+newfstatat(3, "", {st_mode=S_IFREG|0644, st_size=225, ...}, AT_EMPTY_PATH) = 0
+newfstatat(AT_FDCWD, "/usr/lib/python3.10", {st_mode=S_IFDIR|0755, st_size=8192, ...}, 0) = 0
+newfstatat(AT_FDCWD, "/usr/lib/python3.10/lib-dynload", {st_mode=S_IFDIR|0755, st_size=4096, ...}, 0) = 0
+newfstatat(AT_FDCWD, "/usr/lib/python3.10/lib-dynload", {st_mode=S_IFDIR|0755, st_size=4096, ...}, 0) = 0
+newfstatat(AT_FDCWD, "/usr/lib/python3.10/lib-dynload", {st_mode=S_IFDIR|0755, st_size=4096, ...}, 0) = 0
+openat(AT_FDCWD, "/usr/lib/python3.10/lib-dynload", O_RDONLY|O_NONBLOCK|O_CLOEXEC|O_DIRECTORY) = 3
+newfstatat(3, "", {st_mode=S_IFDIR|0755, st_size=4096, ...}, AT_EMPTY_PATH) = 0
+newfstatat(AT_FDCWD, "/usr/local/lib/python3.10/dist-packages", {st_mode=S_IFDIR|0755, st_size=6, ...}, 0) = 0
+newfstatat(AT_FDCWD, "/usr/local/lib/python3.10/dist-packages", {st_mode=S_IFDIR|0755, st_size=6, ...}, 0) = 0
+newfstatat(AT_FDCWD, "/usr/local/lib/python3.10/dist-packages", {st_mode=S_IFDIR|0755, st_size=6, ...}, 0) = 0
+openat(AT_FDCWD, "/usr/local/lib/python3.10/dist-packages", O_RDONLY|O_NONBLOCK|O_CLOEXEC|O_DIRECTORY) = 3
+newfstatat(3, "", {st_mode=S_IFDIR|0755, st_size=6, ...}, AT_EMPTY_PATH) = 0
+newfstatat(AT_FDCWD, "/usr/lib/python3/dist-packages", {st_mode=S_IFDIR|0755, st_size=12288, ...}, 0) = 0
+newfstatat(AT_FDCWD, "/usr/lib/python3/dist-packages/apport_python_hook.py", {st_mode=S_IFREG|0644, st_size=8063, ...}, 0) = 0
+newfstatat(AT_FDCWD, "/usr/lib/python3/dist-packages/apport_python_hook.py", {st_mode=S_IFREG|0644, st_size=8063, ...}, 0) = 0
+openat(AT_FDCWD, "/usr/lib/python3/dist-packages/__pycache__/apport_python_hook.cpython-310.pyc", O_RDONLY|O_CLOEXEC) = 3
+newfstatat(3, "", {st_mode=S_IFREG|0644, st_size=4661, ...}, AT_EMPTY_PATH) = 0
+newfstatat(3, "", {st_mode=S_IFREG|0644, st_size=4661, ...}, AT_EMPTY_PATH) = 0
+newfstatat(AT_FDCWD, "/usr/lib/python3.10", {st_mode=S_IFDIR|0755, st_size=8192, ...}, 0) = 0
+newfstatat(AT_FDCWD, "/usr/lib/python3.10/lib-dynload", {st_mode=S_IFDIR|0755, st_size=4096, ...}, 0) = 0
+newfstatat(AT_FDCWD, "/usr/local/lib/python3.10/dist-packages", {st_mode=S_IFDIR|0755, st_size=6, ...}, 0) = 0
+newfstatat(AT_FDCWD, "/usr/lib/python3/dist-packages", {st_mode=S_IFDIR|0755, st_size=12288, ...}, 0) = 0
+newfstatat(AT_FDCWD, "/home/shenwei01/M_OFDFT_periodic_basis/scripts/runtime_relocation_rank_wrapper.py", {st_mode=S_IFREG|0775, st_size=8562, ...}, 0) = 0
+openat(AT_FDCWD, "/home/shenwei01/M_OFDFT_periodic_basis/scripts/runtime_relocation_rank_wrapper.py", O_RDONLY|O_CLOEXEC) = 3
+newfstatat(3, "", {st_mode=S_IFREG|0775, st_size=8562, ...}, AT_EMPTY_PATH) = 0
+newfstatat(3, "", {st_mode=S_IFREG|0775, st_size=8562, ...}, AT_EMPTY_PATH) = 0
+newfstatat(AT_FDCWD, "/home/shenwei01/M_OFDFT_periodic_basis/scripts/runtime_relocation_rank_wrapper.py", {st_mode=S_IFREG|0775, st_size=8562, ...}, 0) = 0
+readlink("/home/shenwei01/M_OFDFT_periodic_basis/scripts/runtime_relocation_rank_wrapper.py", 0x7ffc4d2dd720, 4096) = -1 EINVAL (Invalid argument)
+readlink("/home", 0x7ffc4d2dcea0, 1023) = -1 EINVAL (Invalid argument)
+readlink("/home/shenwei01", 0x7ffc4d2dcea0, 1023) = -1 EINVAL (Invalid argument)
+readlink("/home/shenwei01/M_OFDFT_periodic_basis", 0x7ffc4d2dcea0, 1023) = -1 EINVAL (Invalid argument)
+readlink("/home/shenwei01/M_OFDFT_periodic_basis/scripts", 0x7ffc4d2dcea0, 1023) = -1 EINVAL (Invalid argument)
+readlink("/home/shenwei01/M_OFDFT_periodic_basis/scripts/runtime_relocation_rank_wrapper.py", 0x7ffc4d2dcea0, 1023) = -1 EINVAL (Invalid argument)
+openat(AT_FDCWD, "/home/shenwei01/M_OFDFT_periodic_basis/scripts/runtime_relocation_rank_wrapper.py", O_RDONLY) = 3
+newfstatat(3, "", {st_mode=S_IFREG|0775, st_size=8562, ...}, AT_EMPTY_PATH) = 0
+newfstatat(3, "", {st_mode=S_IFREG|0775, st_size=8562, ...}, AT_EMPTY_PATH) = 0
+newfstatat(AT_FDCWD, "/home/shenwei01/M_OFDFT_periodic_basis/scripts", {st_mode=S_IFDIR|0755, st_size=4096, ...}, 0) = 0
+newfstatat(AT_FDCWD, "/home/shenwei01/M_OFDFT_periodic_basis/scripts", {st_mode=S_IFDIR|0755, st_size=4096, ...}, 0) = 0
+newfstatat(AT_FDCWD, "/home/shenwei01/M_OFDFT_periodic_basis/scripts", {st_mode=S_IFDIR|0755, st_size=4096, ...}, 0) = 0
+openat(AT_FDCWD, "/home/shenwei01/M_OFDFT_periodic_basis/scripts", O_RDONLY|O_NONBLOCK|O_CLOEXEC|O_DIRECTORY) = 3
+newfstatat(3, "", {st_mode=S_IFDIR|0755, st_size=4096, ...}, AT_EMPTY_PATH) = 0
+newfstatat(AT_FDCWD, "/usr/lib/python3.10", {st_mode=S_IFDIR|0755, st_size=8192, ...}, 0) = 0
+newfstatat(AT_FDCWD, "/usr/lib/python3.10/__future__.py", {st_mode=S_IFREG|0644, st_size=5155, ...}, 0) = 0
+newfstatat(AT_FDCWD, "/usr/lib/python3.10/__future__.py", {st_mode=S_IFREG|0644, st_size=5155, ...}, 0) = 0
+openat(AT_FDCWD, "/usr/lib/python3.10/__pycache__/__future__.cpython-310.pyc", O_RDONLY|O_CLOEXEC) = 3
+newfstatat(3, "", {st_mode=S_IFREG|0644, st_size=4131, ...}, AT_EMPTY_PATH) = 0
+newfstatat(3, "", {st_mode=S_IFREG|0644, st_size=4131, ...}, AT_EMPTY_PATH) = 0
+newfstatat(AT_FDCWD, "/home/shenwei01/M_OFDFT_periodic_basis/scripts", {st_mode=S_IFDIR|0755, st_size=4096, ...}, 0) = 0
+newfstatat(AT_FDCWD, "/usr/lib/python3.10", {st_mode=S_IFDIR|0755, st_size=8192, ...}, 0) = 0
+newfstatat(AT_FDCWD, "/usr/lib/python3.10/json/__init__.cpython-310-x86_64-linux-gnu.so", 0x7ffc4d2ecee0, 0) = -1 ENOENT (No such file or directory)
+newfstatat(AT_FDCWD, "/usr/lib/python3.10/json/__init__.abi3.so", 0x7ffc4d2ecee0, 0) = -1 ENOENT (No such file or directory)
+newfstatat(AT_FDCWD, "/usr/lib/python3.10/json/__init__.so", 0x7ffc4d2ecee0, 0) = -1 ENOENT (No such file or directory)
+newfstatat(AT_FDCWD, "/usr/lib/python3.10/json/__init__.py", {st_mode=S_IFREG|0644, st_size=14020, ...}, 0) = 0
+newfstatat(AT_FDCWD, "/usr/lib/python3.10/json/__init__.py", {st_mode=S_IFREG|0644, st_size=14020, ...}, 0) = 0
+openat(AT_FDCWD, "/usr/lib/python3.10/json/__pycache__/__init__.cpython-310.pyc", O_RDONLY|O_CLOEXEC) = 3
+newfstatat(3, "", {st_mode=S_IFREG|0644, st_size=12264, ...}, AT_EMPTY_PATH) = 0
+newfstatat(3, "", {st_mode=S_IFREG|0644, st_size=12264, ...}, AT_EMPTY_PATH) = 0
+newfstatat(AT_FDCWD, "/usr/lib/python3.10/json", {st_mode=S_IFDIR|0755, st_size=113, ...}, 0) = 0
+newfstatat(AT_FDCWD, "/usr/lib/python3.10/json", {st_mode=S_IFDIR|0755, st_size=113, ...}, 0) = 0
+newfstatat(AT_FDCWD, "/usr/lib/python3.10/json", {st_mode=S_IFDIR|0755, st_size=113, ...}, 0) = 0
+openat(AT_FDCWD, "/usr/lib/python3.10/json", O_RDONLY|O_NONBLOCK|O_CLOEXEC|O_DIRECTORY) = 3
+newfstatat(3, "", {st_mode=S_IFDIR|0755, st_size=113, ...}, AT_EMPTY_PATH) = 0
+newfstatat(AT_FDCWD, "/usr/lib/python3.10/json/decoder.py", {st_mode=S_IFREG|0644, st_size=12473, ...}, 0) = 0
+newfstatat(AT_FDCWD, "/usr/lib/python3.10/json/decoder.py", {st_mode=S_IFREG|0644, st_size=12473, ...}, 0) = 0
+openat(AT_FDCWD, "/usr/lib/python3.10/json/__pycache__/decoder.cpython-310.pyc", O_RDONLY|O_CLOEXEC) = 3
+newfstatat(3, "", {st_mode=S_IFREG|0644, st_size=9766, ...}, AT_EMPTY_PATH) = 0
+newfstatat(3, "", {st_mode=S_IFREG|0644, st_size=9766, ...}, AT_EMPTY_PATH) = 0
+newfstatat(AT_FDCWD, "/home/shenwei01/M_OFDFT_periodic_basis/scripts", {st_mode=S_IFDIR|0755, st_size=4096, ...}, 0) = 0
+newfstatat(AT_FDCWD, "/usr/lib/python3.10", {st_mode=S_IFDIR|0755, st_size=8192, ...}, 0) = 0
+newfstatat(AT_FDCWD, "/usr/lib/python3.10/re.py", {st_mode=S_IFREG|0644, st_size=15860, ...}, 0) = 0
+newfstatat(AT_FDCWD, "/usr/lib/python3.10/re.py", {st_mode=S_IFREG|0644, st_size=15860, ...}, 0) = 0
+openat(AT_FDCWD, "/usr/lib/python3.10/__pycache__/re.cpython-310.pyc", O_RDONLY|O_CLOEXEC) = 3
+newfstatat(3, "", {st_mode=S_IFREG|0644, st_size=14227, ...}, AT_EMPTY_PATH) = 0
+newfstatat(3, "", {st_mode=S_IFREG|0644, st_size=14227, ...}, AT_EMPTY_PATH) = 0
+newfstatat(AT_FDCWD, "/home/shenwei01/M_OFDFT_periodic_basis/scripts", {st_mode=S_IFDIR|0755, st_size=4096, ...}, 0) = 0
+newfstatat(AT_FDCWD, "/usr/lib/python3.10", {st_mode=S_IFDIR|0755, st_size=8192, ...}, 0) = 0
+newfstatat(AT_FDCWD, "/usr/lib/python3.10/enum.py", {st_mode=S_IFREG|0644, st_size=39831, ...}, 0) = 0
+newfstatat(AT_FDCWD, "/usr/lib/python3.10/enum.py", {st_mode=S_IFREG|0644, st_size=39831, ...}, 0) = 0
+openat(AT_FDCWD, "/usr/lib/python3.10/__pycache__/enum.cpython-310.pyc", O_RDONLY|O_CLOEXEC) = 3
+newfstatat(3, "", {st_mode=S_IFREG|0644, st_size=26063, ...}, AT_EMPTY_PATH) = 0
+newfstatat(3, "", {st_mode=S_IFREG|0644, st_size=26063, ...}, AT_EMPTY_PATH) = 0
+newfstatat(AT_FDCWD, "/home/shenwei01/M_OFDFT_periodic_basis/scripts", {st_mode=S_IFDIR|0755, st_size=4096, ...}, 0) = 0
+newfstatat(AT_FDCWD, "/usr/lib/python3.10", {st_mode=S_IFDIR|0755, st_size=8192, ...}, 0) = 0
+newfstatat(AT_FDCWD, "/usr/lib/python3.10/sre_compile.py", {st_mode=S_IFREG|0644, st_size=27973, ...}, 0) = 0
+newfstatat(AT_FDCWD, "/usr/lib/python3.10/sre_compile.py", {st_mode=S_IFREG|0644, st_size=27973, ...}, 0) = 0
+openat(AT_FDCWD, "/usr/lib/python3.10/__pycache__/sre_compile.cpython-310.pyc", O_RDONLY|O_CLOEXEC) = 3
+newfstatat(3, "", {st_mode=S_IFREG|0644, st_size=15194, ...}, AT_EMPTY_PATH) = 0
+newfstatat(3, "", {st_mode=S_IFREG|0644, st_size=15194, ...}, AT_EMPTY_PATH) = 0
+newfstatat(AT_FDCWD, "/home/shenwei01/M_OFDFT_periodic_basis/scripts", {st_mode=S_IFDIR|0755, st_size=4096, ...}, 0) = 0
+newfstatat(AT_FDCWD, "/usr/lib/python3.10", {st_mode=S_IFDIR|0755, st_size=8192, ...}, 0) = 0
+newfstatat(AT_FDCWD, "/usr/lib/python3.10/sre_parse.py", {st_mode=S_IFREG|0644, st_size=40779, ...}, 0) = 0
+newfstatat(AT_FDCWD, "/usr/lib/python3.10/sre_parse.py", {st_mode=S_IFREG|0644, st_size=40779, ...}, 0) = 0
+openat(AT_FDCWD, "/usr/lib/python3.10/__pycache__/sre_parse.cpython-310.pyc", O_RDONLY|O_CLOEXEC) = 3
+newfstatat(3, "", {st_mode=S_IFREG|0644, st_size=21755, ...}, AT_EMPTY_PATH) = 0
+newfstatat(3, "", {st_mode=S_IFREG|0644, st_size=21755, ...}, AT_EMPTY_PATH) = 0
+newfstatat(AT_FDCWD, "/home/shenwei01/M_OFDFT_periodic_basis/scripts", {st_mode=S_IFDIR|0755, st_size=4096, ...}, 0) = 0
+newfstatat(AT_FDCWD, "/usr/lib/python3.10", {st_mode=S_IFDIR|0755, st_size=8192, ...}, 0) = 0
+newfstatat(AT_FDCWD, "/usr/lib/python3.10/sre_constants.py", {st_mode=S_IFREG|0644, st_size=7177, ...}, 0) = 0
+newfstatat(AT_FDCWD, "/usr/lib/python3.10/sre_constants.py", {st_mode=S_IFREG|0644, st_size=7177, ...}, 0) = 0
+openat(AT_FDCWD, "/usr/lib/python3.10/__pycache__/sre_constants.cpython-310.pyc", O_RDONLY|O_CLOEXEC) = 3
+newfstatat(3, "", {st_mode=S_IFREG|0644, st_size=6357, ...}, AT_EMPTY_PATH) = 0
+newfstatat(3, "", {st_mode=S_IFREG|0644, st_size=6357, ...}, AT_EMPTY_PATH) = 0
+newfstatat(AT_FDCWD, "/home/shenwei01/M_OFDFT_periodic_basis/scripts", {st_mode=S_IFDIR|0755, st_size=4096, ...}, 0) = 0
+newfstatat(AT_FDCWD, "/usr/lib/python3.10", {st_mode=S_IFDIR|0755, st_size=8192, ...}, 0) = 0
+newfstatat(AT_FDCWD, "/usr/lib/python3.10/copyreg.py", {st_mode=S_IFREG|0644, st_size=7426, ...}, 0) = 0
+newfstatat(AT_FDCWD, "/usr/lib/python3.10/copyreg.py", {st_mode=S_IFREG|0644, st_size=7426, ...}, 0) = 0
+openat(AT_FDCWD, "/usr/lib/python3.10/__pycache__/copyreg.cpython-310.pyc", O_RDONLY|O_CLOEXEC) = 3
+newfstatat(3, "", {st_mode=S_IFREG|0644, st_size=4683, ...}, AT_EMPTY_PATH) = 0
+newfstatat(3, "", {st_mode=S_IFREG|0644, st_size=4683, ...}, AT_EMPTY_PATH) = 0
+newfstatat(AT_FDCWD, "/usr/lib/python3.10/json", {st_mode=S_IFDIR|0755, st_size=113, ...}, 0) = 0
+newfstatat(AT_FDCWD, "/usr/lib/python3.10/json/scanner.py", {st_mode=S_IFREG|0644, st_size=2425, ...}, 0) = 0
+newfstatat(AT_FDCWD, "/usr/lib/python3.10/json/scanner.py", {st_mode=S_IFREG|0644, st_size=2425, ...}, 0) = 0
+openat(AT_FDCWD, "/usr/lib/python3.10/json/__pycache__/scanner.cpython-310.pyc", O_RDONLY|O_CLOEXEC) = 3
+newfstatat(3, "", {st_mode=S_IFREG|0644, st_size=1916, ...}, AT_EMPTY_PATH) = 0
+newfstatat(3, "", {st_mode=S_IFREG|0644, st_size=1916, ...}, AT_EMPTY_PATH) = 0
+newfstatat(AT_FDCWD, "/home/shenwei01/M_OFDFT_periodic_basis/scripts", {st_mode=S_IFDIR|0755, st_size=4096, ...}, 0) = 0
+newfstatat(AT_FDCWD, "/usr/lib/python3.10", {st_mode=S_IFDIR|0755, st_size=8192, ...}, 0) = 0
+newfstatat(AT_FDCWD, "/usr/lib/python3.10/lib-dynload", {st_mode=S_IFDIR|0755, st_size=4096, ...}, 0) = 0
+newfstatat(AT_FDCWD, "/usr/lib/python3.10/lib-dynload/_json.cpython-310-x86_64-linux-gnu.so", {st_mode=S_IFREG|0644, st_size=49160, ...}, 0) = 0
+openat(AT_FDCWD, "/usr/lib/python3.10/lib-dynload/_json.cpython-310-x86_64-linux-gnu.so", O_RDONLY|O_CLOEXEC) = 3
+newfstatat(3, "", {st_mode=S_IFREG|0644, st_size=49160, ...}, AT_EMPTY_PATH) = 0
+newfstatat(AT_FDCWD, "/usr/lib/python3.10/json", {st_mode=S_IFDIR|0755, st_size=113, ...}, 0) = 0
+newfstatat(AT_FDCWD, "/usr/lib/python3.10/json/encoder.py", {st_mode=S_IFREG|0644, st_size=16074, ...}, 0) = 0
+newfstatat(AT_FDCWD, "/usr/lib/python3.10/json/encoder.py", {st_mode=S_IFREG|0644, st_size=16074, ...}, 0) = 0
+openat(AT_FDCWD, "/usr/lib/python3.10/json/__pycache__/encoder.cpython-310.pyc", O_RDONLY|O_CLOEXEC) = 3
+newfstatat(3, "", {st_mode=S_IFREG|0644, st_size=11117, ...}, AT_EMPTY_PATH) = 0
+newfstatat(3, "", {st_mode=S_IFREG|0644, st_size=11117, ...}, AT_EMPTY_PATH) = 0
+newfstatat(AT_FDCWD, "/home/shenwei01/M_OFDFT_periodic_basis/scripts", {st_mode=S_IFDIR|0755, st_size=4096, ...}, 0) = 0
+newfstatat(AT_FDCWD, "/usr/lib/python3.10", {st_mode=S_IFDIR|0755, st_size=8192, ...}, 0) = 0
+newfstatat(AT_FDCWD, "/usr/lib/python3.10/pathlib.py", {st_mode=S_IFREG|0644, st_size=49575, ...}, 0) = 0
+newfstatat(AT_FDCWD, "/usr/lib/python3.10/pathlib.py", {st_mode=S_IFREG|0644, st_size=49575, ...}, 0) = 0
+openat(AT_FDCWD, "/usr/lib/python3.10/__pycache__/pathlib.cpython-310.pyc", O_RDONLY|O_CLOEXEC) = 3
+newfstatat(3, "", {st_mode=S_IFREG|0644, st_size=42052, ...}, AT_EMPTY_PATH) = 0
+newfstatat(3, "", {st_mode=S_IFREG|0644, st_size=42052, ...}, AT_EMPTY_PATH) = 0
+newfstatat(AT_FDCWD, "/home/shenwei01/M_OFDFT_periodic_basis/scripts", {st_mode=S_IFDIR|0755, st_size=4096, ...}, 0) = 0
+newfstatat(AT_FDCWD, "/usr/lib/python3.10", {st_mode=S_IFDIR|0755, st_size=8192, ...}, 0) = 0
+newfstatat(AT_FDCWD, "/usr/lib/python3.10/fnmatch.py", {st_mode=S_IFREG|0644, st_size=6713, ...}, 0) = 0
+newfstatat(AT_FDCWD, "/usr/lib/python3.10/fnmatch.py", {st_mode=S_IFREG|0644, st_size=6713, ...}, 0) = 0
+openat(AT_FDCWD, "/usr/lib/python3.10/__pycache__/fnmatch.cpython-310.pyc", O_RDONLY|O_CLOEXEC) = 3
+newfstatat(3, "", {st_mode=S_IFREG|0644, st_size=4244, ...}, AT_EMPTY_PATH) = 0
+newfstatat(3, "", {st_mode=S_IFREG|0644, st_size=4244, ...}, AT_EMPTY_PATH) = 0
+newfstatat(AT_FDCWD, "/home/shenwei01/M_OFDFT_periodic_basis/scripts", {st_mode=S_IFDIR|0755, st_size=4096, ...}, 0) = 0
+newfstatat(AT_FDCWD, "/usr/lib/python3.10", {st_mode=S_IFDIR|0755, st_size=8192, ...}, 0) = 0
+newfstatat(AT_FDCWD, "/usr/lib/python3.10/ntpath.py", {st_mode=S_IFREG|0644, st_size=27561, ...}, 0) = 0
+newfstatat(AT_FDCWD, "/usr/lib/python3.10/ntpath.py", {st_mode=S_IFREG|0644, st_size=27561, ...}, 0) = 0
+openat(AT_FDCWD, "/usr/lib/python3.10/__pycache__/ntpath.cpython-310.pyc", O_RDONLY|O_CLOEXEC) = 3
+newfstatat(3, "", {st_mode=S_IFREG|0644, st_size=14704, ...}, AT_EMPTY_PATH) = 0
+newfstatat(3, "", {st_mode=S_IFREG|0644, st_size=14704, ...}, AT_EMPTY_PATH) = 0
+newfstatat(AT_FDCWD, "/home/shenwei01/M_OFDFT_periodic_basis/scripts", {st_mode=S_IFDIR|0755, st_size=4096, ...}, 0) = 0
+newfstatat(AT_FDCWD, "/usr/lib/python3.10", {st_mode=S_IFDIR|0755, st_size=8192, ...}, 0) = 0
+newfstatat(AT_FDCWD, "/usr/lib/python3.10/lib-dynload", {st_mode=S_IFDIR|0755, st_size=4096, ...}, 0) = 0
+newfstatat(AT_FDCWD, "/usr/local/lib/python3.10/dist-packages", {st_mode=S_IFDIR|0755, st_size=6, ...}, 0) = 0
+newfstatat(AT_FDCWD, "/usr/lib/python3/dist-packages", {st_mode=S_IFDIR|0755, st_size=12288, ...}, 0) = 0
+newfstatat(AT_FDCWD, "/home/shenwei01/M_OFDFT_periodic_basis/scripts", {st_mode=S_IFDIR|0755, st_size=4096, ...}, 0) = 0
+newfstatat(AT_FDCWD, "/usr/lib/python3.10", {st_mode=S_IFDIR|0755, st_size=8192, ...}, 0) = 0
+newfstatat(AT_FDCWD, "/usr/lib/python3.10/lib-dynload", {st_mode=S_IFDIR|0755, st_size=4096, ...}, 0) = 0
+newfstatat(AT_FDCWD, "/usr/local/lib/python3.10/dist-packages", {st_mode=S_IFDIR|0755, st_size=6, ...}, 0) = 0
+newfstatat(AT_FDCWD, "/usr/lib/python3/dist-packages", {st_mode=S_IFDIR|0755, st_size=12288, ...}, 0) = 0
+newfstatat(AT_FDCWD, "/home/shenwei01/M_OFDFT_periodic_basis/scripts", {st_mode=S_IFDIR|0755, st_size=4096, ...}, 0) = 0
+newfstatat(AT_FDCWD, "/usr/lib/python3.10", {st_mode=S_IFDIR|0755, st_size=8192, ...}, 0) = 0
+newfstatat(AT_FDCWD, "/usr/lib/python3.10/lib-dynload", {st_mode=S_IFDIR|0755, st_size=4096, ...}, 0) = 0
+newfstatat(AT_FDCWD, "/usr/local/lib/python3.10/dist-packages", {st_mode=S_IFDIR|0755, st_size=6, ...}, 0) = 0
+newfstatat(AT_FDCWD, "/usr/lib/python3/dist-packages", {st_mode=S_IFDIR|0755, st_size=12288, ...}, 0) = 0
+newfstatat(AT_FDCWD, "/home/shenwei01/M_OFDFT_periodic_basis/scripts", {st_mode=S_IFDIR|0755, st_size=4096, ...}, 0) = 0
+newfstatat(AT_FDCWD, "/usr/lib/python3.10", {st_mode=S_IFDIR|0755, st_size=8192, ...}, 0) = 0
+newfstatat(AT_FDCWD, "/usr/lib/python3.10/lib-dynload", {st_mode=S_IFDIR|0755, st_size=4096, ...}, 0) = 0
+newfstatat(AT_FDCWD, "/usr/local/lib/python3.10/dist-packages", {st_mode=S_IFDIR|0755, st_size=6, ...}, 0) = 0
+newfstatat(AT_FDCWD, "/usr/lib/python3/dist-packages", {st_mode=S_IFDIR|0755, st_size=12288, ...}, 0) = 0
+newfstatat(AT_FDCWD, "/home/shenwei01/M_OFDFT_periodic_basis/scripts", {st_mode=S_IFDIR|0755, st_size=4096, ...}, 0) = 0
+newfstatat(AT_FDCWD, "/usr/lib/python3.10", {st_mode=S_IFDIR|0755, st_size=8192, ...}, 0) = 0
+newfstatat(AT_FDCWD, "/usr/lib/python3.10/lib-dynload", {st_mode=S_IFDIR|0755, st_size=4096, ...}, 0) = 0
+newfstatat(AT_FDCWD, "/usr/local/lib/python3.10/dist-packages", {st_mode=S_IFDIR|0755, st_size=6, ...}, 0) = 0
+newfstatat(AT_FDCWD, "/usr/lib/python3/dist-packages", {st_mode=S_IFDIR|0755, st_size=12288, ...}, 0) = 0
+newfstatat(AT_FDCWD, "/home/shenwei01/M_OFDFT_periodic_basis/scripts", {st_mode=S_IFDIR|0755, st_size=4096, ...}, 0) = 0
+newfstatat(AT_FDCWD, "/usr/lib/python3.10", {st_mode=S_IFDIR|0755, st_size=8192, ...}, 0) = 0
+newfstatat(AT_FDCWD, "/usr/lib/python3.10/urllib/__init__.cpython-310-x86_64-linux-gnu.so", 0x7ffc4d2eb790, 0) = -1 ENOENT (No such file or directory)
+newfstatat(AT_FDCWD, "/usr/lib/python3.10/urllib/__init__.abi3.so", 0x7ffc4d2eb790, 0) = -1 ENOENT (No such file or directory)
+newfstatat(AT_FDCWD, "/usr/lib/python3.10/urllib/__init__.so", 0x7ffc4d2eb790, 0) = -1 ENOENT (No such file or directory)
+newfstatat(AT_FDCWD, "/usr/lib/python3.10/urllib/__init__.py", {st_mode=S_IFREG|0644, st_size=0, ...}, 0) = 0
+newfstatat(AT_FDCWD, "/usr/lib/python3.10/urllib/__init__.py", {st_mode=S_IFREG|0644, st_size=0, ...}, 0) = 0
+openat(AT_FDCWD, "/usr/lib/python3.10/urllib/__pycache__/__init__.cpython-310.pyc", O_RDONLY|O_CLOEXEC) = 3
+newfstatat(3, "", {st_mode=S_IFREG|0644, st_size=131, ...}, AT_EMPTY_PATH) = 0
+newfstatat(3, "", {st_mode=S_IFREG|0644, st_size=131, ...}, AT_EMPTY_PATH) = 0
+newfstatat(AT_FDCWD, "/usr/lib/python3.10/urllib", {st_mode=S_IFDIR|0755, st_size=135, ...}, 0) = 0
+newfstatat(AT_FDCWD, "/usr/lib/python3.10/urllib", {st_mode=S_IFDIR|0755, st_size=135, ...}, 0) = 0
+newfstatat(AT_FDCWD, "/usr/lib/python3.10/urllib", {st_mode=S_IFDIR|0755, st_size=135, ...}, 0) = 0
+openat(AT_FDCWD, "/usr/lib/python3.10/urllib", O_RDONLY|O_NONBLOCK|O_CLOEXEC|O_DIRECTORY) = 3
+newfstatat(3, "", {st_mode=S_IFDIR|0755, st_size=135, ...}, AT_EMPTY_PATH) = 0
+newfstatat(AT_FDCWD, "/usr/lib/python3.10/urllib/parse.py", {st_mode=S_IFREG|0644, st_size=44403, ...}, 0) = 0
+newfstatat(AT_FDCWD, "/usr/lib/python3.10/urllib/parse.py", {st_mode=S_IFREG|0644, st_size=44403, ...}, 0) = 0
+openat(AT_FDCWD, "/usr/lib/python3.10/urllib/__pycache__/parse.cpython-310.pyc", O_RDONLY|O_CLOEXEC) = 3
+newfstatat(3, "", {st_mode=S_IFREG|0644, st_size=34868, ...}, AT_EMPTY_PATH) = 0
+newfstatat(3, "", {st_mode=S_IFREG|0644, st_size=34868, ...}, AT_EMPTY_PATH) = 0
+newfstatat(AT_FDCWD, "/home/shenwei01/M_OFDFT_periodic_basis/scripts", {st_mode=S_IFDIR|0755, st_size=4096, ...}, 0) = 0
+newfstatat(AT_FDCWD, "/usr/lib/python3.10", {st_mode=S_IFDIR|0755, st_size=8192, ...}, 0) = 0
+newfstatat(AT_FDCWD, "/usr/lib/python3.10/ipaddress.py", {st_mode=S_IFREG|0644, st_size=77780, ...}, 0) = 0
+newfstatat(AT_FDCWD, "/usr/lib/python3.10/ipaddress.py", {st_mode=S_IFREG|0644, st_size=77780, ...}, 0) = 0
+openat(AT_FDCWD, "/usr/lib/python3.10/__pycache__/ipaddress.cpython-310.pyc", O_RDONLY|O_CLOEXEC) = 3
+newfstatat(3, "", {st_mode=S_IFREG|0644, st_size=62670, ...}, AT_EMPTY_PATH) = 0
+newfstatat(3, "", {st_mode=S_IFREG|0644, st_size=62670, ...}, AT_EMPTY_PATH) = 0
+newfstatat(AT_FDCWD, "/home", {st_mode=S_IFDIR|0755, st_size=59, ...}, AT_SYMLINK_NOFOLLOW) = 0
+newfstatat(AT_FDCWD, "/home/shenwei01", {st_mode=S_IFDIR|0750, st_size=8192, ...}, AT_SYMLINK_NOFOLLOW) = 0
+newfstatat(AT_FDCWD, "/home/shenwei01/M_OFDFT_recovery_S0_20260805_001", {st_mode=S_IFDIR|0775, st_size=89, ...}, AT_SYMLINK_NOFOLLOW) = 0
+newfstatat(AT_FDCWD, "/home/shenwei01/M_OFDFT_recovery_S0_20260805_001/source", {st_mode=S_IFDIR|0775, st_size=69, ...}, AT_SYMLINK_NOFOLLOW) = 0
+newfstatat(AT_FDCWD, "/home/shenwei01/M_OFDFT_recovery_S0_20260805_001/source/abacus_pw_para_relocated_20260805", {st_mode=S_IFREG|0775, st_size=10264504, ...}, AT_SYMLINK_NOFOLLOW) = 0
+newfstatat(AT_FDCWD, "/home", {st_mode=S_IFDIR|0755, st_size=59, ...}, AT_SYMLINK_NOFOLLOW) = 0
+newfstatat(AT_FDCWD, "/home/shenwei01", {st_mode=S_IFDIR|0750, st_size=8192, ...}, AT_SYMLINK_NOFOLLOW) = 0
+newfstatat(AT_FDCWD, "/home/shenwei01/M_OFDFT_recovery_S0_20260805_001", {st_mode=S_IFDIR|0775, st_size=89, ...}, AT_SYMLINK_NOFOLLOW) = 0
+newfstatat(AT_FDCWD, "/home/shenwei01/M_OFDFT_recovery_S0_20260805_001/source", {st_mode=S_IFDIR|0775, st_size=69, ...}, AT_SYMLINK_NOFOLLOW) = 0
+newfstatat(AT_FDCWD, "/home/shenwei01/M_OFDFT_recovery_S0_20260805_001/source/abacus_pw_para_relocated_20260805", {st_mode=S_IFREG|0775, st_size=10264504, ...}, AT_SYMLINK_NOFOLLOW) = 0
+mkdir("/home/shenwei01/M_OFDFT_periodic_basis/runs/S1-20260805-127/mpi_runtime_audit/rank_handshake/ready", 0777) = -1 EEXIST (File exists)
+newfstatat(AT_FDCWD, "/home/shenwei01/M_OFDFT_periodic_basis/runs/S1-20260805-127/mpi_runtime_audit/rank_handshake/ready", {st_mode=S_IFDIR|0775, st_size=63, ...}, 0) = 0
+mkdir("/home/shenwei01/M_OFDFT_periodic_basis/runs/S1-20260805-127/mpi_runtime_audit/rank_handshake/release", 0777) = -1 EEXIST (File exists)
+newfstatat(AT_FDCWD, "/home/shenwei01/M_OFDFT_periodic_basis/runs/S1-20260805-127/mpi_runtime_audit/rank_handshake/release", {st_mode=S_IFDIR|0775, st_size=6, ...}, 0) = 0
+mkdir("/home/shenwei01/M_OFDFT_periodic_basis/runs/S1-20260805-127/mpi_runtime_audit/rank_handshake/failure", 0777) = -1 EEXIST (File exists)
+newfstatat(AT_FDCWD, "/home/shenwei01/M_OFDFT_periodic_basis/runs/S1-20260805-127/mpi_runtime_audit/rank_handshake/failure", {st_mode=S_IFDIR|0775, st_size=6, ...}, 0) = 0
+newfstatat(AT_FDCWD, "/home/shenwei01/M_OFDFT_periodic_basis/runs/S1-20260805-127/mpi_runtime_audit/rank_handshake/ready/rank-1.json", 0x7ffc4d2edd50, 0) = -1 ENOENT (No such file or directory)
+newfstatat(AT_FDCWD, "/home/shenwei01/M_OFDFT_periodic_basis/runs/S1-20260805-127/mpi_runtime_audit/rank_handshake/ready/rank-1.json", 0x7ffc4d2edb10, AT_SYMLINK_NOFOLLOW) = -1 ENOENT (No such file or directory)
+openat(AT_FDCWD, "/home/shenwei01/M_OFDFT_periodic_basis/runs/S1-20260805-127/mpi_runtime_audit/rank_handshake/ready/.rank-1.json.tmp-21", O_WRONLY|O_CREAT|O_EXCL|O_CLOEXEC, 0666) = 3
+newfstatat(3, "", {st_mode=S_IFREG|0664, st_size=0, ...}, AT_EMPTY_PATH) = 0
+rename("/home/shenwei01/M_OFDFT_periodic_basis/runs/S1-20260805-127/mpi_runtime_audit/rank_handshake/ready/.rank-1.json.tmp-21", "/home/shenwei01/M_OFDFT_periodic_basis/runs/S1-20260805-127/mpi_runtime_audit/rank_handshake/ready/rank-1.json") = 0
+newfstatat(AT_FDCWD, "/home/shenwei01/M_OFDFT_periodic_basis/runs/S1-20260805-127/mpi_runtime_audit/rank_handshake/abort", 0x7ffc4d2edd50, 0) = -1 ENOENT (No such file or directory)
+newfstatat(AT_FDCWD, "/home/shenwei01/M_OFDFT_periodic_basis/runs/S1-20260805-127/mpi_runtime_audit/rank_handshake/abort", 0x7ffc4d2edb10, AT_SYMLINK_NOFOLLOW) = -1 ENOENT (No such file or directory)
+openat(AT_FDCWD, "/home/shenwei01/M_OFDFT_periodic_basis/runs/S1-20260805-127/mpi_runtime_audit/rank_handshake/release/rank-1", O_RDONLY|O_NONBLOCK|O_NOFOLLOW|O_CLOEXEC) = -1 ENOENT (No such file or directory)
+newfstatat(AT_FDCWD, "/home/shenwei01/M_OFDFT_periodic_basis/runs/S1-20260805-127/mpi_runtime_audit/rank_handshake/abort", 0x7ffc4d2edd50, 0) = -1 ENOENT (No such file or directory)
+newfstatat(AT_FDCWD, "/home/shenwei01/M_OFDFT_periodic_basis/runs/S1-20260805-127/mpi_runtime_audit/rank_handshake/abort", 0x7ffc4d2edb10, AT_SYMLINK_NOFOLLOW) = -1 ENOENT (No such file or directory)
+openat(AT_FDCWD, "/home/shenwei01/M_OFDFT_periodic_basis/runs/S1-20260805-127/mpi_runtime_audit/rank_handshake/release/rank-1", O_RDONLY|O_NONBLOCK|O_NOFOLLOW|O_CLOEXEC) = -1 ENOENT (No such file or directory)
+newfstatat(AT_FDCWD, "/home/shenwei01/M_OFDFT_periodic_basis/runs/S1-20260805-127/mpi_runtime_audit/rank_handshake/abort", 0x7ffc4d2edd50, 0) = -1 ENOENT (No such file or directory)
+newfstatat(AT_FDCWD, "/home/shenwei01/M_OFDFT_periodic_basis/runs/S1-20260805-127/mpi_runtime_audit/rank_handshake/abort", 0x7ffc4d2edb10, AT_SYMLINK_NOFOLLOW) = -1 ENOENT (No such file or directory)
+openat(AT_FDCWD, "/home/shenwei01/M_OFDFT_periodic_basis/runs/S1-20260805-127/mpi_runtime_audit/rank_handshake/release/rank-1", O_RDONLY|O_NONBLOCK|O_NOFOLLOW|O_CLOEXEC) = -1 ENOENT (No such file or directory)
+newfstatat(AT_FDCWD, "/home/shenwei01/M_OFDFT_periodic_basis/runs/S1-20260805-127/mpi_runtime_audit/rank_handshake/abort", 0x7ffc4d2edd50, 0) = -1 ENOENT (No such file or directory)
+newfstatat(AT_FDCWD, "/home/shenwei01/M_OFDFT_periodic_basis/runs/S1-20260805-127/mpi_runtime_audit/rank_handshake/abort", 0x7ffc4d2edb10, AT_SYMLINK_NOFOLLOW) = -1 ENOENT (No such file or directory)
+openat(AT_FDCWD, "/home/shenwei01/M_OFDFT_periodic_basis/runs/S1-20260805-127/mpi_runtime_audit/rank_handshake/release/rank-1", O_RDONLY|O_NONBLOCK|O_NOFOLLOW|O_CLOEXEC) = 3
+newfstatat(3, "", {st_mode=S_IFREG|0664, st_size=8, ...}, AT_EMPTY_PATH) = 0
+newfstatat(AT_FDCWD, "/home/shenwei01/M_OFDFT_periodic_basis/runs/S1-20260805-127/mpi_runtime_audit/rank_handshake/abort", 0x7ffc4d2edd50, 0) = -1 ENOENT (No such file or directory)
+newfstatat(AT_FDCWD, "/home/shenwei01/M_OFDFT_periodic_basis/runs/S1-20260805-127/mpi_runtime_audit/rank_handshake/abort", 0x7ffc4d2edb10, AT_SYMLINK_NOFOLLOW) = -1 ENOENT (No such file or directory)
+execve("/home/shenwei01/M_OFDFT_recovery_S0_20260805_001/source/abacus_pw_para_relocated_20260805", ["/home/shenwei01/M_OFDFT_recovery_S0_20260805_001/source/abacus_pw_para_relocated_20260805"], 0x55c71f1ac8b0 /* 134 vars */) = 0
+--- SIGCONT {si_signo=SIGCONT, si_code=SI_USER, si_pid=12, si_uid=0} ---
+readlink("/proc/self/exe", "/home/shenwei01/M_OFDFT_recovery_S0_20260805_001/source/abacus_pw_para_relocated_20260805", 4096) = 89
+access("/etc/ld.so.preload", R_OK)      = -1 ENOENT (No such file or directory)
+openat(AT_FDCWD, "/home/shenwei01/M_OFDFT_recovery_S0_20260805_001/conda_prefix/lib/glibc-hwcaps/x86-64-v4/libxc.so.15", O_RDONLY|O_CLOEXEC) = -1 ENOENT (No such file or directory)
+newfstatat(AT_FDCWD, "/home/shenwei01/M_OFDFT_recovery_S0_20260805_001/conda_prefix/lib/glibc-hwcaps/x86-64-v4", 0x7ffdb0fe0420, 0) = -1 ENOENT (No such file or directory)
+openat(AT_FDCWD, "/home/shenwei01/M_OFDFT_recovery_S0_20260805_001/conda_prefix/lib/glibc-hwcaps/x86-64-v3/libxc.so.15", O_RDONLY|O_CLOEXEC) = -1 ENOENT (No such file or directory)
+newfstatat(AT_FDCWD, "/home/shenwei01/M_OFDFT_recovery_S0_20260805_001/conda_prefix/lib/glibc-hwcaps/x86-64-v3", 0x7ffdb0fe0420, 0) = -1 ENOENT (No such file or directory)
+openat(AT_FDCWD, "/home/shenwei01/M_OFDFT_recovery_S0_20260805_001/conda_prefix/lib/glibc-hwcaps/x86-64-v2/libxc.so.15", O_RDONLY|O_CLOEXEC) = -1 ENOENT (No such file or directory)
+newfstatat(AT_FDCWD, "/home/shenwei01/M_OFDFT_recovery_S0_20260805_001/conda_prefix/lib/glibc-hwcaps/x86-64-v2", 0x7ffdb0fe0420, 0) = -1 ENOENT (No such file or directory)
+openat(AT_FDCWD, "/home/shenwei01/M_OFDFT_recovery_S0_20260805_001/conda_prefix/lib/tls/haswell/avx512_1/x86_64/libxc.so.15", O_RDONLY|O_CLOEXEC) = -1 ENOENT (No such file or directory)
+newfstatat(AT_FDCWD, "/home/shenwei01/M_OFDFT_recovery_S0_20260805_001/conda_prefix/lib/tls/haswell/avx512_1/x86_64", 0x7ffdb0fe0420, 0) = -1 ENOENT (No such file or directory)
+openat(AT_FDCWD, "/home/shenwei01/M_OFDFT_recovery_S0_20260805_001/conda_prefix/lib/tls/haswell/avx512_1/libxc.so.15", O_RDONLY|O_CLOEXEC) = -1 ENOENT (No such file or directory)
+newfstatat(AT_FDCWD, "/home/shenwei01/M_OFDFT_recovery_S0_20260805_001/conda_prefix/lib/tls/haswell/avx512_1", 0x7ffdb0fe0420, 0) = -1 ENOENT (No such file or directory)
+openat(AT_FDCWD, "/home/shenwei01/M_OFDFT_recovery_S0_20260805_001/conda_prefix/lib/tls/haswell/x86_64/libxc.so.15", O_RDONLY|O_CLOEXEC) = -1 ENOENT (No such file or directory)
+newfstatat(AT_FDCWD, "/home/shenwei01/M_OFDFT_recovery_S0_20260805_001/conda_prefix/lib/tls/haswell/x86_64", 0x7ffdb0fe0420, 0) = -1 ENOENT (No such file or directory)
+openat(AT_FDCWD, "/home/shenwei01/M_OFDFT_recovery_S0_20260805_001/conda_prefix/lib/tls/haswell/libxc.so.15", O_RDONLY|O_CLOEXEC) = -1 ENOENT (No such file or directory)
+newfstatat(AT_FDCWD, "/home/shenwei01/M_OFDFT_recovery_S0_20260805_001/conda_prefix/lib/tls/haswell", 0x7ffdb0fe0420, 0) = -1 ENOENT (No such file or directory)
+openat(AT_FDCWD, "/home/shenwei01/M_OFDFT_recovery_S0_20260805_001/conda_prefix/lib/tls/avx512_1/x86_64/libxc.so.15", O_RDONLY|O_CLOEXEC) = -1 ENOENT (No such file or directory)
+newfstatat(AT_FDCWD, "/home/shenwei01/M_OFDFT_recovery_S0_20260805_001/conda_prefix/lib/tls/avx512_1/x86_64", 0x7ffdb0fe0420, 0) = -1 ENOENT (No such file or directory)
+openat(AT_FDCWD, "/home/shenwei01/M_OFDFT_recovery_S0_20260805_001/conda_prefix/lib/tls/avx512_1/libxc.so.15", O_RDONLY|O_CLOEXEC) = -1 ENOENT (No such file or directory)
+newfstatat(AT_FDCWD, "/home/shenwei01/M_OFDFT_recovery_S0_20260805_001/conda_prefix/lib/tls/avx512_1", 0x7ffdb0fe0420, 0) = -1 ENOENT (No such file or directory)
+openat(AT_FDCWD, "/home/shenwei01/M_OFDFT_recovery_S0_20260805_001/conda_prefix/lib/tls/x86_64/libxc.so.15", O_RDONLY|O_CLOEXEC) = -1 ENOENT (No such file or directory)
+newfstatat(AT_FDCWD, "/home/shenwei01/M_OFDFT_recovery_S0_20260805_001/conda_prefix/lib/tls/x86_64", 0x7ffdb0fe0420, 0) = -1 ENOENT (No such file or directory)
+openat(AT_FDCWD, "/home/shenwei01/M_OFDFT_recovery_S0_20260805_001/conda_prefix/lib/tls/libxc.so.15", O_RDONLY|O_CLOEXEC) = -1 ENOENT (No such file or directory)
+newfstatat(AT_FDCWD, "/home/shenwei01/M_OFDFT_recovery_S0_20260805_001/conda_prefix/lib/tls", 0x7ffdb0fe0420, 0) = -1 ENOENT (No such file or directory)
+openat(AT_FDCWD, "/home/shenwei01/M_OFDFT_recovery_S0_20260805_001/conda_prefix/lib/haswell/avx512_1/x86_64/libxc.so.15", O_RDONLY|O_CLOEXEC) = -1 ENOENT (No such file or directory)
+newfstatat(AT_FDCWD, "/home/shenwei01/M_OFDFT_recovery_S0_20260805_001/conda_prefix/lib/haswell/avx512_1/x86_64", 0x7ffdb0fe0420, 0) = -1 ENOENT (No such file or directory)
+openat(AT_FDCWD, "/home/shenwei01/M_OFDFT_recovery_S0_20260805_001/conda_prefix/lib/haswell/avx512_1/libxc.so.15", O_RDONLY|O_CLOEXEC) = -1 ENOENT (No such file or directory)
+newfstatat(AT_FDCWD, "/home/shenwei01/M_OFDFT_recovery_S0_20260805_001/conda_prefix/lib/haswell/avx512_1", 0x7ffdb0fe0420, 0) = -1 ENOENT (No such file or directory)
+openat(AT_FDCWD, "/home/shenwei01/M_OFDFT_recovery_S0_20260805_001/conda_prefix/lib/haswell/x86_64/libxc.so.15", O_RDONLY|O_CLOEXEC) = -1 ENOENT (No such file or directory)
+newfstatat(AT_FDCWD, "/home/shenwei01/M_OFDFT_recovery_S0_20260805_001/conda_prefix/lib/haswell/x86_64", 0x7ffdb0fe0420, 0) = -1 ENOENT (No such file or directory)
+openat(AT_FDCWD, "/home/shenwei01/M_OFDFT_recovery_S0_20260805_001/conda_prefix/lib/haswell/libxc.so.15", O_RDONLY|O_CLOEXEC) = -1 ENOENT (No such file or directory)
+newfstatat(AT_FDCWD, "/home/shenwei01/M_OFDFT_recovery_S0_20260805_001/conda_prefix/lib/haswell", 0x7ffdb0fe0420, 0) = -1 ENOENT (No such file or directory)
+openat(AT_FDCWD, "/home/shenwei01/M_OFDFT_recovery_S0_20260805_001/conda_prefix/lib/avx512_1/x86_64/libxc.so.15", O_RDONLY|O_CLOEXEC) = -1 ENOENT (No such file or directory)
+newfstatat(AT_FDCWD, "/home/shenwei01/M_OFDFT_recovery_S0_20260805_001/conda_prefix/lib/avx512_1/x86_64", 0x7ffdb0fe0420, 0) = -1 ENOENT (No such file or directory)
+openat(AT_FDCWD, "/home/shenwei01/M_OFDFT_recovery_S0_20260805_001/conda_prefix/lib/avx512_1/libxc.so.15", O_RDONLY|O_CLOEXEC) = -1 ENOENT (No such file or directory)
+newfstatat(AT_FDCWD, "/home/shenwei01/M_OFDFT_recovery_S0_20260805_001/conda_prefix/lib/avx512_1", 0x7ffdb0fe0420, 0) = -1 ENOENT (No such file or directory)
+openat(AT_FDCWD, "/home/shenwei01/M_OFDFT_recovery_S0_20260805_001/conda_prefix/lib/x86_64/libxc.so.15", O_RDONLY|O_CLOEXEC) = -1 ENOENT (No such file or directory)
+newfstatat(AT_FDCWD, "/home/shenwei01/M_OFDFT_recovery_S0_20260805_001/conda_prefix/lib/x86_64", 0x7ffdb0fe0420, 0) = -1 ENOENT (No such file or directory)
+openat(AT_FDCWD, "/home/shenwei01/M_OFDFT_recovery_S0_20260805_001/conda_prefix/lib/libxc.so.15", O_RDONLY|O_CLOEXEC) = 3
+newfstatat(3, "", {st_mode=S_IFREG|0775, st_size=181358320, ...}, AT_EMPTY_PATH) = 0
+openat(AT_FDCWD, "/home/shenwei01/M_OFDFT_recovery_S0_20260805_001/conda_prefix/lib/libmkl_gf_lp64.so.2", O_RDONLY|O_CLOEXEC) = 3
+newfstatat(3, "", {st_mode=S_IFREG|0775, st_size=17141720, ...}, AT_EMPTY_PATH) = 0
+openat(AT_FDCWD, "/home/shenwei01/M_OFDFT_recovery_S0_20260805_001/conda_prefix/lib/libmkl_gnu_thread.so.2", O_RDONLY|O_CLOEXEC) = 3
+newfstatat(3, "", {st_mode=S_IFREG|0775, st_size=30984104, ...}, AT_EMPTY_PATH) = 0
+openat(AT_FDCWD, "/home/shenwei01/M_OFDFT_recovery_S0_20260805_001/conda_prefix/lib/libmkl_core.so.2", O_RDONLY|O_CLOEXEC) = 3
+newfstatat(3, "", {st_mode=S_IFREG|0775, st_size=74144696, ...}, AT_EMPTY_PATH) = 0
+openat(AT_FDCWD, "/home/shenwei01/M_OFDFT_recovery_S0_20260805_001/conda_prefix/lib/libmkl_scalapack_lp64.so.2", O_RDONLY|O_CLOEXEC) = 3
+newfstatat(3, "", {st_mode=S_IFREG|0775, st_size=7736496, ...}, AT_EMPTY_PATH) = 0
+openat(AT_FDCWD, "/home/shenwei01/M_OFDFT_recovery_S0_20260805_001/conda_prefix/lib/libmkl_blacs_openmpi_lp64.so.2", O_RDONLY|O_CLOEXEC) = 3
+newfstatat(3, "", {st_mode=S_IFREG|0775, st_size=321552, ...}, AT_EMPTY_PATH) = 0
+openat(AT_FDCWD, "/home/shenwei01/M_OFDFT_recovery_S0_20260805_001/conda_prefix/lib/libmpi.so.40", O_RDONLY|O_CLOEXEC) = 3
+newfstatat(3, "", {st_mode=S_IFREG|0755, st_size=3878976, ...}, AT_EMPTY_PATH) = 0
+openat(AT_FDCWD, "/home/shenwei01/M_OFDFT_recovery_S0_20260805_001/conda_prefix/lib/libgomp.so.1", O_RDONLY|O_CLOEXEC) = 3
+newfstatat(3, "", {st_mode=S_IFREG|0775, st_size=1312784, ...}, AT_EMPTY_PATH) = 0
+openat(AT_FDCWD, "/home/shenwei01/M_OFDFT_recovery_S0_20260805_001/conda_prefix/lib/libstdc++.so.6", O_RDONLY|O_CLOEXEC) = 3
+newfstatat(3, "", {st_mode=S_IFREG|0775, st_size=21295144, ...}, AT_EMPTY_PATH) = 0
+openat(AT_FDCWD, "/home/shenwei01/M_OFDFT_recovery_S0_20260805_001/conda_prefix/lib/libm.so.6", O_RDONLY|O_CLOEXEC) = -1 ENOENT (No such file or directory)
+openat(AT_FDCWD, "/home/shenwei01/M_OFDFT_recovery_S0_20260805_001/source/../conda_prefix/lib/glibc-hwcaps/x86-64-v4/libm.so.6", O_RDONLY|O_CLOEXEC) = -1 ENOENT (No such file or directory)
+newfstatat(AT_FDCWD, "/home/shenwei01/M_OFDFT_recovery_S0_20260805_001/source/../conda_prefix/lib/glibc-hwcaps/x86-64-v4", 0x7ffdb0fe0300, 0) = -1 ENOENT (No such file or directory)
+openat(AT_FDCWD, "/home/shenwei01/M_OFDFT_recovery_S0_20260805_001/source/../conda_prefix/lib/glibc-hwcaps/x86-64-v3/libm.so.6", O_RDONLY|O_CLOEXEC) = -1 ENOENT (No such file or directory)
+newfstatat(AT_FDCWD, "/home/shenwei01/M_OFDFT_recovery_S0_20260805_001/source/../conda_prefix/lib/glibc-hwcaps/x86-64-v3", 0x7ffdb0fe0300, 0) = -1 ENOENT (No such file or directory)
+openat(AT_FDCWD, "/home/shenwei01/M_OFDFT_recovery_S0_20260805_001/source/../conda_prefix/lib/glibc-hwcaps/x86-64-v2/libm.so.6", O_RDONLY|O_CLOEXEC) = -1 ENOENT (No such file or directory)
+newfstatat(AT_FDCWD, "/home/shenwei01/M_OFDFT_recovery_S0_20260805_001/source/../conda_prefix/lib/glibc-hwcaps/x86-64-v2", 0x7ffdb0fe0300, 0) = -1 ENOENT (No such file or directory)
+openat(AT_FDCWD, "/home/shenwei01/M_OFDFT_recovery_S0_20260805_001/source/../conda_prefix/lib/tls/haswell/avx512_1/x86_64/libm.so.6", O_RDONLY|O_CLOEXEC) = -1 ENOENT (No such file or directory)
+newfstatat(AT_FDCWD, "/home/shenwei01/M_OFDFT_recovery_S0_20260805_001/source/../conda_prefix/lib/tls/haswell/avx512_1/x86_64", 0x7ffdb0fe0300, 0) = -1 ENOENT (No such file or directory)
+openat(AT_FDCWD, "/home/shenwei01/M_OFDFT_recovery_S0_20260805_001/source/../conda_prefix/lib/tls/haswell/avx512_1/libm.so.6", O_RDONLY|O_CLOEXEC) = -1 ENOENT (No such file or directory)
+newfstatat(AT_FDCWD, "/home/shenwei01/M_OFDFT_recovery_S0_20260805_001/source/../conda_prefix/lib/tls/haswell/avx512_1", 0x7ffdb0fe0300, 0) = -1 ENOENT (No such file or directory)
+openat(AT_FDCWD, "/home/shenwei01/M_OFDFT_recovery_S0_20260805_001/source/../conda_prefix/lib/tls/haswell/x86_64/libm.so.6", O_RDONLY|O_CLOEXEC) = -1 ENOENT (No such file or directory)
+newfstatat(AT_FDCWD, "/home/shenwei01/M_OFDFT_recovery_S0_20260805_001/source/../conda_prefix/lib/tls/haswell/x86_64", 0x7ffdb0fe0300, 0) = -1 ENOENT (No such file or directory)
+openat(AT_FDCWD, "/home/shenwei01/M_OFDFT_recovery_S0_20260805_001/source/../conda_prefix/lib/tls/haswell/libm.so.6", O_RDONLY|O_CLOEXEC) = -1 ENOENT (No such file or directory)
+newfstatat(AT_FDCWD, "/home/shenwei01/M_OFDFT_recovery_S0_20260805_001/source/../conda_prefix/lib/tls/haswell", 0x7ffdb0fe0300, 0) = -1 ENOENT (No such file or directory)
+openat(AT_FDCWD, "/home/shenwei01/M_OFDFT_recovery_S0_20260805_001/source/../conda_prefix/lib/tls/avx512_1/x86_64/libm.so.6", O_RDONLY|O_CLOEXEC) = -1 ENOENT (No such file or directory)
+newfstatat(AT_FDCWD, "/home/shenwei01/M_OFDFT_recovery_S0_20260805_001/source/../conda_prefix/lib/tls/avx512_1/x86_64", 0x7ffdb0fe0300, 0) = -1 ENOENT (No such file or directory)
+openat(AT_FDCWD, "/home/shenwei01/M_OFDFT_recovery_S0_20260805_001/source/../conda_prefix/lib/tls/avx512_1/libm.so.6", O_RDONLY|O_CLOEXEC) = -1 ENOENT (No such file or directory)
+newfstatat(AT_FDCWD, "/home/shenwei01/M_OFDFT_recovery_S0_20260805_001/source/../conda_prefix/lib/tls/avx512_1", 0x7ffdb0fe0300, 0) = -1 ENOENT (No such file or directory)
+openat(AT_FDCWD, "/home/shenwei01/M_OFDFT_recovery_S0_20260805_001/source/../conda_prefix/lib/tls/x86_64/libm.so.6", O_RDONLY|O_CLOEXEC) = -1 ENOENT (No such file or directory)
+newfstatat(AT_FDCWD, "/home/shenwei01/M_OFDFT_recovery_S0_20260805_001/source/../conda_prefix/lib/tls/x86_64", 0x7ffdb0fe0300, 0) = -1 ENOENT (No such file or directory)
+openat(AT_FDCWD, "/home/shenwei01/M_OFDFT_recovery_S0_20260805_001/source/../conda_prefix/lib/tls/libm.so.6", O_RDONLY|O_CLOEXEC) = -1 ENOENT (No such file or directory)
+newfstatat(AT_FDCWD, "/home/shenwei01/M_OFDFT_recovery_S0_20260805_001/source/../conda_prefix/lib/tls", 0x7ffdb0fe0300, 0) = -1 ENOENT (No such file or directory)
+openat(AT_FDCWD, "/home/shenwei01/M_OFDFT_recovery_S0_20260805_001/source/../conda_prefix/lib/haswell/avx512_1/x86_64/libm.so.6", O_RDONLY|O_CLOEXEC) = -1 ENOENT (No such file or directory)
+newfstatat(AT_FDCWD, "/home/shenwei01/M_OFDFT_recovery_S0_20260805_001/source/../conda_prefix/lib/haswell/avx512_1/x86_64", 0x7ffdb0fe0300, 0) = -1 ENOENT (No such file or directory)
+openat(AT_FDCWD, "/home/shenwei01/M_OFDFT_recovery_S0_20260805_001/source/../conda_prefix/lib/haswell/avx512_1/libm.so.6", O_RDONLY|O_CLOEXEC) = -1 ENOENT (No such file or directory)
+newfstatat(AT_FDCWD, "/home/shenwei01/M_OFDFT_recovery_S0_20260805_001/source/../conda_prefix/lib/haswell/avx512_1", 0x7ffdb0fe0300, 0) = -1 ENOENT (No such file or directory)
+openat(AT_FDCWD, "/home/shenwei01/M_OFDFT_recovery_S0_20260805_001/source/../conda_prefix/lib/haswell/x86_64/libm.so.6", O_RDONLY|O_CLOEXEC) = -1 ENOENT (No such file or directory)
+newfstatat(AT_FDCWD, "/home/shenwei01/M_OFDFT_recovery_S0_20260805_001/source/../conda_prefix/lib/haswell/x86_64", 0x7ffdb0fe0300, 0) = -1 ENOENT (No such file or directory)
+openat(AT_FDCWD, "/home/shenwei01/M_OFDFT_recovery_S0_20260805_001/source/../conda_prefix/lib/haswell/libm.so.6", O_RDONLY|O_CLOEXEC) = -1 ENOENT (No such file or directory)
+newfstatat(AT_FDCWD, "/home/shenwei01/M_OFDFT_recovery_S0_20260805_001/source/../conda_prefix/lib/haswell", 0x7ffdb0fe0300, 0) = -1 ENOENT (No such file or directory)
+openat(AT_FDCWD, "/home/shenwei01/M_OFDFT_recovery_S0_20260805_001/source/../conda_prefix/lib/avx512_1/x86_64/libm.so.6", O_RDONLY|O_CLOEXEC) = -1 ENOENT (No such file or directory)
+newfstatat(AT_FDCWD, "/home/shenwei01/M_OFDFT_recovery_S0_20260805_001/source/../conda_prefix/lib/avx512_1/x86_64", 0x7ffdb0fe0300, 0) = -1 ENOENT (No such file or directory)
+openat(AT_FDCWD, "/home/shenwei01/M_OFDFT_recovery_S0_20260805_001/source/../conda_prefix/lib/avx512_1/libm.so.6", O_RDONLY|O_CLOEXEC) = -1 ENOENT (No such file or directory)
+newfstatat(AT_FDCWD, "/home/shenwei01/M_OFDFT_recovery_S0_20260805_001/source/../conda_prefix/lib/avx512_1", 0x7ffdb0fe0300, 0) = -1 ENOENT (No such file or directory)
+openat(AT_FDCWD, "/home/shenwei01/M_OFDFT_recovery_S0_20260805_001/source/../conda_prefix/lib/x86_64/libm.so.6", O_RDONLY|O_CLOEXEC) = -1 ENOENT (No such file or directory)
+newfstatat(AT_FDCWD, "/home/shenwei01/M_OFDFT_recovery_S0_20260805_001/source/../conda_prefix/lib/x86_64", 0x7ffdb0fe0300, 0) = -1 ENOENT (No such file or directory)
+openat(AT_FDCWD, "/home/shenwei01/M_OFDFT_recovery_S0_20260805_001/source/../conda_prefix/lib/libm.so.6", O_RDONLY|O_CLOEXEC) = -1 ENOENT (No such file or directory)
+newfstatat(AT_FDCWD, "/home/shenwei01/M_OFDFT_recovery_S0_20260805_001/source/../conda_prefix/lib", {st_mode=S_IFDIR|0775, st_size=16384, ...}, 0) = 0
+openat(AT_FDCWD, "/etc/ld.so.cache", O_RDONLY|O_CLOEXEC) = 3
+newfstatat(3, "", {st_mode=S_IFREG|0644, st_size=47288, ...}, AT_EMPTY_PATH) = 0
+openat(AT_FDCWD, "/lib/x86_64-linux-gnu/libm.so.6", O_RDONLY|O_CLOEXEC) = 3
+newfstatat(3, "", {st_mode=S_IFREG|0644, st_size=940560, ...}, AT_EMPTY_PATH) = 0
+openat(AT_FDCWD, "/home/shenwei01/M_OFDFT_recovery_S0_20260805_001/conda_prefix/lib/libgcc_s.so.1", O_RDONLY|O_CLOEXEC) = 3
+newfstatat(3, "", {st_mode=S_IFREG|0664, st_size=902640, ...}, AT_EMPTY_PATH) = 0
+openat(AT_FDCWD, "/home/shenwei01/M_OFDFT_recovery_S0_20260805_001/conda_prefix/lib/libc.so.6", O_RDONLY|O_CLOEXEC) = -1 ENOENT (No such file or directory)
+openat(AT_FDCWD, "/home/shenwei01/M_OFDFT_recovery_S0_20260805_001/source/../conda_prefix/lib/libc.so.6", O_RDONLY|O_CLOEXEC) = -1 ENOENT (No such file or directory)
+openat(AT_FDCWD, "/lib/x86_64-linux-gnu/libc.so.6", O_RDONLY|O_CLOEXEC) = 3
+newfstatat(3, "", {st_mode=S_IFREG|0755, st_size=2220400, ...}, AT_EMPTY_PATH) = 0
+openat(AT_FDCWD, "/home/shenwei01/M_OFDFT_recovery_S0_20260805_001/conda_prefix/lib/libdl.so.2", O_RDONLY|O_CLOEXEC) = -1 ENOENT (No such file or directory)
+openat(AT_FDCWD, "/lib/x86_64-linux-gnu/libdl.so.2", O_RDONLY|O_CLOEXEC) = 3
+newfstatat(3, "", {st_mode=S_IFREG|0644, st_size=14432, ...}, AT_EMPTY_PATH) = 0
+openat(AT_FDCWD, "/home/shenwei01/M_OFDFT_recovery_S0_20260805_001/conda_prefix/lib/libpthread.so.0", O_RDONLY|O_CLOEXEC) = -1 ENOENT (No such file or directory)
+openat(AT_FDCWD, "/lib/x86_64-linux-gnu/libpthread.so.0", O_RDONLY|O_CLOEXEC) = 3
+newfstatat(3, "", {st_mode=S_IFREG|0644, st_size=21448, ...}, AT_EMPTY_PATH) = 0
+openat(AT_FDCWD, "/home/shenwei01/M_OFDFT_recovery_S0_20260805_001/conda_prefix/lib/libucc.so.1", O_RDONLY|O_CLOEXEC) = 3
+newfstatat(3, "", {st_mode=S_IFREG|0775, st_size=1343296, ...}, AT_EMPTY_PATH) = 0
+openat(AT_FDCWD, "/home/shenwei01/M_OFDFT_recovery_S0_20260805_001/conda_prefix/lib/libopen-pal.so.80", O_RDONLY|O_CLOEXEC) = 3
+newfstatat(3, "", {st_mode=S_IFREG|0755, st_size=1393216, ...}, AT_EMPTY_PATH) = 0
+openat(AT_FDCWD, "/home/shenwei01/M_OFDFT_recovery_S0_20260805_001/conda_prefix/lib/libfabric.so.1", O_RDONLY|O_CLOEXEC) = 3
+newfstatat(3, "", {st_mode=S_IFREG|0775, st_size=2094392, ...}, AT_EMPTY_PATH) = 0
+openat(AT_FDCWD, "/home/shenwei01/M_OFDFT_recovery_S0_20260805_001/conda_prefix/lib/libucp.so.0", O_RDONLY|O_CLOEXEC) = 3
+newfstatat(3, "", {st_mode=S_IFREG|0775, st_size=7478544, ...}, AT_EMPTY_PATH) = 0
+openat(AT_FDCWD, "/home/shenwei01/M_OFDFT_recovery_S0_20260805_001/conda_prefix/lib/libucs.so.0", O_RDONLY|O_CLOEXEC) = 3
+newfstatat(3, "", {st_mode=S_IFREG|0775, st_size=1679600, ...}, AT_EMPTY_PATH) = 0
+openat(AT_FDCWD, "/home/shenwei01/M_OFDFT_recovery_S0_20260805_001/conda_prefix/lib/libucm.so.0", O_RDONLY|O_CLOEXEC) = 3
+newfstatat(3, "", {st_mode=S_IFREG|0775, st_size=423784, ...}, AT_EMPTY_PATH) = 0
+openat(AT_FDCWD, "/home/shenwei01/M_OFDFT_recovery_S0_20260805_001/conda_prefix/lib/libuct.so.0", O_RDONLY|O_CLOEXEC) = 3
+newfstatat(3, "", {st_mode=S_IFREG|0775, st_size=1251688, ...}, AT_EMPTY_PATH) = 0
+openat(AT_FDCWD, "/home/shenwei01/M_OFDFT_recovery_S0_20260805_001/conda_prefix/lib/libnl-route-3.so.200", O_RDONLY|O_CLOEXEC) = 3
+newfstatat(3, "", {st_mode=S_IFREG|0775, st_size=720544, ...}, AT_EMPTY_PATH) = 0
+openat(AT_FDCWD, "/home/shenwei01/M_OFDFT_recovery_S0_20260805_001/conda_prefix/lib/libnl-3.so.200", O_RDONLY|O_CLOEXEC) = 3
+newfstatat(3, "", {st_mode=S_IFREG|0775, st_size=168928, ...}, AT_EMPTY_PATH) = 0
+openat(AT_FDCWD, "/home/shenwei01/M_OFDFT_recovery_S0_20260805_001/conda_prefix/lib/librt.so.1", O_RDONLY|O_CLOEXEC) = -1 ENOENT (No such file or directory)
+openat(AT_FDCWD, "/home/shenwei01/M_OFDFT_recovery_S0_20260805_001/conda_prefix/lib/librt.so.1", O_RDONLY|O_CLOEXEC) = -1 ENOENT (No such file or directory)
+openat(AT_FDCWD, "/lib/x86_64-linux-gnu/librt.so.1", O_RDONLY|O_CLOEXEC) = 3
+newfstatat(3, "", {st_mode=S_IFREG|0644, st_size=14664, ...}, AT_EMPTY_PATH) = 0
+openat(AT_FDCWD, "/home/shenwei01/M_OFDFT_recovery_S0_20260805_001/conda_prefix/lib/libutil.so.1", O_RDONLY|O_CLOEXEC) = -1 ENOENT (No such file or directory)
+openat(AT_FDCWD, "/home/shenwei01/M_OFDFT_recovery_S0_20260805_001/conda_prefix/lib/libutil.so.1", O_RDONLY|O_CLOEXEC) = -1 ENOENT (No such file or directory)
+openat(AT_FDCWD, "/lib/x86_64-linux-gnu/libutil.so.1", O_RDONLY|O_CLOEXEC) = 3
+newfstatat(3, "", {st_mode=S_IFREG|0644, st_size=14432, ...}, AT_EMPTY_PATH) = 0
+openat(AT_FDCWD, "/home/shenwei01/M_OFDFT_recovery_S0_20260805_001/conda_prefix/lib/libevent_core-2.1.so.7", O_RDONLY|O_CLOEXEC) = 3
+newfstatat(3, "", {st_mode=S_IFREG|0775, st_size=259496, ...}, AT_EMPTY_PATH) = 0
+openat(AT_FDCWD, "/home/shenwei01/M_OFDFT_recovery_S0_20260805_001/conda_prefix/lib/libevent_pthreads-2.1.so.7", O_RDONLY|O_CLOEXEC) = 3
+newfstatat(3, "", {st_mode=S_IFREG|0775, st_size=16848, ...}, AT_EMPTY_PATH) = 0
+openat(AT_FDCWD, "/home/shenwei01/M_OFDFT_recovery_S0_20260805_001/conda_prefix/lib/libhwloc.so.15", O_RDONLY|O_CLOEXEC) = 3
+newfstatat(3, "", {st_mode=S_IFREG|0775, st_size=430912, ...}, AT_EMPTY_PATH) = 0
+openat(AT_FDCWD, "/home/shenwei01/M_OFDFT_recovery_S0_20260805_001/conda_prefix/lib/libpmix.so.2", O_RDONLY|O_CLOEXEC) = 3
+newfstatat(3, "", {st_mode=S_IFREG|0775, st_size=2407200, ...}, AT_EMPTY_PATH) = 0
+openat(AT_FDCWD, "/home/shenwei01/M_OFDFT_recovery_S0_20260805_001/conda_prefix/lib/./glibc-hwcaps/x86-64-v4/librdmacm.so.1", O_RDONLY|O_CLOEXEC) = -1 ENOENT (No such file or directory)
+newfstatat(AT_FDCWD, "/home/shenwei01/M_OFDFT_recovery_S0_20260805_001/conda_prefix/lib/./glibc-hwcaps/x86-64-v4", 0x7ffdb0fe0060, 0) = -1 ENOENT (No such file or directory)
+openat(AT_FDCWD, "/home/shenwei01/M_OFDFT_recovery_S0_20260805_001/conda_prefix/lib/./glibc-hwcaps/x86-64-v3/librdmacm.so.1", O_RDONLY|O_CLOEXEC) = -1 ENOENT (No such file or directory)
+newfstatat(AT_FDCWD, "/home/shenwei01/M_OFDFT_recovery_S0_20260805_001/conda_prefix/lib/./glibc-hwcaps/x86-64-v3", 0x7ffdb0fe0060, 0) = -1 ENOENT (No such file or directory)
+openat(AT_FDCWD, "/home/shenwei01/M_OFDFT_recovery_S0_20260805_001/conda_prefix/lib/./glibc-hwcaps/x86-64-v2/librdmacm.so.1", O_RDONLY|O_CLOEXEC) = -1 ENOENT (No such file or directory)
+newfstatat(AT_FDCWD, "/home/shenwei01/M_OFDFT_recovery_S0_20260805_001/conda_prefix/lib/./glibc-hwcaps/x86-64-v2", 0x7ffdb0fe0060, 0) = -1 ENOENT (No such file or directory)
+openat(AT_FDCWD, "/home/shenwei01/M_OFDFT_recovery_S0_20260805_001/conda_prefix/lib/./tls/haswell/avx512_1/x86_64/librdmacm.so.1", O_RDONLY|O_CLOEXEC) = -1 ENOENT (No such file or directory)
+newfstatat(AT_FDCWD, "/home/shenwei01/M_OFDFT_recovery_S0_20260805_001/conda_prefix/lib/./tls/haswell/avx512_1/x86_64", 0x7ffdb0fe0060, 0) = -1 ENOENT (No such file or directory)
+openat(AT_FDCWD, "/home/shenwei01/M_OFDFT_recovery_S0_20260805_001/conda_prefix/lib/./tls/haswell/avx512_1/librdmacm.so.1", O_RDONLY|O_CLOEXEC) = -1 ENOENT (No such file or directory)
+newfstatat(AT_FDCWD, "/home/shenwei01/M_OFDFT_recovery_S0_20260805_001/conda_prefix/lib/./tls/haswell/avx512_1", 0x7ffdb0fe0060, 0) = -1 ENOENT (No such file or directory)
+openat(AT_FDCWD, "/home/shenwei01/M_OFDFT_recovery_S0_20260805_001/conda_prefix/lib/./tls/haswell/x86_64/librdmacm.so.1", O_RDONLY|O_CLOEXEC) = -1 ENOENT (No such file or directory)
+newfstatat(AT_FDCWD, "/home/shenwei01/M_OFDFT_recovery_S0_20260805_001/conda_prefix/lib/./tls/haswell/x86_64", 0x7ffdb0fe0060, 0) = -1 ENOENT (No such file or directory)
+openat(AT_FDCWD, "/home/shenwei01/M_OFDFT_recovery_S0_20260805_001/conda_prefix/lib/./tls/haswell/librdmacm.so.1", O_RDONLY|O_CLOEXEC) = -1 ENOENT (No such file or directory)
+newfstatat(AT_FDCWD, "/home/shenwei01/M_OFDFT_recovery_S0_20260805_001/conda_prefix/lib/./tls/haswell", 0x7ffdb0fe0060, 0) = -1 ENOENT (No such file or directory)
+openat(AT_FDCWD, "/home/shenwei01/M_OFDFT_recovery_S0_20260805_001/conda_prefix/lib/./tls/avx512_1/x86_64/librdmacm.so.1", O_RDONLY|O_CLOEXEC) = -1 ENOENT (No such file or directory)
+newfstatat(AT_FDCWD, "/home/shenwei01/M_OFDFT_recovery_S0_20260805_001/conda_prefix/lib/./tls/avx512_1/x86_64", 0x7ffdb0fe0060, 0) = -1 ENOENT (No such file or directory)
+openat(AT_FDCWD, "/home/shenwei01/M_OFDFT_recovery_S0_20260805_001/conda_prefix/lib/./tls/avx512_1/librdmacm.so.1", O_RDONLY|O_CLOEXEC) = -1 ENOENT (No such file or directory)
+newfstatat(AT_FDCWD, "/home/shenwei01/M_OFDFT_recovery_S0_20260805_001/conda_prefix/lib/./tls/avx512_1", 0x7ffdb0fe0060, 0) = -1 ENOENT (No such file or directory)
+openat(AT_FDCWD, "/home/shenwei01/M_OFDFT_recovery_S0_20260805_001/conda_prefix/lib/./tls/x86_64/librdmacm.so.1", O_RDONLY|O_CLOEXEC) = -1 ENOENT (No such file or directory)
+newfstatat(AT_FDCWD, "/home/shenwei01/M_OFDFT_recovery_S0_20260805_001/conda_prefix/lib/./tls/x86_64", 0x7ffdb0fe0060, 0) = -1 ENOENT (No such file or directory)
+openat(AT_FDCWD, "/home/shenwei01/M_OFDFT_recovery_S0_20260805_001/conda_prefix/lib/./tls/librdmacm.so.1", O_RDONLY|O_CLOEXEC) = -1 ENOENT (No such file or directory)
+newfstatat(AT_FDCWD, "/home/shenwei01/M_OFDFT_recovery_S0_20260805_001/conda_prefix/lib/./tls", 0x7ffdb0fe0060, 0) = -1 ENOENT (No such file or directory)
+openat(AT_FDCWD, "/home/shenwei01/M_OFDFT_recovery_S0_20260805_001/conda_prefix/lib/./haswell/avx512_1/x86_64/librdmacm.so.1", O_RDONLY|O_CLOEXEC) = -1 ENOENT (No such file or directory)
+newfstatat(AT_FDCWD, "/home/shenwei01/M_OFDFT_recovery_S0_20260805_001/conda_prefix/lib/./haswell/avx512_1/x86_64", 0x7ffdb0fe0060, 0) = -1 ENOENT (No such file or directory)
+openat(AT_FDCWD, "/home/shenwei01/M_OFDFT_recovery_S0_20260805_001/conda_prefix/lib/./haswell/avx512_1/librdmacm.so.1", O_RDONLY|O_CLOEXEC) = -1 ENOENT (No such file or directory)
+newfstatat(AT_FDCWD, "/home/shenwei01/M_OFDFT_recovery_S0_20260805_001/conda_prefix/lib/./haswell/avx512_1", 0x7ffdb0fe0060, 0) = -1 ENOENT (No such file or directory)
+openat(AT_FDCWD, "/home/shenwei01/M_OFDFT_recovery_S0_20260805_001/conda_prefix/lib/./haswell/x86_64/librdmacm.so.1", O_RDONLY|O_CLOEXEC) = -1 ENOENT (No such file or directory)
+newfstatat(AT_FDCWD, "/home/shenwei01/M_OFDFT_recovery_S0_20260805_001/conda_prefix/lib/./haswell/x86_64", 0x7ffdb0fe0060, 0) = -1 ENOENT (No such file or directory)
+openat(AT_FDCWD, "/home/shenwei01/M_OFDFT_recovery_S0_20260805_001/conda_prefix/lib/./haswell/librdmacm.so.1", O_RDONLY|O_CLOEXEC) = -1 ENOENT (No such file or directory)
+newfstatat(AT_FDCWD, "/home/shenwei01/M_OFDFT_recovery_S0_20260805_001/conda_prefix/lib/./haswell", 0x7ffdb0fe0060, 0) = -1 ENOENT (No such file or directory)
+openat(AT_FDCWD, "/home/shenwei01/M_OFDFT_recovery_S0_20260805_001/conda_prefix/lib/./avx512_1/x86_64/librdmacm.so.1", O_RDONLY|O_CLOEXEC) = -1 ENOENT (No such file or directory)
+newfstatat(AT_FDCWD, "/home/shenwei01/M_OFDFT_recovery_S0_20260805_001/conda_prefix/lib/./avx512_1/x86_64", 0x7ffdb0fe0060, 0) = -1 ENOENT (No such file or directory)
+openat(AT_FDCWD, "/home/shenwei01/M_OFDFT_recovery_S0_20260805_001/conda_prefix/lib/./avx512_1/librdmacm.so.1", O_RDONLY|O_CLOEXEC) = -1 ENOENT (No such file or directory)
+newfstatat(AT_FDCWD, "/home/shenwei01/M_OFDFT_recovery_S0_20260805_001/conda_prefix/lib/./avx512_1", 0x7ffdb0fe0060, 0) = -1 ENOENT (No such file or directory)
+openat(AT_FDCWD, "/home/shenwei01/M_OFDFT_recovery_S0_20260805_001/conda_prefix/lib/./x86_64/librdmacm.so.1", O_RDONLY|O_CLOEXEC) = -1 ENOENT (No such file or directory)
+newfstatat(AT_FDCWD, "/home/shenwei01/M_OFDFT_recovery_S0_20260805_001/conda_prefix/lib/./x86_64", 0x7ffdb0fe0060, 0) = -1 ENOENT (No such file or directory)
+openat(AT_FDCWD, "/home/shenwei01/M_OFDFT_recovery_S0_20260805_001/conda_prefix/lib/./librdmacm.so.1", O_RDONLY|O_CLOEXEC) = 3
+newfstatat(3, "", {st_mode=S_IFREG|0775, st_size=140736, ...}, AT_EMPTY_PATH) = 0
+openat(AT_FDCWD, "/home/shenwei01/M_OFDFT_recovery_S0_20260805_001/conda_prefix/lib/./libefa.so.1", O_RDONLY|O_CLOEXEC) = 3
+newfstatat(3, "", {st_mode=S_IFREG|0775, st_size=76272, ...}, AT_EMPTY_PATH) = 0
+openat(AT_FDCWD, "/home/shenwei01/M_OFDFT_recovery_S0_20260805_001/conda_prefix/lib/./libibverbs.so.1", O_RDONLY|O_CLOEXEC) = 3
+--- SIGCONT {si_signo=SIGCONT, si_code=SI_USER, si_pid=17, si_uid=0} ---
+newfstatat(3, "", {st_mode=S_IFREG|0775, st_size=169208, ...}, AT_EMPTY_PATH) = 0
+openat(AT_FDCWD, "/home/shenwei01/M_OFDFT_recovery_S0_20260805_001/conda_prefix/lib/./libatomic.so.1", O_RDONLY|O_CLOEXEC) = 3
+newfstatat(3, "", {st_mode=S_IFREG|0775, st_size=172632, ...}, AT_EMPTY_PATH) = 0
+openat(AT_FDCWD, "/home/shenwei01/M_OFDFT_recovery_S0_20260805_001/conda_prefix/lib/./libxml2.so.16", O_RDONLY|O_CLOEXEC) = 3
+newfstatat(3, "", {st_mode=S_IFREG|0775, st_size=1448936, ...}, AT_EMPTY_PATH) = 0
+openat(AT_FDCWD, "/home/shenwei01/M_OFDFT_recovery_S0_20260805_001/conda_prefix/lib/././glibc-hwcaps/x86-64-v4/libz.so.1", O_RDONLY|O_CLOEXEC) = -1 ENOENT (No such file or directory)
+newfstatat(AT_FDCWD, "/home/shenwei01/M_OFDFT_recovery_S0_20260805_001/conda_prefix/lib/././glibc-hwcaps/x86-64-v4", 0x7ffdb0fdffc0, 0) = -1 ENOENT (No such file or directory)
+openat(AT_FDCWD, "/home/shenwei01/M_OFDFT_recovery_S0_20260805_001/conda_prefix/lib/././glibc-hwcaps/x86-64-v3/libz.so.1", O_RDONLY|O_CLOEXEC) = -1 ENOENT (No such file or directory)
+newfstatat(AT_FDCWD, "/home/shenwei01/M_OFDFT_recovery_S0_20260805_001/conda_prefix/lib/././glibc-hwcaps/x86-64-v3", 0x7ffdb0fdffc0, 0) = -1 ENOENT (No such file or directory)
+openat(AT_FDCWD, "/home/shenwei01/M_OFDFT_recovery_S0_20260805_001/conda_prefix/lib/././glibc-hwcaps/x86-64-v2/libz.so.1", O_RDONLY|O_CLOEXEC) = -1 ENOENT (No such file or directory)
+newfstatat(AT_FDCWD, "/home/shenwei01/M_OFDFT_recovery_S0_20260805_001/conda_prefix/lib/././glibc-hwcaps/x86-64-v2", 0x7ffdb0fdffc0, 0) = -1 ENOENT (No such file or directory)
+openat(AT_FDCWD, "/home/shenwei01/M_OFDFT_recovery_S0_20260805_001/conda_prefix/lib/././tls/haswell/avx512_1/x86_64/libz.so.1", O_RDONLY|O_CLOEXEC) = -1 ENOENT (No such file or directory)
+newfstatat(AT_FDCWD, "/home/shenwei01/M_OFDFT_recovery_S0_20260805_001/conda_prefix/lib/././tls/haswell/avx512_1/x86_64", 0x7ffdb0fdffc0, 0) = -1 ENOENT (No such file or directory)
+openat(AT_FDCWD, "/home/shenwei01/M_OFDFT_recovery_S0_20260805_001/conda_prefix/lib/././tls/haswell/avx512_1/libz.so.1", O_RDONLY|O_CLOEXEC) = -1 ENOENT (No such file or directory)
+newfstatat(AT_FDCWD, "/home/shenwei01/M_OFDFT_recovery_S0_20260805_001/conda_prefix/lib/././tls/haswell/avx512_1", 0x7ffdb0fdffc0, 0) = -1 ENOENT (No such file or directory)
+openat(AT_FDCWD, "/home/shenwei01/M_OFDFT_recovery_S0_20260805_001/conda_prefix/lib/././tls/haswell/x86_64/libz.so.1", O_RDONLY|O_CLOEXEC) = -1 ENOENT (No such file or directory)
+newfstatat(AT_FDCWD, "/home/shenwei01/M_OFDFT_recovery_S0_20260805_001/conda_prefix/lib/././tls/haswell/x86_64", 0x7ffdb0fdffc0, 0) = -1 ENOENT (No such file or directory)
+openat(AT_FDCWD, "/home/shenwei01/M_OFDFT_recovery_S0_20260805_001/conda_prefix/lib/././tls/haswell/libz.so.1", O_RDONLY|O_CLOEXEC) = -1 ENOENT (No such file or directory)
+newfstatat(AT_FDCWD, "/home/shenwei01/M_OFDFT_recovery_S0_20260805_001/conda_prefix/lib/././tls/haswell", 0x7ffdb0fdffc0, 0) = -1 ENOENT (No such file or directory)
+openat(AT_FDCWD, "/home/shenwei01/M_OFDFT_recovery_S0_20260805_001/conda_prefix/lib/././tls/avx512_1/x86_64/libz.so.1", O_RDONLY|O_CLOEXEC) = -1 ENOENT (No such file or directory)
+newfstatat(AT_FDCWD, "/home/shenwei01/M_OFDFT_recovery_S0_20260805_001/conda_prefix/lib/././tls/avx512_1/x86_64", 0x7ffdb0fdffc0, 0) = -1 ENOENT (No such file or directory)
+openat(AT_FDCWD, "/home/shenwei01/M_OFDFT_recovery_S0_20260805_001/conda_prefix/lib/././tls/avx512_1/libz.so.1", O_RDONLY|O_CLOEXEC) = -1 ENOENT (No such file or directory)
+newfstatat(AT_FDCWD, "/home/shenwei01/M_OFDFT_recovery_S0_20260805_001/conda_prefix/lib/././tls/avx512_1", 0x7ffdb0fdffc0, 0) = -1 ENOENT (No such file or directory)
+openat(AT_FDCWD, "/home/shenwei01/M_OFDFT_recovery_S0_20260805_001/conda_prefix/lib/././tls/x86_64/libz.so.1", O_RDONLY|O_CLOEXEC) = -1 ENOENT (No such file or directory)
+newfstatat(AT_FDCWD, "/home/shenwei01/M_OFDFT_recovery_S0_20260805_001/conda_prefix/lib/././tls/x86_64", 0x7ffdb0fdffc0, 0) = -1 ENOENT (No such file or directory)
+openat(AT_FDCWD, "/home/shenwei01/M_OFDFT_recovery_S0_20260805_001/conda_prefix/lib/././tls/libz.so.1", O_RDONLY|O_CLOEXEC) = -1 ENOENT (No such file or directory)
+newfstatat(AT_FDCWD, "/home/shenwei01/M_OFDFT_recovery_S0_20260805_001/conda_prefix/lib/././tls", 0x7ffdb0fdffc0, 0) = -1 ENOENT (No such file or directory)
+openat(AT_FDCWD, "/home/shenwei01/M_OFDFT_recovery_S0_20260805_001/conda_prefix/lib/././haswell/avx512_1/x86_64/libz.so.1", O_RDONLY|O_CLOEXEC) = -1 ENOENT (No such file or directory)
+newfstatat(AT_FDCWD, "/home/shenwei01/M_OFDFT_recovery_S0_20260805_001/conda_prefix/lib/././haswell/avx512_1/x86_64", 0x7ffdb0fdffc0, 0) = -1 ENOENT (No such file or directory)
+openat(AT_FDCWD, "/home/shenwei01/M_OFDFT_recovery_S0_20260805_001/conda_prefix/lib/././haswell/avx512_1/libz.so.1", O_RDONLY|O_CLOEXEC) = -1 ENOENT (No such file or directory)
+newfstatat(AT_FDCWD, "/home/shenwei01/M_OFDFT_recovery_S0_20260805_001/conda_prefix/lib/././haswell/avx512_1", 0x7ffdb0fdffc0, 0) = -1 ENOENT (No such file or directory)
+openat(AT_FDCWD, "/home/shenwei01/M_OFDFT_recovery_S0_20260805_001/conda_prefix/lib/././haswell/x86_64/libz.so.1", O_RDONLY|O_CLOEXEC) = -1 ENOENT (No such file or directory)
+newfstatat(AT_FDCWD, "/home/shenwei01/M_OFDFT_recovery_S0_20260805_001/conda_prefix/lib/././haswell/x86_64", 0x7ffdb0fdffc0, 0) = -1 ENOENT (No such file or directory)
+openat(AT_FDCWD, "/home/shenwei01/M_OFDFT_recovery_S0_20260805_001/conda_prefix/lib/././haswell/libz.so.1", O_RDONLY|O_CLOEXEC) = -1 ENOENT (No such file or directory)
+newfstatat(AT_FDCWD, "/home/shenwei01/M_OFDFT_recovery_S0_20260805_001/conda_prefix/lib/././haswell", 0x7ffdb0fdffc0, 0) = -1 ENOENT (No such file or directory)
+openat(AT_FDCWD, "/home/shenwei01/M_OFDFT_recovery_S0_20260805_001/conda_prefix/lib/././avx512_1/x86_64/libz.so.1", O_RDONLY|O_CLOEXEC) = -1 ENOENT (No such file or directory)
+newfstatat(AT_FDCWD, "/home/shenwei01/M_OFDFT_recovery_S0_20260805_001/conda_prefix/lib/././avx512_1/x86_64", 0x7ffdb0fdffc0, 0) = -1 ENOENT (No such file or directory)
+openat(AT_FDCWD, "/home/shenwei01/M_OFDFT_recovery_S0_20260805_001/conda_prefix/lib/././avx512_1/libz.so.1", O_RDONLY|O_CLOEXEC) = -1 ENOENT (No such file or directory)
+newfstatat(AT_FDCWD, "/home/shenwei01/M_OFDFT_recovery_S0_20260805_001/conda_prefix/lib/././avx512_1", 0x7ffdb0fdffc0, 0) = -1 ENOENT (No such file or directory)
+openat(AT_FDCWD, "/home/shenwei01/M_OFDFT_recovery_S0_20260805_001/conda_prefix/lib/././x86_64/libz.so.1", O_RDONLY|O_CLOEXEC) = -1 ENOENT (No such file or directory)
+newfstatat(AT_FDCWD, "/home/shenwei01/M_OFDFT_recovery_S0_20260805_001/conda_prefix/lib/././x86_64", 0x7ffdb0fdffc0, 0) = -1 ENOENT (No such file or directory)
+openat(AT_FDCWD, "/home/shenwei01/M_OFDFT_recovery_S0_20260805_001/conda_prefix/lib/././libz.so.1", O_RDONLY|O_CLOEXEC) = 3
+newfstatat(3, "", {st_mode=S_IFREG|0775, st_size=117128, ...}, AT_EMPTY_PATH) = 0
+openat(AT_FDCWD, "/home/shenwei01/M_OFDFT_recovery_S0_20260805_001/conda_prefix/lib/././libiconv.so.2", O_RDONLY|O_CLOEXEC) = 3
+newfstatat(3, "", {st_mode=S_IFREG|0775, st_size=1178544, ...}, AT_EMPTY_PATH) = 0
+openat(AT_FDCWD, "/home/shenwei01/M_OFDFT_recovery_S0_20260805_001/conda_prefix/lib/././libicuuc.so.78", O_RDONLY|O_CLOEXEC) = 3
+newfstatat(3, "", {st_mode=S_IFREG|0775, st_size=2702352, ...}, AT_EMPTY_PATH) = 0
+--- SIGTERM {si_signo=SIGTERM, si_code=SI_USER, si_pid=17, si_uid=0} ---
++++ killed by SIGTERM +++

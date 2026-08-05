@@ -1,0 +1,2 @@
+openat(AT_FDCWD, "/home/shenwei01/M_OFDFT_periodic_basis/runs/S1-20260805-127/runtime_home/.openmpi/mca-params.conf", O_RDONLY) = -1 ENOENT (No such file or directory)
+exit(0)                                 = ?

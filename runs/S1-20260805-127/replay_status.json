@@ -1,0 +1,35 @@
+{
+  "core_validation_exit_code": 97,
+  "invocation_exit_code": 98,
+  "launcher_exit_code": 98,
+  "parser_exit_code": 1,
+  "run_status": {
+    "counterpart_audit_status": null,
+    "failure_stage": "runtime_invocation_or_parser",
+    "invocation_exit_code": 98,
+    "launcher_exit_code": 98,
+    "namespace_host_status": "rejected",
+    "parser_exit_code": 1,
+    "result_converged": null,
+    "result_json_present": false,
+    "runtime_audit_json_present": true,
+    "runtime_audit_status": "rejected",
+    "runtime_relocation_mode": true,
+    "schema_version": 2,
+    "setup_completed": true,
+    "status": "rejected",
+    "workflow_exit_code": 98
+  },
+  "runtime_audit_failure_reasons": [
+    "rank_1_initial_map_capture_failed",
+    "launcher_exit_code:98",
+    "target_process_set_incomplete",
+    "registered_probe_count_mismatch_count:20",
+    "successful_exec_multiset_mismatch:{\"expected\": {\"/home/shenwei01/M_OFDFT_recovery_S0_20260805_001/conda_prefix/bin/mpirun\": 1, \"/home/shenwei01/M_OFDFT_recovery_S0_20260805_001/conda_prefix/bin/prte\": 1, \"/home/shenwei01/M_OFDFT_recovery_S0_20260805_001/source/abacus_pw_para_relocated_20260805\": 4, \"/usr/bin/python3.10\": 4}, \"observed\": {\"/home/shenwei01/M_OFDFT_recovery_S0_20260805_001/conda_prefix/bin/mpirun\": 1, \"/home/shenwei01/M_OFDFT_recovery_S0_20260805_001/conda_prefix/bin/prte\": 1, \"/home/shenwei01/M_OFDFT_recovery_S0_20260805_001/source/abacus_pw_para_relocated_20260805\": 2, \"/usr/bin/python3.10\": 4}}"
+  ],
+  "runtime_audit_status": "rejected",
+  "safe_retry_policy": "archive_committed_failure_then_retry_same_registered_id",
+  "schema_version": 2,
+  "status": "rejected",
+  "workflow_exit_code": 98
+}
