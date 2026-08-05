@@ -29,6 +29,255 @@ from parse_s1_single import parse_log  # noqa: E402
 
 
 class S1MpiPrefixEquivalenceTest(unittest.TestCase):
+    def test_strace_516_command_uses_external_containment_contract(self) -> None:
+        real_command = ["/recovery/bin/mpirun", "-np", "4", "/recovery/bin/abacus"]
+        trace_prefix = Path("/evidence/strace/trace")
+        command = AUDIT._build_strace_command(
+            Path("/usr/bin/strace"), trace_prefix, real_command
+        )
+        self.assertEqual(
+            command,
+            [
+                "/usr/bin/strace",
+                "-ff",
+                "-qq",
+                "-I",
+                "1",
+                "-s",
+                "4096",
+                "-e",
+                "trace=file,process",
+                "-o",
+                str(trace_prefix),
+                *real_command,
+            ],
+        )
+        self.assertNotIn("--kill-on-exit", command)
+        self.assertTrue(
+            VALIDATOR._strace_command_contract_matches(
+                command,
+                Path("/usr/bin/strace"),
+                trace_prefix,
+                real_command,
+            )
+        )
+        incompatible = [*command[:3], "--kill-on-exit", *command[3:]]
+        self.assertFalse(
+            VALIDATOR._strace_command_contract_matches(
+                incompatible,
+                Path("/usr/bin/strace"),
+                trace_prefix,
+                real_command,
+            )
+        )
+
+    def test_known_pid_terminal_proof_covers_every_independent_channel(self) -> None:
+        sources = {
+            100: ["strace_root"],
+            101: ["launcher_discovery", "strace_trace_file"],
+            102: ["rank_handshake", "strace_trace_file"],
+            103: ["rank_handshake", "strace_trace_file"],
+            104: ["rank_handshake", "strace_trace_file"],
+            105: ["rank_handshake", "strace_trace_file"],
+            106: ["strace_trace_file"],
+        }
+        terminal = {
+            "known_pid_count": len(sources),
+            "known_pids": [
+                {
+                    "pid": pid,
+                    "sources": value,
+                    "observed_start_time_ticks": pid * 10,
+                    "terminal_start_time_ticks": None,
+                    "terminal_state": "gone",
+                }
+                for pid, value in sources.items()
+            ],
+            "process_group": 100,
+            "process_group_members_after": [],
+            "all_known_pids_gone": True,
+        }
+        cleanup = {
+            "members_before_cleanup": [100],
+            "tracee_pids_before_cleanup": [101, 102, 103, 104, 105, 106],
+        }
+        arguments = (
+            {101, 102, 103, 104, 105, 106},
+            101,
+            {0: 102, 1: 103, 2: 104, 3: 105},
+            {101, 102, 103, 104, 105},
+            cleanup,
+        )
+        self.assertEqual(
+            VALIDATOR._known_pid_terminal_contract_failures(
+                terminal, *arguments
+            ),
+            [],
+        )
+        missing = dict(terminal)
+        missing["known_pids"] = terminal["known_pids"][:-1]
+        missing["known_pid_count"] = len(missing["known_pids"])
+        self.assertTrue(
+            VALIDATOR._known_pid_terminal_contract_failures(missing, *arguments)
+        )
+        wrong_root = json.loads(json.dumps(terminal))
+        wrong_root["known_pids"][0]["sources"] = ["process_group_scan"]
+        self.assertTrue(
+            VALIDATOR._known_pid_terminal_contract_failures(wrong_root, *arguments)
+        )
+        untraced_targets = (
+            {106},
+            arguments[1],
+            arguments[2],
+            arguments[3],
+            arguments[4],
+        )
+        failures = VALIDATOR._known_pid_terminal_contract_failures(
+            terminal, *untraced_targets
+        )
+        self.assertTrue(any("lack raw trace files" in row for row in failures))
+
+        extra_aggregate = json.loads(json.dumps(terminal))
+        extra_aggregate["extra_schema"] = "forbidden"
+        self.assertTrue(
+            VALIDATOR._known_pid_terminal_contract_failures(
+                extra_aggregate, *arguments
+            )
+        )
+
+        spliced_row = json.loads(json.dumps(terminal))
+        del spliced_row["known_pids"][1]["observed_start_time_ticks"]
+        spliced_row["known_pids"][1]["sources"].append("unknown_spliced_source")
+        self.assertTrue(
+            VALIDATOR._known_pid_terminal_contract_failures(spliced_row, *arguments)
+        )
+
+        invalid_gone = json.loads(json.dumps(terminal))
+        invalid_gone["known_pids"][1]["terminal_start_time_ticks"] = 999
+        self.assertTrue(
+            VALIDATOR._known_pid_terminal_contract_failures(invalid_gone, *arguments)
+        )
+
+        valid_reuse = json.loads(json.dumps(terminal))
+        valid_reuse["known_pids"][1]["terminal_state"] = (
+            "pid_reused_original_gone"
+        )
+        valid_reuse["known_pids"][1]["terminal_start_time_ticks"] = 999
+        self.assertEqual(
+            VALIDATOR._known_pid_terminal_contract_failures(
+                valid_reuse, *arguments
+            ),
+            [],
+        )
+
+        spliced_root = json.loads(json.dumps(terminal))
+        spliced_root["process_group"] = 101
+        spliced_root["known_pids"][1]["sources"] = sorted(
+            [*spliced_root["known_pids"][1]["sources"], "strace_root"]
+        )
+        self.assertTrue(
+            VALIDATOR._known_pid_terminal_contract_failures(
+                spliced_root, *arguments
+            )
+        )
+
+        spliced_launcher = json.loads(json.dumps(terminal))
+        spliced_launcher["known_pids"][-1]["sources"] = sorted(
+            [
+                *spliced_launcher["known_pids"][-1]["sources"],
+                "launcher_discovery",
+            ]
+        )
+        self.assertTrue(
+            VALIDATOR._known_pid_terminal_contract_failures(
+                spliced_launcher, *arguments
+            )
+        )
+
+        spliced_rank = json.loads(json.dumps(terminal))
+        spliced_rank["known_pids"][-1]["sources"] = sorted(
+            [*spliced_rank["known_pids"][-1]["sources"], "rank_handshake"]
+        )
+        self.assertTrue(
+            VALIDATOR._known_pid_terminal_contract_failures(
+                spliced_rank, *arguments
+            )
+        )
+
+        spliced_trace = json.loads(json.dumps(terminal))
+        spliced_trace["known_pids"][0]["sources"] = sorted(
+            [*spliced_trace["known_pids"][0]["sources"], "strace_trace_file"]
+        )
+        self.assertTrue(
+            VALIDATOR._known_pid_terminal_contract_failures(
+                spliced_trace, *arguments
+            )
+        )
+
+    def test_runtime_pid_roles_cross_bind_handshakes_and_mapped_processes(self) -> None:
+        launcher_pid = 101
+        rank_pids = {0: 102, 1: 103, 2: 104, 3: 105}
+        launcher_rows = [{"pid": launcher_pid, "role": "launcher", "rank": None}]
+        rank_rows = [
+            {"pid": pid, "role": "rank", "rank": rank}
+            for rank, pid in rank_pids.items()
+        ]
+        self.assertEqual(
+            VALIDATOR._runtime_pid_role_contract_failures(
+                launcher_pid, rank_pids, launcher_rows, rank_rows, 4
+            ),
+            [],
+        )
+
+        changed_launcher = json.loads(json.dumps(launcher_rows))
+        changed_launcher[0]["pid"] = 201
+        self.assertTrue(
+            VALIDATOR._runtime_pid_role_contract_failures(
+                launcher_pid, rank_pids, changed_launcher, rank_rows, 4
+            )
+        )
+
+        changed_rank = json.loads(json.dumps(rank_rows))
+        changed_rank[2]["pid"] = 204
+        self.assertTrue(
+            VALIDATOR._runtime_pid_role_contract_failures(
+                launcher_pid, rank_pids, launcher_rows, changed_rank, 4
+            )
+        )
+
+        changed_rank_number = json.loads(json.dumps(rank_rows))
+        changed_rank_number[2]["rank"] = 1
+        self.assertTrue(
+            VALIDATOR._runtime_pid_role_contract_failures(
+                launcher_pid, rank_pids, launcher_rows, changed_rank_number, 4
+            )
+        )
+
+    def test_raw_trace_filenames_are_canonical_positive_pids(self) -> None:
+        with tempfile.TemporaryDirectory() as temporary:
+            directory = Path(temporary)
+            canonical = directory / "trace.101"
+            canonical.write_text("execve(...) = 0\n")
+            files, failures = VALIDATOR._trace_file_pid_contract([canonical])
+            self.assertEqual(files, {101: canonical})
+            self.assertEqual(failures, [])
+
+            for name in ("trace.foo", "trace.0", "trace.-1", "trace.0101"):
+                invalid = directory / name
+                invalid.write_text("")
+                _, failures = VALIDATOR._trace_file_pid_contract([invalid])
+                self.assertTrue(failures, name)
+
+            hidden = directory / "hidden.999"
+            hidden.write_text(
+                'openat(AT_FDCWD, "/old/prefix/libbad.so", O_RDONLY) = 3\n'
+            )
+            files, failures = VALIDATOR._trace_directory_contract(directory)
+            self.assertEqual(files, {101: canonical})
+            self.assertTrue(
+                any("hidden.999" in failure for failure in failures), failures
+            )
+
     def test_fixed_mapping_is_exact_and_official_freeze_is_not_fabricated(self) -> None:
         self.assertEqual(
             [(replay[-3:], reference[-3:]) for replay, reference, _, _ in COMMON.FIXED_PAIRS],
@@ -378,20 +627,127 @@ class S1MpiPrefixEquivalenceTest(unittest.TestCase):
             unproven = AUDIT._prove_known_pids_gone(known, time.monotonic(), 100)
         self.assertFalse(unproven["all_known_pids_gone"])
 
-        with mock.patch.object(NAMESPACE, "_pid_namespace_members", return_value=([], [])):
-            namespace_gone = NAMESPACE._prove_pid_namespace_empty(
-                456, time.monotonic() + 1
+
+    def test_pid1_kernel_reap_proof_requires_every_frozen_condition(self) -> None:
+        with tempfile.TemporaryDirectory() as temporary:
+            namespace = Path(temporary)
+            inode = 456
+            (namespace / "state.before_mount.json").write_text(
+                json.dumps(
+                    {"namespace_init_pid": 1, "pid_namespace_inode": inode}
+                )
             )
-        self.assertTrue(namespace_gone["all_namespace_members_gone"])
-        with mock.patch.object(
-            NAMESPACE,
-            "_pid_namespace_members",
-            return_value=([], ["cannot_stat_pid_namespace:7"]),
-        ):
-            namespace_unknown = NAMESPACE._prove_pid_namespace_empty(
-                456, time.monotonic() + 1
+            (namespace / "state.after_run.json").write_text(
+                json.dumps(
+                    {"namespace_init_pid": 1, "pid_namespace_inode": inode}
+                )
             )
-        self.assertFalse(namespace_unknown["all_namespace_members_gone"])
+            (namespace / "payload_status.json").write_text(
+                json.dumps(
+                    {
+                        "status": "accepted",
+                        "audit_launcher_exit_code": 0,
+                        "pid_namespace_inode": inode,
+                    }
+                )
+            )
+            unshare = ["/usr/bin/unshare", *NAMESPACE.UNSHARE_NAMESPACE_ARGUMENTS]
+            payload = ["/bin/bash", "/project/namespace_payload.sh", "-np", "4"]
+            command = [*unshare, *payload]
+            accepted = NAMESPACE._pid1_kernel_reap_proof(
+                namespace, command, unshare, payload, True, 0
+            )
+            self.assertTrue(accepted["all_namespace_members_reaped"])
+            self.assertTrue(
+                VALIDATOR._pid1_kernel_reap_contract_matches(
+                    accepted, inode, command, unshare, payload
+                )
+            )
+            altered_proof = dict(accepted)
+            altered_proof["process_wait_completed_normally"] = False
+            self.assertFalse(
+                VALIDATOR._pid1_kernel_reap_contract_matches(
+                    altered_proof, inode, command, unshare, payload
+                )
+            )
+
+            for required in ("--pid", "--fork", "--kill-child=KILL"):
+                altered = [value for value in unshare if value != required]
+                rejected = NAMESPACE._pid1_kernel_reap_proof(
+                    namespace, [*altered, *payload], altered, payload, True, 0
+                )
+                self.assertFalse(
+                    rejected["all_namespace_members_reaped"], required
+                )
+            self.assertFalse(
+                NAMESPACE._pid1_kernel_reap_proof(
+                    namespace, command, unshare, payload, False, 0
+                )["all_namespace_members_reaped"]
+            )
+            self.assertFalse(
+                NAMESPACE._pid1_kernel_reap_proof(
+                    namespace, command, unshare, payload, True, 1
+                )["all_namespace_members_reaped"]
+            )
+            (namespace / "state.after_run.json").write_text(
+                json.dumps(
+                    {"namespace_init_pid": 1, "pid_namespace_inode": inode + 1}
+                )
+            )
+            self.assertFalse(
+                NAMESPACE._pid1_kernel_reap_proof(
+                    namespace, command, unshare, payload, True, 0
+                )["all_namespace_members_reaped"]
+            )
+
+    def test_accessible_namespace_scan_is_auxiliary_but_fail_closed(self) -> None:
+        with tempfile.TemporaryDirectory() as temporary:
+            proc = Path(temporary)
+            member = proc / "100"
+            (member / "ns").mkdir(parents=True)
+            namespace_path = member / "ns" / "pid"
+            namespace_path.write_text("namespace handle")
+            (member / "stat").write_text(
+                "100 (target) S " + " ".join(["0"] * 19 + ["123"]) + "\n"
+            )
+            inode = namespace_path.stat().st_ino
+            present = NAMESPACE._accessible_host_pid_namespace_scan(inode, proc)
+            self.assertFalse(present["scan_passed"])
+            self.assertEqual(present["accessible_matching_member_count"], 1)
+
+            inaccessible = proc / "200"
+            inaccessible.mkdir()
+            original_stat = Path.stat
+
+            def selective_stat(path, *args, **kwargs):
+                if path == inaccessible / "ns" / "pid":
+                    raise PermissionError("synthetic hidepid")
+                return original_stat(path, *args, **kwargs)
+
+            with mock.patch.object(Path, "stat", selective_stat):
+                auxiliary = NAMESPACE._accessible_host_pid_namespace_scan(
+                    inode + 1, proc
+                )
+            self.assertTrue(auxiliary["scan_passed"])
+            self.assertEqual(auxiliary["inaccessible_pid_count"], 1)
+            self.assertEqual(auxiliary["fatal_errors"], [])
+            self.assertTrue(
+                VALIDATOR._accessible_host_scan_contract_matches(auxiliary)
+            )
+            missing_sample = json.loads(json.dumps(auxiliary))
+            missing_sample["inaccessible_pid_samples"] = []
+            self.assertFalse(
+                VALIDATOR._accessible_host_scan_contract_matches(missing_sample)
+            )
+
+            invalid = NAMESPACE._accessible_host_pid_namespace_scan(None, proc)
+            self.assertFalse(invalid["scan_passed"])
+            self.assertTrue(invalid["fatal_errors"])
+            missing_proc = NAMESPACE._accessible_host_pid_namespace_scan(
+                inode, proc / "missing"
+            )
+            self.assertFalse(missing_proc["scan_passed"])
+            self.assertTrue(missing_proc["fatal_errors"])
 
     def test_watchdog_origin_is_unique_and_alarm_cannot_be_swallowed(self) -> None:
         self.assertFalse(issubclass(AUDIT.AbsoluteWatchdogExpired, OSError))
@@ -438,6 +794,37 @@ class S1MpiPrefixEquivalenceTest(unittest.TestCase):
             self.assertTrue(rejected["timeout_triggered"])
             self.assertEqual(rejected["started_epoch_seconds"], arguments[0])
             self.assertGreaterEqual(rejected["elapsed_seconds"], 0.0)
+
+        with tempfile.TemporaryDirectory() as temporary:
+            audit_directory = Path(temporary) / "audit"
+            implementation = mock.Mock(
+                side_effect=NAMESPACE.AbsoluteWatchdogExpired("injected deadline")
+            )
+            with mock.patch.dict(
+                os.environ,
+                {"M_OFDFT_MPI_AUDIT_DIR": str(audit_directory)},
+            ), mock.patch.object(
+                NAMESPACE, "_main_impl", implementation
+            ), mock.patch.object(
+                NAMESPACE.signal, "getsignal", return_value=object()
+            ), mock.patch.object(
+                NAMESPACE.signal, "signal"
+            ), mock.patch.object(
+                NAMESPACE.signal, "setitimer"
+            ):
+                self.assertEqual(NAMESPACE.main(), 124)
+            host_status = json.loads(
+                (
+                    audit_directory / "namespace" / "host_status.json"
+                ).read_text()
+            )
+            self.assertEqual(host_status["status"], "rejected")
+            self.assertTrue(host_status["timeout_triggered"])
+            self.assertFalse(
+                host_status["pid1_kernel_reap_proof"][
+                    "all_namespace_members_reaped"
+                ]
+            )
 
     def test_version_probe_timeout_is_part_of_absolute_deadline(self) -> None:
         identity = {

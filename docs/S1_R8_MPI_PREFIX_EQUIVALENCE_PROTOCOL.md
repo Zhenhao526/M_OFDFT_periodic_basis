@@ -74,8 +74,10 @@ scripts/run_s1_runtime_relocation_smoke.py \
 2. 4-rank handshake、严格 exec 集合、maps、22 个旧前缀失败探针均通过；
 3. recovery mapped component counterpart 检查全部可证明；
 4. 074 计算收敛，`|dE| < 0.1 meV/atom`、`|dP| < 0.02 GPa`，审计退出 0；
-5. PID namespace 退出后，host `/proc/*/ns/pid` 中同 inode 成员为 0；strace、handshake、
-   descendant 和 PGID 汇总的每个已知 PID 都有消失或 PID-reuse 终态证据；
+5. namespace payload 作为 PID 1 正常退出，`unshare --pid --fork --kill-child=KILL`
+   的实际命令、exit 0 和 inode 一致性形成 kernel reap 证明；host 可访问 inode 扫描未见
+   同 inode 成员；strace、handshake、descendant 和 PGID 汇总的每个已知 PID 都有消失
+   或 PID-reuse 终态证据；
 6. 命令、脚本 SHA、stdout/stderr、`audit.json`、`objects.tsv`、counterpart、namespace、
    strace 和结果摘要归档到受管证据目录并生成校验和。
 
@@ -161,8 +163,17 @@ namespace 内以 `size=1m,nosuid,nodev,noexec` 的 tmpfs 覆盖旧 runtime root�
 旧 root/prefix 的 lstat、realpath 和 mountinfo 在前后必须完全相同。证据同时冻结
 原始 mountinfo、uid_map、gid_map、PID namespace inode/NSpid、namespace init PID 1、
 无 shared propagation、payload 状态、工具前后身份和清理后的零残留进程。外层退出后
-必须遍历 host `/proc`，同 PID namespace inode 的成员和扫描错误都必须为 0；不得把
-默认 `true` 或一次 PGID 快照当成零残留证明。
+权威终态证明要求：实际 `unshare` 命令与冻结 argv 完全一致，payload Bash 在三份状态
+证据中均为同一 PID namespace 的 PID 1，`process.wait()` 正常返回，payload/unshare 均
+exit 0。Linux PID namespace 规则规定 PID 1 终止时 kernel 对 namespace 中其余进程发送
+`SIGKILL`；该不变量与 `--kill-child=KILL`、外层 PG/descendant 零残留共同构成
+`pid1_kernel_reap_proof`。参见
+[pid_namespaces(7)](https://man7.org/linux/man-pages/man7/pid_namespaces.7.html)。
+
+host `/proc/*/ns/pid` 扫描保留为辅助负向硬门：任何**可访问**的同 inode 成员立即拒绝；
+`/proc` 无法列举、目标 namespace inode 无效等审计自身错误也拒绝。节点因 hidepid/权限
+策略不可读的无关 PID 必须记录数量和有限样例，但不得伪称扫描穷尽，也不覆盖 PID 1/kernel
+证明。不得把默认 `true`、一次 PGID 快照或仅“未发现可读成员”当成零残留证明。
 
 内层 7200 s、外层 7260 s 都是覆盖 preflight、工具 `--version`、计算、逐文件哈希、
 counterpart、postflight 和 summary 写入的绝对 deadline。每个阻塞子进程使用剩余时间
@@ -191,8 +202,12 @@ runner 使用独立 FD 9 读取清单；子任务关闭 FD 9，stdin 接 `/dev/n
 再依次 release、`SIGSTOP`、读取 `/proc/<pid>/maps`、`SIGCONT`。不得用 20 ms 抽样式
 PID 猜测替代 handshake。
 
-`/usr/bin/strace` 固定使用 `trace=file,process` 和 `--kill-on-exit`；其 path、realpath、
-SHA-256、版本输出必须在执行前后完全一致。执行
+`/usr/bin/strace` 固定使用与服务器 5.16 兼容的
+`-ff -qq -I 1 -s 4096 -e trace=file,process`，且命令前缀、trace 输出前缀和后续 MPI
+命令必须逐项完全一致；不得登记该版本不支持的 `--kill-on-exit`。其 path、realpath、
+SHA-256、版本输出必须在执行前后完全一致。tracee 收口不依赖该缺失选项，而由审计器
+进程组与跨 channel known-PID 终态证明、`unshare --kill-child=KILL` 私有 PID namespace
+的 PID 1/kernel reap 证明、可访问 host inode 负向扫描共同完成；任一层不完整均拒绝。执行
 链的成功 `execve` 必须是精确 multiset：mpirun 1、recovery prterun 1、冻结 Python
 4、relocated ABACUS 4。只有明确 `result == 0` 才算成功；额外成功 exec 或截断/未知
 result 均拒绝。
@@ -200,7 +215,12 @@ result 均拒绝。
 审计器从 strace trace 文件、clone/exec 过程证据、rank handshake、动态 descendant 和
 PGID 扫描合并已知 PID 集合，并逐 PID 记录 observed start-time 与终态 `gone` 或
 `pid_reused_original_gone`；任何 `still_present_or_identity_unproven` 都拒绝。PID
-namespace 的 kernel 收口和 host inode 扫描是外层独立硬门，二者都通过才可声称零残留。
+validator 只接受 regular、非符号链接且名称严格为 `trace.<positive-int>` 的 raw trace；
+launcher/rank handshake PID 必须逐一出现在 raw trace 中，并与 maps process rows 的
+launcher PID 和 `{rank: PID}` 精确相等。known-PID 集还必须与全部 trace PID、cleanup
+PG/descendant 逐一交叉覆盖，并要求 strace PG leader 带 `strace_root` 来源。
+PID 1/kernel reap 证明和可访问 host inode 负向扫描是外层独立硬门；连同内层 known-PID
+与 PG 零残留全部通过，才可声称本次执行无残留 tracee。
 
 ## 5. maps 与 recovery↔old counterpart 硬门
 

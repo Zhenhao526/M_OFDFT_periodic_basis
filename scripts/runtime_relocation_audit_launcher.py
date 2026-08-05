@@ -39,10 +39,34 @@ RESULT_PATTERN = re.compile(
 )
 SYSCALL_PATTERN = re.compile(r"^([A-Za-z_][A-Za-z0-9_]*)\(")
 ABSOLUTE_WATCHDOG_SECONDS = 7200.0
+STRACE_FIXED_ARGUMENTS = (
+    "-ff",
+    "-qq",
+    "-I",
+    "1",
+    "-s",
+    "4096",
+    "-e",
+    "trace=file,process",
+)
 
 
 class AbsoluteWatchdogExpired(BaseException):
     """Uncatchable by broad operational-error handlers inside the audit."""
+
+
+def _build_strace_command(
+    strace_path: Path, trace_prefix: Path, real_command: list[str]
+) -> list[str]:
+    """Build the exact strace-5.16-compatible, externally contained command."""
+
+    return [
+        str(strace_path),
+        *STRACE_FIXED_ARGUMENTS,
+        "-o",
+        str(trace_prefix),
+        *real_command,
+    ]
 
 
 def _within(path: Path, root: Path) -> bool:
@@ -922,19 +946,11 @@ def _main_impl(
         ]
         os.environ["M_OFDFT_RANK_HANDSHAKE_DIR"] = str(handshake)
         real_command = [str(real_mpirun), "--allow-run-as-root", *transformed_arguments]
-        strace_command = [
-            strace_before["path"],
-            "-ff",
-            "-qq",
-            "--kill-on-exit",
-            "-s",
-            "4096",
-            "-e",
-            "trace=file,process",
-            "-o",
-            str(strace_directory / "trace"),
-            *real_command,
-        ]
+        strace_command = _build_strace_command(
+            Path(strace_before["path"]),
+            strace_directory / "trace",
+            real_command,
+        )
         process = subprocess.Popen(
             strace_command,
             stdin=subprocess.DEVNULL,

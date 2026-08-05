@@ -84,6 +84,8 @@ AUDIT_KEYS = {
     "runtime_wall_timeout_seconds",
     "absolute_deadline_watchdog_seconds",
     "known_pid_terminal_proof_required",
+    "strace_fixed_arguments",
+    "tracee_termination_contract",
     "mapping_observation_scope",
     "mpirun_and_support_daemon_maps_out_of_scope",
     "rank_handshake_required",
@@ -195,6 +197,441 @@ FROZEN_IMPLEMENTATION_PATHS = (
 
 def _same_path(left: Path, right: Path) -> bool:
     return left.resolve(strict=False) == right.resolve(strict=False)
+
+
+def _strace_command_contract_matches(
+    strace_command: object,
+    strace_path: Path,
+    trace_prefix: Path,
+    real_command: object,
+) -> bool:
+    """Require the exact 5.16-compatible command and external-containment mode."""
+
+    fixed = [
+        "-ff",
+        "-qq",
+        "-I",
+        "1",
+        "-s",
+        "4096",
+        "-e",
+        "trace=file,process",
+    ]
+    return (
+        isinstance(strace_command, list)
+        and isinstance(real_command, list)
+        and len(strace_command) == 11 + len(real_command)
+        and _same_path(Path(str(strace_command[0])), strace_path)
+        and strace_command[1:9] == fixed
+        and strace_command[9] == "-o"
+        and _same_path(Path(str(strace_command[10])), trace_prefix)
+        and strace_command[11:] == real_command
+        and "--kill-on-exit" not in strace_command
+    )
+
+
+def _known_pid_terminal_contract_failures(
+    terminal_process: object,
+    trace_pids: set[int],
+    launcher_pid: object,
+    rank_pids: dict[int, int],
+    process_pids: set[int],
+    cleanup: object,
+) -> list[str]:
+    """Cross-bind every independent PID source to the terminal proof."""
+
+    failures: list[str] = []
+    if not isinstance(terminal_process, dict):
+        return ["terminal process evidence is not an object"]
+    expected_terminal_keys = {
+        "known_pid_count",
+        "known_pids",
+        "process_group",
+        "process_group_members_after",
+        "all_known_pids_gone",
+    }
+    if set(terminal_process) != expected_terminal_keys:
+        failures.append("terminal process evidence has an invalid schema")
+    rows = terminal_process.get("known_pids")
+    if not isinstance(rows, list):
+        return ["known PID rows are not a list"]
+    allowed_sources = {
+        "strace_root",
+        "rank_handshake",
+        "launcher_discovery",
+        "descendant_scan",
+        "process_group_scan",
+        "strace_trace_file",
+        "terminal_process_group_scan",
+    }
+    expected_row_keys = {
+        "pid",
+        "sources",
+        "observed_start_time_ticks",
+        "terminal_start_time_ticks",
+        "terminal_state",
+    }
+    known: dict[int, dict] = {}
+    row_order: list[int] = []
+    for row in rows:
+        if not isinstance(row, dict):
+            failures.append("known PID row is not an object")
+            continue
+        if set(row) != expected_row_keys:
+            failures.append("known PID row has an invalid schema")
+        try:
+            pid = int(row["pid"])
+        except (KeyError, TypeError, ValueError):
+            failures.append("known PID row has an invalid PID")
+            continue
+        if (
+            not isinstance(row.get("pid"), int)
+            or isinstance(row.get("pid"), bool)
+            or pid <= 0
+            or pid in known
+        ):
+            failures.append(f"known PID row is duplicate/invalid: {pid}")
+        row_order.append(pid)
+        known[pid] = row
+        sources = row.get("sources")
+        if not isinstance(sources, list) or not sources:
+            failures.append(f"known PID {pid} source list is incomplete")
+        elif any(not isinstance(source, str) or not source for source in sources):
+            failures.append(f"known PID {pid} source list is invalid")
+        elif sources != sorted(set(sources)) or not set(sources) <= allowed_sources:
+            failures.append(f"known PID {pid} source list is invalid")
+        observed = row.get("observed_start_time_ticks")
+        terminal = row.get("terminal_start_time_ticks")
+        observed_valid = observed is None or (
+            isinstance(observed, int)
+            and not isinstance(observed, bool)
+            and observed > 0
+        )
+        state = row.get("terminal_state")
+        if not observed_valid:
+            failures.append(f"known PID {pid} observed start time is invalid")
+        if state == "gone":
+            state_valid = terminal is None
+        elif state == "pid_reused_original_gone":
+            state_valid = (
+                isinstance(observed, int)
+                and not isinstance(observed, bool)
+                and observed > 0
+                and isinstance(terminal, int)
+                and not isinstance(terminal, bool)
+                and terminal > 0
+                and terminal != observed
+            )
+        else:
+            state_valid = False
+        if not state_valid:
+            failures.append(f"known PID {pid} terminal row is incomplete")
+    if row_order != sorted(set(row_order)):
+        failures.append("known PID rows are not strictly PID-sorted and unique")
+    known_pid_count = terminal_process.get("known_pid_count")
+    if (
+        not isinstance(known_pid_count, int)
+        or isinstance(known_pid_count, bool)
+        or known_pid_count != len(rows)
+    ):
+        failures.append("known PID count differs from rows")
+    if terminal_process.get("all_known_pids_gone") is not True:
+        failures.append("known PID aggregate is not terminal")
+    if terminal_process.get("process_group_members_after") != []:
+        failures.append("terminal process group still has members")
+
+    cleanup_pids: set[int] = set()
+    if isinstance(cleanup, dict):
+        for key in ("members_before_cleanup", "tracee_pids_before_cleanup"):
+            values = cleanup.get(key, [])
+            if isinstance(values, list):
+                try:
+                    cleanup_pids.update(int(value) for value in values)
+                except (TypeError, ValueError):
+                    failures.append(f"cleanup PID list is invalid: {key}")
+            else:
+                failures.append(f"cleanup PID list is invalid: {key}")
+    else:
+        failures.append("process cleanup evidence is not an object")
+
+    required = set(trace_pids) | set(rank_pids.values()) | process_pids | cleanup_pids
+    if isinstance(launcher_pid, int):
+        required.add(launcher_pid)
+    missing = sorted(required - set(known))
+    if missing:
+        failures.append(f"cross-channel PIDs missing from terminal proof: {missing}")
+    for pid in trace_pids:
+        if pid in known and "strace_trace_file" not in known[pid].get("sources", []):
+            failures.append(f"trace PID {pid} lacks strace source binding")
+    for pid in rank_pids.values():
+        if pid in known and "rank_handshake" not in known[pid].get("sources", []):
+            failures.append(f"rank PID {pid} lacks handshake source binding")
+    if isinstance(launcher_pid, int) and launcher_pid in known:
+        if "launcher_discovery" not in known[launcher_pid].get("sources", []):
+            failures.append(f"launcher PID {launcher_pid} lacks discovery source binding")
+    target_pids = set(rank_pids.values()) | process_pids
+    if isinstance(launcher_pid, int):
+        target_pids.add(launcher_pid)
+    untraced_targets = sorted(target_pids - trace_pids)
+    if untraced_targets:
+        failures.append(
+            f"launcher/rank/process PIDs lack raw trace files: {untraced_targets}"
+        )
+    process_group = terminal_process.get("process_group")
+    if (
+        not isinstance(process_group, int)
+        or isinstance(process_group, bool)
+        or process_group <= 0
+    ):
+        failures.append("strace process-group root is invalid")
+    elif (
+        process_group not in known
+        or "strace_root" not in known[process_group].get("sources", [])
+    ):
+        failures.append("strace process-group root lacks terminal source binding")
+    source_pids = {
+        source: {
+            pid
+            for pid, row in known.items()
+            if isinstance(row.get("sources"), list)
+            and source in row.get("sources", [])
+        }
+        for source in (
+            "strace_root",
+            "launcher_discovery",
+            "rank_handshake",
+            "strace_trace_file",
+        )
+    }
+    expected_source_pids = {
+        "strace_root": (
+            {process_group}
+            if isinstance(process_group, int)
+            and not isinstance(process_group, bool)
+            and process_group > 0
+            else set()
+        ),
+        "launcher_discovery": (
+            {launcher_pid}
+            if isinstance(launcher_pid, int)
+            and not isinstance(launcher_pid, bool)
+            and launcher_pid > 0
+            else set()
+        ),
+        "rank_handshake": set(rank_pids.values()),
+        "strace_trace_file": set(trace_pids),
+    }
+    for source, expected_pids in expected_source_pids.items():
+        if source_pids[source] != expected_pids:
+            failures.append(
+                f"known PID source binding differs for {source}: "
+                f"{sorted(source_pids[source])} != {sorted(expected_pids)}"
+            )
+    return failures
+
+
+def _runtime_pid_role_contract_failures(
+    launcher_pid: object,
+    rank_pids: dict[int, int],
+    launcher_rows: list[dict],
+    rank_rows: list[dict],
+    expected_rank_count: int,
+) -> list[str]:
+    """Require handshake and mapped-process evidence to identify identical PIDs."""
+
+    failures: list[str] = []
+    valid_launcher_pid = (
+        isinstance(launcher_pid, int)
+        and not isinstance(launcher_pid, bool)
+        and launcher_pid > 0
+    )
+    if not valid_launcher_pid:
+        failures.append("launcher handshake PID is invalid")
+
+    expected_ranks = set(range(expected_rank_count))
+    if set(rank_pids) != expected_ranks:
+        failures.append("rank handshake PID map does not cover the frozen ranks")
+    elif any(
+        not isinstance(pid, int) or isinstance(pid, bool) or pid <= 0
+        for pid in rank_pids.values()
+    ):
+        failures.append("rank handshake PID map contains an invalid PID")
+    elif len(set(rank_pids.values())) != expected_rank_count:
+        failures.append("rank handshake PID map contains duplicate PIDs")
+    elif valid_launcher_pid and launcher_pid in rank_pids.values():
+        failures.append("launcher and rank handshake PIDs overlap")
+
+    if len(launcher_rows) != 1:
+        failures.append("mapped-process evidence does not contain one launcher")
+    else:
+        launcher_row = launcher_rows[0]
+        row_pid = launcher_row.get("pid")
+        if (
+            not isinstance(row_pid, int)
+            or isinstance(row_pid, bool)
+            or launcher_row.get("rank") is not None
+            or not valid_launcher_pid
+            or row_pid != launcher_pid
+        ):
+            failures.append("mapped launcher PID differs from launcher handshake")
+
+    mapped_rank_pids: dict[int, int] = {}
+    mapped_rank_rows_valid = len(rank_rows) == expected_rank_count
+    for row in rank_rows:
+        rank = row.get("rank")
+        pid = row.get("pid")
+        if (
+            not isinstance(rank, int)
+            or isinstance(rank, bool)
+            or not isinstance(pid, int)
+            or isinstance(pid, bool)
+            or pid <= 0
+            or rank in mapped_rank_pids
+        ):
+            mapped_rank_rows_valid = False
+            continue
+        mapped_rank_pids[rank] = pid
+    if not mapped_rank_rows_valid or mapped_rank_pids != rank_pids:
+        failures.append("mapped rank PID map differs from rank handshakes")
+    return failures
+
+
+def _trace_file_pid_contract(
+    trace_paths: list[Path],
+) -> tuple[dict[int, Path], list[str]]:
+    """Parse only canonical, regular ``trace.<positive-int>`` evidence files."""
+
+    trace_files: dict[int, Path] = {}
+    failures: list[str] = []
+    for path in trace_paths:
+        suffix = path.name.removeprefix("trace.")
+        try:
+            pid = int(suffix)
+        except ValueError:
+            pid = -1
+        if (
+            not path.name.startswith("trace.")
+            or pid <= 0
+            or suffix != str(pid)
+            or not path.is_file()
+            or path.is_symlink()
+        ):
+            failures.append(f"invalid raw trace artifact: {path.name}")
+            continue
+        if pid in trace_files:
+            failures.append(f"duplicate raw trace PID: {pid}")
+            continue
+        trace_files[pid] = path
+    if not trace_files:
+        failures.append("raw trace PID set is empty")
+    return trace_files, failures
+
+
+def _trace_directory_contract(
+    trace_directory: Path,
+) -> tuple[dict[int, Path], list[str]]:
+    """Enumerate every direct child so a renamed trace cannot evade validation."""
+
+    if (
+        not trace_directory.is_dir()
+        or trace_directory.is_symlink()
+    ):
+        return {}, ["raw trace directory is missing, symbolic, or not a directory"]
+    try:
+        entries = sorted(trace_directory.iterdir())
+    except OSError as error:
+        return {}, [f"cannot enumerate raw trace directory: {error}"]
+    return _trace_file_pid_contract(entries)
+
+
+def _accessible_host_scan_contract_matches(scan: object) -> bool:
+    """Validate the exact auxiliary host PID-namespace scan schema."""
+
+    expected_keys = {
+        "schema_version",
+        "pid_namespace_inode",
+        "accessible_matching_members",
+        "accessible_matching_member_count",
+        "inaccessible_pid_count",
+        "inaccessible_pid_samples",
+        "fatal_errors",
+        "no_accessible_matching_members",
+        "scan_passed",
+    }
+    if not isinstance(scan, dict) or set(scan) != expected_keys:
+        return False
+    count = scan.get("inaccessible_pid_count")
+    samples = scan.get("inaccessible_pid_samples")
+    if (
+        scan.get("schema_version") != 1
+        or scan.get("accessible_matching_members") != []
+        or scan.get("accessible_matching_member_count") != 0
+        or scan.get("fatal_errors") != []
+        or scan.get("no_accessible_matching_members") is not True
+        or scan.get("scan_passed") is not True
+        or not isinstance(count, int)
+        or isinstance(count, bool)
+        or count < 0
+        or not isinstance(samples, list)
+        or len(samples) != min(count, 20)
+    ):
+        return False
+    sample_pids: list[int] = []
+    for row in samples:
+        if (
+            not isinstance(row, dict)
+            or set(row) != {"host_pid", "error"}
+            or not isinstance(row.get("host_pid"), int)
+            or isinstance(row.get("host_pid"), bool)
+            or row.get("host_pid", 0) <= 0
+            or not isinstance(row.get("error"), str)
+            or not row.get("error")
+        ):
+            return False
+        sample_pids.append(row["host_pid"])
+    return sample_pids == sorted(set(sample_pids))
+
+
+def _pid1_kernel_reap_contract_matches(
+    proof: object,
+    namespace_inode: object,
+    expected_host_command: list[str],
+    expected_unshare_argv: list[str],
+    expected_payload_argv: list[str],
+) -> bool:
+    """Bind the kernel-reap claim to the raw PID-namespace evidence."""
+
+    expected = {
+        "schema_version": 1,
+        "authority": "linux_pid_namespace_init_exit_and_unshare_parent_wait",
+        "expected_unshare_argv": expected_unshare_argv,
+        "expected_payload_argv": expected_payload_argv,
+        "observed_command": expected_host_command,
+        "command_contract_satisfied": True,
+        "process_wait_completed_normally": True,
+        "process_wait_exit_code": 0,
+        "process_wait_exit_zero": True,
+        "state_before_mount": {
+            "namespace_init_pid": 1,
+            "pid_namespace_inode": namespace_inode,
+        },
+        "state_after_run": {
+            "namespace_init_pid": 1,
+            "pid_namespace_inode": namespace_inode,
+        },
+        "payload_status": {
+            "status": "accepted",
+            "audit_launcher_exit_code": 0,
+            "pid_namespace_inode": namespace_inode,
+        },
+        "pid1_is_one": True,
+        "pid_namespace_inode": namespace_inode,
+        "pid_namespace_inode_consistent": True,
+        "payload_accepted_and_exit_zero": True,
+        "evidence_errors": [],
+        "all_namespace_members_reaped": True,
+    }
+    return proof == expected
 
 
 def _expect_keys(payload: dict, expected: set[str], label: str, errors: list[str]) -> None:
@@ -976,11 +1413,21 @@ def _validate_runtime_relocation_audit_evidence(
 
     launcher_pid = audit.get("launcher_pid")
     rank_pids_value = audit.get("rank_pids")
-    try:
-        rank_pids = {int(rank): int(pid) for rank, pid in rank_pids_value.items()}
-    except (AttributeError, TypeError, ValueError):
+    expected_rank_pid_keys = {
+        str(rank) for rank in range(audit_spec["rank_count"])
+    }
+    if (
+        not isinstance(rank_pids_value, dict)
+        or set(rank_pids_value) != expected_rank_pid_keys
+        or any(
+            not isinstance(pid, int) or isinstance(pid, bool) or pid <= 0
+            for pid in rank_pids_value.values()
+        )
+    ):
         rank_pids = {}
         errors.append(f"{prefix} invalid rank PID evidence")
+    else:
+        rank_pids = {int(rank): pid for rank, pid in rank_pids_value.items()}
     handshake_directory = audit_directory / "rank_handshake"
     ready_paths = sorted((handshake_directory / "ready").glob("*"))
     release_paths = sorted((handshake_directory / "release").glob("*"))
@@ -1038,8 +1485,11 @@ def _validate_runtime_relocation_audit_evidence(
     }
     if audit.get("rank_handshake_terminal_state") != expected_terminal:
         errors.append(f"{prefix} rank handshake terminal summary mismatch")
-    traces = sorted(trace_directory.glob("trace.*"))
-    evidence_paths.extend(path for path in traces if path.is_file())
+    trace_files, trace_path_failures = _trace_directory_contract(trace_directory)
+    traces = [trace_files[pid] for pid in sorted(trace_files)]
+    trace_pids = set(trace_files)
+    evidence_paths.extend(traces)
+    errors.extend(f"{prefix} {failure}" for failure in trace_path_failures)
     trace_records = []
     pid_roles = {pid: ("rank", rank) for rank, pid in rank_pids.items()}
     if isinstance(launcher_pid, int):
@@ -1113,29 +1563,33 @@ def _validate_runtime_relocation_audit_evidence(
         f"{prefix} {failure}"
         for failure in _timing_evidence_failures(audit, 7200, "runtime audit")
     )
-    known_pid_rows = terminal_process.get("known_pids", [])
-    if (
-        terminal_process.get("all_known_pids_gone") is not True
-        or terminal_process.get("process_group_members_after") != []
-        or not isinstance(known_pid_rows, list)
-        or terminal_process.get("known_pid_count") != len(known_pid_rows)
-        or len(known_pid_rows) < 6
-        or any(
-            not isinstance(row, dict)
-            or row.get("terminal_state") not in ("gone", "pid_reused_original_gone")
-            or not isinstance(row.get("sources"), list)
-            or not row.get("sources")
-            for row in known_pid_rows
-        )
-    ):
-        errors.append(f"{prefix} runtime known-PID terminal proof is incomplete")
+    role_failures = _runtime_pid_role_contract_failures(
+        launcher_pid,
+        rank_pids,
+        launcher_rows,
+        rank_rows,
+        audit_spec["rank_count"],
+    )
+    errors.extend(f"{prefix} {failure}" for failure in role_failures)
+    terminal_failures = _known_pid_terminal_contract_failures(
+        terminal_process,
+        trace_pids,
+        launcher_pid,
+        rank_pids,
+        set(process_by_pid),
+        audit_cleanup,
+    )
+    errors.extend(f"{prefix} {failure}" for failure in terminal_failures)
     strace_command = audit.get("strace_command", [])
-    if (
-        not isinstance(strace_command, list)
-        or "--kill-on-exit" not in strace_command
-        or "trace=file,process" not in strace_command
+    if not _strace_command_contract_matches(
+        strace_command,
+        Path(str(tools["strace"]["path"])),
+        run_directory / "mpi_runtime_audit" / "strace" / "trace",
+        command,
     ):
-        errors.append(f"{prefix} strace process/kill-on-exit contract mismatch")
+        errors.append(
+            f"{prefix} strace 5.16 interruptible/external-containment contract mismatch"
+        )
     controlled_home = run_directory / "runtime_home"
     controlled_marker = controlled_home / "CONTROLLED_HOME.txt"
     if (
@@ -1181,7 +1635,10 @@ def _validate_runtime_relocation_audit_evidence(
     ):
         errors.append(f"{prefix} namespace host before/after tool gate failed")
     cleanup = host_status.get("process_group_cleanup", {})
-    pid_namespace_cleanup = host_status.get("pid_namespace_cleanup", {})
+    pid1_kernel_reap_proof = host_status.get("pid1_kernel_reap_proof", {})
+    accessible_namespace_scan = host_status.get(
+        "accessible_host_pid_namespace_scan", {}
+    )
     if (
         host_status.get("total_wall_timeout_seconds") != 7260
         or host_status.get("absolute_deadline_watchdog_seconds") != 7260
@@ -1196,12 +1653,13 @@ def _validate_runtime_relocation_audit_evidence(
         for failure in _timing_evidence_failures(host_status, 7260, "namespace host")
     )
     if (
-        pid_namespace_cleanup.get("all_namespace_members_gone") is not True
-        or pid_namespace_cleanup.get("members_after_namespace_exit") != []
-        or pid_namespace_cleanup.get("scan_errors") != []
-        or not isinstance(pid_namespace_cleanup.get("pid_namespace_inode"), int)
+        not isinstance(pid1_kernel_reap_proof, dict)
+        or pid1_kernel_reap_proof.get("all_namespace_members_reaped") is not True
+        or pid1_kernel_reap_proof.get("evidence_errors") != []
     ):
-        errors.append(f"{prefix} host PID-namespace terminal proof is incomplete")
+        errors.append(f"{prefix} PID-1 kernel reap proof is incomplete")
+    if not _accessible_host_scan_contract_matches(accessible_namespace_scan):
+        errors.append(f"{prefix} accessible host PID-namespace scan is invalid")
     if host_status.get("counterpart_audit") != counterpart_audit:
         errors.append(f"{prefix} host counterpart audit handoff mismatch")
     if host_status.get("tools_before") != {
@@ -1289,11 +1747,43 @@ def _validate_runtime_relocation_audit_evidence(
             errors.append(f"{prefix} namespace {phase} isolation evidence mismatch")
     if not Path(runtime["old_root"]).is_dir() or not Path(runtime["old_prefix"]).is_dir():
         errors.append(f"{prefix} host old runtime did not survive private namespace")
-    if pid_namespace_cleanup.get("pid_namespace_inode") != namespace_inode:
-        errors.append(f"{prefix} host cleanup scanned a different PID namespace")
     payload_status = payloads.get("payload_status.json", {})
     if payload_status.get("pid_namespace_inode") != namespace_inode:
         errors.append(f"{prefix} payload status PID namespace identity mismatch")
+    expected_host_command = [
+        *runtime["namespace"]["unshare_argv_prefix"],
+        "--bind-to",
+        "core",
+        "-np",
+        str(audit_spec["rank_count"]),
+        replay["abacus"]["path"],
+    ]
+    if (
+        host_preflight.get("command") != expected_host_command
+        or host_status.get("command") != expected_host_command
+        or host_preflight.get("stdin") != "/dev/null"
+        or host_status.get("stdin") != "/dev/null"
+    ):
+        errors.append(f"{prefix} executed unshare namespace command differs from registration")
+    expected_unshare_argv = runtime["namespace"]["unshare_argv_prefix"][:10]
+    expected_payload_argv = [
+        *runtime["namespace"]["unshare_argv_prefix"][10:],
+        "--bind-to",
+        "core",
+        "-np",
+        str(audit_spec["rank_count"]),
+        replay["abacus"]["path"],
+    ]
+    if not _pid1_kernel_reap_contract_matches(
+        pid1_kernel_reap_proof,
+        namespace_inode,
+        expected_host_command,
+        expected_unshare_argv,
+        expected_payload_argv,
+    ):
+        errors.append(f"{prefix} PID-1 kernel reap proof differs from raw namespace evidence")
+    if accessible_namespace_scan.get("pid_namespace_inode") != namespace_inode:
+        errors.append(f"{prefix} accessible host scan used a different PID namespace")
     return evidence_paths
 
 
@@ -2036,7 +2526,9 @@ def validate(
         "namespace_effective_uid": 0,
         "pid_namespace_required": True,
         "namespace_init_pid": 1,
-        "host_proc_pid_namespace_empty_after_exit_required": True,
+        "pid1_kernel_reap_proof_required": True,
+        "accessible_host_pid_namespace_negative_scan_required": True,
+        "host_proc_pid_namespace_scan_is_auxiliary": True,
         "external_old_root_must_survive": True,
         "total_wall_timeout_seconds": 7260,
         "timeout_requires_zero_residual_processes": True,
@@ -2049,6 +2541,22 @@ def validate(
         "runtime_wall_timeout_seconds": 7200,
         "absolute_deadline_watchdog_seconds": 7200,
         "known_pid_terminal_proof_required": True,
+        "strace_fixed_arguments": [
+            "-ff",
+            "-qq",
+            "-I",
+            "1",
+            "-s",
+            "4096",
+            "-e",
+            "trace=file,process",
+        ],
+        "tracee_termination_contract": [
+            "runtime_process_group_zero_residual",
+            "known_pid_cross_channel_terminal_proof",
+            "pid_namespace_init_exit_kernel_sigkill",
+            "accessible_host_inode_negative_scan",
+        ],
         "mapping_observation_scope": "final_prterun_and_four_abacus_ranks",
         "mpirun_and_support_daemon_maps_out_of_scope": True,
         "rank_handshake_required": True,

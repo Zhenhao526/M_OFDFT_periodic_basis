@@ -29,6 +29,17 @@ COUNTERPART_HEADER = (
     "verification_rule",
 )
 ABSOLUTE_WATCHDOG_SECONDS = 7260.0
+UNSHARE_NAMESPACE_ARGUMENTS = (
+    "--user",
+    "--map-root-user",
+    "--kill-child=KILL",
+    "--mount",
+    "--pid",
+    "--fork",
+    "--mount-proc",
+    "--propagation",
+    "private",
+)
 
 
 class AbsoluteWatchdogExpired(BaseException):
@@ -310,15 +321,52 @@ def _process_group_members(process_group: int) -> list[int]:
     return sorted(members)
 
 
-def _pid_namespace_members(namespace_inode: int | None) -> tuple[list[dict], list[str]]:
+def _accessible_host_pid_namespace_scan(
+    namespace_inode: int | None, proc_root: Path = Path("/proc")
+) -> dict:
+    """Find readable host processes still attached to the namespace.
+
+    A per-process ``PermissionError`` is deliberately non-fatal: the kernel PID 1
+    lifecycle proof is authoritative, while this scan is an auxiliary negative
+    check over the subset of host ``/proc`` entries that the invoking user may
+    inspect.  Failure to enumerate ``/proc`` itself remains fatal.
+    """
+
     members: list[dict] = []
-    errors: list[str] = []
-    if not isinstance(namespace_inode, int) or namespace_inode <= 0:
-        return members, ["invalid_or_missing_pid_namespace_inode"]
+    inaccessible: list[dict] = []
+    fatal_errors: list[str] = []
+    if (
+        not isinstance(namespace_inode, int)
+        or isinstance(namespace_inode, bool)
+        or namespace_inode <= 0
+    ):
+        fatal_errors.append("invalid_or_missing_pid_namespace_inode")
+        return {
+            "schema_version": 1,
+            "pid_namespace_inode": namespace_inode,
+            "accessible_matching_members": members,
+            "accessible_matching_member_count": 0,
+            "inaccessible_pid_count": 0,
+            "inaccessible_pid_samples": [],
+            "fatal_errors": fatal_errors,
+            "no_accessible_matching_members": False,
+            "scan_passed": False,
+        }
     try:
-        proc_entries = list(Path("/proc").iterdir())
+        proc_entries = list(proc_root.iterdir())
     except OSError as error:
-        return members, [f"cannot_list_host_proc:{error}"]
+        fatal_errors.append(f"cannot_list_host_proc:{error}")
+        return {
+            "schema_version": 1,
+            "pid_namespace_inode": namespace_inode,
+            "accessible_matching_members": members,
+            "accessible_matching_member_count": 0,
+            "inaccessible_pid_count": 0,
+            "inaccessible_pid_samples": [],
+            "fatal_errors": fatal_errors,
+            "no_accessible_matching_members": False,
+            "scan_passed": False,
+        }
     for entry in proc_entries:
         if not entry.name.isdigit():
             continue
@@ -327,8 +375,15 @@ def _pid_namespace_members(namespace_inode: int | None) -> tuple[list[dict], lis
             inode = namespace_path.stat().st_ino
         except FileNotFoundError:
             continue
-        except (PermissionError, OSError) as error:
-            errors.append(f"cannot_stat_pid_namespace:{entry.name}:{error}")
+        except PermissionError as error:
+            inaccessible.append(
+                {"host_pid": int(entry.name), "error": str(error)}
+            )
+            continue
+        except OSError as error:
+            fatal_errors.append(
+                f"cannot_stat_pid_namespace:{entry.name}:{error}"
+            )
             continue
         if inode != namespace_inode:
             continue
@@ -344,41 +399,135 @@ def _pid_namespace_members(namespace_inode: int | None) -> tuple[list[dict], lis
                 "start_time_ticks": start_time_ticks,
             }
         )
-    return sorted(members, key=lambda row: row["host_pid"]), errors
-
-
-def _prove_pid_namespace_empty(
-    namespace_inode: int | None, deadline: float
-) -> dict:
-    proof_started = time.monotonic()
-    proof_deadline = min(deadline, time.monotonic() + 5.0)
-    observations = []
-    final_members: list[dict] = []
-    final_errors: list[str] = []
-    while True:
-        members, errors = _pid_namespace_members(namespace_inode)
-        observations.append(
-            {
-                "monotonic_offset_seconds": time.monotonic() - proof_started,
-                "member_host_pids": [row["host_pid"] for row in members],
-                "scan_errors": errors,
-            }
-        )
-        final_members, final_errors = members, errors
-        if not members or errors or time.monotonic() >= proof_deadline:
-            break
-        time.sleep(0.05)
+    members.sort(key=lambda row: row["host_pid"])
+    inaccessible.sort(key=lambda row: row["host_pid"])
+    no_accessible_matching_members = not members
     return {
+        "schema_version": 1,
         "pid_namespace_inode": namespace_inode,
-        "observations": observations,
-        "members_after_namespace_exit": final_members,
-        "scan_errors": final_errors,
-        "all_namespace_members_gone": (
-            isinstance(namespace_inode, int)
-            and namespace_inode > 0
-            and not final_members
-            and not final_errors
+        "accessible_matching_members": members,
+        "accessible_matching_member_count": len(members),
+        "inaccessible_pid_count": len(inaccessible),
+        "inaccessible_pid_samples": inaccessible[:20],
+        "fatal_errors": fatal_errors,
+        "no_accessible_matching_members": no_accessible_matching_members,
+        "scan_passed": no_accessible_matching_members and not fatal_errors,
+    }
+
+
+def _read_namespace_evidence(path: Path, label: str) -> tuple[dict, list[str]]:
+    try:
+        payload = json.loads(path.read_text(encoding="utf-8"))
+    except (FileNotFoundError, json.JSONDecodeError, OSError) as error:
+        return {}, [f"{label}_unavailable:{error}"]
+    if not isinstance(payload, dict):
+        return {}, [f"{label}_not_json_object"]
+    return payload, []
+
+
+def _pid1_kernel_reap_proof(
+    namespace_directory: Path,
+    command: list[str],
+    expected_unshare_argv: list[str],
+    expected_payload_argv: list[str],
+    process_wait_completed_normally: bool,
+    process_wait_exit_code: int | None,
+) -> dict:
+    before, before_errors = _read_namespace_evidence(
+        namespace_directory / "state.before_mount.json", "state_before_mount"
+    )
+    after, after_errors = _read_namespace_evidence(
+        namespace_directory / "state.after_run.json", "state_after_run"
+    )
+    payload, payload_errors = _read_namespace_evidence(
+        namespace_directory / "payload_status.json", "payload_status"
+    )
+    evidence_errors = [*before_errors, *after_errors, *payload_errors]
+    expected_command = [*expected_unshare_argv, *expected_payload_argv]
+    command_contract_satisfied = (
+        bool(expected_unshare_argv)
+        and expected_unshare_argv[1:] == list(UNSHARE_NAMESPACE_ARGUMENTS)
+        and command == expected_command
+    )
+    namespace_init_pids = [
+        before.get("namespace_init_pid"),
+        after.get("namespace_init_pid"),
+    ]
+    pid1_is_one = all(
+        isinstance(value, int)
+        and not isinstance(value, bool)
+        and value == 1
+        for value in namespace_init_pids
+    )
+    namespace_inodes = [
+        before.get("pid_namespace_inode"),
+        after.get("pid_namespace_inode"),
+        payload.get("pid_namespace_inode"),
+    ]
+    pid_namespace_inode_consistent = (
+        all(
+            isinstance(value, int)
+            and not isinstance(value, bool)
+            and value > 0
+            for value in namespace_inodes
+        )
+        and len(set(namespace_inodes)) == 1
+    )
+    payload_accepted_and_exit_zero = (
+        payload.get("status") == "accepted"
+        and isinstance(payload.get("audit_launcher_exit_code"), int)
+        and not isinstance(payload.get("audit_launcher_exit_code"), bool)
+        and payload.get("audit_launcher_exit_code") == 0
+    )
+    wait_exit_zero = (
+        process_wait_completed_normally is True
+        and isinstance(process_wait_exit_code, int)
+        and not isinstance(process_wait_exit_code, bool)
+        and process_wait_exit_code == 0
+    )
+    all_namespace_members_reaped = (
+        not evidence_errors
+        and command_contract_satisfied
+        and pid1_is_one
+        and pid_namespace_inode_consistent
+        and payload_accepted_and_exit_zero
+        and wait_exit_zero
+    )
+    return {
+        "schema_version": 1,
+        "authority": "linux_pid_namespace_init_exit_and_unshare_parent_wait",
+        "expected_unshare_argv": expected_unshare_argv,
+        "expected_payload_argv": expected_payload_argv,
+        "observed_command": command,
+        "command_contract_satisfied": command_contract_satisfied,
+        "process_wait_completed_normally": process_wait_completed_normally,
+        "process_wait_exit_code": process_wait_exit_code,
+        "process_wait_exit_zero": wait_exit_zero,
+        "state_before_mount": {
+            "namespace_init_pid": before.get("namespace_init_pid"),
+            "pid_namespace_inode": before.get("pid_namespace_inode"),
+        },
+        "state_after_run": {
+            "namespace_init_pid": after.get("namespace_init_pid"),
+            "pid_namespace_inode": after.get("pid_namespace_inode"),
+        },
+        "payload_status": {
+            "status": payload.get("status"),
+            "audit_launcher_exit_code": payload.get("audit_launcher_exit_code"),
+            "pid_namespace_inode": payload.get("pid_namespace_inode"),
+        },
+        "pid1_is_one": pid1_is_one,
+        "pid_namespace_inode": (
+            namespace_inodes[0]
+            if isinstance(namespace_inodes[0], int)
+            and not isinstance(namespace_inodes[0], bool)
+            and namespace_inodes[0] > 0
+            else None
         ),
+        "pid_namespace_inode_consistent": pid_namespace_inode_consistent,
+        "payload_accepted_and_exit_zero": payload_accepted_and_exit_zero,
+        "evidence_errors": evidence_errors,
+        "all_namespace_members_reaped": all_namespace_members_reaped,
     }
 
 
@@ -468,6 +617,10 @@ def _main_impl(
     host_old_runtime_after: dict = {}
     counterpart_audit: dict = {}
     process: subprocess.Popen | None = None
+    expected_unshare_argv: list[str] = []
+    expected_payload_argv: list[str] = []
+    process_wait_completed_normally = False
+    process_wait_exit_code: int | None = None
     timeout_triggered = False
     cleanup_evidence = {
         "members_before_cleanup": [],
@@ -475,13 +628,6 @@ def _main_impl(
         "tracee_pids_before_cleanup": [],
         "tracee_pids_after_cleanup": [],
         "all_group_members_gone": False,
-    }
-    pid_namespace_cleanup = {
-        "pid_namespace_inode": None,
-        "observations": [],
-        "members_after_namespace_exit": [],
-        "scan_errors": ["namespace_not_started"],
-        "all_namespace_members_gone": False,
     }
     try:
         if os.getuid() == 0:
@@ -533,21 +679,12 @@ def _main_impl(
             strict=True
         ):
             raise ValueError("namespace mount tool differs from frozen mount identity")
-        command = [
-            str(unshare_path),
-            "--user",
-            "--map-root-user",
-            "--kill-child=KILL",
-            "--mount",
-            "--pid",
-            "--fork",
-            "--mount-proc",
-            "--propagation",
-            "private",
-            str(bash_path),
-            str(payload),
-            *sys.argv[1:],
-        ]
+        expected_unshare_argv = [str(unshare_path), *UNSHARE_NAMESPACE_ARGUMENTS]
+        expected_payload_argv = [str(bash_path), str(payload), *sys.argv[1:]]
+        command = [*expected_unshare_argv, *expected_payload_argv]
+        watchdog_state["command"] = command
+        watchdog_state["expected_unshare_argv"] = expected_unshare_argv
+        watchdog_state["expected_payload_argv"] = expected_payload_argv
         preflight = {
             "schema_version": 1,
             "status": "accepted",
@@ -585,24 +722,16 @@ def _main_impl(
             cleanup_evidence = _terminate_group(process)
             exit_code = int(process.returncode if process.returncode is not None else 97)
         else:
+            process_wait_completed_normally = True
+            process_wait_exit_code = exit_code
+            watchdog_state["process_wait_completed_normally"] = True
+            watchdog_state["process_wait_exit_code"] = exit_code
             residual = _process_group_members(process.pid)
             if residual:
                 cleanup_evidence = _terminate_group(process)
                 failure_reasons.append("namespace_process_group_residual_after_exit")
             else:
                 cleanup_evidence = _terminate_group(process)
-        namespace_inode = None
-        state_path = namespace_directory / "state.before_mount.json"
-        try:
-            state = json.loads(state_path.read_text(encoding="utf-8"))
-            namespace_inode = state.get("pid_namespace_inode")
-        except (FileNotFoundError, json.JSONDecodeError, OSError) as error:
-            failure_reasons.append(f"pid_namespace_identity_unavailable:{error}")
-        pid_namespace_cleanup = _prove_pid_namespace_empty(
-            namespace_inode, total_deadline
-        )
-        if not pid_namespace_cleanup["all_namespace_members_gone"]:
-            failure_reasons.append("pid_namespace_terminal_proof_incomplete")
         if exit_code == 0:
             counterpart_audit = _verify_recovery_counterparts(
                 audit_directory, total_deadline
@@ -615,6 +744,23 @@ def _main_impl(
         failure_reasons.append(f"namespace_launch_failed:{error}")
         if process is not None:
             cleanup_evidence = _terminate_group(process)
+    pid1_kernel_reap_proof = _pid1_kernel_reap_proof(
+        namespace_directory,
+        command,
+        expected_unshare_argv,
+        expected_payload_argv,
+        process_wait_completed_normally,
+        process_wait_exit_code,
+    )
+    accessible_host_pid_namespace_scan = _accessible_host_pid_namespace_scan(
+        pid1_kernel_reap_proof["pid_namespace_inode"]
+    )
+    if not pid1_kernel_reap_proof["all_namespace_members_reaped"]:
+        failure_reasons.append("pid1_kernel_reap_proof_failed")
+    if accessible_host_pid_namespace_scan["fatal_errors"]:
+        failure_reasons.append("accessible_host_pid_namespace_scan_fatal")
+    if accessible_host_pid_namespace_scan["accessible_matching_members"]:
+        failure_reasons.append("accessible_host_pid_namespace_member_detected")
     if not cleanup_evidence["all_group_members_gone"]:
         failure_reasons.append("namespace_process_group_cleanup_incomplete")
     for prefix, label in (
@@ -661,7 +807,8 @@ def _main_impl(
         "elapsed_seconds": ended_monotonic - started_monotonic,
         "timeout_triggered": timeout_triggered,
         "process_group_cleanup": cleanup_evidence,
-        "pid_namespace_cleanup": pid_namespace_cleanup,
+        "pid1_kernel_reap_proof": pid1_kernel_reap_proof,
+        "accessible_host_pid_namespace_scan": accessible_host_pid_namespace_scan,
         "tools_before": before,
         "tools_after": after,
         "host_old_runtime_before": host_old_runtime_before,
@@ -724,24 +871,44 @@ def main() -> int:
                 cleanup_evidence = _terminate_group(process)
             except Exception as cleanup_error:
                 cleanup_failures.append(f"watchdog_cleanup_failed:{cleanup_error}")
+        if not cleanup_evidence["all_group_members_gone"]:
+            cleanup_failures.append("namespace_process_group_cleanup_incomplete")
         audit_directory = Path(os.environ.get("M_OFDFT_MPI_AUDIT_DIR", "."))
         namespace_directory = audit_directory / "namespace"
         namespace_directory.mkdir(parents=True, exist_ok=True)
-        namespace_inode = None
-        try:
-            state = json.loads(
-                (namespace_directory / "state.before_mount.json").read_text(
-                    encoding="utf-8"
-                )
-            )
-            namespace_inode = state.get("pid_namespace_inode")
-        except (FileNotFoundError, json.JSONDecodeError, OSError) as identity_error:
-            cleanup_failures.append(
-                f"watchdog_pid_namespace_identity_unavailable:{identity_error}"
-            )
-        pid_namespace_cleanup = _prove_pid_namespace_empty(
-            namespace_inode, time.monotonic() + 5.0
+        command = watchdog_state.get("command", [])
+        expected_unshare_argv = watchdog_state.get("expected_unshare_argv", [])
+        expected_payload_argv = watchdog_state.get("expected_payload_argv", [])
+        if not isinstance(command, list):
+            command = []
+        if not isinstance(expected_unshare_argv, list):
+            expected_unshare_argv = []
+        if not isinstance(expected_payload_argv, list):
+            expected_payload_argv = []
+        pid1_kernel_reap_proof = _pid1_kernel_reap_proof(
+            namespace_directory,
+            command,
+            expected_unshare_argv,
+            expected_payload_argv,
+            watchdog_state.get("process_wait_completed_normally") is True,
+            (
+                watchdog_state.get("process_wait_exit_code")
+                if isinstance(watchdog_state.get("process_wait_exit_code"), int)
+                and not isinstance(watchdog_state.get("process_wait_exit_code"), bool)
+                else None
+            ),
         )
+        accessible_host_pid_namespace_scan = _accessible_host_pid_namespace_scan(
+            pid1_kernel_reap_proof["pid_namespace_inode"]
+        )
+        if not pid1_kernel_reap_proof["all_namespace_members_reaped"]:
+            cleanup_failures.append("pid1_kernel_reap_proof_failed")
+        if accessible_host_pid_namespace_scan["fatal_errors"]:
+            cleanup_failures.append("accessible_host_pid_namespace_scan_fatal")
+        if accessible_host_pid_namespace_scan["accessible_matching_members"]:
+            cleanup_failures.append(
+                "accessible_host_pid_namespace_member_detected"
+            )
         ended_monotonic = time.monotonic()
         ended = time.time()
         _atomic_json(
@@ -763,7 +930,10 @@ def main() -> int:
                 "elapsed_seconds": ended_monotonic - started_monotonic,
                 "timeout_triggered": True,
                 "process_group_cleanup": cleanup_evidence,
-                "pid_namespace_cleanup": pid_namespace_cleanup,
+                "pid1_kernel_reap_proof": pid1_kernel_reap_proof,
+                "accessible_host_pid_namespace_scan": (
+                    accessible_host_pid_namespace_scan
+                ),
             },
         )
         return 124
