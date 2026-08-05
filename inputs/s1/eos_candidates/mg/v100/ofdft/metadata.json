@@ -1,0 +1,37 @@
+{
+  "atom_count": 2,
+  "candidate_status": "candidate_not_converged",
+  "cell_angstrom": [
+    [
+      3.2094,
+      0.0,
+      0.0
+    ],
+    [
+      -1.6047,
+      2.779421930905777,
+      0.0
+    ],
+    [
+      0.0,
+      0.0,
+      5.2108
+    ]
+  ],
+  "config_sha256": "7e9b3918a797bde38b8bd1bee819161cec729010093431304837231330356a62",
+  "ecutrho_ry": 160,
+  "ecutwfc_ry": 40,
+  "kmesh": [
+    1,
+    1,
+    1
+  ],
+  "material": "mg",
+  "pseudopotential": "mg.lda.lps",
+  "pseudopotential_sha256": "4b964580cfbd798708299bb0e0baef2f437983d29e6d7040f63b7532038b4259",
+  "solver": "ofdft",
+  "structure": "hcp_primitive",
+  "volume_angstrom3": 46.48177806310133,
+  "volume_per_atom_angstrom3": 23.240889031550665,
+  "volume_ratio": 1.0
+}

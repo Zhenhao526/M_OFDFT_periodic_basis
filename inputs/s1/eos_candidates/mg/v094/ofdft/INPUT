@@ -1,0 +1,23 @@
+INPUT_PARAMETERS
+suffix s1_mg_v094_ofdft
+calculation scf
+esolver_type ofdft
+basis_type pw
+dft_functional XC_LDA_X+XC_LDA_C_PZ
+symmetry 0
+pseudo_dir ../../../../../../assets/pseudo
+pseudo_rcut 16
+ecutwfc 40
+ecutrho 160
+scf_nmax 200
+cal_force 1
+cal_stress 1
+of_kinetic wt
+of_method tn
+of_conv both
+of_tole 1e-8
+of_tolp 1e-7
+of_wt_alpha 0.8333333333333334
+of_wt_beta 0.8333333333333334
+of_wt_rho0 0.0
+of_hold_rho0 0

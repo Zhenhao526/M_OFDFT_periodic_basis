@@ -1,0 +1,56 @@
+{
+  "schema_version": 1,
+  "status": "candidate_not_converged",
+  "volume_ratios": [0.9, 0.94, 0.97, 1.0, 1.03, 1.06, 1.1],
+  "materials": {
+    "al": {
+      "element": "Al",
+      "structure": "fcc_primitive",
+      "mass": 26.9815385,
+      "a0_angstrom": 4.05,
+      "pseudopotential": "al.gga.psp",
+      "pseudopotential_sha256": "d76ceac60058e230eac514fc419269433a33b199eb6abfa7d6ab43cde248bd1d",
+      "xc": "XC_GGA_X_PBE+XC_GGA_C_PBE",
+      "ofdft": {
+        "ecutwfc_ry": 30,
+        "ecutrho_ry": 120,
+        "cutoff_scan_ry": [20, 30, 40, 60],
+        "kmesh": [1, 1, 1]
+      },
+      "ksdft": {
+        "ecutwfc_ry": 60,
+        "ecutrho_ry": 240,
+        "cutoff_scan_ry": [40, 60, 80],
+        "kmesh": [16, 16, 16],
+        "kmesh_scan": [[12, 12, 12], [16, 16, 16], [20, 20, 20]],
+        "smearing_sigma_ry": 0.00734986,
+        "smearing_scan_ry": [0.00734986, 0.00367493]
+      }
+    },
+    "mg": {
+      "element": "Mg",
+      "structure": "hcp_primitive",
+      "mass": 24.305,
+      "a0_angstrom": 3.2094,
+      "c0_angstrom": 5.2108,
+      "pseudopotential": "mg.lda.lps",
+      "pseudopotential_sha256": "4b964580cfbd798708299bb0e0baef2f437983d29e6d7040f63b7532038b4259",
+      "xc": "XC_LDA_X+XC_LDA_C_PZ",
+      "ofdft": {
+        "ecutwfc_ry": 40,
+        "ecutrho_ry": 160,
+        "cutoff_scan_ry": [30, 40, 60, 80],
+        "kmesh": [1, 1, 1]
+      },
+      "ksdft": {
+        "ecutwfc_ry": 60,
+        "ecutrho_ry": 240,
+        "cutoff_scan_ry": [40, 60, 80],
+        "kmesh": [16, 16, 10],
+        "kmesh_scan": [[12, 12, 8], [16, 16, 10], [20, 20, 12]],
+        "smearing_sigma_ry": 0.00734986,
+        "smearing_scan_ry": [0.00734986, 0.00367493]
+      }
+    }
+  }
+}
