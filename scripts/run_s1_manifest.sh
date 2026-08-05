@@ -19,7 +19,15 @@ if [[ -n "$(git status --porcelain)" ]]; then
     exit 2
 fi
 
-tail -n +2 "$manifest" | while IFS=$'\t' read -r experiment_id input_directory material series_id volume_ratio; do
+exec 3<"$manifest"
+IFS= read -r header <&3
+expected_header=$'experiment_id\tinput_directory\tmaterial\tseries_id\tvolume_ratio'
+if [[ "$header" != "$expected_header" ]]; then
+    echo "Invalid manifest header: $header" >&2
+    exit 2
+fi
+
+while IFS=$'\t' read -r experiment_id input_directory material series_id volume_ratio <&3; do
     run_directory="runs/$experiment_id"
     if [[ -d "$run_directory" ]]; then
         if git ls-files --error-unmatch "$run_directory/result.json" >/dev/null 2>&1; then
@@ -32,7 +40,7 @@ tail -n +2 "$manifest" | while IFS=$'\t' read -r experiment_id input_directory m
 
     echo "START $experiment_id material=$material series=$series_id volume_ratio=$volume_ratio"
     status=0
-    scripts/run_s1_single.sh "$experiment_id" "$input_directory" || status=$?
+    scripts/run_s1_single.sh "$experiment_id" "$input_directory" </dev/null || status=$?
     git add "$run_directory"
     git commit -m "record $material $series_id EOS V/V0=$volume_ratio ($experiment_id)"
     if [[ $status -ne 0 ]]; then
@@ -41,3 +49,4 @@ tail -n +2 "$manifest" | while IFS=$'\t' read -r experiment_id input_directory m
     fi
     echo "DONE $experiment_id"
 done
+exec 3<&-
