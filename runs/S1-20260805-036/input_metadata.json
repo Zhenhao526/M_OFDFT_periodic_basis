@@ -1,0 +1,49 @@
+{
+  "atom_count": 1,
+  "candidate_status": "eos_candidate_parameters_frozen",
+  "cell_angstrom": [
+    [
+      0.0,
+      1.9551160038264002,
+      1.9551160038264002
+    ],
+    [
+      1.9551160038264002,
+      0.0,
+      1.9551160038264002
+    ],
+    [
+      1.9551160038264002,
+      1.9551160038264002,
+      0.0
+    ]
+  ],
+  "config_sha256": "1b781794c54c3642c08ebc333a12bcc732810d97eb90970e604fb9b57f3a947a",
+  "dataset_kind": "eos",
+  "ecutrho_ry": 160,
+  "ecutwfc_ry": 40,
+  "energy_observable": "zero_temp_extrapolated_energy",
+  "expected_electrons": 3,
+  "fit_model": "birch_murnaghan_3",
+  "kmesh": [
+    24,
+    24,
+    24
+  ],
+  "material": "al",
+  "protocol_revision": "S1-R7",
+  "pseudopotential": "al.gga.psp",
+  "pseudopotential_sha256": "d76ceac60058e230eac514fc419269433a33b199eb6abfa7d6ab43cde248bd1d",
+  "relative_energy_reference_volume_ratio": 1.0,
+  "series_id": "ksdft_standard",
+  "smearing_method": "fd",
+  "smearing_sigma_ry": 0.00734986,
+  "solver": "ksdft",
+  "stru_sha256": "78f39f8f09367c41279248b1772a2dbe9dd77d2839931891ce5696b7ebac7fea",
+  "structure": "fcc_primitive",
+  "structure_id": "al_v090",
+  "volume_angstrom3": 14.946778124999998,
+  "volume_per_atom_angstrom3": 14.946778124999998,
+  "volume_ratio": 0.9,
+  "xc": "XC_GGA_X_PBE+XC_GGA_C_PBE"
+}
