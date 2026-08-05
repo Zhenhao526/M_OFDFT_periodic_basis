@@ -1,0 +1,108 @@
+
+                     ▄████▄ █████▄ ▄████▄ ▄█████ ██  ██ ▄█████ 
+                     ██▄▄██ ██▄▄██ ██▄▄██ ██     ██  ██ ▀▀▀▄▄▄ 
+                     ██  ██ ██▄▄█▀ ██  ██ ▀█████ ▀████▀ █████▀ 
+
+                                                                                     
+                                v3.11.0-beta.5
+
+               Atomic-orbital Based Ab-initio Computation at UStc                    
+
+                     Website: http://abacus.ustc.edu.cn/                             
+               Documentation: https://abacus.deepmodeling.com/                       
+                  Repository: https://github.com/abacusmodeling/abacus-develop       
+                              https://github.com/deepmodeling/abacus-develop         
+                      Commit: unknown
+
+ Wed Aug  5 18:37:54 2026
+ MAKE THE DIR         : OUT.g1_ne_147_from_097/
+ RUNNING WITH DEVICE  : CPU / Intel(R) Xeon(R) Platinum 8368Q CPU @ 2.60GHz (x2)
+ NAME OF ELEMENT      : Mg
+ DFT FUNC. (PSEUDO)   : PZ
+ DFT FUNC. (SET TO)   : XC_LDA_X+XC_LDA_C_PZ
+ MAKE SURE THIS DFT FUNCTIONAL IS WHAT YOU NEED
+ UNIFORM GRID DIM     : 25 * 25 * 45
+ UNIFORM GRID DIM(BIG): 25 * 25 * 45
+ DONE(0.13885    SEC) : SETUP UNITCELL
+ DONE(0.141092   SEC) : INIT K-POINTS
+ ----------------------------------------------------------------
+ Self-consistent calculations for electrons
+ ----------------------------------------------------------------
+ SPIN    KPOINTS         PROCESSES   THREADS/PROC  THREADS/TOTAL 
+ 1       1               4           1             4             
+ ----------------------------------------------------------------
+ Use plane wave basis
+ ----------------------------------------------------------------
+ ELEMENT NATOM       
+ Mg      2           
+ ----------------------------------------------------------------
+ Initial plane wave basis and FFT box
+ ----------------------------------------------------------------
+ DONE(0.143982   SEC) : SETUP UNITCELL
+ START CHARGE         : ATOMIC
+ DONE(0.222458   SEC) : LOCAL POTENTIAL
+ DONE(0.22548    SEC) : INIT POTENTIAL
+ DONE(0.225791   SEC) : INIT KEDF
+ DONE(0.225943   SEC) : INIT OPTIMIZATION
+ DONE(0.226118   SEC) : INIT PHI
+
+ ================================================================
+ SELF-CONSISTENT: 
+ ================================================================
+ ============================= Running OFDFT ==============================
+ ITER       ETOT/eV           EDIFF/eV        EFERMI/eV    POTNORM   TIME/s
+ TN0     -4.68545848e+01   -4.68545848e+01   3.6061e+00   1.1282e-01   0.01  
+ TN1     -4.91069546e+01   -2.25236978e+00   3.0084e+00   6.8464e-02   0.09  
+ TN2     -4.92012979e+01   -9.43433352e-02   2.9902e+00   2.5080e-02   0.07  
+ TN3     -4.92114578e+01   -1.01598960e-02   2.9888e+00   9.2145e-03   0.06  
+ TN4     -4.92138213e+01   -2.36343667e-03   2.9888e+00   6.7987e-03   0.06  
+ TN5     -4.92145822e+01   -7.60977857e-04   2.9887e+00   3.0885e-03   0.06  
+ TN6     -4.92152042e+01   -6.22000170e-04   2.9886e+00   2.1824e-04   0.15  
+ TN7     -4.92152063e+01   -2.01576260e-06   2.9885e+00   2.2853e-05   0.13  
+ TN8     -4.92152063e+01   -1.30747337e-08   2.9885e+00   1.1648e-05   0.06  
+ TN9     -4.92152063e+01   -3.23161638e-09   2.9885e+00   6.5637e-06   0.06  
+ TN10    -4.92152063e+01   -1.26238508e-09   2.9885e+00   5.1810e-06   0.06  
+ TN11    -4.92152063e+01   -1.14078089e-09   2.9885e+00   5.9422e-07   0.12  
+ ----------------------------------------------------------------
+              Stress_x             Stress_y             Stress_z 
+ ----------------------------------------------------------------
+        -40.7090037702        -0.0000027347         0.0000000001 
+         -0.0000027347       -40.7090069281         0.0000000001 
+          0.0000000001         0.0000000001       -38.5150656975 
+ ----------------------------------------------------------------
+ TOTAL-PRESSURE (EXCLUDE KINETIC PART OF IONS): -39.977692 kbar
+
+ TIME STATISTICS
+----------------------------------------------------------------------
+     CLASS_NAME             NAME        TIME/s  CALLS   AVG/s  PER/%  
+----------------------------------------------------------------------
+                     total              1.23   17       0.07   100.00 
+ Driver              atomic_world       1.23   1        1.23   100.00 
+ Driver              reading            0.05   1        0.05   4.33   
+ Charge              atomic_rho         0.08   2        0.04   6.20   
+ PW_Basis_Sup        recip2real         0.21   928      0.00   17.08  
+ PW_Basis_Sup        recip2real_copy_g  0.01   928      0.00   1.12   
+ ppcell_vl           init_vloc          0.03   1        0.03   2.40   
+ Potential           cal_veff           0.31   231      0.00   25.57  
+ H_Hartree_pw        v_hartree          0.12   231      0.00   9.53   
+ PW_Basis_Sup        real2recip         0.20   924      0.00   16.64  
+ PotXC               cal_veff           0.19   231      0.00   15.88  
+ XC_Functional_Libxc v_xc_libxc         0.19   231      0.00   15.79  
+ Libxc               xc_lda/gga_exc_vxc 0.17   462      0.00   13.73  
+ Relax_Driver        relax_driver       1.00   1        1.00   81.52  
+ ESolver_OF          runner             0.95   1        0.95   77.17  
+ KEDF_Manager        get_potential      0.57   229      0.00   46.41  
+ KEDF_TF             tf_potential       0.07   229      0.00   5.82   
+ KEDF_WT             wt_potential       0.39   229      0.00   31.66  
+ KEDF_vW             vw_potential       0.11   229      0.00   8.84   
+ ESolver_OF          after_opt          0.04   1        0.04   3.25   
+ ModuleIO            ctrl_output_fp     0.01   1        0.01   1.01   
+ OF_Stress_PW        cal_stress         0.05   1        0.05   3.99   
+ Stress              stress_loc         0.05   1        0.05   3.90   
+----------------------------------------------------------------------
+
+
+ START  Time  : Wed Aug  5 18:37:54 2026
+ FINISH Time  : Wed Aug  5 18:37:55 2026
+ TOTAL  Time  : 1
+ SEE INFORMATION IN : OUT.g1_ne_147_from_097/
