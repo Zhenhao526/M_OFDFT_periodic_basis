@@ -1,0 +1,81 @@
+{
+  "audit_experiment_id": "S1-20260805-128",
+  "expected_electron_derivation": {
+    "cell_volume_bohr3": 282.30712801913177,
+    "cell_volume_exact_fraction": {
+      "denominator": 5000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000,
+      "numerator": 1411535640095658764587337218963557269721426583499776635217063783931936405520980884485138690544083
+    },
+    "components": {
+      "Mg": {
+        "atom_count": 2,
+        "electron_contribution": 4.0,
+        "pseudopotential": "mg.lda.lps",
+        "pseudopotential_sha256": "4b964580cfbd798708299bb0e0baef2f437983d29e6d7040f63b7532038b4259",
+        "zion": 2.0
+      }
+    },
+    "derivation": "sum_STRU_atom_count_times_local_pseudopotential_zion",
+    "expected_electrons_exact_fraction": {
+      "denominator": 1,
+      "numerator": 4
+    }
+  },
+  "integration": {
+    "absolute_error_electrons": 1.0851950339234682e-15,
+    "acceptance_limit": 1e-10,
+    "accepted": true,
+    "atom_count": 2,
+    "cell_volume_bohr3": 282.30712801913177,
+    "certified_relative_error": 2.745852962158033e-16,
+    "cube_header_volume_bohr3": 282.30751490375604,
+    "cube_header_volume_relative_delta": 1.3704387381722208e-06,
+    "density_format": "abacus_cube_text_bohr_minus_3",
+    "density_path": "runs/S1-20260805-128/OUT.g1_ne_128_from_050/chg.cube",
+    "density_sha256": "43673b8ab361e25794b9b9b04422f5fef8a30e20704279a3883bfaa70f28fb4e",
+    "expected_electrons": 4.0,
+    "file_size_bytes": 501448,
+    "floating_absolute_error_bound": 0.0,
+    "grid_count": 20736,
+    "grid_dimension_authority": "raw_running_scf_log",
+    "grid_dimensions": [
+      24,
+      24,
+      36
+    ],
+    "integrated_electrons": 3.999999999999999,
+    "math_fsum_crosscheck_absolute_delta": 0.0,
+    "math_fsum_value_sum": 293.8076717438708,
+    "numerical_certification": "exact_fraction_for_printed_tokens_STRU_volume_and_rounding_bound",
+    "relative_error": 2.7129875848086705e-16,
+    "spin_count": 1,
+    "summation_algorithm": "exact_scaled_integer_decimal_sum_with_math_fsum_crosscheck",
+    "text_rounding_absolute_error_bound": 1.3146150939745072e-17,
+    "volume_authority": "STRU_not_six_decimal_cube_axes"
+  },
+  "protocol_revision": "S1-G1-ELECTRON-NUMBER-R1",
+  "provenance": {
+    "config_path": "config/S1_electron_number_audit.json",
+    "config_sha256": "b87e0ca7ce089c529849468e2437b96a019f096a9be327627d1954a4f20d3010",
+    "integrator_path": "scripts/s1_electron_number_common.py",
+    "integrator_sha256": "608b4e21756adecad967aac9254a421ba56f2aa8a6c18899e136566345eab161",
+    "manifest_path": "config/S1_electron_number_audit_manifest.tsv",
+    "manifest_sha256": "128ac010f20dd236068503cce2ddb704facd41ed9dd9fe040e15d218799fbd66",
+    "preregistration_commit": "f3efec315b1074c34709f8040f978d72575b6f10",
+    "replay_code_commit": "34609dd5965c4ecca5a8d1cce287970223f204f6",
+    "source_result_sha256": "888bf627f757a12345c093601cb2c512ea069bdcab35c0aff93b1f9b1cddcef9",
+    "source_run_introduction_commit": "b61eecb06aeeb4a1f83f9e26a0a2a11ee65c0984",
+    "validator_path": "scripts/validate_s1_electron_number_audit.py",
+    "validator_sha256": "a70e014eab81e8b56686877312c08cd005c348d068ccefd8c8539e7ecf9ca7a9"
+  },
+  "schema_version": 1,
+  "scientific_equivalence": {
+    "accepted": true,
+    "delta_energy_mev_per_atom": 0.0,
+    "delta_pressure_gpa": 0.0,
+    "energy_limit_mev_per_atom": 0.1,
+    "pressure_limit_gpa": 0.02
+  },
+  "source_experiment_id": "S1-20260805-050",
+  "status": "accepted"
+}
