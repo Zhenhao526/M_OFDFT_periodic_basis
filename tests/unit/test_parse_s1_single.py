@@ -29,6 +29,17 @@ Autoset the number of electrons = 3
         with self.assertRaises(ValueError):
             MODULE.parse_log("!FINAL_ETOT_IS -1 eV", expected_electrons=3.0, atom_count=1)
 
+    def test_nonconverged_result_is_preserved(self) -> None:
+        text = """
+Autoset the number of electrons = 3
+ !!SCF IS NOT CONVERGED!!
+ #TOTAL-PRESSURE# (EXCLUDE KINETIC PART OF IONS): 7.5 kbar
+ !FINAL_ETOT_IS -57.25 eV
+"""
+        result = MODULE.parse_log(text, expected_electrons=3.0, atom_count=1)
+        self.assertFalse(result["converged"])
+        self.assertEqual(result["failure_reason"], "scf_not_converged")
+
 
 if __name__ == "__main__":
     unittest.main()

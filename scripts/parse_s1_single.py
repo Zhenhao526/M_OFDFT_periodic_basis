@@ -17,14 +17,16 @@ def parse_log(text: str, expected_electrons: float, atom_count: int) -> dict:
     pressure_matches = PRESSURE_PATTERN.findall(text)
     electron_matches = ELECTRON_PATTERN.findall(text)
     converged = "#SCF IS CONVERGED#" in text
-    if not converged or not energy_matches or not pressure_matches or not electron_matches:
-        raise ValueError("missing convergence, energy, pressure, or electron marker")
+    explicitly_not_converged = "!!SCF IS NOT CONVERGED!!" in text
+    if (not converged and not explicitly_not_converged) or not energy_matches or not pressure_matches or not electron_matches:
+        raise ValueError("missing SCF status, energy, pressure, or electron marker")
     energy_ev = float(energy_matches[-1])
     pressure_kbar = float(pressure_matches[-1])
     electron_count = float(electron_matches[-1])
     return {
         "atom_count": atom_count,
-        "converged": True,
+        "converged": converged,
+        "failure_reason": None if converged else "scf_not_converged",
         "electron_count_expected": expected_electrons,
         "electron_count_reported": electron_count,
         "electron_count_nominal_relative_error": abs(electron_count - expected_electrons) / expected_electrons,
@@ -53,7 +55,7 @@ def main() -> int:
         json.dumps(result, indent=2, sort_keys=True) + "\n", encoding="utf-8"
     )
     print(json.dumps(result, indent=2, sort_keys=True))
-    return 0
+    return 0 if result["converged"] else 1
 
 
 if __name__ == "__main__":
