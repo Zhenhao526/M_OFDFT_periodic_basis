@@ -1,0 +1,18 @@
+openat(AT_FDCWD, "/home/shenwei01/M_OFDFT_periodic_basis/runs/S1-20260805-136/runtime_home/.openmpi/mca-params.conf", O_RDONLY) = -1 ENOENT (No such file or directory)
+openat(AT_FDCWD, "/proc/self/maps", O_RDONLY) = 21
+newfstatat(21, "", {st_mode=S_IFREG|0444, st_size=0, ...}, AT_EMPTY_PATH) = 0
+openat(AT_FDCWD, "/tmp/ompi.17/1/pmix-gds-shmem2.node01-prterun-node01-17@1.jobdata.17", O_RDWR|O_CREAT, 0600) = 21
+openat(AT_FDCWD, "/tmp/ompi.17/1/pmix-gds-shmem2.node01-prterun-node01-17@1.jobdata.17", O_RDWR) = 22
+openat(AT_FDCWD, "/tmp/ompi.17/1/pmix-gds-shmem2.node01-prterun-node01-17@1.jobdata.17", O_RDWR) = 21
+openat(AT_FDCWD, "/proc/self/maps", O_RDONLY) = 21
+newfstatat(21, "", {st_mode=S_IFREG|0444, st_size=0, ...}, AT_EMPTY_PATH) = 0
+openat(AT_FDCWD, "/tmp/ompi.17/1/pmix-gds-shmem2.node01-prterun-node01-17@1.session.ffffffff.17", O_RDWR|O_CREAT, 0600) = 21
+openat(AT_FDCWD, "/tmp/ompi.17/1/pmix-gds-shmem2.node01-prterun-node01-17@1.session.ffffffff.17", O_RDWR) = 22
+openat(AT_FDCWD, "/tmp/ompi.17/1/pmix-gds-shmem2.node01-prterun-node01-17@1.session.ffffffff.17", O_RDWR) = 21
+unlink("/dev/shm/sm_segment.node01.0.d0730001.3") = 0
+unlink("/dev/shm/sm_segment.node01.0.d0730001.2") = 0
+unlink("/dev/shm/sm_segment.node01.0.d0730001.1") = 0
+unlink("/dev/shm/sm_segment.node01.0.d0730001.0") = 0
+unlink("/tmp/ompi.17/1/pmix-gds-shmem2.node01-prterun-node01-17@1.jobdata.17") = 0
+unlink("/tmp/ompi.17/1/pmix-gds-shmem2.node01-prterun-node01-17@1.session.ffffffff.17") = 0
+exit(0)                                 = ?
