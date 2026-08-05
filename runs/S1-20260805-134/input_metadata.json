@@ -1,0 +1,57 @@
+{
+  "atom_count": 2,
+  "candidate_status": "electron_number_output_replay_preregistered",
+  "cell_angstrom": [
+    [
+      3.312999802545665,
+      0.0,
+      0.0
+    ],
+    [
+      -1.6564999012728325,
+      2.869141991737375,
+      0.0
+    ],
+    [
+      0.0,
+      0.0,
+      5.3790052256200385
+    ]
+  ],
+  "config_sha256": "1b781794c54c3642c08ebc333a12bcc732810d97eb90970e604fb9b57f3a947a",
+  "dataset_kind": "eos",
+  "ecutrho_ry": 120,
+  "ecutwfc_ry": 30,
+  "electron_number_audit": {
+    "audit_experiment_id": "S1-20260805-134",
+    "cube_precision": 17,
+    "only_scientific_input_change": "none_output_control_only",
+    "output_control": "out_chg 1 17",
+    "protocol_revision": "S1-G1-ELECTRON-NUMBER-R1",
+    "source_experiment_id": "S1-20260805-056"
+  },
+  "energy_observable": "total_energy",
+  "expected_electrons": 4,
+  "fit_model": "birch_murnaghan_3",
+  "kmesh": [
+    1,
+    1,
+    1
+  ],
+  "material": "mg",
+  "protocol_revision": "S1-R7",
+  "pseudopotential": "mg.lda.lps",
+  "pseudopotential_sha256": "4b964580cfbd798708299bb0e0baef2f437983d29e6d7040f63b7532038b4259",
+  "relative_energy_reference_volume_ratio": 1.0,
+  "series_id": "ofdft",
+  "smearing_method": null,
+  "smearing_sigma_ry": null,
+  "solver": "ofdft",
+  "stru_sha256": "2830ba604f066a34709da8abb3fa32449372e05b41c2715e999ffd0eeafb8512",
+  "structure": "hcp_primitive",
+  "structure_id": "mg_v110",
+  "volume_angstrom3": 51.12995586941148,
+  "volume_per_atom_angstrom3": 25.56497793470574,
+  "volume_ratio": 1.1000000000000003,
+  "xc": "XC_LDA_X+XC_LDA_C_PZ"
+}

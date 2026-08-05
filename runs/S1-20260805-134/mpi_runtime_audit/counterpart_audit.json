@@ -1,0 +1,49 @@
+{
+  "captured_recovery_component_count": 48,
+  "counterpart_byte_mismatch_count": 0,
+  "counterpart_missing_count": 0,
+  "exclusion_rules": {
+    "launcher_identity_gate": {
+      "byte_equality_required": true,
+      "reference": {
+        "path": "/home/shenwei01/wt_melting_runtime_20260724/conda_prefix/bin/prterun",
+        "realpath": "/home/shenwei01/wt_melting_runtime_20260724/conda_prefix/bin/prte",
+        "sha256": "8e61af4375677a82d3dff0ba1fd96b6bc45778de0fe0c86b477c2421a08b73ea"
+      },
+      "replay": {
+        "path": "/home/shenwei01/M_OFDFT_recovery_S0_20260805_001/conda_prefix/bin/prterun",
+        "realpath": "/home/shenwei01/M_OFDFT_recovery_S0_20260805_001/conda_prefix/bin/prte",
+        "sha256": "8e61af4375677a82d3dff0ba1fd96b6bc45778de0fe0c86b477c2421a08b73ea"
+      }
+    },
+    "mpirun_identity_gate": {
+      "byte_equality_required": true,
+      "reference": {
+        "path": "/home/shenwei01/M_OFDFT_recovery_S0_20260805_001/conda_prefix/bin/mpirun",
+        "realpath": "/home/shenwei01/M_OFDFT_recovery_S0_20260805_001/conda_prefix/bin/mpirun",
+        "sha256": "7ae46f275cdccb2b9783d283986f5eac82c837106b7693a6638ecad5e44cfa20"
+      },
+      "replay": {
+        "path": "/home/shenwei01/M_OFDFT_recovery_S0_20260805_001/conda_prefix/bin/mpirun",
+        "realpath": "/home/shenwei01/M_OFDFT_recovery_S0_20260805_001/conda_prefix/bin/mpirun",
+        "sha256": "7ae46f275cdccb2b9783d283986f5eac82c837106b7693a6638ecad5e44cfa20"
+      }
+    },
+    "relocated_abacus_elf_gate": {
+      "byte_equality_required": false,
+      "reference": {
+        "path": "/home/shenwei01/M_OFDFT_recovery_S0_20260805_001/source/abacus_pw_para",
+        "realpath": "/home/shenwei01/M_OFDFT_recovery_S0_20260805_001/source/abacus_pw_para",
+        "sha256": "2d68a57c7b25608b3550854dabc2e63601eeca956bf185ad7d0967052bdbb4ba"
+      },
+      "replay": {
+        "path": "/home/shenwei01/M_OFDFT_recovery_S0_20260805_001/source/abacus_pw_para_relocated_20260805",
+        "realpath": "/home/shenwei01/M_OFDFT_recovery_S0_20260805_001/source/abacus_pw_para_relocated_20260805",
+        "sha256": "438c74b9ada4c8df15ffbb66da6755907dfd2a3812ecf868fafd4d7dc4db62e1"
+      }
+    }
+  },
+  "failure_reasons": [],
+  "schema_version": 1,
+  "status": "accepted"
+}

@@ -1,0 +1,27 @@
+ NAME OF ELEMENT      : Mg
+ DFT FUNC. (PSEUDO)   : PZ
+ DFT FUNC. (SET TO)   : XC_LDA_X+XC_LDA_C_PZ
+ MAKE SURE THIS DFT FUNCTIONAL IS WHAT YOU NEED
+ AUTO_SET NBANDS to 12
+                            startmag_type = 2
+                       charge from rho_at = 2
+                         charge should be = 2
+ Warning: negative or imaginary starting charge :  neg = 0 ima = 0.0226301 SPIN = 0
+
+ SETUP ATOMIC RHO FOR SPIN 1
+                 Electron number from rho = 3.99917
+           total electron number from rho = 3.99917
+                                should be = 4
+                 charge before normalized = 3.99999999999998
+                  charge after normalized = 4
+                 charge before normalized = 4
+                  charge after normalized = 4
+                            startmag_type = 2
+                       charge from rho_at = 2.00000000000003
+                         charge should be = 2
+ Warning: negative or imaginary starting charge :  neg = 0 ima = 0.0226301447010258 SPIN = 0
+
+ SETUP ATOMIC RHO FOR SPIN 1
+                 Electron number from rho = 3.9991666666666
+           total electron number from rho = 3.9991666666666
+                                should be = 4
