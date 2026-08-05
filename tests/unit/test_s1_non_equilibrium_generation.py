@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 import json
+import subprocess
 import sys
 import tempfile
 import unittest
@@ -68,6 +69,10 @@ class S1NonEquilibriumGenerationTest(unittest.TestCase):
         self.assertEqual(payload["experiment_count"], 42)
         self.assertEqual(payload["first_experiment_id"], "S1-20260805-071")
         self.assertEqual(payload["last_experiment_id"], "S1-20260805-112")
+        self.assertEqual(
+            payload["preregistration_commit"],
+            "d6ffe59256b3ad0dbbaedfc81fd13e9740042c08",
+        )
 
     def test_manifest_metadata_hash_tampering_is_rejected(self) -> None:
         lines = MANIFEST_PATH.read_text().splitlines()
@@ -79,6 +84,47 @@ class S1NonEquilibriumGenerationTest(unittest.TestCase):
             tampered.write_text("\n".join(lines) + "\n")
             with self.assertRaisesRegex(ValueError, "metadata SHA-256 mismatch"):
                 VALIDATOR.validate(PROJECT_ROOT, CONFIG_PATH, tampered)
+
+    def test_preregistration_blob_detects_byte_level_changes(self) -> None:
+        with tempfile.TemporaryDirectory() as temporary:
+            repository = Path(temporary)
+            manifest = repository / VALIDATOR.CANONICAL_MANIFEST_PATH
+            config = repository / VALIDATOR.CANONICAL_CONFIG_PATH
+            manifest.parent.mkdir(parents=True)
+            manifest.write_text("frozen manifest\n")
+            config.write_text("frozen config\n")
+            self._git(repository, "init")
+            self._git(repository, "config", "user.name", "Unit Test")
+            self._git(repository, "config", "user.email", "unit@example.invalid")
+            self._git(repository, "add", ".")
+            self._git(repository, "commit", "-m", "preregister matrix")
+            commit = VALIDATOR.find_preregistration_commit(repository)
+            self.assertIsNone(
+                VALIDATOR.preregistration_mismatch(
+                    repository,
+                    commit,
+                    VALIDATOR.CANONICAL_CONFIG_PATH,
+                    config,
+                )
+            )
+            config.write_text("changed after preregistration\n")
+            mismatch = VALIDATOR.preregistration_mismatch(
+                repository,
+                commit,
+                VALIDATOR.CANONICAL_CONFIG_PATH,
+                config,
+            )
+            self.assertIn("differs byte-for-byte", mismatch or "")
+
+    @staticmethod
+    def _git(repository: Path, *arguments: str) -> None:
+        subprocess.run(
+            ["git", *arguments],
+            cwd=repository,
+            check=True,
+            text=True,
+            capture_output=True,
+        )
 
 
 if __name__ == "__main__":

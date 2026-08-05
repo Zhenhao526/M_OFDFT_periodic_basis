@@ -22,6 +22,10 @@ HEADER = (
     "input_metadata_sha256",
 )
 
+CANONICAL_CONFIG_PATH = Path("config/S1_non_equilibrium_convergence.json")
+CANONICAL_MANIFEST_PATH = Path("config/S1_non_equilibrium_run_manifest.tsv")
+REGISTERED_INPUT_FILES = ("INPUT", "STRU", "KPT", "metadata.json")
+
 
 def _project_path(project_root: Path, value: str) -> Path:
     path = Path(value)
@@ -51,12 +55,92 @@ def _same_scalar(left, right) -> bool:
     return left == right
 
 
+def _git_output(project_root: Path, *arguments: str) -> bytes:
+    completed = subprocess.run(
+        ["git", "-C", str(project_root), *arguments],
+        stdout=subprocess.PIPE,
+        stderr=subprocess.PIPE,
+        check=False,
+    )
+    if completed.returncode != 0:
+        detail = completed.stderr.decode("utf-8", errors="replace").strip()
+        raise ValueError(f"git {' '.join(arguments)} failed: {detail}")
+    return completed.stdout
+
+
+def find_preregistration_commit(project_root: Path) -> str:
+    output = _git_output(
+        project_root,
+        "log",
+        "--diff-filter=A",
+        "--format=%H",
+        "--",
+        CANONICAL_MANIFEST_PATH.as_posix(),
+    ).decode("ascii")
+    commits = [line.strip() for line in output.splitlines() if line.strip()]
+    if len(commits) != 1:
+        raise ValueError(
+            "expected exactly one S1-R8 manifest preregistration commit, "
+            f"found {len(commits)}"
+        )
+    return commits[0]
+
+
+def preregistered_blob(project_root: Path, commit: str, relative_path: Path) -> bytes:
+    return _git_output(
+        project_root,
+        "cat-file",
+        "blob",
+        f"{commit}:{relative_path.as_posix()}",
+    )
+
+
+def preregistration_mismatch(
+    project_root: Path, commit: str, relative_path: Path, current_path: Path
+) -> str | None:
+    try:
+        frozen = preregistered_blob(project_root, commit, relative_path)
+    except ValueError as error:
+        return f"{relative_path}: missing preregistered blob ({error})"
+    if current_path.is_symlink():
+        return f"{relative_path}: preregistered file must not be a symbolic link"
+    if not current_path.is_file():
+        return f"{relative_path}: missing current preregistered file"
+    if current_path.read_bytes() != frozen:
+        return f"{relative_path}: differs byte-for-byte from preregistration commit {commit}"
+    return None
+
+
 def validate(project_root: Path, config_path: Path, manifest_path: Path) -> dict:
     config = json.loads(config_path.read_text(encoding="utf-8"))
     config_digest = sha256(config_path)
     rows = read_manifest(manifest_path)
     expected = build_entries(config)
     errors = []
+
+    preregistration_commit = find_preregistration_commit(project_root)
+    for relative_path, current_path in (
+        (CANONICAL_CONFIG_PATH, config_path),
+        (CANONICAL_MANIFEST_PATH, manifest_path),
+    ):
+        mismatch = preregistration_mismatch(
+            project_root, preregistration_commit, relative_path, current_path
+        )
+        if mismatch:
+            errors.append(mismatch)
+
+    for entry in expected:
+        input_directory = Path(entry["input_directory"])
+        for name in REGISTERED_INPUT_FILES:
+            relative_path = input_directory / name
+            mismatch = preregistration_mismatch(
+                project_root,
+                preregistration_commit,
+                relative_path,
+                project_root / relative_path,
+            )
+            if mismatch:
+                errors.append(mismatch)
 
     if len(rows) != len(expected):
         errors.append(f"expected {len(expected)} manifest rows, found {len(rows)}")
@@ -103,7 +187,7 @@ def validate(project_root: Path, config_path: Path, manifest_path: Path) -> dict
 
         input_directory = project_root / row["input_directory"]
         metadata_path = input_directory / "metadata.json"
-        for required in ("INPUT", "STRU", "KPT", "metadata.json"):
+        for required in REGISTERED_INPUT_FILES:
             if not (input_directory / required).is_file():
                 errors.append(f"{experiment_id}: missing input {required}")
         if not metadata_path.is_file():
@@ -111,6 +195,17 @@ def validate(project_root: Path, config_path: Path, manifest_path: Path) -> dict
         if sha256(metadata_path) != row["input_metadata_sha256"]:
             errors.append(f"{experiment_id}: input metadata SHA-256 mismatch")
         metadata = json.loads(metadata_path.read_text(encoding="utf-8"))
+        pseudopotential = metadata.get("pseudopotential")
+        if not isinstance(pseudopotential, str) or Path(pseudopotential).name != pseudopotential:
+            errors.append(f"{experiment_id}: invalid pseudopotential basename")
+        else:
+            pseudopotential_path = project_root / "assets" / "pseudo" / pseudopotential
+            if pseudopotential_path.is_symlink():
+                errors.append(f"{experiment_id}: pseudopotential must not be a symbolic link")
+            elif not pseudopotential_path.is_file():
+                errors.append(f"{experiment_id}: missing pseudopotential")
+            elif sha256(pseudopotential_path) != metadata.get("pseudopotential_sha256"):
+                errors.append(f"{experiment_id}: pseudopotential SHA-256 mismatch")
         spec = config["materials"][row["material"]][row["series_id"]]
         expected_metadata = {
             "comparison_axis": spec["comparison_axis"],
@@ -203,6 +298,7 @@ def validate(project_root: Path, config_path: Path, manifest_path: Path) -> dict
         "last_experiment_id": rows[-1]["experiment_id"],
         "config_sha256": config_digest,
         "manifest_sha256": sha256(manifest_path),
+        "preregistration_commit": preregistration_commit,
     }
 
 

@@ -32,29 +32,34 @@ fi
 while IFS=$'\t' read -r experiment_id input_directory material series_id comparison_axis volume_ratio reference_experiment_id input_metadata_sha256 <&3; do
     run_directory="runs/$experiment_id"
     if [[ -d "$run_directory" ]]; then
-        if ! git ls-files --error-unmatch "$run_directory/result.json" >/dev/null 2>&1; then
+        if [[ -z "$(git ls-files -- "$run_directory")" ]]; then
             echo "Refusing uncommitted existing run: $run_directory" >&2
             exit 2
         fi
-        python3 - "$run_directory" "$experiment_id" "$input_metadata_sha256" <<'PY'
-import hashlib
-import json
+        python3 - "$experiment_id" "$input_directory" "$material" "$series_id" \
+            "$reference_experiment_id" "$input_metadata_sha256" <<'PY'
 import sys
 from pathlib import Path
 
-run = Path(sys.argv[1])
-experiment_id = sys.argv[2]
-expected_metadata_sha = sys.argv[3]
-result = json.loads((run / "result.json").read_text())
-experiment = json.loads((run / "experiment_metadata.json").read_text())
-metadata_path = run / "input_metadata.json"
-actual_metadata_sha = hashlib.sha256(metadata_path.read_bytes()).hexdigest()
-if experiment.get("experiment_id") != experiment_id:
-    raise SystemExit("committed run experiment ID does not match manifest")
-if actual_metadata_sha != expected_metadata_sha:
-    raise SystemExit("committed run input metadata does not match manifest")
-if not result.get("converged"):
-    raise SystemExit("committed S1-R8 run is failed; register a new retry ID")
+project_root = Path.cwd()
+sys.path.insert(0, str(project_root / "scripts"))
+from analyze_s1_non_equilibrium import _read_refined_point
+
+row = {
+    "experiment_id": sys.argv[1],
+    "input_directory": sys.argv[2],
+    "material": sys.argv[3],
+    "series_id": sys.argv[4],
+    "reference_experiment_id": sys.argv[5],
+    "input_metadata_sha256": sys.argv[6],
+}
+point, failures = _read_refined_point(project_root, row)
+if point is None or failures:
+    detail = ",".join(failures) if failures else "missing_run"
+    raise SystemExit(
+        "committed S1-R8 run is incomplete, failed, or provenance-invalid; "
+        f"register a new retry ID ({detail})"
+    )
 PY
         echo "SKIP $experiment_id already committed and validated"
         continue

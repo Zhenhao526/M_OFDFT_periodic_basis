@@ -2,12 +2,15 @@
 from __future__ import annotations
 
 import argparse
+import hashlib
 import json
 import math
+import re
 import subprocess
 from pathlib import Path
 
 from analyze_s1_eos import fit_bm3
+from parse_s1_single import parse_log
 from validate_s1_non_equilibrium_manifest import read_manifest, sha256, validate
 
 
@@ -19,13 +22,25 @@ def _project_path(project_root: Path, value: str) -> Path:
 def _energy(metadata: dict, result: dict) -> float | None:
     if not result.get("converged"):
         return None
-    if metadata["solver"] == "ksdft":
+    if metadata.get("solver") == "ksdft":
         value = result.get("zero_temp_extrapolated_energy_ev_per_atom")
     else:
         value = result.get("energy_ev_per_atom")
-    if value is None or not math.isfinite(float(value)):
+    try:
+        value = float(value)
+    except (TypeError, ValueError):
         return None
-    return float(value)
+    if not math.isfinite(value):
+        return None
+    return value
+
+
+def _finite_float(value) -> float | None:
+    try:
+        parsed = float(value)
+    except (TypeError, ValueError):
+        return None
+    return parsed if math.isfinite(parsed) else None
 
 
 def compare_series(
@@ -120,11 +135,197 @@ def _fit_quality(points: list[dict], max_residual_mev: float = 1.0) -> tuple[dic
     return fit, failures
 
 
+def _series_status(
+    provenance_failures: list[str], fit_failures: list[str], comparison: dict
+) -> str:
+    if provenance_failures or comparison.get("status") == "indeterminate":
+        return "indeterminate"
+    if fit_failures or comparison.get("status") == "rejected":
+        return "rejected"
+    return "accepted"
+
+
 def _baseline_points(core_summary: dict, material: str, series_id: str) -> list[dict]:
     payload = core_summary["series"][f"{material}/{series_id}"]
     if payload["status"] != "accepted":
         raise ValueError(f"frozen baseline series is not accepted: {material}/{series_id}")
     return payload["points"]
+
+
+def _tracked_head_failures(project_root: Path, paths: list[Path]) -> list[str]:
+    failures = []
+    relative_paths = []
+    for path in paths:
+        if path.is_symlink():
+            failures.append(f"symbolic_link_run_artifact:{path}")
+        try:
+            relative_paths.append(path.relative_to(project_root).as_posix())
+        except ValueError:
+            failures.append(f"archive_path_outside_project:{path}")
+    if failures or not relative_paths:
+        return failures
+
+    tracked = subprocess.run(
+        ["git", "-C", str(project_root), "ls-files", "--", *relative_paths],
+        stdout=subprocess.PIPE,
+        stderr=subprocess.PIPE,
+        text=True,
+        check=False,
+    )
+    if tracked.returncode != 0:
+        return ["git_ls_files_failed"]
+    tracked_paths = {line.strip() for line in tracked.stdout.splitlines() if line.strip()}
+    for relative_path in relative_paths:
+        if relative_path not in tracked_paths:
+            failures.append(f"untracked_run_artifact:{relative_path}")
+
+    clean = subprocess.run(
+        ["git", "-C", str(project_root), "diff", "--quiet", "HEAD", "--", *relative_paths],
+        stdout=subprocess.DEVNULL,
+        stderr=subprocess.DEVNULL,
+        check=False,
+    )
+    if clean.returncode != 0:
+        failures.append("run_artifact_differs_from_head")
+    return failures
+
+
+def _normalized_run_input(source: bytes) -> bytes:
+    pattern = re.compile(br"(?m)^pseudo_dir[ \t]+[^\r\n]*(\r?\n|$)")
+    matches = list(pattern.finditer(source))
+    if len(matches) != 1:
+        raise ValueError(f"expected exactly one source pseudo_dir line, found {len(matches)}")
+    return pattern.sub(lambda match: b"pseudo_dir ." + match.group(1), source, count=1)
+
+
+def _checksum_failures(run_directory: Path, pseudopotential: str) -> list[str]:
+    checksum_path = run_directory / "INPUT_SHA256SUMS"
+    if not checksum_path.is_file():
+        return ["missing_run_artifact:INPUT_SHA256SUMS"]
+    records: dict[str, str] = {}
+    failures = []
+    for line_number, line in enumerate(
+        checksum_path.read_text(encoding="utf-8", errors="replace").splitlines(), start=1
+    ):
+        fields = line.split(maxsplit=1)
+        if len(fields) != 2 or not re.fullmatch(r"[0-9a-fA-F]{64}", fields[0]):
+            failures.append(f"invalid_checksum_line:{line_number}")
+            continue
+        recorded_path = fields[1]
+        if recorded_path.startswith("*"):
+            recorded_path = recorded_path[1:]
+        basename = Path(recorded_path).name
+        if not basename:
+            failures.append(f"invalid_checksum_path:{line_number}")
+        elif basename in records:
+            failures.append(f"duplicate_checksum_basename:{basename}")
+        else:
+            records[basename] = fields[0].lower()
+
+    expected = {"INPUT", "STRU", "KPT", pseudopotential}
+    if set(records) != expected:
+        missing = sorted(expected - set(records))
+        extra = sorted(set(records) - expected)
+        if missing:
+            failures.append(f"missing_checksum_entries:{','.join(missing)}")
+        if extra:
+            failures.append(f"unexpected_checksum_entries:{','.join(extra)}")
+    for basename in sorted(expected & set(records)):
+        path = run_directory / basename
+        if not path.is_file():
+            failures.append(f"missing_run_artifact:{basename}")
+            continue
+        actual = hashlib.sha256(path.read_bytes()).hexdigest()
+        if actual != records[basename]:
+            failures.append(f"checksum_mismatch:{basename}")
+    return failures
+
+
+def _result_reparse_failures(log_path: Path, metadata: dict, result: dict) -> list[str]:
+    try:
+        reparsed = parse_log(
+            log_path.read_text(encoding="utf-8", errors="replace"),
+            float(metadata["expected_electrons"]),
+            int(metadata["atom_count"]),
+            str(metadata["solver"]),
+        )
+    except (KeyError, TypeError, ValueError) as error:
+        return [f"running_log_reparse_failed:{error}"]
+    if reparsed != result:
+        return ["result_json_does_not_match_running_log"]
+    return []
+
+
+def _archive_failures(
+    project_root: Path,
+    row: dict[str, str],
+    run_directory: Path,
+    metadata: dict,
+    result: dict,
+) -> list[str]:
+    failures = []
+    source_directory = project_root / row["input_directory"]
+    pseudopotential = metadata.get("pseudopotential")
+    if not isinstance(pseudopotential, str) or Path(pseudopotential).name != pseudopotential:
+        return ["invalid_pseudopotential_basename"]
+
+    required_names = (
+        "INPUT",
+        "STRU",
+        "KPT",
+        "input_metadata.json",
+        "experiment_metadata.json",
+        "result.json",
+        "INPUT_SHA256SUMS",
+        pseudopotential,
+    )
+    required_paths = [run_directory / name for name in required_names]
+    for name, path in zip(required_names, required_paths):
+        if not path.is_file():
+            failures.append(f"missing_run_artifact:{name}")
+
+    logs = list(run_directory.glob("OUT.*/running_scf.log"))
+    if len(logs) != 1:
+        failures.append(f"expected_one_running_scf_log_found:{len(logs)}")
+    tracked_paths = [path for path in required_paths if path.is_file()]
+    if len(logs) == 1:
+        tracked_paths.append(logs[0])
+    failures.extend(_tracked_head_failures(project_root, tracked_paths))
+
+    source_metadata = source_directory / "metadata.json"
+    if source_metadata.is_file() and (run_directory / "input_metadata.json").is_file():
+        if source_metadata.read_bytes() != (run_directory / "input_metadata.json").read_bytes():
+            failures.append("run_metadata_differs_from_frozen_source")
+
+    for name in ("STRU", "KPT"):
+        source = source_directory / name
+        archived = run_directory / name
+        if source.is_file() and archived.is_file() and source.read_bytes() != archived.read_bytes():
+            failures.append(f"run_{name.lower()}_differs_from_frozen_source")
+
+    source_input = source_directory / "INPUT"
+    archived_input = run_directory / "INPUT"
+    if source_input.is_file() and archived_input.is_file():
+        try:
+            expected_input = _normalized_run_input(source_input.read_bytes())
+        except ValueError as error:
+            failures.append(f"source_input_normalization_failed:{error}")
+        else:
+            if archived_input.read_bytes() != expected_input:
+                failures.append("run_input_has_changes_beyond_pseudo_dir_normalization")
+
+    source_pseudo = project_root / "assets" / "pseudo" / pseudopotential
+    archived_pseudo = run_directory / pseudopotential
+    if source_pseudo.is_file() and archived_pseudo.is_file():
+        if source_pseudo.read_bytes() != archived_pseudo.read_bytes():
+            failures.append("run_pseudopotential_differs_from_frozen_source")
+        if sha256(archived_pseudo) != metadata.get("pseudopotential_sha256"):
+            failures.append("run_pseudopotential_sha256_mismatch")
+
+    failures.extend(_checksum_failures(run_directory, pseudopotential))
+    if len(logs) == 1:
+        failures.extend(_result_reparse_failures(logs[0], metadata, result))
+    return failures
 
 
 def _read_refined_point(project_root: Path, row: dict[str, str]) -> tuple[dict | None, list[str]]:
@@ -134,19 +335,44 @@ def _read_refined_point(project_root: Path, row: dict[str, str]) -> tuple[dict |
         "input_metadata.json",
         "experiment_metadata.json",
         "result.json",
-        "INPUT_SHA256SUMS",
     )
-    if any(not (run_directory / name).is_file() for name in required):
-        return None, ["missing_run_artifacts"]
-    metadata = json.loads((run_directory / "input_metadata.json").read_text(encoding="utf-8"))
-    experiment = json.loads(
-        (run_directory / "experiment_metadata.json").read_text(encoding="utf-8")
-    )
-    result = json.loads((run_directory / "result.json").read_text(encoding="utf-8"))
+    missing = [name for name in required if not (run_directory / name).is_file()]
+    if missing:
+        return None, [f"missing_run_artifacts:{','.join(missing)}"]
+    try:
+        metadata = json.loads(
+            (run_directory / "input_metadata.json").read_text(encoding="utf-8")
+        )
+        experiment = json.loads(
+            (run_directory / "experiment_metadata.json").read_text(encoding="utf-8")
+        )
+        result = json.loads((run_directory / "result.json").read_text(encoding="utf-8"))
+    except (OSError, json.JSONDecodeError) as error:
+        return None, [f"invalid_run_json:{error}"]
+    if not all(isinstance(payload, dict) for payload in (metadata, experiment, result)):
+        return None, ["invalid_run_json_object_type"]
+    failures.extend(_archive_failures(project_root, row, run_directory, metadata, result))
     if sha256(run_directory / "input_metadata.json") != row["input_metadata_sha256"]:
         failures.append("run_input_metadata_sha256_mismatch")
     if experiment.get("experiment_id") != row["experiment_id"]:
         failures.append("experiment_id_mismatch")
+    abacus_sha256 = experiment.get("abacus_sha256")
+    if not isinstance(abacus_sha256, str) or not re.fullmatch(
+        r"[0-9a-f]{64}", abacus_sha256
+    ):
+        failures.append("invalid_abacus_sha256_provenance")
+    code_commit = experiment.get("code_commit")
+    if not isinstance(code_commit, str) or not re.fullmatch(r"[0-9a-f]{40,64}", code_commit):
+        failures.append("invalid_code_commit_provenance")
+    else:
+        commit = subprocess.run(
+            ["git", "-C", str(project_root), "cat-file", "-e", f"{code_commit}^{{commit}}"],
+            stdout=subprocess.DEVNULL,
+            stderr=subprocess.DEVNULL,
+            check=False,
+        )
+        if commit.returncode != 0:
+            failures.append("missing_code_commit_provenance")
     if metadata.get("series_id") != row["series_id"]:
         failures.append("series_id_mismatch")
     if metadata.get("baseline_experiment_id") != row["reference_experiment_id"]:
@@ -156,10 +382,16 @@ def _read_refined_point(project_root: Path, row: dict[str, str]) -> tuple[dict |
     energy = _energy(metadata, result)
     if energy is None:
         failures.append("missing_registered_energy_observable")
+    pressure = _finite_float(result.get("pressure_gpa"))
+    if pressure is None:
+        failures.append("missing_finite_pressure_gpa")
+    volume_per_atom = _finite_float(metadata.get("volume_per_atom_angstrom3"))
+    if volume_per_atom is None or volume_per_atom <= 0.0:
+        failures.append("missing_positive_volume_per_atom")
     return (
         {
-            "abacus_sha256": experiment.get("abacus_sha256"),
-            "code_commit": experiment.get("code_commit"),
+            "abacus_sha256": abacus_sha256,
+            "code_commit": code_commit,
             "converged": bool(result.get("converged")),
             "ecutrho_ry": metadata.get("ecutrho_ry"),
             "ecutwfc_ry": metadata.get("ecutwfc_ry"),
@@ -168,12 +400,12 @@ def _read_refined_point(project_root: Path, row: dict[str, str]) -> tuple[dict |
             "experiment_id": row["experiment_id"],
             "kmesh": metadata.get("kmesh"),
             "material": row["material"],
-            "pressure_gpa": result.get("pressure_gpa"),
+            "pressure_gpa": pressure,
             "series_id": row["series_id"],
             "smearing_sigma_ry": metadata.get("smearing_sigma_ry"),
             "solver": metadata.get("solver"),
             "stru_sha256": metadata.get("stru_sha256"),
-            "volume_per_atom_angstrom3": metadata.get("volume_per_atom_angstrom3"),
+            "volume_per_atom_angstrom3": volume_per_atom,
             "volume_ratio": round(float(metadata.get("volume_ratio")), 12),
         },
         failures,
@@ -245,8 +477,10 @@ def analyze(
         )
         if point is not None:
             grouped.setdefault(key, []).append(point)
-            input_code_commits.add(point["code_commit"])
-            input_abacus_hashes.add(point["abacus_sha256"])
+            if isinstance(point["code_commit"], str):
+                input_code_commits.add(point["code_commit"])
+            if isinstance(point["abacus_sha256"], str):
+                input_abacus_hashes.add(point["abacus_sha256"])
 
     series_payload = {}
     global_failures = []
@@ -265,14 +499,14 @@ def analyze(
         for series_id in config["series_order"]:
             key = (material, series_id)
             spec = config["materials"][material][series_id]
-            failures = list(runtime_failures.get(key, []))
+            provenance_failures = list(runtime_failures.get(key, []))
             refined = grouped.get(key, [])
             expected_ratios = {
                 round(float(value), 12) for value in config["volume_ratios"]
             }
             actual_ratios = {point["volume_ratio"] for point in refined if point["converged"]}
             if actual_ratios != expected_ratios:
-                failures.append("incomplete_or_duplicate_seven_point_series")
+                provenance_failures.append("incomplete_or_duplicate_seven_point_series")
             baseline = _baseline_points(core_summary, material, spec["baseline_series_id"])
             baseline_by_id = {point["experiment_id"]: point for point in baseline}
             for point in refined:
@@ -283,23 +517,21 @@ def analyze(
                 )
                 base = baseline_by_id.get(reference_id)
                 if base is None:
-                    failures.append(f"{point['experiment_id']}:reference_not_in_baseline")
+                    provenance_failures.append(
+                        f"{point['experiment_id']}:reference_not_in_baseline"
+                    )
                     continue
                 if point["abacus_sha256"] != base["abacus_sha256"]:
-                    failures.append(f"{point['experiment_id']}:abacus_binary_mismatch")
+                    provenance_failures.append(
+                        f"{point['experiment_id']}:abacus_binary_mismatch"
+                    )
                 if point["stru_sha256"] != base["stru_sha256"]:
-                    failures.append(f"{point['experiment_id']}:structure_mismatch")
+                    provenance_failures.append(f"{point['experiment_id']}:structure_mismatch")
 
             fit = None
             fit_failures = []
             comparison = {"status": "indeterminate", "failure_reason": "invalid_series"}
-            if not failures:
-                try:
-                    fit, fit_failures = _fit_quality(refined)
-                except ValueError as error:
-                    fit_failures = [str(error)]
-                failures.extend(fit_failures)
-            if not failures:
+            if not provenance_failures:
                 if spec["comparison_axis"] == "cutoff":
                     energy_threshold = float(
                         config["acceptance"][
@@ -323,7 +555,12 @@ def analyze(
                     energy_threshold,
                     pressure_threshold,
                 )
-            status = "indeterminate" if failures else comparison["status"]
+                try:
+                    fit, fit_failures = _fit_quality(refined)
+                except ValueError as error:
+                    fit_failures = [f"bm3_fit_failed:{error}"]
+            status = _series_status(provenance_failures, fit_failures, comparison)
+            failures = provenance_failures + fit_failures
             if status != "accepted":
                 global_failures.append(f"{material}/{series_id}:{status}")
             series_payload[f"{material}/{series_id}"] = {
@@ -333,6 +570,8 @@ def analyze(
                 "baseline_series_id": spec["baseline_series_id"],
                 "status": status,
                 "failures": failures,
+                "provenance_failures": provenance_failures,
+                "fit_failures": fit_failures,
                 "fit": fit,
                 "comparison": comparison,
                 "points": refined,
@@ -383,6 +622,9 @@ def analyze(
                 ["git", "-C", str(project_root), "rev-parse", "HEAD"], text=True
             ).strip(),
             "analyzer_script_sha256": sha256(Path(__file__).resolve()),
+            "result_parser_script_sha256": sha256(
+                project_root / "scripts" / "parse_s1_single.py"
+            ),
             "config_path": str(config_path.relative_to(project_root)),
             "config_sha256": sha256(config_path),
             "manifest_path": str(manifest_path.relative_to(project_root)),
@@ -391,6 +633,7 @@ def analyze(
             "core_summary_sha256": sha256(core_summary_path),
             "input_abacus_sha256_values": sorted(input_abacus_hashes),
             "input_code_commits": sorted(input_code_commits),
+            "preregistration_commit": manifest_validation["preregistration_commit"],
         },
         "manifest_validation": manifest_validation,
         "s1_r8_status": overall_status,
