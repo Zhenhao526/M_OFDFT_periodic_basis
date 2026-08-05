@@ -219,6 +219,10 @@ def main() -> int:
     args = parser.parse_args()
     config = json.loads(args.config.read_text(encoding="utf-8"))
     config_digest = sha256(args.config)
+    try:
+        config_display_path = str(args.config.resolve().relative_to(project_root))
+    except ValueError:
+        config_display_path = str(args.config.resolve())
     expected_ratios = [round(float(value), 12) for value in config["volume_ratios"]]
     attempts: dict[tuple[str, str, float], list[dict]] = defaultdict(list)
     global_failures = []
@@ -413,7 +417,7 @@ def main() -> int:
                 ["git", "-C", str(project_root), "rev-parse", "HEAD"], text=True
             ).strip(),
             "analyzer_script_sha256": sha256(Path(__file__).resolve()),
-            "config_path": str(args.config.resolve()),
+            "config_path": config_display_path,
             "config_sha256": config_digest,
             "input_abacus_sha256_values": sorted(
                 {point["abacus_sha256"] for point in selected.values()}
