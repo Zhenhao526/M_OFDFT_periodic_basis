@@ -1,0 +1,151 @@
+{
+  "audit_experiment_id": "S1-20260805-139",
+  "expected_electron_derivation": {
+    "cell_volume_bohr3": 115.43537143714519,
+    "cell_volume_exact_fraction": {
+      "denominator": 7812500000000000000000000000000000000000000000000000000000000000000000000000000000000000000000,
+      "numerator": 901838839352696780286125019271824927011905685315768148865518440313683362818590897775289715022303
+    },
+    "components": {
+      "Al": {
+        "atom_count": 1,
+        "electron_contribution": 3.0,
+        "pseudopotential": "al.gga.psp",
+        "pseudopotential_sha256": "d76ceac60058e230eac514fc419269433a33b199eb6abfa7d6ab43cde248bd1d",
+        "zion": 3.0
+      }
+    },
+    "derivation": "sum_STRU_atom_count_times_local_pseudopotential_zion",
+    "expected_electrons_exact_fraction": {
+      "denominator": 1,
+      "numerator": 3
+    }
+  },
+  "integration": {
+    "absolute_error_electrons": 4.220789412690142e-16,
+    "acceptance_limit": 1e-10,
+    "accepted": true,
+    "atom_count": 1,
+    "cell_volume_bohr3": 115.43537143714519,
+    "certified_relative_error": 1.425980728853248e-16,
+    "cube_header_volume_bohr3": 115.43483901356782,
+    "cube_header_volume_relative_delta": 4.612308781401396e-06,
+    "density_format": "abacus_cube_text_bohr_minus_3",
+    "density_path": "runs/S1-20260805-139/OUT.g1_ne_139_from_075/chg.cube",
+    "density_sha256": "a56d76c3fea631cf461c8b679c6ffe4b0bf3276a9ef2d082a39412cd40f5f084",
+    "expected_electrons": 3.0,
+    "file_size_bytes": 193887,
+    "floating_absolute_error_bound": 0.0,
+    "grid_count": 8000,
+    "grid_dimension_authority": "raw_running_scf_log",
+    "grid_dimensions": [
+      20,
+      20,
+      20
+    ],
+    "integrated_electrons": 3.0000000000000004,
+    "math_fsum_crosscheck_absolute_delta": 0.0,
+    "math_fsum_value_sum": 207.90854398617373,
+    "numerical_certification": "exact_fraction_for_printed_tokens_STRU_volume_and_rounding_bound",
+    "relative_error": 1.4069298042300473e-16,
+    "spin_count": 1,
+    "summation_algorithm": "exact_scaled_integer_decimal_sum_with_math_fsum_crosscheck",
+    "text_rounding_absolute_error_bound": 5.715277386960207e-18,
+    "volume_authority": "STRU_not_six_decimal_cube_axes"
+  },
+  "kmp_runtime_contract": {
+    "accepted": true,
+    "captured_mapping_count": 0,
+    "contract_mode": "registered_r2",
+    "kmp_pattern": "^/dev/shm/__KMP_REGISTERED_LIB_[1-9][0-9]*_0$",
+    "libomp_mapping_count": 4,
+    "libomp_path": "/home/shenwei01/M_OFDFT_recovery_S0_20260805_001/conda_prefix/lib/libomp.so",
+    "libomp_realpath": "/home/shenwei01/M_OFDFT_recovery_S0_20260805_001/conda_prefix/lib/libomp.so",
+    "libomp_sha256": "3fe1a40e7676ecb914fde29f45a1083656b9eafea07c680970d8dc4bb8bd0e84",
+    "lifecycle_count": 4,
+    "protocol_revision": "S1-G1-ELECTRON-NUMBER-R2-KMP-RUNTIME-CONTRACT-v1",
+    "rank_count": 4,
+    "ranks": [
+      {
+        "captured_mapping_count": 0,
+        "kmp_path": "/dev/shm/__KMP_REGISTERED_LIB_20_0",
+        "libomp_mapping_count": 1,
+        "lifecycle": [
+          "create",
+          "read",
+          "unlink"
+        ],
+        "pid": 20,
+        "rank": 0,
+        "successful_syscall_count": 3
+      },
+      {
+        "captured_mapping_count": 0,
+        "kmp_path": "/dev/shm/__KMP_REGISTERED_LIB_21_0",
+        "libomp_mapping_count": 1,
+        "lifecycle": [
+          "create",
+          "read",
+          "unlink"
+        ],
+        "pid": 21,
+        "rank": 1,
+        "successful_syscall_count": 3
+      },
+      {
+        "captured_mapping_count": 0,
+        "kmp_path": "/dev/shm/__KMP_REGISTERED_LIB_22_0",
+        "libomp_mapping_count": 1,
+        "lifecycle": [
+          "create",
+          "read",
+          "unlink"
+        ],
+        "pid": 22,
+        "rank": 2,
+        "successful_syscall_count": 3
+      },
+      {
+        "captured_mapping_count": 0,
+        "kmp_path": "/dev/shm/__KMP_REGISTERED_LIB_23_0",
+        "libomp_mapping_count": 1,
+        "lifecycle": [
+          "create",
+          "read",
+          "unlink"
+        ],
+        "pid": 23,
+        "rank": 3,
+        "successful_syscall_count": 3
+      }
+    ],
+    "registered_mapping_pattern_required": true,
+    "schema_version": 1,
+    "successful_syscall_count": 12
+  },
+  "protocol_revision": "S1-G1-ELECTRON-NUMBER-R2",
+  "provenance": {
+    "config_path": "config/S1_electron_number_audit_r2.json",
+    "config_sha256": "bfed0e87451ccf60ff8239b5ad25d6a4e62e52e037d560ffa3dcdb4d08a83624",
+    "integrator_path": "scripts/s1_electron_number_common.py",
+    "integrator_sha256": "608b4e21756adecad967aac9254a421ba56f2aa8a6c18899e136566345eab161",
+    "manifest_path": "config/S1_electron_number_audit_r2_manifest.tsv",
+    "manifest_sha256": "961eded6054f5382ce156754b98b1a0bc4b837cfb1b8491fc8ecf120566b43ce",
+    "preregistration_commit": "b18106b25e1d4f7e595ddae0fe6da2ed17a08d56",
+    "replay_code_commit": "b69ff5190e8d36ebba7a0e9e46236d1aa7fc7da6",
+    "source_result_sha256": "ad45c3e63c1aea3bbd09d7d63dd520e4197d1fe358d9a44609b4b5bb49276330",
+    "source_run_introduction_commit": "e7ccfac26bd88565e3cd6e28e581d43678b7bab6",
+    "validator_path": "scripts/validate_s1_electron_number_audit_r2.py",
+    "validator_sha256": "1077728517c9340ab79a81428332e8d8f7c06d4ce87dca9234f5f4a450915255"
+  },
+  "schema_version": 2,
+  "scientific_equivalence": {
+    "accepted": true,
+    "delta_energy_mev_per_atom": 0.0,
+    "delta_pressure_gpa": 0.0,
+    "energy_limit_mev_per_atom": 0.1,
+    "pressure_limit_gpa": 0.02
+  },
+  "source_experiment_id": "S1-20260805-075",
+  "status": "accepted"
+}
