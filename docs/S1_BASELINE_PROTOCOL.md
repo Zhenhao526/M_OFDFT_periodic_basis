@@ -69,3 +69,20 @@ S2 must not start before every G1 acceptance item has evidence.
   settings and produced a numerical plateau. Before any retry, tolerances were
   changed to `of_tole=1e-7`, `of_tolp=1e-6`; G1 energy and pressure acceptance
   thresholds were not changed. The failed run remains in the experiment ledger.
+
+## Completed convergence evidence
+
+### Al WT cutoff at `V/V0 = 1.00`
+
+| Cutoff (Ry) | Selected experiment | Converged | Delta to next (meV/atom) | Pressure delta to next (GPa) |
+|---:|---|---|---:|---:|
+| 20 | `S1-20260805-002` | yes | 0.011269 | 0.0000990 |
+| 30 | `S1-20260805-001` | yes | 0.001121 | 0.0000202 |
+| 40 | `S1-20260805-003` | yes | 0.000108 | 0.0000148 |
+| 60 | `S1-20260805-005` | yes | — | — |
+
+All adjacent comparisons are below `1 meV/atom` and `0.02 GPa`; 20 Ry is the
+minimum passing candidate at the equilibrium point. `S1-20260805-004` is a
+retained nonconverged 60 Ry attempt preceding S1-R1. The 20 Ry recommendation
+remains candidate status until EOS and pressure behavior away from `V0` are
+checked; no production parameter is silently frozen from a single point.

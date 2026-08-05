@@ -1,0 +1,115 @@
+{
+  "failed_attempts": 1,
+  "passed": true,
+  "recommended_ecutwfc_ry": 20.0,
+  "rows": [
+    {
+      "attempts": [
+        {
+          "code_commit": "6d193c8c3f03dd98164f0a2a077d656d2a27860c",
+          "converged": true,
+          "energy_ev_per_atom": -57.18341434814601,
+          "experiment_id": "S1-20260805-002",
+          "failure_reason": null,
+          "pressure_gpa": 0.7789389
+        }
+      ],
+      "chosen": {
+        "code_commit": "6d193c8c3f03dd98164f0a2a077d656d2a27860c",
+        "converged": true,
+        "energy_ev_per_atom": -57.18341434814601,
+        "experiment_id": "S1-20260805-002",
+        "failure_reason": null,
+        "pressure_gpa": 0.7789389
+      },
+      "delta_pressure_to_next_gpa": 9.899999999996023e-05,
+      "delta_to_next_mev_per_atom": 0.011269056592766447,
+      "ecutwfc_ry": 20.0,
+      "passes_next_step": true
+    },
+    {
+      "attempts": [
+        {
+          "code_commit": "7f846d07d73a10ff2db715ab7662f91a43ff8f5c",
+          "converged": true,
+          "energy_ev_per_atom": -57.183403079089416,
+          "experiment_id": "S1-20260805-001",
+          "failure_reason": null,
+          "pressure_gpa": 0.7788399
+        }
+      ],
+      "chosen": {
+        "code_commit": "7f846d07d73a10ff2db715ab7662f91a43ff8f5c",
+        "converged": true,
+        "energy_ev_per_atom": -57.183403079089416,
+        "experiment_id": "S1-20260805-001",
+        "failure_reason": null,
+        "pressure_gpa": 0.7788399
+      },
+      "delta_pressure_to_next_gpa": 2.019999999991473e-05,
+      "delta_to_next_mev_per_atom": 0.001120682171062981,
+      "ecutwfc_ry": 30.0,
+      "passes_next_step": true
+    },
+    {
+      "attempts": [
+        {
+          "code_commit": "d151e2819678d9220f92b6d694eb71d4f06806f8",
+          "converged": true,
+          "energy_ev_per_atom": -57.183401958407245,
+          "experiment_id": "S1-20260805-003",
+          "failure_reason": null,
+          "pressure_gpa": 0.7788197000000001
+        }
+      ],
+      "chosen": {
+        "code_commit": "d151e2819678d9220f92b6d694eb71d4f06806f8",
+        "converged": true,
+        "energy_ev_per_atom": -57.183401958407245,
+        "experiment_id": "S1-20260805-003",
+        "failure_reason": null,
+        "pressure_gpa": 0.7788197000000001
+      },
+      "delta_pressure_to_next_gpa": 1.4800000000092517e-05,
+      "delta_to_next_mev_per_atom": 0.0001076224691587413,
+      "ecutwfc_ry": 40.0,
+      "passes_next_step": true
+    },
+    {
+      "attempts": [
+        {
+          "code_commit": "026931d176e5c914551293b606fc3d8409df1ca0",
+          "converged": false,
+          "energy_ev_per_atom": -57.18340185078486,
+          "experiment_id": "S1-20260805-004",
+          "failure_reason": "scf_not_converged",
+          "pressure_gpa": 0.7788049
+        },
+        {
+          "code_commit": "f58e3d9346ca1754975625c29d3aec58448807c4",
+          "converged": true,
+          "energy_ev_per_atom": -57.183401850784776,
+          "experiment_id": "S1-20260805-005",
+          "failure_reason": null,
+          "pressure_gpa": 0.7788049
+        }
+      ],
+      "chosen": {
+        "code_commit": "f58e3d9346ca1754975625c29d3aec58448807c4",
+        "converged": true,
+        "energy_ev_per_atom": -57.183401850784776,
+        "experiment_id": "S1-20260805-005",
+        "failure_reason": null,
+        "pressure_gpa": 0.7788049
+      },
+      "delta_pressure_to_next_gpa": null,
+      "delta_to_next_mev_per_atom": null,
+      "ecutwfc_ry": 60.0,
+      "passes_next_step": null
+    }
+  ],
+  "thresholds": {
+    "energy_mev_per_atom": 1.0,
+    "pressure_gpa": 0.02
+  }
+}
