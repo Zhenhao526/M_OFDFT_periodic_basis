@@ -1,0 +1,10 @@
+{
+  "difference_mev_per_atom": 0.0,
+  "energies_ev": [
+    -228.73364097028113,
+    -228.73364097028113
+  ],
+  "natoms": 4,
+  "passed": true,
+  "tolerance_mev_per_atom": 0.1
+}

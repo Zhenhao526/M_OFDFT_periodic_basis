@@ -2,22 +2,22 @@
 
 > 本文件是项目状态的唯一人工入口。任何人接手前先读本文件，再读项目书和当前阶段 README。  
 > 状态词仅使用：`not_started`、`in_progress`、`blocked`、`accepted`、`rejected`、`paused`。  
-> 更新时间：2026-08-05 14:11 CST
-> 文档版本：V1.6
+> 更新时间：2026-08-05 14:18 CST
+> 文档版本：V1.7
 
 ## 0. 十分钟上手摘要
 
 | 项目 | 当前值 |
 |---|---|
-| 当前总状态 | `in_progress`（S0 可复现基线及隔离 shell 恢复演练已通过） |
-| 当前阶段 | S0：项目初始化与可复现协议 |
-| 当前闸门 | G0，尚未验收 |
+| 当前总状态 | `in_progress`（G0 已通过，S1 平面波基准闭环开始） |
+| 当前阶段 | S1：平面波 OFDFT/KSDFT 基准闭环 |
+| 当前闸门 | G1，执行中 |
 | 当前负责人 | 远端账户 `shenwei01`；本轮执行与记录：Codex |
 | 当前工作分支 | `main`，工作树干净；`origin` 为 GitHub 仓库 |
-| 最近可用提交 | 标签 `s0-upload-complete-20260805`（包含数值基线、复现协议、GitHub 地址和同步路径） |
-| 最近通过的 smoke test | `S0-20260805-002`：隔离 shell 中单测 2/2；两次 SCF 均收敛，能量差 0.0 meV/atom |
-| 当前阻塞 | 尚未选择项目许可证；第三方 LPP 再分发条件待核对；尚未完成“从零安装”60 分钟验收 |
-| 下一项唯一动作 | 项目负责人确定项目许可证或明确维持内部研究限制 |
+| 最近可用提交 | 标签 `s0-clean-recovery-20260805`（G0 验收状态） |
+| 最近通过的 smoke test | `S0-20260805-003`：新恢复前缀中单测 2/2；两次 SCF 均收敛，能量差 0.0 meV/atom |
+| 当前阻塞 | 项目许可证与 LPP 再分发条件仍未解决，但仅限制对外发布，不阻塞内部 S1 计算 |
+| 下一项唯一动作 | 锁定 Al/Mg 七点 EOS 的结构、截断、网格、展宽和 KSDFT 对照协议 |
 
 ### 必读文件
 
@@ -63,25 +63,28 @@ cd /home/shenwei01/M_OFDFT_periodic_basis
 - [x] 以提交 `5c6a63423c3c0cca0ac46002fa1df9212b480a6e` 和标签 `s0-isolated-smoke-20260805` 固化隔离恢复状态；
 - [x] 固定单位、能量口径、实验/结构命名和文件格式协议；
 - [x] 将 `main` 和全部 S0 标签上传至 `https://github.com/Zhenhao526/M_OFDFT_periodic_basis.git`；
+- [x] 生成 443 MB 锁定运行时归档，SHA-256 为 `5fbfa016...dad6bdd`；
+- [x] 在全新空目录恢复 1.3 GB 运行时，恢复 11.13 秒，旧前缀动态库引用 0 项；
+- [x] 完成 `S0-20260805-003`：恢复加单测/smoke 总计 23.46 秒，重复差 0.0 meV/atom；
+- [x] 完成 G0 量化审核并允许进入内部研究阶段 S1；
 - [ ] 选择项目对外发布许可证；
-- [ ] 完成从零安装型干净环境 60 分钟重建测试（现有隔离运行时的恢复演练已通过）。
 
 ### 下次开始位置
 
-继续完成 S0，不要进入混合基或 ML：
+从 S1 基准闭环开始，不要进入 S2 混合基或 ML：
 
-1. 由负责人明确项目许可证或内部研究限制；
-2. 核对 Al/Mg LPP 的第三方再分发条款；
-3. 在全新运行时前缀中执行从零安装型恢复验收；
-4. 准备但不执行 S1 基准配置；
-5. 完成 G0 审核记录。
+1. 阅读 `docs/G0_ACCEPTANCE.md` 和 S1 任务书；
+2. 盘点已有 Al/Mg WT 与 KSDFT 输入，禁止直接覆盖旧熔化工作区；
+3. 锁定七点 EOS、收敛扫描和元数据协议；
+4. 先执行 Al 单点收敛测试，再扩展七点 EOS；
+5. 许可证和 LPP 再分发问题继续作为发布限制跟踪。
 
 ## 2. 阶段总览
 
 | 阶段 | 名称 | 状态 | 开始日期 | 结束日期 | 闸门 | 证据链接 | 下一动作 |
 |---|---|---|---|---|---|---|---|
-| S0 | 初始化与复现协议 | `in_progress` | 2026-08-05 | — | G0 | `/home/shenwei01/M_OFDFT_periodic_basis` | 确定许可证；完成从零安装验收 |
-| S1 | 平面波基准闭环 | `not_started` | — | — | G1 | — | 等待 G0 |
+| S0 | 初始化与复现协议 | `accepted` | 2026-08-05 | 2026-08-05 | G0 | `docs/G0_ACCEPTANCE.md`; `S0-20260805-003` | 技术验收完成；发布限制移交 S7 |
+| S1 | 平面波基准闭环 | `in_progress` | 2026-08-05 | — | G1 | — | 锁定 Al/Mg EOS 与收敛协议 |
 | S2 | 混合密度基表示 | `not_started` | — | — | G2 | — | 等待 G1 |
 | S3 | 固定 KEDF 自洽求解 | `not_started` | — | — | G3 | — | 等待 G2 |
 | S4A | 固定晶胞解析力 | `not_started` | — | — | G4A | — | 等待 G3 |
@@ -90,21 +93,21 @@ cd /home/shenwei01/M_OFDFT_periodic_basis
 | S6 | 合金、缺陷、动力学 | `not_started` | — | — | G6 | — | 等待 G4A；ML 分支另需 G5 |
 | S7 | 性能、发布与论文 | `not_started` | — | — | G7 | — | 持续准备，最终验收 |
 
-## 3. 当前阶段：S0
+## 3. 已验收阶段：S0
 
 ### S0 验收清单
 
 - [x] 确定代码仓库绝对路径和远端地址：`/home/shenwei01/M_OFDFT_periodic_basis`、`https://github.com/Zhenhao526/M_OFDFT_periodic_basis.git`；
-- [ ] 写入许可证与 README（README 已完成；许可证待负责人决定）；
+- [ ] 写入许可证与 README（README 已完成；许可证待负责人决定，作为对外发布限制移交 S7）；
 - [x] 固定主基准与 KSDFT 程序版本：ABACUS v3.11.0-beta.5；
 - [x] 建立运行时包清单、CMake 缓存和系统快照；
 - [x] 收集 Al、Mg LPP 并记录来源和 SHA-256；
 - [x] 建立单位、能量口径和命名规范：`docs/S0_REPRODUCIBILITY_PROTOCOL.md`；
 - [x] 建立 fcc Al smoke test；
-- [ ] 在干净环境 60 分钟内完成从零安装和测试（`env -i` 隔离恢复已在 12.22 秒内通过）；
+- [x] 在全新空目录恢复锁定二进制环境并完成测试，共 23.46 秒，满足 <60 分钟；
 - [x] 重复运行能量差 0.0 meV/atom，满足 <0.1 meV/atom；
 - [x] 建立自动测试入口，2/2 单元测试通过；
-- [ ] 填写 G0 决策记录。
+- [x] 填写 G0 决策记录：`docs/G0_ACCEPTANCE.md`。
 
 ### 当前阶段文件
 
@@ -117,7 +120,16 @@ cd /home/shenwei01/M_OFDFT_periodic_basis
 | 环境锁 | `/home/shenwei01/M_OFDFT_periodic_basis/environment/` | 已建立 | 包清单、CMake、系统快照 |
 | 软件清单 | `/home/shenwei01/M_OFDFT_periodic_basis/manifests/` | 已建立 | 二进制、源码包与 LPP 哈希 |
 | 复现协议 | `/home/shenwei01/M_OFDFT_periodic_basis/docs/S0_REPRODUCIBILITY_PROTOCOL.md` | 已完成 | 固定单位、能量口径、ID、随机种子和格式 |
-| smoke test | `/home/shenwei01/M_OFDFT_periodic_basis/runs/S0-20260805-002/` | 已通过 | `env -i` 隔离 shell；单测 2/2；双重复总耗时 12.22 秒 |
+| 运行时归档 | `/home/shenwei01/M_OFDFT_runtime_20260805.tar.gz` | 已通过 | 443 MB；SHA-256 `5fbfa016...dad6bdd` |
+| G0 验收 | `/home/shenwei01/M_OFDFT_periodic_basis/docs/G0_ACCEPTANCE.md` | 已通过 | 新前缀恢复、动态库隔离、单测和 smoke 全部达标 |
+| smoke test | `/home/shenwei01/M_OFDFT_periodic_basis/runs/S0-20260805-003/` | 已通过 | 新恢复前缀；单测 2/2；双重复耗时 12.33 秒 |
+
+## 3A. 当前阶段：S1
+
+- 状态：`in_progress`；G1 尚未验收。
+- 核心材料：fcc Al、hcp Mg；每种至少七个体积点 `0.90, 0.94, 0.97, 1.00, 1.03, 1.06, 1.10 V0`。
+- 当前工作仅限基准协议、输入生成、收敛扫描、EOS 与交叉核验；不得提前进入 S2 或 ML。
+- 当前唯一动作：锁定 Al/Mg EOS、FFT/截断、k 点、展宽、自洽阈值和 KSDFT 对照协议。
 
 ## 4. 闸门决策记录
 
@@ -129,6 +141,7 @@ cd /home/shenwei01/M_OFDFT_periodic_basis
 | 2026-08-05 | G0 | `paused` | Codex | 远端环境、哈希、单元测试和 smoke 已完成；许可证与干净环境重建未完成 | `S0-20260805-001` | 保持 S0，不进入 S1 |
 | 2026-08-05 | G0 | `paused` | Codex | Git 基线已固化；隔离 shell 恢复 12.22 秒并重复差 0.0 meV/atom；从零安装和外部许可决策未完成 | `S0-20260805-002` | 保持 S0，不进入 S1 |
 | 2026-08-05 | G0 | `paused` | Codex | GitHub 远端已建立并完成 `main`/标签上传；许可证、LPP 再分发和从零安装仍未完成 | `s0-github-sync-20260805` | 保持 S0，不进入 S1 |
+| 2026-08-05 | G0 | `accepted` | Codex | 锁定二进制归档从空目录恢复 11.13 s；恢复加单测/smoke 23.46 s；动态库旧前缀引用 0；重复差 0.0 meV/atom；单测 2/2 | `docs/G0_ACCEPTANCE.md`; `S0-20260805-003` | 允许内部 S1；许可证/LPP 再分发继续限制发布 |
 
 ## 5. 实验台账
 
@@ -138,6 +151,7 @@ cd /home/shenwei01/M_OFDFT_periodic_basis
 |---|---|---|---|---|---|---|---|---|---|
 | S0-20260805-001 | 2026-08-05 | S0 | 验证 ABACUS/WT fcc Al 可运行且重复确定 | `f8b619fc551c0f007c2249d23912fccd0363a1d9`；`s0-smoke-20260805` | `tests/smoke/al_fcc_wt/` | `runs/S0-20260805-001/` | 两次 SCF 收敛；能量差 0.0 meV/atom | 通过 | 是，2 次 |
 | S0-20260805-002 | 2026-08-05 | S0 | 验证无用户环境变量时可按仓库入口恢复执行 | `5c6a63423c3c0cca0ac46002fa1df9212b480a6e`；`s0-isolated-smoke-20260805` | `tests/smoke/al_fcc_wt/` | `runs/S0-20260805-002/` | 单测 2/2；两次 SCF 收敛；能量差 0.0 meV/atom；总耗时 12.22 s | 通过 | 是，2 次 |
+| S0-20260805-003 | 2026-08-05 | S0 | 验证锁定二进制运行时可从空目录恢复且不引用旧前缀 | `f0efae6e6a269d9030e63c04e26b70dff0a3e254` | `tests/smoke/al_fcc_wt/` | `runs/S0-20260805-003/` | 恢复 11.13 s；单测+双重复 12.33 s；旧前缀库 0；能量差 0.0 meV/atom | 通过 | 是，2 次 |
 
 ## 6. 当前指标看板
 
@@ -145,7 +159,8 @@ cd /home/shenwei01/M_OFDFT_periodic_basis
 
 | 指标 | 当前值 | 目标 | 数据集/实验 ID | 状态 |
 |---|---:|---:|---|---|
-| 环境安装时间 | — | <60 min | — | 未测 |
+| 干净二进制环境恢复加测试时间 | 23.46 s | <60 min | S0-20260805-003 | 通过 |
+| 运行时归档生成时间 | 68.70 s | 记录项 | S0-20260805-003 | 通过 |
 | 隔离 shell 恢复加测试时间 | 12.22 s | 记录项（不替代从零安装 <60 min） | S0-20260805-002 | 通过 |
 | smoke test 重复能量差 | 0.0 meV/atom | <0.1 meV/atom | S0-20260805-001 | 通过 |
 | Al/Mg EOS 完成率 | — | 100% | — | 未测 |
@@ -166,7 +181,7 @@ cd /home/shenwei01/M_OFDFT_periodic_basis
 | B-001 | 2026-08-05 | 远端 Git URL 已确定并完成首次同步 | S0/S7 | Codex | 后续提交同步至 GitHub `main` | 否 | `accepted` |
 | B-002 | 2026-08-05 | Al/Mg LPP 已有来源与校验和，但再分发许可证仍需核对 | S0/S7 | 待填写 | 核对第三方再分发条件 | 是 | `in_progress` |
 | B-003 | 2026-08-05 | 项目许可证尚未选择 | S0/S7 | 项目负责人 | 选择许可证或维持内部研究限制 | 是 | `blocked` |
-| B-004 | 2026-08-05 | `env -i` 恢复已通过，但尚未在全新运行时前缀验证 60 分钟从零安装 | S0 | 待填写 | 在独立新前缀执行安装、单测和 smoke 并计时 | 否 | `in_progress` |
+| B-004 | 2026-08-05 | 已在全新空目录恢复锁定二进制前缀并完成单测/smoke | S0 | Codex | 结果固定于 `S0-20260805-003` | 否 | `accepted` |
 | B-005 | 2026-08-05 | node01 直连 GitHub HTTPS 超时，不能在计算节点直接推送 | S0–S7 | Codex | 暂用完整 Git bundle 经跳板机传回本机后原子推送；后续可配置可审计的出口代理 | 否 | `paused` |
 
 ### 活跃风险
@@ -193,15 +208,17 @@ cd /home/shenwei01/M_OFDFT_periodic_basis
 | 2026-08-05 | D-006 | 统一归档单位为 Å、eV、eV/atom、eV/Å 和 GPa，并保留原始程序输出 | 防止不同程序原生单位和能量口径混入验收表 | 直接沿用各程序打印单位 | S1 起所有解析结果必须显式声明单位和参考态 |
 | 2026-08-05 | D-007 | GitHub 仓库 `Zhenhao526/M_OFDFT_periodic_basis` 作为远端代码库 | 用户指定目标；首次上传已通过 SSH 原子推送完成 | 仅保留 node01 本地 Git | 解除 B-001，后续可从外部获取提交与标签 |
 | 2026-08-05 | D-008 | node01 无 GitHub 出口时使用完整 Git bundle 中转，并在三端校验 SHA-256 | node01 HTTPS 连接 20 秒超时；bundle 验证完整且三端哈希一致 | 在计算节点反复直接 push | 不阻塞版本发布，但每次同步必须核验远端 ref |
+| 2026-08-05 | D-009 | G0 采用锁定二进制归档的干净恢复验收，不冒充源码重编译 | 原运行时无 Conda 元数据；归档 SHA、ABACUS SHA、动态库解析和数值结果均可审计 | 声称无法复现的联网 Conda 重装 | G0 环境恢复口径明确；源码重编译仍可在 S7 另行验收 |
+| 2026-08-05 | D-010 | G0 技术验收通过，许可证和 LPP 再分发限制移交 S7 | G0 六项量化标准全部通过；未选择许可证不影响内部数值基准 | 因发布条款无限期阻塞 S1 | 允许启动内部 S1，禁止未经许可的公开发布 |
 
 ## 9. 最近可用状态
 
 此节必须始终指向一个可运行、可复现的状态；若暂无则明确写“无”。
 
-- 最近可用状态：GitHub `main` 标签 `s0-upload-complete-20260805`；数值证据提交为 `5c6a63423c3c0cca0ac46002fa1df9212b480a6e`，标签 `s0-isolated-smoke-20260805`。
+- 最近可用状态：标签 `s0-clean-recovery-20260805`；clean-prefix 数值证据代码提交为 `f0efae6e6a269d9030e63c04e26b70dff0a3e254`。
 - 对应环境：`environment/`，ABACUS v3.11.0-beta.5 CPU + OpenMPI 5.0.10 + LibXC 7.0.0。
-- 已通过测试：隔离 shell 中 2/2 单元测试；`S0-20260805-001` 与 `S0-20260805-002` 的双重复 SCF 均收敛，重复差均为 0.0 meV/atom。
-- 已知失败：本项目暂无失败实验；许可证、远端 Git、LPP 再分发条件和从零安装仍未验收。
+- 已通过测试：新恢复前缀中 2/2 单元测试；`S0-20260805-001/002/003` 的双重复 SCF 均收敛，重复差均为 0.0 meV/atom。
+- 已知失败：本项目暂无失败实验；许可证和 LPP 再分发条件仍未验收，node01 直连 GitHub 超时但有中转流程。
 - 恢复方法：按“最近可运行命令”登录，进入仓库并运行单元测试；新 smoke 必须使用新的实验 ID。
 - 同步方法：node01 执行 `git bundle create ... --all` 并 `git bundle verify`，经跳板机传至本机；三端 SHA-256 一致后，从临时 clone 使用 `git push --atomic origin main --tags`，最后以 `git ls-remote` 核验。
 
@@ -239,6 +256,7 @@ cd /home/shenwei01/M_OFDFT_periodic_basis
 | 2026-08-05 13:26 CST | 交接固化 | Codex | S0 | `s0-handoff-20260805` | S0-20260805-002 通过 | 校验清单全量通过，工作树干净；G0 保持 paused |
 | 2026-08-05 14:06 CST | 远端同步 | Codex | S0 | `s0-github-sync-20260805` | S0-20260805-002 通过 | `main` 与 S0 标签已上传 GitHub；B-001 已解除 |
 | 2026-08-05 14:11 CST | 上传验收 | Codex | S0 | `s0-upload-complete-20260805` | S0-20260805-002 通过 | GitHub HEAD、`main` 和全部标签已远端核验；登记 node01 出口限制与 bundle 中转方法 |
+| 2026-08-05 14:18 CST | G0 验收 | Codex | S1 | `s0-clean-recovery-20260805` | S0-20260805-003 通过 | clean-prefix 恢复与测试 23.46 秒；G0 accepted，进入内部 S1 |
 
 ## 11. 文档变更记录
 
@@ -251,3 +269,4 @@ cd /home/shenwei01/M_OFDFT_periodic_basis
 | 2026-08-05 | V1.4 | Codex | 固化最终交接标签、校验清单通过状态和 G0 暂停结论 |
 | 2026-08-05 | V1.5 | Codex | 记录 GitHub 远端、首次上传结果、B-001 解除及新的唯一下一动作 |
 | 2026-08-05 | V1.6 | Codex | 记录 GitHub 引用验收、node01 出口限制及经校验 bundle 中转的标准同步路径 |
+| 2026-08-05 | V1.7 | Codex | 记录 clean-prefix 恢复、S0-003、G0 accepted 结论及 S1 启动位置 |

@@ -1,0 +1,8 @@
+{
+  "abacus_sha256": "2d68a57c7b25608b3550854dabc2e63601eeca956bf185ad7d0967052bdbb4ba",
+  "archive": "/home/shenwei01/M_OFDFT_runtime_20260805.tar.gz",
+  "completed_at": "2026-08-05T06:13:26.048235+00:00",
+  "elapsed_seconds": 9,
+  "passed": true,
+  "target": "/home/shenwei01/M_OFDFT_recovery_S0_20260805_001"
+}
