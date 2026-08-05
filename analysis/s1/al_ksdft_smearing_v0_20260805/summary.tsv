@@ -1,0 +1,3 @@
+value	experiment_id	converged	energy_ev_per_atom	pressure_gpa	absolute_energy_shift_to_next_mev_per_atom
+0.00734986	S1-20260805-024	True	-57.20225558335594	-0.09018920000000001	4.634968933778794
+0.00367493	S1-20260805-025	True	-57.19762061442216	-0.0739916	None

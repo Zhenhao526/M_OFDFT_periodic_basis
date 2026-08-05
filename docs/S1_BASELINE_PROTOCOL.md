@@ -73,9 +73,11 @@ S2 must not start before every G1 acceptance item has evidence.
   `V/V0=1.00`. The candidate KS reference was therefore changed from 60/240 Ry
   to 40/160 Ry before generating k-point and smearing scans. This is a
   one-axis-at-a-time protocol update, not final G1 parameter freezing.
-- The two-point smearing scan at `V/V0=1.00` is an energy pre-screen only. It
-  cannot establish the required `<0.2%` equilibrium-volume change; full
-  smearing acceptance remains pending until EOS fits exist at both sigmas.
+- The two-point smearing scan at `V/V0=1.00` is a convergence and absolute
+  energy-shift diagnostic only. A single volume cannot establish either the
+  relative EOS energy change or the required `<0.2%` equilibrium-volume
+  change; full smearing acceptance remains pending until EOS fits exist at
+  both sigmas.
 - `S1-R3`, 2026-08-05: the planned Al 12³/16³/20³ k-point scan produced
   adjacent energy changes of 3.662659 and 4.432064 meV/atom, so no pair met
   the `<2 meV/atom` gate. The failed gate is retained in
@@ -166,3 +168,16 @@ The original three-mesh plan failed. After the committed S1-R3 extension,
 
 The isolated first-pair pass is rejected by S1-R4. The accepted V0 reference
 for the Mg smearing scan is 20x20x12.
+
+### KSDFT smearing diagnostics at `V/V0 = 1.00`
+
+| Material | Standard sigma experiment | Half sigma experiment | Absolute energy shift (meV/atom) | Diagnostic complete | G1 accepted |
+|---|---|---|---:|---|---|
+| Al | `S1-20260805-024` | `S1-20260805-025` | 4.634969 | yes | no, EOS pending |
+| Mg | `S1-20260805-026` | `S1-20260805-027` | 4.824088 | yes | no, EOS pending |
+
+All four calculations converged and reported the nominal electron count. The
+absolute shifts above are deliberately not compared with the `<2 meV/atom`
+relative-energy gate: the gate applies after subtracting a common EOS reference
+within each sigma series. Both sigma values must therefore be carried into the
+EOS step for final smearing acceptance.

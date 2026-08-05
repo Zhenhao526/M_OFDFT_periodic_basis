@@ -1,0 +1,62 @@
+{
+  "axis": "smearing",
+  "diagnostic_complete": true,
+  "failed_attempts": 0,
+  "metric_interpretation": "single_volume_absolute_energy_shift_not_acceptance_metric",
+  "passed": false,
+  "pending_acceptance": [
+    "eos_relative_energy_change_below_2_mev_per_atom",
+    "equilibrium_volume_change_below_0.2_percent"
+  ],
+  "recommended_value": null,
+  "rows": [
+    {
+      "absolute_energy_shift_to_next_mev_per_atom": 4.824087609922145,
+      "attempts": [
+        {
+          "code_commit": "95bf0e228c2de2b0bf01fda5c3f2fc5ea700769d",
+          "converged": true,
+          "energy_ev_per_atom": -24.658454229769767,
+          "experiment_id": "S1-20260805-026",
+          "failure_reason": null,
+          "pressure_gpa": -2.9538810000000004
+        }
+      ],
+      "chosen": {
+        "code_commit": "95bf0e228c2de2b0bf01fda5c3f2fc5ea700769d",
+        "converged": true,
+        "energy_ev_per_atom": -24.658454229769767,
+        "experiment_id": "S1-20260805-026",
+        "failure_reason": null,
+        "pressure_gpa": -2.9538810000000004
+      },
+      "value": 0.00734986
+    },
+    {
+      "absolute_energy_shift_to_next_mev_per_atom": null,
+      "attempts": [
+        {
+          "code_commit": "52f350895b3d25258ba87ec2e832e510a76c410c",
+          "converged": true,
+          "energy_ev_per_atom": -24.653630142159844,
+          "experiment_id": "S1-20260805-027",
+          "failure_reason": null,
+          "pressure_gpa": -2.9706663
+        }
+      ],
+      "chosen": {
+        "code_commit": "52f350895b3d25258ba87ec2e832e510a76c410c",
+        "converged": true,
+        "energy_ev_per_atom": -24.653630142159844,
+        "experiment_id": "S1-20260805-027",
+        "failure_reason": null,
+        "pressure_gpa": -2.9706663
+      },
+      "value": 0.00367493
+    }
+  ],
+  "thresholds": {
+    "eos_relative_energy_mev_per_atom": 2.0,
+    "equilibrium_volume_percent": 0.2
+  }
+}

@@ -2,8 +2,8 @@
 
 > 本文件是项目状态的唯一人工入口。任何人接手前先读本文件，再读项目书和当前阶段 README。  
 > 状态词仅使用：`not_started`、`in_progress`、`blocked`、`accepted`、`rejected`、`paused`。  
-> 更新时间：2026-08-05 14:38 CST
-> 文档版本：V1.9
+> 更新时间：2026-08-05 15:26 CST
+> 文档版本：V2.0
 
 ## 0. 十分钟上手摘要
 
@@ -14,10 +14,10 @@
 | 当前闸门 | G1，执行中 |
 | 当前负责人 | 远端账户 `shenwei01`；本轮执行与记录：Codex |
 | 当前工作分支 | `main`，工作树干净；`origin` 为 GitHub 仓库 |
-| 最近可用提交 | 标签 `s1-wt-cutoffs-20260805`（G0 验收、S1 协议及 Al/Mg WT 截断扫描） |
+| 最近可用提交 | 待标记 `s1-ks-convergence-20260805`（Al/Mg WT/KS 截断、KS k 点及展宽 V0 诊断） |
 | 最近通过的 smoke test | `S0-20260805-003`：新恢复前缀中单测 2/2；两次 SCF 均收敛，能量差 0.0 meV/atom |
 | 当前阻塞 | node01 无第二套独立 OFDFT/KSDFT 程序；许可证与 LPP 条款仍限制发布 |
-| 下一项唯一动作 | 执行 Al/Mg KSDFT 截断、k 点和展宽收敛扫描 |
+| 下一项唯一动作 | 冻结 EOS 候选参数并生成标准/半展宽成对的 Al/Mg 七点 EOS 输入矩阵 |
 
 ### 必读文件
 
@@ -71,16 +71,21 @@ cd /home/shenwei01/M_OFDFT_periodic_basis
 - [x] 完成 Al WT 20/30/40/60 Ry 扫描，20 Ry 已满足相邻加密阈值；
 - [x] 保留 `S1-20260805-004` 未收敛结果，并在提交 S1-R1 后以 `S1-20260805-005` 成功复核；
 - [x] 完成 Mg WT 30/40/60/80 Ry 扫描，四点全部收敛，30 Ry 为 V0 最小通过候选；
+- [x] 完成 Al/Mg KSDFT 40/60/80 Ry 截断扫描，二者均选择 40 Ry；
+- [x] 完成并扩展 Al k 点扫描至 24³，尾部稳定判据选择 20³；
+- [x] 完成并扩展 Mg k 点扫描至 24x24x16，尾部稳定判据选择 20x20x12；
+- [x] 完成 Al/Mg 标准与半展宽 V0 诊断，四点全部收敛；明确单点绝对能量位移不能替代 EOS 相对能量验收；
+- [x] 单元测试扩展至 13/13，通过输入、解析、k 点尾部稳定及展宽诊断语义检查；
 - [ ] 选择项目对外发布许可证；
 
 ### 下次开始位置
 
 从 S1 基准闭环开始，不要进入 S2 混合基或 ML：
 
-1. 阅读 `docs/S1_BASELINE_PROTOCOL.md` 及 Al/Mg WT 截断摘要；
-2. 执行 Al/Mg KS 截断、k 点和展宽扫描；
-3. 冻结参数后运行十四个 EOS 点；
-4. 对非平衡体积复核 WT 相对能量与压力；
+1. 阅读 `docs/S1_BASELINE_PROTOCOL.md` 的 S1-R1 至 S1-R5 及全部收敛摘要；
+2. 将 WT 候选截断设为 Al 20 Ry、Mg 30 Ry，KS 设为 40 Ry及已验收 k 网格；
+3. 生成十四个结构点的 OFDFT/标准展宽 KSDFT EOS，并为 KSDFT 生成对应半展宽 EOS；
+4. 用两套 KS EOS 比较平衡体积与相对能量，再决定展宽参数并复核 WT 非平衡体积；
 5. 许可证、LPP 再分发和第二程序依赖继续跟踪。
 
 ## 2. 阶段总览
@@ -88,7 +93,7 @@ cd /home/shenwei01/M_OFDFT_periodic_basis
 | 阶段 | 名称 | 状态 | 开始日期 | 结束日期 | 闸门 | 证据链接 | 下一动作 |
 |---|---|---|---|---|---|---|---|
 | S0 | 初始化与复现协议 | `accepted` | 2026-08-05 | 2026-08-05 | G0 | `docs/G0_ACCEPTANCE.md`; `S0-20260805-003` | 技术验收完成；发布限制移交 S7 |
-| S1 | 平面波基准闭环 | `in_progress` | 2026-08-05 | — | G1 | `analysis/s1/al_ofdft_cutoff_20260805/`; `analysis/s1/mg_ofdft_cutoff_20260805/` | 执行 KSDFT 收敛扫描 |
+| S1 | 平面波基准闭环 | `in_progress` | 2026-08-05 | — | G1 | `analysis/s1/*_cutoff_20260805/`; `analysis/s1/*_kpoint_20260805/`; `analysis/s1/*_smearing_v0_20260805/` | 生成并执行双展宽 EOS 矩阵 |
 | S2 | 混合密度基表示 | `not_started` | — | — | G2 | — | 等待 G1 |
 | S3 | 固定 KEDF 自洽求解 | `not_started` | — | — | G3 | — | 等待 G2 |
 | S4A | 固定晶胞解析力 | `not_started` | — | — | G4A | — | 等待 G3 |
@@ -135,7 +140,9 @@ cd /home/shenwei01/M_OFDFT_periodic_basis
 - 当前工作仅限基准协议、输入生成、收敛扫描、EOS 与交叉核验；不得提前进入 S2 或 ML。
 - 当前结果：Al WT 在 V0 的 20→30 Ry 变化为 0.011269 meV/atom、0.0000990 GPa；20 Ry 为最小通过候选。
 - 当前结果：Mg WT 30→40 Ry 变化为 0.00000651 meV/atom、0.0000070 GPa；30 Ry 为 V0 最小通过候选。
-- 当前唯一动作：执行 Al/Mg KSDFT 截断、k 点和展宽扫描。
+- 当前结果：Al/Mg KS 截断均选择 40 Ry；Al k 网格选择 20³，Mg 选择 20x20x12。
+- 当前结果：标准/半展宽 V0 诊断全部收敛；绝对能量位移分别为 Al 4.634969、Mg 4.824088 meV/atom，仅作诊断，G1 展宽验收等待 EOS。
+- 当前唯一动作：冻结 EOS 候选参数并生成标准/半展宽成对的七点 EOS 输入矩阵。
 
 ## 4. 闸门决策记录
 
@@ -167,6 +174,12 @@ cd /home/shenwei01/M_OFDFT_periodic_basis
 | S1-20260805-007 | 2026-08-05 | S1 | Mg WT V0 40 Ry 截断点 | `bd86a79115453d180b9f47c4a2200b5c4f1d9cc2` | `inputs/s1/convergence_candidates/mg/ofdft/cutoff/ecut040/` | `runs/S1-20260805-007/` | 相对 30 Ry：0.00000651 meV/atom；0.0000070 GPa | 通过 | 单次 |
 | S1-20260805-008 | 2026-08-05 | S1 | Mg WT V0 60 Ry 截断点 | `1f9eca6c9de88e4853505ae3f0061df106ed6d5f` | `inputs/s1/convergence_candidates/mg/ofdft/cutoff/ecut060/` | `runs/S1-20260805-008/` | 收敛；相邻加密通过 | 通过 | 单次 |
 | S1-20260805-009 | 2026-08-05 | S1 | Mg WT V0 80 Ry 截断点 | `2d83f2e08858e06981e2559de94ef831a9b13335` | `inputs/s1/convergence_candidates/mg/ofdft/cutoff/ecut080/` | `runs/S1-20260805-009/` | 收敛；-24.6368596887 eV/atom | 通过 | 单次 |
+| S1-20260805-010–012 | 2026-08-05 | S1 | Al KS V0 40/60/80 Ry 截断 | 各运行目录记录 | `inputs/s1/convergence_candidates/al/ksdft/cutoff/` | 对应 `runs/` | 40→60：0.125921 meV/atom；60→80：0.009981 | 40 Ry 通过 | 三点 |
+| S1-20260805-013–015 | 2026-08-05 | S1 | Mg KS V0 40/60/80 Ry 截断 | 各运行目录记录 | `inputs/s1/convergence_candidates/mg/ksdft/cutoff/` | 对应 `runs/` | 40→60：0.001405 meV/atom；60→80：0.000050 | 40 Ry 通过 | 三点 |
+| S1-20260805-016–019 | 2026-08-05 | S1 | Al KS 12³/16³/20³/24³ k 点 | 各运行目录记录 | `inputs/s1/convergence_candidates/al/ksdft/kpoint/` | 对应 `runs/` | 相邻变化 3.662659、4.432064、1.377592 meV/atom | 20³ 通过 | 四点 |
+| S1-20260805-020–023 | 2026-08-05 | S1 | Mg KS 12x12x8 至 24x24x16 k 点 | 各运行目录记录 | `inputs/s1/convergence_candidates/mg/ksdft/kpoint/` | 对应 `runs/` | 相邻变化 0.225665、2.035276、0.059513 meV/atom | 20x20x12 通过 | 四点 |
+| S1-20260805-024–025 | 2026-08-05 | S1 | Al KS 标准/半展宽 V0 诊断 | 各运行目录记录 | `inputs/s1/convergence_candidates/al/ksdft/smearing/` | 对应 `runs/` | 两点收敛；绝对能量位移 4.634969 meV/atom | 诊断完成，G1 待 EOS | 两点 |
+| S1-20260805-026–027 | 2026-08-05 | S1 | Mg KS 标准/半展宽 V0 诊断 | 各运行目录记录 | `inputs/s1/convergence_candidates/mg/ksdft/smearing/` | 对应 `runs/` | 两点收敛；绝对能量位移 4.824088 meV/atom | 诊断完成，G1 待 EOS | 两点 |
 
 ## 6. 当前指标看板
 
@@ -182,6 +195,11 @@ cd /home/shenwei01/M_OFDFT_periodic_basis
 | Al WT V0 截断加密压力变化 | 0.0000990 GPa（20→30 Ry） | <0.02 GPa | S1-20260805-001/002 | 通过 |
 | Mg WT V0 截断加密能量变化 | 0.00000651 meV/atom（30→40 Ry） | <1 meV/atom | S1-20260805-006/007 | 通过 |
 | Mg WT V0 截断加密压力变化 | 0.0000070 GPa（30→40 Ry） | <0.02 GPa | S1-20260805-006/007 | 通过 |
+| Al KS V0 截断加密能量变化 | 0.125921 meV/atom（40→60 Ry） | <1 meV/atom | S1-20260805-010/011 | 通过 |
+| Mg KS V0 截断加密能量变化 | 0.001405 meV/atom（40→60 Ry） | <1 meV/atom | S1-20260805-013/014 | 通过 |
+| Al KS k 点尾部加密变化 | 1.377592 meV/atom（20³→24³） | <2 meV/atom | S1-20260805-018/019 | 通过 |
+| Mg KS k 点尾部加密变化 | 0.059513 meV/atom（20x20x12→24x24x16） | <2 meV/atom | S1-20260805-022/023 | 通过 |
+| Al/Mg 展宽 V0 诊断完成率 | 4/4 收敛 | 100% | S1-20260805-024–027 | 诊断通过，G1 待 EOS |
 | Al/Mg EOS 完成率 | — | 100% | — | 未测 |
 | 密度投影 L2 | — | 平衡 <1% | — | 未测 |
 | 固定 KEDF 能量差 P95 | — | <10 meV/atom | — | 未测 |
@@ -233,15 +251,19 @@ cd /home/shenwei01/M_OFDFT_periodic_basis
 | 2026-08-05 | D-011 | Al WT V0 的最小候选截断保留为 20 Ry | 20→30 Ry 能量变化 0.011269 meV/atom、压力变化 0.0000990 GPa，后续加密变化更小 | 未扫描直接沿用 20 Ry | 仍须以非平衡体积 EOS 验证相对能量后才可冻结生产参数 |
 | 2026-08-05 | D-012 | 记录 60 Ry 严格阈值失败后，将 WT 停止阈值恢复为审计基线 1e-7/1e-6 | S1-004 在稳定能量/压力下势范数平台为 1.9681e-7；阈值修改先提交后复跑 | 删除失败或事后放宽 G1 精度指标 | S1-005 收敛；G1 能量/压力阈值未改变 |
 | 2026-08-05 | D-013 | Mg WT V0 的最小候选截断设为 30 Ry | 30→40 Ry 能量变化 0.00000651 meV/atom、压力变化 0.0000070 GPa，四个扫描点全部收敛 | 直接沿用旧 40 Ry 而不验证 | 须在非平衡 EOS 点复核后才能冻结生产参数 |
+| 2026-08-05 | D-014 | Al/Mg KSDFT 截断候选均设为 40 Ry | 两套 40→60 Ry 比较均通过能量和压力门槛 | 沿用未经验证的 60 Ry | 后续 k 点、展宽和 EOS 使用 40/160 Ry |
+| 2026-08-05 | D-015 | k 点推荐要求候选之后所有已采样相邻加密均通过 | Al 原三点全部失败；Mg 出现先通过后反弹 | 取第一个孤立通过对 | Al 选择 20³，Mg 选择 20x20x12 |
+| 2026-08-05 | D-016 | 原计划 k 点范围失败后分别增加 Al 24³、Mg 24x24x16 | 新点与前一点变化分别为 1.377592、0.059513 meV/atom | 强行接受原最大网格 | 保留失败摘要并形成尾部稳定证据 |
+| 2026-08-05 | D-017 | 单体积双展宽只记录绝对能量位移，不判定相对能量门槛 | G1 指标要求 EOS 相对能量和平衡体积；单点无法计算二者 | 将 4.6–4.8 meV 绝对位移误作相对能量失败 | 双展宽均进入 EOS，G1 保持未通过 |
 
 ## 9. 最近可用状态
 
 此节必须始终指向一个可运行、可复现的状态；若暂无则明确写“无”。
 
-- 最近可用状态：标签 `s1-wt-cutoffs-20260805`；包含 G0 clean recovery、S1 候选输入、Al/Mg WT 截断结果和保留失败。
+- 最近可用状态：待标记 `s1-ks-convergence-20260805`；包含 G0 clean recovery、Al/Mg WT/KS 截断、扩展 k 点扫描、尾部稳定分析和双展宽 V0 诊断。
 - 对应环境：`environment/`，ABACUS v3.11.0-beta.5 CPU + OpenMPI 5.0.10 + LibXC 7.0.0。
-- 已通过测试：新恢复前缀中 2/2 单元测试；`S0-20260805-001/002/003` 的双重复 SCF 均收敛，重复差均为 0.0 meV/atom。
-- 已知失败：`S1-20260805-004` 在初始严格阈值下 200 步未收敛，已由提交后的 S1-R1 和 `S1-20260805-005` 复核；发布限制和 GitHub 出口问题仍在。
+- 已通过测试：13/13 单元测试；`S0-20260805-001/002/003` 双重复 SCF 均收敛；S1-010 至 027 的 KSDFT 数值运行全部收敛。
+- 已知失败：`S1-20260805-004` 的初始严格阈值失败已复核；Al 原 12/16/20³ k 点门槛不通过及 Mg 中间反弹均已保留并经扩展点解决；G1 展宽 EOS、第二程序和发布限制仍未解决。
 - 恢复方法：按“最近可运行命令”登录，进入仓库并运行单元测试；新 smoke 必须使用新的实验 ID。
 - 同步方法：node01 执行 `git bundle create ... --all` 并 `git bundle verify`，经跳板机传至本机；三端 SHA-256 一致后，从临时 clone 使用 `git push --atomic origin main --tags`，最后以 `git ls-remote` 核验。
 
@@ -282,6 +304,7 @@ cd /home/shenwei01/M_OFDFT_periodic_basis
 | 2026-08-05 14:18 CST | G0 验收 | Codex | S1 | `s0-clean-recovery-20260805` | S0-20260805-003 通过 | clean-prefix 恢复与测试 23.46 秒；G0 accepted，进入内部 S1 |
 | 2026-08-05 14:32 CST | S1 更新 | Codex | S1 | `s1-al-wt-cutoff-20260805` | S1-005 通过；S1-004 失败保留 | 28 个 EOS 与 14 个截断候选已生成；Al WT V0 推荐 20 Ry 候选 |
 | 2026-08-05 14:38 CST | S1 更新 | Codex | S1 | `s1-wt-cutoffs-20260805` | S1-006 至 009 全部通过 | Mg WT V0 推荐 30 Ry 候选；下一步转入 KSDFT 收敛扫描 |
+| 2026-08-05 15:26 CST | S1 更新 | Codex | S1 | 待标记 `s1-ks-convergence-20260805` | S1-010 至 027 除协议门槛比较外均数值收敛 | KS 截断和 k 点已选定；双展宽 V0 诊断完成；下一步双展宽 EOS |
 
 ## 11. 文档变更记录
 
@@ -297,3 +320,4 @@ cd /home/shenwei01/M_OFDFT_periodic_basis
 | 2026-08-05 | V1.7 | Codex | 记录 clean-prefix 恢复、S0-003、G0 accepted 结论及 S1 启动位置 |
 | 2026-08-05 | V1.8 | Codex | 记录 S1 协议、候选输入、Al WT 截断扫描、失败保留和 Mg 下一动作 |
 | 2026-08-05 | V1.9 | Codex | 记录 Mg WT 截断扫描、Al/Mg 候选截断及 KSDFT 下一动作 |
+| 2026-08-05 | V2.0 | Codex | 记录 KS 截断、扩展 k 点尾部稳定判据、双展宽 V0 诊断及双展宽 EOS 下一动作 |

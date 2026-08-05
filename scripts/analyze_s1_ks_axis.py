@@ -30,6 +30,14 @@ def mark_tail_stability(rows: list[dict]) -> None:
             )
 
 
+def convert_smearing_rows_to_diagnostics(rows: list[dict]) -> None:
+    for row in rows:
+        row["absolute_energy_shift_to_next_mev_per_atom"] = row.pop(
+            "delta_to_next_mev_per_atom"
+        )
+        row.pop("passes_energy_threshold")
+
+
 def main() -> int:
     parser = argparse.ArgumentParser()
     parser.add_argument("axis", choices=("kpoint", "smearing"))
@@ -81,63 +89,84 @@ def main() -> int:
             current["converged"] and following["converged"] and delta < 2.0
         )
 
-    mark_tail_stability(rows)
-
-    energy_passed = any(row["passes_energy_threshold"] for row in rows[:-1])
     if args.axis == "kpoint":
+        mark_tail_stability(rows)
         recommended = next(
             (row["value"] for row in rows[:-1] if row["passes_all_denser_steps"]), None
         )
         passed = recommended is not None
         pending = []
+        diagnostic_complete = None
+        metric_interpretation = "adjacent_relative_energy_convergence"
     else:
-        recommended = rows[0]["value"] if energy_passed else None
+        convert_smearing_rows_to_diagnostics(rows)
+        recommended = None
         passed = False
-        pending = ["equilibrium_volume_change_below_0.2_percent"]
+        pending = [
+            "eos_relative_energy_change_below_2_mev_per_atom",
+            "equilibrium_volume_change_below_0.2_percent",
+        ]
+        diagnostic_complete = len(rows) >= 2 and all(row["chosen"]["converged"] for row in rows)
+        metric_interpretation = "single_volume_absolute_energy_shift_not_acceptance_metric"
 
     payload = {
         "axis": args.axis,
-        "energy_prescreen_passed": energy_passed,
+        "diagnostic_complete": diagnostic_complete,
         "failed_attempts": sum(
             not attempt["converged"]
             for attempts in attempts_by_value.values()
             for attempt in attempts
         ),
         "passed": passed,
+        "metric_interpretation": metric_interpretation,
         "pending_acceptance": pending,
         "recommended_value": recommended,
         "rows": rows,
-        "thresholds": {"energy_mev_per_atom": 2.0},
+        "thresholds": (
+            {"relative_energy_mev_per_atom": 2.0}
+            if args.axis == "kpoint"
+            else {
+                "eos_relative_energy_mev_per_atom": 2.0,
+                "equilibrium_volume_percent": 0.2,
+            }
+        ),
     }
     args.output_directory.mkdir(parents=True, exist_ok=True)
     (args.output_directory / "summary.json").write_text(
         json.dumps(payload, indent=2, sort_keys=True) + "\n", encoding="utf-8"
     )
-    lines = [
-        "value\texperiment_id\tconverged\tenergy_ev_per_atom\tpressure_gpa\t"
-        "delta_to_next_mev_per_atom\tpasses_energy_threshold\tpasses_all_denser_steps"
-    ]
+    if args.axis == "kpoint":
+        lines = [
+            "value\texperiment_id\tconverged\tenergy_ev_per_atom\tpressure_gpa\t"
+            "delta_to_next_mev_per_atom\tpasses_energy_threshold\tpasses_all_denser_steps"
+        ]
+    else:
+        lines = [
+            "value\texperiment_id\tconverged\tenergy_ev_per_atom\tpressure_gpa\t"
+            "absolute_energy_shift_to_next_mev_per_atom"
+        ]
     for row in rows:
         chosen = row["chosen"]
         value = "x".join(map(str, row["value"])) if isinstance(row["value"], list) else row["value"]
-        lines.append(
-            "\t".join(
-                str(item)
-                for item in (
-                    value,
-                    chosen["experiment_id"],
-                    chosen["converged"],
-                    chosen["energy_ev_per_atom"],
-                    chosen["pressure_gpa"],
-                    row["delta_to_next_mev_per_atom"],
-                    row["passes_energy_threshold"],
-                    row["passes_all_denser_steps"],
-                )
-            )
+        common = (
+            value,
+            chosen["experiment_id"],
+            chosen["converged"],
+            chosen["energy_ev_per_atom"],
+            chosen["pressure_gpa"],
         )
+        if args.axis == "kpoint":
+            values = common + (
+                row["delta_to_next_mev_per_atom"],
+                row["passes_energy_threshold"],
+                row["passes_all_denser_steps"],
+            )
+        else:
+            values = common + (row["absolute_energy_shift_to_next_mev_per_atom"],)
+        lines.append("\t".join(str(item) for item in values))
     (args.output_directory / "summary.tsv").write_text("\n".join(lines) + "\n", encoding="utf-8")
     print(json.dumps(payload, indent=2, sort_keys=True))
-    return 0 if (passed or (args.axis == "smearing" and energy_passed)) else 1
+    return 0 if (passed or (args.axis == "smearing" and diagnostic_complete)) else 1
 
 
 if __name__ == "__main__":

@@ -40,6 +40,15 @@ class AnalyzeS1KsAxisTest(unittest.TestCase):
             [False, False, True, None],
         )
 
+    def test_smearing_shift_is_diagnostic_not_a_pass_flag(self) -> None:
+        rows = [
+            {"delta_to_next_mev_per_atom": 4.5, "passes_energy_threshold": False},
+            {"delta_to_next_mev_per_atom": None, "passes_energy_threshold": None},
+        ]
+        MODULE.convert_smearing_rows_to_diagnostics(rows)
+        self.assertEqual(rows[0]["absolute_energy_shift_to_next_mev_per_atom"], 4.5)
+        self.assertNotIn("passes_energy_threshold", rows[0])
+
 
 if __name__ == "__main__":
     unittest.main()
