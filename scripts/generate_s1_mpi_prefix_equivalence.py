@@ -15,6 +15,7 @@ from s1_mpi_prefix_equivalence_common import (
     CANONICAL_CONFIG_PATH,
     CANONICAL_MANIFEST_PATH,
     DEFAULT_R8_SUMMARY_PATH,
+    DEFAULT_RUNTIME_SMOKE_SUMMARY_PATH,
     FIXED_PAIRS,
     PROTOCOL_REVISION,
     R8_CONFIG_PATH,
@@ -36,6 +37,7 @@ from s1_mpi_prefix_equivalence_common import (
     require_tracked_at_head,
     sha256,
 )
+from s1_runtime_relocation_smoke import validate_smoke
 from validate_s1_non_equilibrium_manifest import validate as validate_r8_manifest
 from s1_runtime_relocation_elf import (
     file_identity,
@@ -144,6 +146,7 @@ def build_frozen_payload(
     reference_mpirun: Path | None = None,
     reference_launcher: Path | None = None,
     require_clean_worktree: bool = True,
+    smoke_summary_path: Path | None = None,
 ) -> tuple[dict, list[dict[str, object]], list[Path]]:
     project_root = project_root.resolve()
     if require_clean_worktree and not git_clean(project_root):
@@ -518,6 +521,9 @@ def build_frozen_payload(
                     "--map-root-user",
                     "--kill-child=KILL",
                     "--mount",
+                    "--pid",
+                    "--fork",
+                    "--mount-proc",
                     "--propagation",
                     "private",
                     runtime_tools["bash"]["path"],
@@ -531,6 +537,9 @@ def build_frozen_payload(
                 "host_uid": os.getuid(),
                 "host_gid": os.getgid(),
                 "namespace_effective_uid": 0,
+                "pid_namespace_required": True,
+                "namespace_init_pid": 1,
+                "host_proc_pid_namespace_empty_after_exit_required": True,
                 "external_old_root_must_survive": True,
                 "total_wall_timeout_seconds": 7260,
                 "timeout_requires_zero_residual_processes": True,
@@ -540,6 +549,8 @@ def build_frozen_payload(
             "launcher_count": 1,
             "rank_count": 4,
             "runtime_wall_timeout_seconds": 7200,
+            "absolute_deadline_watchdog_seconds": 7200,
+            "known_pid_terminal_proof_required": True,
             "mapping_observation_scope": "final_prterun_and_four_abacus_ranks",
             "mpirun_and_support_daemon_maps_out_of_scope": True,
             "rank_handshake_required": True,
@@ -625,6 +636,26 @@ def build_frozen_payload(
         "manifest_path": relative_or_absolute(project_root, output_manifest_path),
         "mappings": mappings,
     }
+    if smoke_summary_path is not None:
+        smoke_row = next(
+            row
+            for row in staged_rows
+            if row["reference_experiment_id"] == "S1-20260805-074"
+        )
+        smoke_validation = validate_smoke(
+            project_root, config, smoke_row, smoke_summary_path.resolve()
+        )
+        smoke_tracked_paths = smoke_validation.pop("tracked_paths")
+        tracked_paths.extend(smoke_tracked_paths)
+        smoke_tracking_failures = require_tracked_at_head(
+            project_root, smoke_tracked_paths
+        )
+        if smoke_tracking_failures:
+            raise ValueError(
+                "managed 074 smoke evidence is not immutable at HEAD:\n- "
+                + "\n- ".join(smoke_tracking_failures)
+            )
+        config["source"]["runtime_relocation_smoke"] = smoke_validation
     return config, staged_rows, tracked_paths
 
 
@@ -651,7 +682,10 @@ def generate(
     reference_mpirun: Path | None = None,
     reference_launcher: Path | None = None,
     require_clean_worktree: bool = True,
+    smoke_summary_path: Path | None = None,
 ) -> dict:
+    if smoke_summary_path is None:
+        raise ValueError("formal generation requires an accepted --smoke-summary")
     for output in (config_path, manifest_path):
         if output.exists() or output.is_symlink():
             raise ValueError(f"refusing to overwrite frozen output: {output}")
@@ -676,6 +710,7 @@ def generate(
         reference_mpirun=reference_mpirun,
         reference_launcher=reference_launcher,
         require_clean_worktree=require_clean_worktree,
+        smoke_summary_path=smoke_summary_path,
     )
     config_text = json.dumps(config, indent=2, sort_keys=True) + "\n"
     config_digest = hashlib.sha256(config_text.encode("utf-8")).hexdigest()
@@ -748,6 +783,15 @@ def main() -> int:
     parser.add_argument(
         "--r8-summary", type=Path, default=project_root / DEFAULT_R8_SUMMARY_PATH
     )
+    parser.add_argument(
+        "--smoke-summary",
+        type=Path,
+        required=True,
+        help=(
+            "committed accepted managed 074 smoke summary; formal 113--118 "
+            "preregistration is refused without it"
+        ),
+    )
     args = parser.parse_args()
     payload = generate(
         project_root,
@@ -770,6 +814,7 @@ def main() -> int:
         python=args.python,
         reference_mpirun=args.reference_mpirun,
         reference_launcher=args.reference_launcher,
+        smoke_summary_path=args.smoke_summary.resolve(),
     )
     print(json.dumps(payload, indent=2, sort_keys=True))
     return 0

@@ -14,9 +14,111 @@ PROJECT_ROOT = Path(__file__).resolve().parents[2]
 ACTIVATE = PROJECT_ROOT / "environment" / "activate.sh"
 RUN_SINGLE = PROJECT_ROOT / "scripts" / "run_s1_single.sh"
 RUN_MANIFEST = PROJECT_ROOT / "scripts" / "run_s1_non_equilibrium_manifest.sh"
+STATUS_WRITER = PROJECT_ROOT / "scripts" / "write_s1_runtime_relocation_status.py"
 
 
 class S1RuntimeHardeningTest(unittest.TestCase):
+    def test_status_writer_synthesizes_strict_early_failure_bundle(self) -> None:
+        with tempfile.TemporaryDirectory() as temporary:
+            run = Path(temporary) / "runs/S1-20260805-113"
+            completed = subprocess.run(
+                [
+                    "/usr/bin/python3",
+                    str(STATUS_WRITER),
+                    str(run),
+                    "--experiment-id",
+                    "S1-20260805-113",
+                    "--code-commit",
+                    "1" * 40,
+                    "--workflow-exit",
+                    "73",
+                    "--invocation-exit",
+                    "73",
+                    "--parser-exit",
+                    "97",
+                    "--core-validation-exit",
+                    "97",
+                    "--setup-completed",
+                    "false",
+                    "--failure-stage",
+                    "fault_injected_before_input_copy",
+                ],
+                check=False,
+                text=True,
+                capture_output=True,
+            )
+            self.assertEqual(completed.returncode, 0, completed.stderr)
+            for name in (
+                "experiment_metadata.json",
+                "run_status.json",
+                "replay_status.json",
+                "failure.json",
+            ):
+                self.assertTrue((run / name).is_file(), name)
+            status = json.loads((run / "run_status.json").read_text())
+            replay = json.loads((run / "replay_status.json").read_text())
+            failure = json.loads((run / "failure.json").read_text())
+            self.assertFalse(status["setup_completed"])
+            self.assertEqual(status["failure_stage"], "fault_injected_before_input_copy")
+            self.assertEqual(replay["run_status"], status)
+            self.assertEqual(failure["failure_stage"], status["failure_stage"])
+
+    def test_run_single_exit_trap_preserves_early_shell_failure(self) -> None:
+        with tempfile.TemporaryDirectory() as temporary:
+            repository = Path(temporary)
+            scripts = repository / "scripts"
+            environment_directory = repository / "environment"
+            input_directory = repository / "inputs/candidate"
+            pseudo_directory = repository / "assets/pseudo"
+            for directory in (
+                scripts,
+                environment_directory,
+                input_directory,
+                pseudo_directory,
+                repository / "prefix/bin",
+            ):
+                directory.mkdir(parents=True, exist_ok=True)
+            shutil.copy2(RUN_SINGLE, scripts / RUN_SINGLE.name)
+            shutil.copy2(STATUS_WRITER, scripts / STATUS_WRITER.name)
+            shutil.copy2(ACTIVATE, environment_directory / ACTIVATE.name)
+            (input_directory / "INPUT").write_text("INPUT_PARAMETERS\npseudo_dir x\n")
+            (input_directory / "STRU").write_text("structure\n")
+            (input_directory / "KPT").write_text("kpoints\n")
+            (input_directory / "metadata.json").write_text(
+                json.dumps({"pseudopotential": "al.gga.psp"}) + "\n"
+            )
+            (pseudo_directory / "al.gga.psp").write_text("pseudo\n")
+            self._git(repository, "init")
+            self._git(repository, "config", "user.name", "Unit Test")
+            self._git(repository, "config", "user.email", "unit@example.invalid")
+            self._git(repository, "add", ".")
+            self._git(repository, "commit", "-m", "fixture")
+            experiment_id = "S1-20260805-902"
+            completed = subprocess.run(
+                [str(scripts / RUN_SINGLE.name), experiment_id, str(input_directory)],
+                cwd=repository,
+                env={
+                    "PATH": os.environ.get("PATH", "/usr/bin:/bin"),
+                    "HOME": str(repository / "deliberately-wrong-home"),
+                    "M_OFDFT_PREFIX": str(repository / "prefix"),
+                    "M_OFDFT_RUNTIME": str(repository),
+                    "M_OFDFT_ABACUS": "/usr/bin/true",
+                    "M_OFDFT_MPIRUN": "/usr/bin/true",
+                    "M_OFDFT_PYTHON_TOOL": "/usr/bin/python3",
+                    "M_OFDFT_RUNTIME_RELOCATION_MODE": "1",
+                },
+                check=False,
+                text=True,
+                capture_output=True,
+            )
+            self.assertNotEqual(completed.returncode, 0)
+            run = repository / "runs" / experiment_id
+            for name in ("run_status.json", "replay_status.json", "failure.json"):
+                self.assertTrue((run / name).is_file(), f"{name}: {completed.stderr}")
+            status = json.loads((run / "run_status.json").read_text())
+            self.assertFalse(status["setup_completed"])
+            self.assertEqual(status["failure_stage"], "controlled_home_setup")
+
     def test_mpi_component_prefixes_default_to_recovery_prefix(self) -> None:
         values = self._source_activate({"M_OFDFT_PREFIX": "/tmp/recovery-prefix"})
         self.assertEqual(

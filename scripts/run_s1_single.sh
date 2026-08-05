@@ -9,14 +9,36 @@ fi
 project_root=$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)
 experiment_id=$1
 input_directory=$(realpath "$2")
-run_directory="$project_root/runs/$experiment_id"
 runtime_relocation_mode=${M_OFDFT_RUNTIME_RELOCATION_MODE:-0}
+runtime_relocation_smoke_mode=${M_OFDFT_RUNTIME_RELOCATION_SMOKE_MODE:-0}
 if [[ "$runtime_relocation_mode" != 0 && "$runtime_relocation_mode" != 1 ]]; then
     echo "M_OFDFT_RUNTIME_RELOCATION_MODE must be 0 or 1" >&2
     exit 2
 fi
+if [[ "$runtime_relocation_smoke_mode" != 0 && "$runtime_relocation_smoke_mode" != 1 ]]; then
+    echo "M_OFDFT_RUNTIME_RELOCATION_SMOKE_MODE must be 0 or 1" >&2
+    exit 2
+fi
+if [[ "$runtime_relocation_smoke_mode" == 1 && "$runtime_relocation_mode" != 1 ]]; then
+    echo "Runtime-relocation smoke requires M_OFDFT_RUNTIME_RELOCATION_MODE=1" >&2
+    exit 2
+fi
 
-if [[ ! "$experiment_id" =~ ^S1-[0-9]{8}-[0-9]{3}$ ]]; then
+if [[ "$runtime_relocation_smoke_mode" == 1 ]]; then
+    expected_smoke_id=S1-RUNTIME-SMOKE-20260805-074
+    expected_smoke_directory="$project_root/analysis/s1/runtime_relocation_smoke_20260805/run"
+    if [[ "$experiment_id" != "$expected_smoke_id" ]]; then
+        echo "Runtime smoke ID must be $expected_smoke_id" >&2
+        exit 2
+    fi
+    run_directory=${M_OFDFT_RUN_DIRECTORY_OVERRIDE:-}
+    if [[ "$run_directory" != "$expected_smoke_directory" ]]; then
+        echo "Runtime smoke directory must be $expected_smoke_directory" >&2
+        exit 2
+    fi
+elif [[ "$experiment_id" =~ ^S1-[0-9]{8}-[0-9]{3}$ ]]; then
+    run_directory="$project_root/runs/$experiment_id"
+else
     echo "Invalid S1 experiment ID: $experiment_id" >&2
     exit 2
 fi
@@ -66,9 +88,46 @@ abacus_path=$abacus
 abacus_realpath=$(realpath "$abacus_path")
 mpi_ranks=${M_OFDFT_NPROCS:-4}
 pseudopotential=$("$python_tool_path" -c 'import json,sys; print(json.load(open(sys.argv[1]))["pseudopotential"])' "$input_directory/metadata.json")
+git_commit=$(git -C "$project_root" rev-parse HEAD)
+status_writer="$project_root/scripts/write_s1_runtime_relocation_status.py"
+setup_completed=false
+failure_stage=run_directory_created
+invocation_exit_code=97
+parser_exit_code=97
+runtime_mode_text=false
+if [[ "$runtime_relocation_mode" == 1 ]]; then
+    runtime_mode_text=true
+fi
 
 mkdir -p "$run_directory"
+finalize_created_attempt() {
+    local shell_exit=$?
+    trap - EXIT
+    if [[ "$runtime_relocation_mode" != 1 ]]; then
+        exit "$shell_exit"
+    fi
+    if [[ $shell_exit -ne 0 && $invocation_exit_code -eq 97 ]]; then
+        invocation_exit_code=$shell_exit
+    fi
+    local workflow_exit=$invocation_exit_code
+    if [[ $workflow_exit -eq 0 ]]; then
+        workflow_exit=$parser_exit_code
+    fi
+    "$python_tool_path" "$status_writer" "$run_directory" \
+        --experiment-id "$experiment_id" \
+        --code-commit "$git_commit" \
+        --workflow-exit "$workflow_exit" \
+        --invocation-exit "$invocation_exit_code" \
+        --parser-exit "$parser_exit_code" \
+        --core-validation-exit 97 \
+        --setup-completed "$setup_completed" \
+        --runtime-relocation-mode "$runtime_mode_text" \
+        --failure-stage "${failure_stage:-component_rejected}" >/dev/null 2>&1 || true
+    exit "$shell_exit"
+}
+trap finalize_created_attempt EXIT
 if [[ "$runtime_relocation_mode" == 1 ]]; then
+    failure_stage=controlled_home_setup
     expected_home="$run_directory/runtime_home"
     if [[ "$HOME" != "$expected_home" ]]; then
         echo "Runtime-relocation HOME must be $expected_home" >&2
@@ -78,6 +137,7 @@ if [[ "$runtime_relocation_mode" == 1 ]]; then
     printf '%s\n' 'Controlled empty HOME for S1 runtime-relocation replay.' \
         > "$HOME/CONTROLLED_HOME.txt"
 fi
+failure_stage=input_archive_setup
 cp "$input_directory/INPUT" "$input_directory/STRU" "$input_directory/KPT" "$run_directory/"
 cp "$input_directory/metadata.json" "$run_directory/input_metadata.json"
 cp "$project_root/assets/pseudo/$pseudopotential" "$run_directory/$pseudopotential"
@@ -87,7 +147,7 @@ sed -i 's|^pseudo_dir .*|pseudo_dir .|' "$run_directory/INPUT"
     sha256sum INPUT STRU KPT "$pseudopotential" > INPUT_SHA256SUMS
 )
 
-git_commit=$(git -C "$project_root" rev-parse HEAD)
+failure_stage=experiment_metadata_setup
 "$python_tool_path" - "$run_directory/experiment_metadata.json" "$experiment_id" "$git_commit" \
     "$abacus_path" "$provenance_mpirun_path" "$mpirun_invocation_path" "$mpirun_path" \
     "$mpi_ranks" "$OPAL_PREFIX" "$PRTE_PREFIX" "$PMIX_PREFIX" \
@@ -144,6 +204,9 @@ payload = {
 Path(sys.argv[1]).write_text(json.dumps(payload, indent=2, sort_keys=True) + "\n", encoding="utf-8")
 PY
 
+setup_completed=true
+failure_stage=runtime_invocation_or_parser
+
 set +e
 (
     cd "$run_directory"
@@ -154,65 +217,20 @@ invocation_exit_code=$?
 "$python_tool_path" "$project_root/scripts/parse_s1_single.py" "$run_directory"
 parser_exit_code=$?
 set -e
-"$python_tool_path" - "$run_directory" "$invocation_exit_code" "$parser_exit_code" \
-    "$runtime_relocation_mode" <<'PY'
-import json
-import os
-import sys
-from pathlib import Path
-
-run = Path(sys.argv[1])
-invocation_exit_code = int(sys.argv[2])
-parser_exit_code = int(sys.argv[3])
-runtime_relocation_mode = sys.argv[4] == "1"
-result_path = run / "result.json"
-audit_path = run / "mpi_runtime_audit" / "audit.json"
-host_status_path = run / "mpi_runtime_audit" / "namespace" / "host_status.json"
-counterpart_path = run / "mpi_runtime_audit" / "counterpart_audit.json"
-result = json.loads(result_path.read_text(encoding="utf-8")) if result_path.is_file() else None
-audit = json.loads(audit_path.read_text(encoding="utf-8")) if audit_path.is_file() else None
-host_status = json.loads(host_status_path.read_text(encoding="utf-8")) if host_status_path.is_file() else None
-counterpart = json.loads(counterpart_path.read_text(encoding="utf-8")) if counterpart_path.is_file() else None
-launcher_exit_code = (
-    audit.get("launcher_exit_code") if isinstance(audit, dict) else invocation_exit_code
-)
-workflow_exit_code = invocation_exit_code if invocation_exit_code != 0 else parser_exit_code
-accepted = (
-    invocation_exit_code == 0
-    and parser_exit_code == 0
-    and isinstance(result, dict)
-    and result.get("converged") is True
-)
-if runtime_relocation_mode:
-    accepted = (
-        accepted
-        and isinstance(audit, dict)
-        and audit.get("status") == "accepted"
-        and isinstance(host_status, dict)
-        and host_status.get("status") == "accepted"
-        and isinstance(counterpart, dict)
-        and counterpart.get("status") == "accepted"
-    )
-payload = {
-    "schema_version": 2,
-    "status": "accepted" if accepted else "rejected",
-    "runtime_relocation_mode": runtime_relocation_mode,
-    "workflow_exit_code": workflow_exit_code,
-    "invocation_exit_code": invocation_exit_code,
-    "launcher_exit_code": launcher_exit_code,
-    "parser_exit_code": parser_exit_code,
-    "result_json_present": result_path.is_file(),
-    "result_converged": result.get("converged") if isinstance(result, dict) else None,
-    "runtime_audit_json_present": audit_path.is_file(),
-    "runtime_audit_status": audit.get("status") if isinstance(audit, dict) else None,
-    "namespace_host_status": host_status.get("status") if isinstance(host_status, dict) else None,
-    "counterpart_audit_status": counterpart.get("status") if isinstance(counterpart, dict) else None,
-}
-output = run / "run_status.json"
-temporary = output.with_name(f".{output.name}.tmp-{os.getpid()}")
-temporary.write_text(json.dumps(payload, indent=2, sort_keys=True) + "\n", encoding="utf-8")
-os.replace(temporary, output)
-PY
+workflow_exit_code=$invocation_exit_code
+if [[ $workflow_exit_code -eq 0 ]]; then
+    workflow_exit_code=$parser_exit_code
+fi
+"$python_tool_path" "$status_writer" "$run_directory" \
+    --experiment-id "$experiment_id" \
+    --code-commit "$git_commit" \
+    --workflow-exit "$workflow_exit_code" \
+    --invocation-exit "$invocation_exit_code" \
+    --parser-exit "$parser_exit_code" \
+    --setup-completed true \
+    --runtime-relocation-mode "$runtime_mode_text" \
+    --failure-stage "$failure_stage" \
+    --run-only
 if [[ $invocation_exit_code -ne 0 ]]; then
     exit "$invocation_exit_code"
 fi

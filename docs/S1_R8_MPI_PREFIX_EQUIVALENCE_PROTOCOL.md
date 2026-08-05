@@ -1,4 +1,4 @@
-# S1-R8-RUNTIME-RELOCATION-R1 六点运行时重定位等价协议
+# S1-R8-RUNTIME-RELOCATION-R2 六点运行时重定位等价协议
 
 状态：`generator_ready_not_frozen`。本文件名为历史兼容名称；正式协议不是“只改
 MPI 前缀”，而是 **runtime-relocation equivalence**。当前提交没有创建正式
@@ -45,15 +45,50 @@ provenance limitation，不补写旧元数据。
 ## 2. 074 必须先行，但不占用正式 ID
 
 在生成正式 config/manifest 之前，先用 **074 的冻结输入**完成一次非正式、受管的
-namespace smoke。它不得创建或改写 113–118，不得改动 074 引用归档，也不得把
-`/tmp` 作为最终证据位置。先行接收标准为：
+namespace smoke。唯一标识为 `S1-RUNTIME-SMOKE-20260805-074`，唯一输出根为
+`analysis/s1/runtime_relocation_smoke_20260805/`；单点入口只有同时收到显式 smoke
+mode、固定标识和该绝对目录 override 才允许非标准 ID。它不得创建或改写引用 074
+或正式 113–118，也不得把 `/tmp` 作为最终证据位置。专用执行入口为：
+
+```bash
+scripts/run_s1_runtime_relocation_smoke.py \
+  --recovery-prefix /home/shenwei01/M_OFDFT_recovery_S0_20260805_001/conda_prefix \
+  --old-prefix /home/shenwei01/wt_melting_runtime_20260724/conda_prefix \
+  --abacus /home/shenwei01/M_OFDFT_recovery_S0_20260805_001/source/abacus_pw_para_relocated_20260805 \
+  --mpirun /home/shenwei01/M_OFDFT_recovery_S0_20260805_001/conda_prefix/bin/mpirun \
+  --reference-mpirun /home/shenwei01/M_OFDFT_recovery_S0_20260805_001/conda_prefix/bin/mpirun \
+  --launcher /home/shenwei01/M_OFDFT_recovery_S0_20260805_001/conda_prefix/bin/prterun \
+  --reference-launcher /home/shenwei01/wt_melting_runtime_20260724/conda_prefix/bin/prterun \
+  --readelf /usr/bin/readelf \
+  --chrpath /usr/bin/chrpath \
+  --strace /usr/bin/strace \
+  --unshare /usr/bin/unshare \
+  --mount /usr/bin/mount \
+  --bash /bin/bash \
+  --python /usr/bin/python3
+```
+
+先行接收标准为：
 
 1. 私有 user/mount namespace 建立成功，外部旧运行时未变化；
 2. 4-rank handshake、严格 exec 集合、maps、22 个旧前缀失败探针均通过；
 3. recovery mapped component counterpart 检查全部可证明；
-4. 074 计算收敛，审计退出 0，且无残留 tracee/process-group 成员；
-5. 命令、脚本 SHA、stdout/stderr、`audit.json`、`objects.tsv`、counterpart、namespace、
+4. 074 计算收敛，`|dE| < 0.1 meV/atom`、`|dP| < 0.02 GPa`，审计退出 0；
+5. PID namespace 退出后，host `/proc/*/ns/pid` 中同 inode 成员为 0；strace、handshake、
+   descendant 和 PGID 汇总的每个已知 PID 都有消失或 PID-reuse 终态证据；
+6. 命令、脚本 SHA、stdout/stderr、`audit.json`、`objects.tsv`、counterpart、namespace、
    strace 和结果摘要归档到受管证据目录并生成校验和。
+
+`evidence_manifest.tsv` 完整枚举 run 树每个 leaf 的相对路径、Git mode、字节数和
+SHA-256；新增、删除、类型/mode 或 blob 变化均拒绝。`summary.json` 还冻结 smoke code
+commit、smoke commit、runtime/tool/wrapper/ELF 身份和完整实现闭包；summary、manifest、
+run metadata 必须在同一 smoke commit 首次加入，且该 commit 的 parent 等于实际执行的
+code commit。
+
+失败 smoke 不删除、不原地覆盖。先提交完整失败根；下次专用入口自动移动到
+`failed_runs/runtime_relocation_smoke/attempt-<failure-commit-prefix>/` 并单独提交，随后
+才创建新 attempt。未提交、缺 machine-readable rejected status 或已接收 smoke 均拒绝
+自动归档。
 
 074 smoke 只证明执行通路具备条件，不替代正式 preregistration 或六点结果。
 
@@ -80,7 +115,8 @@ scripts/generate_s1_runtime_relocation_equivalence.py \
   --unshare /usr/bin/unshare \
   --mount /usr/bin/mount \
   --bash /bin/bash \
-  --python /usr/bin/python3
+  --python /usr/bin/python3 \
+  --smoke-summary analysis/s1/runtime_relocation_smoke_20260805/summary.json
 
 scripts/validate_s1_runtime_relocation_equivalence.py \
   config/S1_runtime_relocation_equivalence_manifest.tsv \
@@ -100,13 +136,22 @@ git commit -m "preregister S1-R8 runtime-relocation equivalence replay"
 
 ```text
 /usr/bin/unshare --user --map-root-user --kill-child=KILL \
-  --mount --propagation private /bin/bash <namespace-payload>
+  --mount --pid --fork --mount-proc --propagation private \
+  /bin/bash <namespace-payload>
 ```
 
 namespace 内以 `size=1m,nosuid,nodev,noexec` 的 tmpfs 覆盖旧 runtime root；host 上
 旧 root/prefix 的 lstat、realpath 和 mountinfo 在前后必须完全相同。证据同时冻结
-原始 mountinfo、uid_map、gid_map、无 shared propagation、payload 状态、工具前后
-身份、总 deadline 和清理后的零残留进程。
+原始 mountinfo、uid_map、gid_map、PID namespace inode/NSpid、namespace init PID 1、
+无 shared propagation、payload 状态、工具前后身份和清理后的零残留进程。外层退出后
+必须遍历 host `/proc`，同 PID namespace inode 的成员和扫描错误都必须为 0；不得把
+默认 `true` 或一次 PGID 快照当成零残留证明。
+
+内层 7200 s、外层 7260 s 都是覆盖 preflight、工具 `--version`、计算、逐文件哈希、
+counterpart、postflight 和 summary 写入的绝对 deadline。每个阻塞子进程使用剩余时间
+timeout，逐块哈希前后复核 deadline，两层另有 process-wide watchdog。summary 记录
+timezone-aware UTC、start/end epoch 和 monotonic elapsed；validator 重算一致性，超时或
+elapsed 越界一律拒绝。
 
 运行环境从 `env -i` 建立，并要求：
 
@@ -126,10 +171,16 @@ runner 使用独立 FD 9 读取清单；子任务关闭 FD 9，stdin 接 `/dev/n
 再依次 release、`SIGSTOP`、读取 `/proc/<pid>/maps`、`SIGCONT`。不得用 20 ms 抽样式
 PID 猜测替代 handshake。
 
-`/usr/bin/strace` 的 path、realpath、SHA-256、版本输出必须在执行前后完全一致。执行
+`/usr/bin/strace` 固定使用 `trace=file,process` 和 `--kill-on-exit`；其 path、realpath、
+SHA-256、版本输出必须在执行前后完全一致。执行
 链的成功 `execve` 必须是精确 multiset：mpirun 1、recovery prterun 1、冻结 Python
 4、relocated ABACUS 4。只有明确 `result == 0` 才算成功；额外成功 exec 或截断/未知
 result 均拒绝。
+
+审计器从 strace trace 文件、clone/exec 过程证据、rank handshake、动态 descendant 和
+PGID 扫描合并已知 PID 集合，并逐 PID 记录 observed start-time 与终态 `gone` 或
+`pid_reused_original_gone`；任何 `still_present_or_identity_unproven` 都拒绝。PID
+namespace 的 kernel 收口和 host inode 扫描是外层独立硬门，二者都通过才可声称零残留。
 
 ## 5. maps 与 recovery↔old counterpart 硬门
 
@@ -188,6 +239,12 @@ core validation，再写 schema-2 状态，字段分别保存 `workflow_exit_cod
 `core_validation_exit_code`、audit/namespace/counterpart 状态，不得把 parser-only 或
 validation-only 失败误记为 launcher 失败。
 
+创建 attempt 目录后立即安装 EXIT trap；setup、metadata、launcher 或 parser 的早期
+shell 失败都必须原子写出 machine-readable `run_status.json`、`replay_status.json`、
+`failure.json`。`setup_completed` 与 `failure_stage` 明确区分执行前失败；外层即使发现
+缺失/损坏的 `run_status.json` 也从捕获的退出码合成严格失败证据，不得留下无法续跑的
+脏目录。
+
 成功点验证后单独提交。失败点同样解析可用日志、重算 raw strace、写
 `run_status.json`、`replay_status.json`、`failure.json`，验证后单独提交并立即停止。
 下次续跑必须先把已提交失败移动到：
@@ -197,9 +254,11 @@ failed_runs/runtime_relocation/<ID>/attempt-<failure-commit-prefix>/
 ```
 
 再单独提交 archive，之后才允许用同一登记 ID 重试。严格校验使用当前
-`runs/<ID>` 的最近 introduction commit，并分别验证所有历史 failed archive 的 blob
-与 commit-parent 链，因此 fail→commit→archive→same-ID retry 是可验证流程。不得
-删除失败证据或原地覆盖。
+`runs/<ID>` 的最近 introduction commit，并分别验证所有历史 failed archive 的完整
+Git leaf 集合：relative path、mode/type 和 object id 必须与 failure commit 的
+`runs/<ID>` 完全一致，当前 archive 工作树也必须等于 HEAD。任何删除、新增、符号链接/
+可执行位/gitlink 类型变化或 blob 变化均拒绝；同时验证 commit-parent 链。因此
+fail→commit→archive→same-ID retry 是可验证流程。不得删除失败证据或原地覆盖。
 
 ## 8. 科学硬门和处置
 
@@ -242,6 +301,7 @@ scripts/analyze_s1_runtime_relocation_equivalence.py \
 
 canonical 对外入口是：
 
+- `run_s1_runtime_relocation_smoke.py`
 - `generate_s1_runtime_relocation_equivalence.py`
 - `validate_s1_runtime_relocation_equivalence.py`
 - `run_s1_runtime_relocation_equivalence.sh`

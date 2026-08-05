@@ -15,6 +15,7 @@ import stat
 import subprocess
 import sys
 import time
+from datetime import datetime, timezone
 from pathlib import Path
 
 from s1_mpi_prefix_equivalence_common import (
@@ -24,7 +25,12 @@ from s1_mpi_prefix_equivalence_common import (
     TRANSIENT_MAPPING_PATTERNS,
     registered_old_prefix_failed_probes,
 )
-from s1_runtime_relocation_elf import file_identity, sha256, versioned_tool_identity
+from s1_runtime_relocation_elf import (
+    file_identity,
+    remaining_seconds,
+    sha256,
+    versioned_tool_identity,
+)
 
 
 QUOTED_STRING = re.compile(r'"(?:\\.|[^"\\])*"')
@@ -373,7 +379,9 @@ def _capture_target(
     return True
 
 
-def _sha256(path: Path, cache: dict[str, str | None]) -> str | None:
+def _sha256(
+    path: Path, cache: dict[str, str | None], deadline: float | None = None
+) -> str | None:
     key = str(path)
     if key in cache:
         return cache[key]
@@ -383,8 +391,14 @@ def _sha256(path: Path, cache: dict[str, str | None]) -> str | None:
             return None
         digest = hashlib.sha256()
         with path.open("rb") as handle:
-            for chunk in iter(lambda: handle.read(1024 * 1024), b""):
+            while True:
+                remaining_seconds(deadline, f"mapped object hashing: {path}")
+                chunk = handle.read(1024 * 1024)
+                remaining_seconds(deadline, f"mapped object hashing: {path}")
+                if not chunk:
+                    break
                 digest.update(chunk)
+        remaining_seconds(deadline, f"mapped object hashing: {path}")
         value: str | None = digest.hexdigest()
     except (FileNotFoundError, IsADirectoryError, PermissionError, OSError):
         value = None
@@ -432,6 +446,101 @@ def _process_group_members(process_group: int) -> list[int]:
         except (FileNotFoundError, PermissionError, OSError, ValueError):
             continue
     return sorted(members)
+
+
+def _proc_start_time_ticks(pid: int, proc_root: Path = Path("/proc")) -> int | None:
+    try:
+        text = (proc_root / str(pid) / "stat").read_text(encoding="ascii")
+        fields = text[text.rfind(")") + 2 :].split()
+        return int(fields[19])
+    except (FileNotFoundError, PermissionError, OSError, ValueError, IndexError):
+        return None
+
+
+def _trace_pids(directory: Path) -> set[int]:
+    values: set[int] = set()
+    try:
+        paths = list(directory.glob("trace.*"))
+    except OSError:
+        return values
+    for path in paths:
+        try:
+            values.add(int(path.name.rsplit(".", 1)[1]))
+        except (IndexError, ValueError):
+            continue
+    return values
+
+
+def _register_known_pids(
+    known: dict[int, dict], pids: set[int] | list[int], source: str
+) -> None:
+    for pid in sorted(set(pids)):
+        if pid <= 0:
+            continue
+        record = known.setdefault(
+            pid,
+            {
+                "pid": pid,
+                "sources": set(),
+                "observed_start_time_ticks": _proc_start_time_ticks(pid),
+            },
+        )
+        record["sources"].add(source)
+        if record["observed_start_time_ticks"] is None:
+            record["observed_start_time_ticks"] = _proc_start_time_ticks(pid)
+
+
+def _prove_known_pids_gone(
+    known: dict[int, dict], deadline: float, process_group: int | None
+) -> dict:
+    """Record terminal evidence for every PID observed by independent channels."""
+
+    proof_deadline = min(deadline, time.monotonic() + 5.0)
+    while True:
+        remaining = []
+        for pid, record in known.items():
+            current = _proc_start_time_ticks(pid)
+            original = record.get("observed_start_time_ticks")
+            if current is not None and (original is None or current == original):
+                remaining.append(pid)
+        group_members = _process_group_members(process_group) if process_group else []
+        _register_known_pids(known, group_members, "terminal_process_group_scan")
+        if not remaining and not group_members:
+            break
+        if time.monotonic() >= proof_deadline:
+            break
+        time.sleep(0.05)
+    rows = []
+    all_gone = True
+    for pid, record in sorted(known.items()):
+        current = _proc_start_time_ticks(pid)
+        original = record.get("observed_start_time_ticks")
+        if current is None:
+            terminal = "gone"
+        elif original is not None and current != original:
+            terminal = "pid_reused_original_gone"
+        else:
+            terminal = "still_present_or_identity_unproven"
+            all_gone = False
+        rows.append(
+            {
+                "pid": pid,
+                "sources": sorted(record["sources"]),
+                "observed_start_time_ticks": original,
+                "terminal_start_time_ticks": current,
+                "terminal_state": terminal,
+            }
+        )
+    final_group_members = _process_group_members(process_group) if process_group else []
+    if final_group_members:
+        all_gone = False
+    return {
+        "known_pid_count": len(rows),
+        "known_pids": rows,
+        "process_group": process_group,
+        "process_group_members_after": final_group_members,
+        "all_known_pids_gone": all_gone and bool(rows),
+    }
 
 
 def _terminate_process_group(
@@ -651,7 +760,7 @@ def _required_environment() -> tuple[str, ...]:
     )
 
 
-def main() -> int:
+def _main_impl() -> int:
     audit_directory = Path(os.environ.get("M_OFDFT_MPI_AUDIT_DIR", "."))
     audit_directory.mkdir(parents=True, exist_ok=True)
     objects_path = audit_directory / "objects.tsv"
@@ -665,7 +774,9 @@ def main() -> int:
     rank_pids: dict[int, int] = {}
     exit_code = 97
     started = time.time()
-    total_deadline = time.monotonic() + 7200
+    started_monotonic = time.monotonic()
+    started_at_utc = datetime.now(timezone.utc).isoformat()
+    total_deadline = started_monotonic + 7200
     strace_before: dict = {}
     strace_after: dict = {}
     real_command: list[str] = []
@@ -677,7 +788,15 @@ def main() -> int:
         "members_after_cleanup": [],
         "tracee_pids_before_cleanup": [],
         "tracee_pids_after_cleanup": [],
-        "all_group_members_gone": True,
+        "all_group_members_gone": False,
+    }
+    known_pids: dict[int, dict] = {}
+    terminal_process_evidence = {
+        "known_pid_count": 0,
+        "known_pids": [],
+        "process_group": None,
+        "process_group_members_after": [],
+        "all_known_pids_gone": False,
     }
     missing = [key for key in _required_environment() if not os.environ.get(key)]
     if missing:
@@ -712,18 +831,30 @@ def main() -> int:
         )
         rank_wrapper = Path(os.environ["M_OFDFT_RANK_WRAPPER"]).resolve(strict=True)
         python_tool = Path(os.environ["M_OFDFT_PYTHON_TOOL"]).resolve(strict=True)
-        if sha256(real_mpirun) != os.environ["M_OFDFT_EXPECTED_MPIRUN_SHA256"]:
+        if sha256(
+            real_mpirun, total_deadline, "mpirun preflight hashing"
+        ) != os.environ["M_OFDFT_EXPECTED_MPIRUN_SHA256"]:
             raise ValueError("mpirun SHA-256 changed before launch")
-        if sha256(expected_launcher) != os.environ["M_OFDFT_EXPECTED_LAUNCHER_SHA256"]:
+        if sha256(
+            expected_launcher, total_deadline, "launcher preflight hashing"
+        ) != os.environ["M_OFDFT_EXPECTED_LAUNCHER_SHA256"]:
             raise ValueError("launcher SHA-256 changed before launch")
-        if sha256(expected_abacus) != os.environ["M_OFDFT_EXPECTED_ABACUS_SHA256"]:
+        if sha256(
+            expected_abacus, total_deadline, "ABACUS preflight hashing"
+        ) != os.environ["M_OFDFT_EXPECTED_ABACUS_SHA256"]:
             raise ValueError("ABACUS SHA-256 changed before launch")
-        if sha256(rank_wrapper) != os.environ["M_OFDFT_RANK_WRAPPER_SHA256"]:
+        if sha256(
+            rank_wrapper, total_deadline, "rank wrapper preflight hashing"
+        ) != os.environ["M_OFDFT_RANK_WRAPPER_SHA256"]:
             raise ValueError("rank wrapper SHA-256 changed before launch")
-        if sha256(python_tool) != os.environ["M_OFDFT_PYTHON_SHA256"]:
+        if sha256(
+            python_tool, total_deadline, "Python preflight hashing"
+        ) != os.environ["M_OFDFT_PYTHON_SHA256"]:
             raise ValueError("Python SHA-256 changed before launch")
         strace_before = versioned_tool_identity(
-            Path(os.environ["M_OFDFT_STRACE_TOOL"]), "strace"
+            Path(os.environ["M_OFDFT_STRACE_TOOL"]),
+            "strace",
+            deadline=total_deadline,
         )
         expected_strace = {
             "path": os.environ["M_OFDFT_STRACE_PATH"],
@@ -786,10 +917,11 @@ def main() -> int:
             strace_before["path"],
             "-ff",
             "-qq",
+            "--kill-on-exit",
             "-s",
             "4096",
             "-e",
-            "trace=file",
+            "trace=file,process",
             "-o",
             str(strace_directory / "trace"),
             *real_command,
@@ -799,6 +931,7 @@ def main() -> int:
             stdin=subprocess.DEVNULL,
             start_new_session=True,
         )
+        _register_known_pids(known_pids, [process.pid], "strace_root")
         rank_pids, launcher_pid, handshake_failures = _wait_for_ready(
             process,
             handshake,
@@ -807,6 +940,9 @@ def main() -> int:
             max(0.001, min(120, total_deadline - time.monotonic())),
         )
         failures.extend(handshake_failures)
+        _register_known_pids(known_pids, set(rank_pids.values()), "rank_handshake")
+        if launcher_pid is not None:
+            _register_known_pids(known_pids, [launcher_pid], "launcher_discovery")
         if launcher_pid is not None:
             if not _capture_target(
                 launcher_pid,
@@ -848,6 +984,17 @@ def main() -> int:
                 (handshake / "abort").write_text("abort\n", encoding="ascii")
                 cleanup_evidence = _terminate_process_group(process)
                 break
+            _register_known_pids(
+                known_pids, _descendants(process.pid), "descendant_scan"
+            )
+            _register_known_pids(
+                known_pids,
+                _process_group_members(process.pid),
+                "process_group_scan",
+            )
+            _register_known_pids(
+                known_pids, _trace_pids(strace_directory), "strace_trace_file"
+            )
             if launcher_pid is not None:
                 _capture_target(
                     launcher_pid,
@@ -877,11 +1024,22 @@ def main() -> int:
         if exit_code != 0:
             failures.append(f"launcher_exit_code:{exit_code}")
         strace_after = versioned_tool_identity(
-            Path(os.environ["M_OFDFT_STRACE_TOOL"]), "strace"
+            Path(os.environ["M_OFDFT_STRACE_TOOL"]),
+            "strace",
+            deadline=total_deadline,
         )
         if strace_after != strace_before:
             failures.append("strace_identity_changed_during_run")
-    except (KeyError, FileExistsError, FileNotFoundError, OSError, ValueError) as error:
+    except (
+        KeyError,
+        FileExistsError,
+        FileNotFoundError,
+        OSError,
+        TimeoutError,
+        ValueError,
+    ) as error:
+        if isinstance(error, TimeoutError):
+            timeout_triggered = True
         failures.append(f"audit_launcher_exception:{error}")
         if process is not None:
             cleanup_evidence = _terminate_process_group(process)
@@ -894,18 +1052,36 @@ def main() -> int:
             timeout_triggered = True
             failures.append("runtime_audit_total_deadline_exceeded_during_hashing")
             break
-        record["executable_sha256"] = _sha256(
-            Path(record["executable_realpath"]), hash_cache
-        )
+        try:
+            record["executable_sha256"] = _sha256(
+                Path(record["executable_realpath"]), hash_cache, total_deadline
+            )
+        except TimeoutError as error:
+            timeout_triggered = True
+            failures.append(f"runtime_audit_hash_deadline:{error}")
+            break
+        if time.monotonic() >= total_deadline:
+            timeout_triggered = True
+            failures.append("runtime_audit_total_deadline_exceeded_after_hashing")
+            break
     for record in objects.values():
         if time.monotonic() >= total_deadline:
             timeout_triggered = True
             failures.append("runtime_audit_total_deadline_exceeded_during_hashing")
             break
         if record["classification"] != "transient_system":
-            record["loaded_sha256"] = _sha256(
-                Path(record["loaded_realpath"]), hash_cache
-            )
+            try:
+                record["loaded_sha256"] = _sha256(
+                    Path(record["loaded_realpath"]), hash_cache, total_deadline
+                )
+            except TimeoutError as error:
+                timeout_triggered = True
+                failures.append(f"runtime_audit_hash_deadline:{error}")
+                break
+            if time.monotonic() >= total_deadline:
+                timeout_triggered = True
+                failures.append("runtime_audit_total_deadline_exceeded_after_hashing")
+                break
     object_rows = sorted(objects.values(), key=lambda row: (row["pid"], row["mapped_path"]))
     process_rows = sorted(processes.values(), key=lambda row: row["pid"])
     _write_objects(objects_path, object_rows)
@@ -914,8 +1090,19 @@ def main() -> int:
         if residual_members:
             cleanup_evidence = _terminate_process_group(process)
             failures.append("runtime_audit_process_group_residual")
+        elif not cleanup_evidence["all_group_members_gone"]:
+            cleanup_evidence = _terminate_process_group(process)
+        _register_known_pids(known_pids, _trace_pids(strace_directory), "strace_trace_file")
+        _register_known_pids(
+            known_pids, _process_group_members(process.pid), "terminal_process_group_scan"
+        )
+        terminal_process_evidence = _prove_known_pids_gone(
+            known_pids, total_deadline, process.pid
+        )
     if not cleanup_evidence["all_group_members_gone"]:
         failures.append("runtime_audit_process_group_cleanup_incomplete")
+    if not terminal_process_evidence["all_known_pids_gone"]:
+        failures.append("runtime_audit_known_pid_terminal_proof_incomplete")
 
     trace_records = _trace_records(strace_directory, launcher_pid, rank_pids)
     old_prefix_value = Path(os.environ.get("M_OFDFT_OLD_PREFIX", "/invalid-old-prefix"))
@@ -1021,6 +1208,12 @@ def main() -> int:
         "abort_exists": (handshake / "abort").exists(),
     }
 
+    ended_monotonic = time.monotonic()
+    ended = time.time()
+    if ended_monotonic > total_deadline:
+        timeout_triggered = True
+        failures.append("runtime_audit_absolute_deadline_exceeded_before_summary")
+
     payload = {
         "schema_version": 2,
         "protocol": "runtime_relocation_equivalence",
@@ -1029,10 +1222,16 @@ def main() -> int:
         "command": real_command,
         "strace_command": strace_command,
         "launcher_exit_code": exit_code,
-        "elapsed_seconds": time.time() - started,
+        "started_at_utc": started_at_utc,
+        "ended_at_utc": datetime.now(timezone.utc).isoformat(),
+        "started_epoch_seconds": started,
+        "ended_epoch_seconds": ended,
+        "elapsed_seconds": ended_monotonic - started_monotonic,
         "runtime_wall_timeout_seconds": 7200,
+        "absolute_deadline_watchdog_seconds": 7200,
         "timeout_triggered": timeout_triggered,
         "process_group_cleanup": cleanup_evidence,
+        "terminal_process_evidence": terminal_process_evidence,
         "old_prefix": str(old_prefix_value),
         "recovery_root": os.environ.get("M_OFDFT_RECOVERY_ROOT"),
         "recovery_prefix": os.environ.get("M_OFDFT_RECOVERY_PREFIX"),
@@ -1082,9 +1281,67 @@ def main() -> int:
         **access,
     }
     _atomic_json(audit_path, payload)
+    if time.monotonic() > total_deadline and payload["status"] == "accepted":
+        payload["status"] = "rejected"
+        payload["timeout_triggered"] = True
+        payload["failure_reasons"].append(
+            "runtime_audit_absolute_deadline_exceeded_during_summary_write"
+        )
+        payload["ended_epoch_seconds"] = time.time()
+        payload["ended_at_utc"] = datetime.now(timezone.utc).isoformat()
+        payload["elapsed_seconds"] = time.monotonic() - started_monotonic
+        _atomic_json(audit_path, payload)
     if exit_code != 0:
         return exit_code
     return 0 if not failures else 96
+
+
+def _deadline_alarm(_signum, _frame) -> None:
+    raise TimeoutError("runtime audit absolute watchdog expired")
+
+
+def main() -> int:
+    """Enforce a process-wide deadline, including preflight and postflight work."""
+
+    previous_handler = signal.getsignal(signal.SIGALRM)
+    signal.signal(signal.SIGALRM, _deadline_alarm)
+    signal.setitimer(signal.ITIMER_REAL, 7200.0)
+    try:
+        return _main_impl()
+    except TimeoutError as error:
+        audit_directory = Path(os.environ.get("M_OFDFT_MPI_AUDIT_DIR", "."))
+        audit_directory.mkdir(parents=True, exist_ok=True)
+        _atomic_json(
+            audit_directory / "audit.json",
+            {
+                "schema_version": 2,
+                "protocol": "runtime_relocation_equivalence",
+                "status": "rejected",
+                "failure_reasons": [f"runtime_audit_absolute_watchdog:{error}"],
+                "launcher_exit_code": 124,
+                "runtime_wall_timeout_seconds": 7200,
+                "absolute_deadline_watchdog_seconds": 7200,
+                "timeout_triggered": True,
+                "process_group_cleanup": {
+                    "members_before_cleanup": [],
+                    "members_after_cleanup": [],
+                    "tracee_pids_before_cleanup": [],
+                    "tracee_pids_after_cleanup": [],
+                    "all_group_members_gone": False,
+                },
+                "terminal_process_evidence": {
+                    "known_pid_count": 0,
+                    "known_pids": [],
+                    "process_group": None,
+                    "process_group_members_after": [],
+                    "all_known_pids_gone": False,
+                },
+            },
+        )
+        return 124
+    finally:
+        signal.setitimer(signal.ITIMER_REAL, 0.0)
+        signal.signal(signal.SIGALRM, previous_handler)
 
 
 if __name__ == "__main__":

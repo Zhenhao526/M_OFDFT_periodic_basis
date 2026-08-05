@@ -11,9 +11,10 @@ import stat
 import subprocess
 import sys
 import time
+from datetime import datetime, timezone
 from pathlib import Path
 
-from s1_runtime_relocation_elf import sha256, versioned_tool_identity
+from s1_runtime_relocation_elf import remaining_seconds, sha256, versioned_tool_identity
 
 
 COUNTERPART_HEADER = (
@@ -37,7 +38,9 @@ def _atomic_json(path: Path, payload: dict) -> None:
     os.replace(temporary, path)
 
 
-def _tool_from_environment(prefix: str, label: str) -> tuple[Path, dict]:
+def _tool_from_environment(
+    prefix: str, label: str, deadline: float | None = None
+) -> tuple[Path, dict]:
     path = Path(os.environ[f"M_OFDFT_{prefix}_TOOL"])
     expected = {
         "path": os.environ[f"M_OFDFT_{prefix}_PATH"],
@@ -48,18 +51,23 @@ def _tool_from_environment(prefix: str, label: str) -> tuple[Path, dict]:
             f"M_OFDFT_{prefix}_VERSION_OUTPUT_SHA256"
         ],
     }
-    actual = versioned_tool_identity(path, label)
+    actual = versioned_tool_identity(path, label, deadline=deadline)
     for key, value in expected.items():
         if actual.get(key) != value:
             raise ValueError(f"{label} {key} differs from frozen identity")
     return path, actual
 
 
-def _script_identity(environment_key: str, sha_key: str, label: str) -> Path:
+def _script_identity(
+    environment_key: str,
+    sha_key: str,
+    label: str,
+    deadline: float | None = None,
+) -> Path:
     path = Path(os.environ[environment_key]).resolve(strict=True)
     if not path.is_file() or path.is_symlink():
         raise ValueError(f"{label} is missing or a symbolic link: {path}")
-    if sha256(path) != os.environ[sha_key]:
+    if sha256(path, deadline, f"{label} hashing") != os.environ[sha_key]:
         raise ValueError(f"{label} SHA-256 differs from frozen identity")
     return path
 
@@ -157,9 +165,13 @@ def _verify_recovery_counterparts(
         reference = reference_identities[rule]
         replay_path = Path(replay["realpath"]).resolve(strict=True)
         reference_path = Path(reference["realpath"]).resolve(strict=True)
-        if sha256(replay_path) != replay["sha256"]:
+        if sha256(
+            replay_path, total_deadline, f"{rule} replay hashing"
+        ) != replay["sha256"]:
             failures.append(f"{rule}:replay_identity_changed")
-        if sha256(reference_path) != reference["sha256"]:
+        if sha256(
+            reference_path, total_deadline, f"{rule} reference hashing"
+        ) != reference["sha256"]:
             failures.append(f"{rule}:reference_identity_changed")
         if rule != "relocated_abacus_elf_gate" and (
             replay["sha256"] != reference["sha256"]
@@ -196,7 +208,11 @@ def _verify_recovery_counterparts(
             except ValueError:
                 failures.append(f"recovery_object_outside_root:{recovery_path}")
                 continue
-        recovery_sha = sha256(recovery_realpath)
+        recovery_sha = sha256(
+            recovery_realpath,
+            total_deadline,
+            f"recovery counterpart hashing: {recovery_realpath}",
+        )
         if recovery_sha != registered["sha256"]:
             failures.append(f"recovery_object_hash_changed:{recovery_realpath}")
         rule = exclusions.get(str(recovery_realpath))
@@ -204,7 +220,11 @@ def _verify_recovery_counterparts(
             reference = reference_identities[rule]
             old_path = Path(reference["path"])
             old_realpath = Path(reference["realpath"]).resolve(strict=True)
-            old_sha = sha256(old_realpath)
+            old_sha = sha256(
+                old_realpath,
+                total_deadline,
+                f"registered counterpart hashing: {old_realpath}",
+            )
             byte_equal = recovery_sha == old_sha
             if rule != "relocated_abacus_elf_gate" and not byte_equal:
                 mismatch_count += 1
@@ -224,7 +244,11 @@ def _verify_recovery_counterparts(
                     byte_equal = False
                     missing_count += 1
                 else:
-                    old_sha = sha256(old_realpath)
+                    old_sha = sha256(
+                        old_realpath,
+                        total_deadline,
+                        f"old counterpart hashing: {old_realpath}",
+                    )
                     byte_equal = recovery_sha == old_sha
                     if not byte_equal:
                         mismatch_count += 1
@@ -279,6 +303,78 @@ def _process_group_members(process_group: int) -> list[int]:
         except (FileNotFoundError, PermissionError, OSError, ValueError):
             continue
     return sorted(members)
+
+
+def _pid_namespace_members(namespace_inode: int | None) -> tuple[list[dict], list[str]]:
+    members: list[dict] = []
+    errors: list[str] = []
+    if not isinstance(namespace_inode, int) or namespace_inode <= 0:
+        return members, ["invalid_or_missing_pid_namespace_inode"]
+    try:
+        proc_entries = list(Path("/proc").iterdir())
+    except OSError as error:
+        return members, [f"cannot_list_host_proc:{error}"]
+    for entry in proc_entries:
+        if not entry.name.isdigit():
+            continue
+        namespace_path = entry / "ns" / "pid"
+        try:
+            inode = namespace_path.stat().st_ino
+        except FileNotFoundError:
+            continue
+        except (PermissionError, OSError) as error:
+            errors.append(f"cannot_stat_pid_namespace:{entry.name}:{error}")
+            continue
+        if inode != namespace_inode:
+            continue
+        try:
+            stat_text = (entry / "stat").read_text(encoding="ascii")
+            start_time_ticks = int(stat_text[stat_text.rfind(")") + 2 :].split()[19])
+        except (FileNotFoundError, PermissionError, OSError, ValueError, IndexError):
+            start_time_ticks = None
+        members.append(
+            {
+                "host_pid": int(entry.name),
+                "pid_namespace_inode": inode,
+                "start_time_ticks": start_time_ticks,
+            }
+        )
+    return sorted(members, key=lambda row: row["host_pid"]), errors
+
+
+def _prove_pid_namespace_empty(
+    namespace_inode: int | None, deadline: float
+) -> dict:
+    proof_started = time.monotonic()
+    proof_deadline = min(deadline, time.monotonic() + 5.0)
+    observations = []
+    final_members: list[dict] = []
+    final_errors: list[str] = []
+    while True:
+        members, errors = _pid_namespace_members(namespace_inode)
+        observations.append(
+            {
+                "monotonic_offset_seconds": time.monotonic() - proof_started,
+                "member_host_pids": [row["host_pid"] for row in members],
+                "scan_errors": errors,
+            }
+        )
+        final_members, final_errors = members, errors
+        if not members or errors or time.monotonic() >= proof_deadline:
+            break
+        time.sleep(0.05)
+    return {
+        "pid_namespace_inode": namespace_inode,
+        "observations": observations,
+        "members_after_namespace_exit": final_members,
+        "scan_errors": final_errors,
+        "all_namespace_members_gone": (
+            isinstance(namespace_inode, int)
+            and namespace_inode > 0
+            and not final_members
+            and not final_errors
+        ),
+    }
 
 
 def _descendants(root_pid: int) -> list[int]:
@@ -343,8 +439,11 @@ def _terminate_group(process: subprocess.Popen) -> dict:
     }
 
 
-def main() -> int:
-    total_deadline = time.monotonic() + 7260
+def _main_impl() -> int:
+    started = time.time()
+    started_monotonic = time.monotonic()
+    started_at_utc = datetime.now(timezone.utc).isoformat()
+    total_deadline = started_monotonic + 7260
     audit_directory = Path(os.environ["M_OFDFT_MPI_AUDIT_DIR"])
     try:
         audit_directory.mkdir(parents=True, exist_ok=False)
@@ -368,7 +467,14 @@ def main() -> int:
         "members_after_cleanup": [],
         "tracee_pids_before_cleanup": [],
         "tracee_pids_after_cleanup": [],
-        "all_group_members_gone": True,
+        "all_group_members_gone": False,
+    }
+    pid_namespace_cleanup = {
+        "pid_namespace_inode": None,
+        "observations": [],
+        "members_after_namespace_exit": [],
+        "scan_errors": ["namespace_not_started"],
+        "all_namespace_members_gone": False,
     }
     try:
         if os.getuid() == 0:
@@ -387,25 +493,34 @@ def main() -> int:
         ):
             raise ValueError("host old runtime preflight identity is unsafe")
         unshare_path, before["unshare"] = _tool_from_environment(
-            "UNSHARE", "unshare"
+            "UNSHARE", "unshare", total_deadline
         )
-        bash_path, before["bash"] = _tool_from_environment("BASH", "bash")
-        mount_path, before["mount"] = _tool_from_environment("MOUNT", "mount")
-        _, before["python"] = _tool_from_environment("PYTHON", "python")
+        bash_path, before["bash"] = _tool_from_environment(
+            "BASH", "bash", total_deadline
+        )
+        mount_path, before["mount"] = _tool_from_environment(
+            "MOUNT", "mount", total_deadline
+        )
+        _, before["python"] = _tool_from_environment(
+            "PYTHON", "python", total_deadline
+        )
         payload = _script_identity(
             "M_OFDFT_NAMESPACE_PAYLOAD",
             "M_OFDFT_NAMESPACE_PAYLOAD_SHA256",
             "namespace payload",
+            total_deadline,
         )
         audit_launcher = _script_identity(
             "M_OFDFT_AUDIT_LAUNCHER",
             "M_OFDFT_AUDIT_LAUNCHER_SHA256",
             "runtime audit launcher",
+            total_deadline,
         )
         rank_wrapper = _script_identity(
             "M_OFDFT_RANK_WRAPPER",
             "M_OFDFT_RANK_WRAPPER_SHA256",
             "rank handshake wrapper",
+            total_deadline,
         )
         if Path(os.environ["M_OFDFT_MOUNT_TOOL"]).resolve(strict=True) != mount_path.resolve(
             strict=True
@@ -417,6 +532,9 @@ def main() -> int:
             "--map-root-user",
             "--kill-child=KILL",
             "--mount",
+            "--pid",
+            "--fork",
+            "--mount-proc",
             "--propagation",
             "private",
             str(bash_path),
@@ -428,11 +546,17 @@ def main() -> int:
             "status": "accepted",
             "tools": before,
             "namespace_payload_path": str(payload),
-            "namespace_payload_sha256": sha256(payload),
+            "namespace_payload_sha256": sha256(
+                payload, total_deadline, "namespace payload preflight hashing"
+            ),
             "audit_launcher_path": str(audit_launcher),
-            "audit_launcher_sha256": sha256(audit_launcher),
+            "audit_launcher_sha256": sha256(
+                audit_launcher, total_deadline, "audit launcher preflight hashing"
+            ),
             "rank_wrapper_path": str(rank_wrapper),
-            "rank_wrapper_sha256": sha256(rank_wrapper),
+            "rank_wrapper_sha256": sha256(
+                rank_wrapper, total_deadline, "rank wrapper preflight hashing"
+            ),
             "command": command,
             "stdin": "/dev/null",
             "host_old_runtime_before": host_old_runtime_before,
@@ -457,13 +581,29 @@ def main() -> int:
             if residual:
                 cleanup_evidence = _terminate_group(process)
                 failure_reasons.append("namespace_process_group_residual_after_exit")
+            else:
+                cleanup_evidence = _terminate_group(process)
+        namespace_inode = None
+        state_path = namespace_directory / "state.before_mount.json"
+        try:
+            state = json.loads(state_path.read_text(encoding="utf-8"))
+            namespace_inode = state.get("pid_namespace_inode")
+        except (FileNotFoundError, json.JSONDecodeError, OSError) as error:
+            failure_reasons.append(f"pid_namespace_identity_unavailable:{error}")
+        pid_namespace_cleanup = _prove_pid_namespace_empty(
+            namespace_inode, total_deadline
+        )
+        if not pid_namespace_cleanup["all_namespace_members_gone"]:
+            failure_reasons.append("pid_namespace_terminal_proof_incomplete")
         if exit_code == 0:
             counterpart_audit = _verify_recovery_counterparts(
                 audit_directory, total_deadline
             )
             if counterpart_audit.get("status") != "accepted":
                 failure_reasons.extend(counterpart_audit.get("failure_reasons", []))
-    except (KeyError, FileNotFoundError, OSError, ValueError) as error:
+    except (KeyError, FileNotFoundError, OSError, TimeoutError, ValueError) as error:
+        if isinstance(error, TimeoutError):
+            timeout_triggered = True
         failure_reasons.append(f"namespace_launch_failed:{error}")
         if process is not None:
             cleanup_evidence = _terminate_group(process)
@@ -476,7 +616,7 @@ def main() -> int:
         ("PYTHON", "python"),
     ):
         try:
-            _, after[label] = _tool_from_environment(prefix, label)
+            _, after[label] = _tool_from_environment(prefix, label, total_deadline)
             if label in before and after[label] != before[label]:
                 failure_reasons.append(f"{label}_identity_changed_during_run")
         except (KeyError, FileNotFoundError, OSError, ValueError) as error:
@@ -492,6 +632,11 @@ def main() -> int:
         failure_reasons.append("namespace_total_deadline_exceeded_during_postflight")
     if exit_code != 0:
         failure_reasons.append(f"namespace_payload_exit_code:{exit_code}")
+    ended_monotonic = time.monotonic()
+    ended = time.time()
+    if ended_monotonic > total_deadline:
+        timeout_triggered = True
+        failure_reasons.append("namespace_absolute_deadline_exceeded_before_summary")
     status = {
         "schema_version": 1,
         "status": "accepted" if not failure_reasons else "rejected",
@@ -500,8 +645,15 @@ def main() -> int:
         "stdin": "/dev/null",
         "namespace_payload_exit_code": exit_code,
         "total_wall_timeout_seconds": 7260,
+        "absolute_deadline_watchdog_seconds": 7260,
+        "started_at_utc": started_at_utc,
+        "ended_at_utc": datetime.now(timezone.utc).isoformat(),
+        "started_epoch_seconds": started,
+        "ended_epoch_seconds": ended,
+        "elapsed_seconds": ended_monotonic - started_monotonic,
         "timeout_triggered": timeout_triggered,
         "process_group_cleanup": cleanup_evidence,
+        "pid_namespace_cleanup": pid_namespace_cleanup,
         "tools_before": before,
         "tools_after": after,
         "host_old_runtime_before": host_old_runtime_before,
@@ -509,7 +661,57 @@ def main() -> int:
         "counterpart_audit": counterpart_audit,
     }
     _atomic_json(namespace_directory / "host_status.json", status)
+    if time.monotonic() > total_deadline and status["status"] == "accepted":
+        status["status"] = "rejected"
+        status["timeout_triggered"] = True
+        status["failure_reasons"].append(
+            "namespace_absolute_deadline_exceeded_during_summary_write"
+        )
+        status["ended_epoch_seconds"] = time.time()
+        status["ended_at_utc"] = datetime.now(timezone.utc).isoformat()
+        status["elapsed_seconds"] = time.monotonic() - started_monotonic
+        _atomic_json(namespace_directory / "host_status.json", status)
     return 0 if not failure_reasons else (exit_code if exit_code else 97)
+
+
+def _deadline_alarm(_signum, _frame) -> None:
+    raise TimeoutError("namespace absolute watchdog expired")
+
+
+def main() -> int:
+    previous_handler = signal.getsignal(signal.SIGALRM)
+    signal.signal(signal.SIGALRM, _deadline_alarm)
+    signal.setitimer(signal.ITIMER_REAL, 7260.0)
+    try:
+        return _main_impl()
+    except TimeoutError as error:
+        audit_directory = Path(os.environ.get("M_OFDFT_MPI_AUDIT_DIR", "."))
+        namespace_directory = audit_directory / "namespace"
+        namespace_directory.mkdir(parents=True, exist_ok=True)
+        _atomic_json(
+            namespace_directory / "host_status.json",
+            {
+                "schema_version": 1,
+                "status": "rejected",
+                "failure_reasons": [f"namespace_absolute_watchdog:{error}"],
+                "namespace_payload_exit_code": 124,
+                "total_wall_timeout_seconds": 7260,
+                "absolute_deadline_watchdog_seconds": 7260,
+                "timeout_triggered": True,
+                "process_group_cleanup": {"all_group_members_gone": False},
+                "pid_namespace_cleanup": {
+                    "pid_namespace_inode": None,
+                    "observations": [],
+                    "members_after_namespace_exit": [],
+                    "scan_errors": ["watchdog_expired"],
+                    "all_namespace_members_gone": False,
+                },
+            },
+        )
+        return 124
+    finally:
+        signal.setitimer(signal.ITIMER_REAL, 0.0)
+        signal.signal(signal.SIGALRM, previous_handler)
 
 
 if __name__ == "__main__":

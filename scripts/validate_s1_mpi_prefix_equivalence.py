@@ -11,6 +11,7 @@ import os
 import re
 import stat
 import subprocess
+from datetime import datetime
 from pathlib import Path
 
 from analyze_s1_non_equilibrium import _archive_failures, _checksum_failures
@@ -46,6 +47,7 @@ from s1_runtime_relocation_elf import (
     relocation_equivalence_evidence,
     versioned_tool_identity,
 )
+from s1_runtime_relocation_smoke import validate_smoke
 
 
 TOP_LEVEL_KEYS = {
@@ -80,6 +82,8 @@ AUDIT_KEYS = {
     "launcher_count",
     "rank_count",
     "runtime_wall_timeout_seconds",
+    "absolute_deadline_watchdog_seconds",
+    "known_pid_terminal_proof_required",
     "mapping_observation_scope",
     "mpirun_and_support_daemon_maps_out_of_scope",
     "rank_handshake_required",
@@ -125,6 +129,7 @@ SOURCE_KEYS = {
     "r8_series_status",
     "r8_manifest_validation",
     "r8_algorithm_provenance",
+    "runtime_relocation_smoke",
 }
 R8_VALIDATION_KEYS = {
     "experiment_count",
@@ -173,6 +178,9 @@ FROZEN_IMPLEMENTATION_PATHS = (
     "scripts/runtime_relocation_namespace_launcher.py",
     "scripts/runtime_relocation_namespace_payload.sh",
     "scripts/runtime_relocation_rank_wrapper.py",
+    "scripts/write_s1_runtime_relocation_status.py",
+    "scripts/s1_runtime_relocation_smoke.py",
+    "scripts/run_s1_runtime_relocation_smoke.py",
     "scripts/s1_runtime_relocation_elf.py",
     "scripts/analyze_s1_mpi_prefix_equivalence.py",
     "scripts/analyze_s1_runtime_relocation_equivalence.py",
@@ -281,6 +289,35 @@ def _integer_fields(value: object) -> list[int]:
         return []
 
 
+def _timing_evidence_failures(payload: dict, timeout: float, label: str) -> list[str]:
+    failures: list[str] = []
+    numeric = {}
+    for key in ("started_epoch_seconds", "ended_epoch_seconds", "elapsed_seconds"):
+        value = payload.get(key)
+        if not isinstance(value, (int, float)) or isinstance(value, bool):
+            failures.append(f"{label} {key} is not numeric")
+        else:
+            numeric[key] = float(value)
+    for key in ("started_at_utc", "ended_at_utc"):
+        value = payload.get(key)
+        try:
+            parsed = datetime.fromisoformat(str(value))
+            if parsed.tzinfo is None:
+                raise ValueError("timezone missing")
+        except ValueError:
+            failures.append(f"{label} {key} is not a timezone-aware ISO timestamp")
+    if len(numeric) == 3:
+        wall_elapsed = numeric["ended_epoch_seconds"] - numeric["started_epoch_seconds"]
+        monotonic_elapsed = numeric["elapsed_seconds"]
+        if wall_elapsed < 0 or monotonic_elapsed < 0:
+            failures.append(f"{label} elapsed time is negative")
+        if abs(wall_elapsed - monotonic_elapsed) > max(1.0, monotonic_elapsed * 0.01):
+            failures.append(f"{label} wall/monotonic elapsed evidence is inconsistent")
+        if monotonic_elapsed > timeout:
+            failures.append(f"{label} elapsed time exceeds absolute deadline")
+    return failures
+
+
 def _git_bytes(project_root: Path, *arguments: str) -> bytes:
     completed = subprocess.run(
         ["git", "-C", str(project_root), *arguments],
@@ -292,6 +329,48 @@ def _git_bytes(project_root: Path, *arguments: str) -> bytes:
         detail = completed.stderr.decode("utf-8", errors="replace").strip()
         raise ValueError(f"git {' '.join(arguments)} failed: {detail}")
     return completed.stdout
+
+
+def _git_tree_entries(
+    project_root: Path, commit: str, prefix: str
+) -> dict[str, tuple[str, str, str]]:
+    """Return the complete tracked leaf collection below *prefix* at *commit*.
+
+    Git does not track empty directories.  Every tracked leaf is nevertheless
+    represented by its relative path, mode (which distinguishes regular files,
+    executables, symlinks, and gitlinks), object type, and object id.  Comparing
+    this mapping therefore rejects missing/extra paths and type changes as well
+    as byte changes.
+    """
+
+    normalized = prefix.rstrip("/")
+    output = _git_bytes(
+        project_root,
+        "ls-tree",
+        "-r",
+        "-z",
+        commit,
+        "--",
+        normalized,
+    )
+    entries: dict[str, tuple[str, str, str]] = {}
+    for raw in output.split(b"\0"):
+        if not raw:
+            continue
+        try:
+            metadata, raw_path = raw.split(b"\t", 1)
+            mode, object_type, object_id = metadata.decode("ascii").split(" ", 2)
+            path = raw_path.decode("utf-8", errors="surrogateescape")
+        except ValueError as error:
+            raise ValueError(f"cannot parse git tree entry below {normalized}") from error
+        expected_prefix = normalized + "/"
+        if not path.startswith(expected_prefix):
+            raise ValueError(f"git tree path escaped prefix {normalized}: {path}")
+        suffix = path[len(expected_prefix) :]
+        if not suffix or suffix in entries:
+            raise ValueError(f"duplicate/empty git tree suffix below {normalized}: {suffix}")
+        entries[suffix] = (mode, object_type, object_id)
+    return entries
 
 
 def _preregistration_commit(
@@ -423,16 +502,41 @@ def _failed_archive_chain_failures(project_root: Path, experiment_id: str) -> li
             ).decode("ascii").strip()
             if archive_parent != failure_commit:
                 failures.append(f"{prefix} archive commit does not immediately follow failure")
-            for path in sorted(item for item in attempt.rglob("*") if item.is_file()):
-                suffix = path.relative_to(attempt).as_posix()
-                failure_blob = _git_bytes(
-                    project_root,
-                    "cat-file",
-                    "blob",
-                    f"{failure_commit}:runs/{experiment_id}/{suffix}",
+            failure_entries = _git_tree_entries(
+                project_root, failure_commit, f"runs/{experiment_id}"
+            )
+            archived_entries = _git_tree_entries(
+                project_root, archive_commit, attempt.relative_to(project_root).as_posix()
+            )
+            head_entries = _git_tree_entries(
+                project_root, "HEAD", attempt.relative_to(project_root).as_posix()
+            )
+            archive_worktree_changes = _git_bytes(
+                project_root,
+                "status",
+                "--porcelain=v1",
+                "--untracked-files=all",
+                "--",
+                attempt.relative_to(project_root).as_posix(),
+            )
+            if not failure_entries:
+                failures.append(f"{prefix} failed-run commit has an empty tracked tree")
+            if archived_entries != failure_entries:
+                missing = sorted(set(failure_entries) - set(archived_entries))
+                added = sorted(set(archived_entries) - set(failure_entries))
+                changed = sorted(
+                    suffix
+                    for suffix in set(failure_entries) & set(archived_entries)
+                    if failure_entries[suffix] != archived_entries[suffix]
                 )
-                if path.read_bytes() != failure_blob:
-                    failures.append(f"{prefix} archived blob differs: {suffix}")
+                failures.append(
+                    f"{prefix} archive tree differs from failed run: "
+                    f"missing={missing} added={added} mode_type_or_blob_changed={changed}"
+                )
+            if head_entries != archived_entries:
+                failures.append(f"{prefix} current archive tree differs from archive commit")
+            if archive_worktree_changes:
+                failures.append(f"{prefix} current archive worktree differs from HEAD")
         except (FileNotFoundError, KeyError, ValueError, json.JSONDecodeError) as error:
             failures.append(f"{prefix} archive chain validation failed: {error}")
     return failures
@@ -995,14 +1099,43 @@ def _validate_runtime_relocation_audit_evidence(
     if audit.get("runtime_environment") != expected_runtime_environment:
         errors.append(f"{prefix} final runtime environment differs from registration")
     audit_cleanup = audit.get("process_group_cleanup", {})
+    terminal_process = audit.get("terminal_process_evidence", {})
     if (
         audit.get("runtime_wall_timeout_seconds") != 7200
+        or audit.get("absolute_deadline_watchdog_seconds") != 7200
         or audit.get("timeout_triggered") is not False
         or audit_cleanup.get("all_group_members_gone") is not True
         or audit_cleanup.get("members_after_cleanup") != []
         or audit_cleanup.get("tracee_pids_after_cleanup") != []
     ):
         errors.append(f"{prefix} runtime audit timeout/process cleanup evidence mismatch")
+    errors.extend(
+        f"{prefix} {failure}"
+        for failure in _timing_evidence_failures(audit, 7200, "runtime audit")
+    )
+    known_pid_rows = terminal_process.get("known_pids", [])
+    if (
+        terminal_process.get("all_known_pids_gone") is not True
+        or terminal_process.get("process_group_members_after") != []
+        or not isinstance(known_pid_rows, list)
+        or terminal_process.get("known_pid_count") != len(known_pid_rows)
+        or len(known_pid_rows) < 6
+        or any(
+            not isinstance(row, dict)
+            or row.get("terminal_state") not in ("gone", "pid_reused_original_gone")
+            or not isinstance(row.get("sources"), list)
+            or not row.get("sources")
+            for row in known_pid_rows
+        )
+    ):
+        errors.append(f"{prefix} runtime known-PID terminal proof is incomplete")
+    strace_command = audit.get("strace_command", [])
+    if (
+        not isinstance(strace_command, list)
+        or "--kill-on-exit" not in strace_command
+        or "trace=file,process" not in strace_command
+    ):
+        errors.append(f"{prefix} strace process/kill-on-exit contract mismatch")
     controlled_home = run_directory / "runtime_home"
     controlled_marker = controlled_home / "CONTROLLED_HOME.txt"
     if (
@@ -1048,14 +1181,27 @@ def _validate_runtime_relocation_audit_evidence(
     ):
         errors.append(f"{prefix} namespace host before/after tool gate failed")
     cleanup = host_status.get("process_group_cleanup", {})
+    pid_namespace_cleanup = host_status.get("pid_namespace_cleanup", {})
     if (
         host_status.get("total_wall_timeout_seconds") != 7260
+        or host_status.get("absolute_deadline_watchdog_seconds") != 7260
         or host_status.get("timeout_triggered") is not False
         or cleanup.get("all_group_members_gone") is not True
         or cleanup.get("members_after_cleanup") != []
         or cleanup.get("tracee_pids_after_cleanup") != []
     ):
         errors.append(f"{prefix} namespace timeout/process cleanup evidence mismatch")
+    errors.extend(
+        f"{prefix} {failure}"
+        for failure in _timing_evidence_failures(host_status, 7260, "namespace host")
+    )
+    if (
+        pid_namespace_cleanup.get("all_namespace_members_gone") is not True
+        or pid_namespace_cleanup.get("members_after_namespace_exit") != []
+        or pid_namespace_cleanup.get("scan_errors") != []
+        or not isinstance(pid_namespace_cleanup.get("pid_namespace_inode"), int)
+    ):
+        errors.append(f"{prefix} host PID-namespace terminal proof is incomplete")
     if host_status.get("counterpart_audit") != counterpart_audit:
         errors.append(f"{prefix} host counterpart audit handoff mismatch")
     if host_status.get("tools_before") != {
@@ -1079,6 +1225,7 @@ def _validate_runtime_relocation_audit_evidence(
     if payloads.get("payload_status.json", {}).get("status") != "accepted":
         errors.append(f"{prefix} namespace payload did not accept")
     before_state = payloads.get("state.before_mount.json", {})
+    namespace_inode = before_state.get("pid_namespace_inode")
     raw_before_lines = namespace_paths["mountinfo.before_mount"].read_text(
         encoding="utf-8", errors="replace"
     ).splitlines() if namespace_paths["mountinfo.before_mount"].is_file() else []
@@ -1098,6 +1245,10 @@ def _validate_runtime_relocation_audit_evidence(
         or before_state.get("old_root_mountinfo_lines") != []
         or before_state.get("old_root_mountinfo_lines") != recomputed_before_old_lines
         or before_state.get("shared_mount_lines") != []
+        or before_state.get("namespace_init_pid") != 1
+        or not isinstance(namespace_inode, int)
+        or namespace_inode <= 0
+        or before_state.get("nspid", [])[-1:] != [before_state.get("pid")]
         or uid_map != expected_uid_map
         or gid_map != expected_gid_map
     ):
@@ -1128,6 +1279,9 @@ def _validate_runtime_relocation_audit_evidence(
             or state.get("old_prefix_exists")
             or not mount_ok
             or state.get("shared_mount_lines") != []
+            or state.get("namespace_init_pid") != 1
+            or state.get("pid_namespace_inode") != namespace_inode
+            or state.get("nspid", [])[-1:] != [state.get("pid")]
             or lines != recomputed_old_lines
             or _integer_fields(state.get("uid_map", "")) != expected_uid_map
             or _integer_fields(state.get("gid_map", "")) != expected_gid_map
@@ -1135,6 +1289,11 @@ def _validate_runtime_relocation_audit_evidence(
             errors.append(f"{prefix} namespace {phase} isolation evidence mismatch")
     if not Path(runtime["old_root"]).is_dir() or not Path(runtime["old_prefix"]).is_dir():
         errors.append(f"{prefix} host old runtime did not survive private namespace")
+    if pid_namespace_cleanup.get("pid_namespace_inode") != namespace_inode:
+        errors.append(f"{prefix} host cleanup scanned a different PID namespace")
+    payload_status = payloads.get("payload_status.json", {})
+    if payload_status.get("pid_namespace_inode") != namespace_inode:
+        errors.append(f"{prefix} payload status PID namespace identity mismatch")
     return evidence_paths
 
 
@@ -1332,6 +1491,8 @@ def validate_replay_run(
         "schema_version": 2,
         "status": "accepted",
         "runtime_relocation_mode": True,
+        "setup_completed": True,
+        "failure_stage": None,
         "workflow_exit_code": 0,
         "invocation_exit_code": 0,
         "launcher_exit_code": 0,
@@ -1438,9 +1599,19 @@ def _failure_status_model_errors(
         "launcher_exit_code": launcher_exit,
         "parser_exit_code": parser_exit,
     }
+    failure_stage = run_status.get("failure_stage")
+    failure_stage_valid = (
+        run_status.get("status") == "accepted" and failure_stage is None
+    ) or (
+        run_status.get("status") == "rejected"
+        and isinstance(failure_stage, str)
+        and bool(failure_stage)
+    )
     if (
         run_status.get("schema_version") != 2
         or run_status.get("runtime_relocation_mode") is not True
+        or not isinstance(run_status.get("setup_completed"), bool)
+        or not failure_stage_valid
         or any(run_status.get(key) != value for key, value in mirrored_exit_fields.items())
     ):
         errors.append("run_status.json is not a coherent runtime-relocation execution")
@@ -1472,6 +1643,8 @@ def _failure_status_model_errors(
         "status": "failed_attempt_preserved",
         **mirrored_exit_fields,
         "core_validation_exit_code": core_validation_exit,
+        "setup_completed": run_status.get("setup_completed"),
+        "failure_stage": run_status.get("failure_stage"),
         "runtime_audit_failure_reasons": replay_status.get(
             "runtime_audit_failure_reasons", []
         ),
@@ -1497,43 +1670,14 @@ def validate_failed_replay_run(
         return [f"{prefix} missing failed-attempt directory"]
     source_directory = path_from_project(project_root, row["input_directory"])
     required = {
-        "INPUT": run_directory / "INPUT",
-        "STRU": run_directory / "STRU",
-        "KPT": run_directory / "KPT",
-        "input_metadata.json": run_directory / "input_metadata.json",
         "experiment_metadata.json": run_directory / "experiment_metadata.json",
-        "INPUT_SHA256SUMS": run_directory / "INPUT_SHA256SUMS",
         "run_status.json": run_directory / "run_status.json",
         "replay_status.json": run_directory / "replay_status.json",
         "failure.json": run_directory / "failure.json",
-        row["pseudopotential"]: run_directory / row["pseudopotential"],
     }
     for name, path in required.items():
         if not path.is_file() or path.is_symlink():
             errors.append(f"{prefix} missing or symbolic-link failure artifact {name}")
-    try:
-        if required["INPUT"].read_bytes() != normalized_run_input(
-            (source_directory / "INPUT").read_bytes()
-        ):
-            errors.append(f"{prefix} failed-attempt INPUT differs from frozen source")
-        for name in ("STRU", "KPT"):
-            if required[name].read_bytes() != (source_directory / name).read_bytes():
-                errors.append(f"{prefix} failed-attempt {name} differs from source")
-        if required["input_metadata.json"].read_bytes() != (
-            source_directory / "metadata.json"
-        ).read_bytes():
-            errors.append(f"{prefix} failed-attempt metadata differs from source")
-        if required[row["pseudopotential"]].read_bytes() != (
-            project_root / "assets" / "pseudo" / row["pseudopotential"]
-        ).read_bytes():
-            errors.append(f"{prefix} failed-attempt pseudopotential differs")
-    except (FileNotFoundError, ValueError) as error:
-        errors.append(f"{prefix} failed-attempt input comparison failed: {error}")
-    errors.extend(
-        f"{prefix} {failure}"
-        for failure in _checksum_failures(run_directory, row["pseudopotential"])
-    )
-
     try:
         run_status = json.loads(required["run_status.json"].read_text(encoding="utf-8"))
         replay_status = json.loads(
@@ -1556,6 +1700,46 @@ def validate_failed_replay_run(
             run_status, replay_status, failure_status
         )
     )
+    setup_paths = {
+        "INPUT": run_directory / "INPUT",
+        "STRU": run_directory / "STRU",
+        "KPT": run_directory / "KPT",
+        "input_metadata.json": run_directory / "input_metadata.json",
+        "INPUT_SHA256SUMS": run_directory / "INPUT_SHA256SUMS",
+        row["pseudopotential"]: run_directory / row["pseudopotential"],
+    }
+    setup_completed = run_status.get("setup_completed") is True
+    if setup_completed:
+        for name, path in setup_paths.items():
+            if not path.is_file() or path.is_symlink():
+                errors.append(f"{prefix} missing completed-setup artifact {name}")
+    try:
+        comparisons = {
+            "INPUT": normalized_run_input((source_directory / "INPUT").read_bytes()),
+            "STRU": (source_directory / "STRU").read_bytes(),
+            "KPT": (source_directory / "KPT").read_bytes(),
+            "input_metadata.json": (source_directory / "metadata.json").read_bytes(),
+            row["pseudopotential"]: (
+                project_root / "assets" / "pseudo" / row["pseudopotential"]
+            ).read_bytes(),
+        }
+        for name, expected in comparisons.items():
+            path = setup_paths[name]
+            if path.exists() or path.is_symlink():
+                if not path.is_file() or path.is_symlink() or path.read_bytes() != expected:
+                    errors.append(f"{prefix} failed-attempt {name} differs from source")
+        if setup_completed:
+            errors.extend(
+                f"{prefix} {failure}"
+                for failure in _checksum_failures(run_directory, row["pseudopotential"])
+            )
+    except (FileNotFoundError, ValueError) as error:
+        errors.append(f"{prefix} failed-attempt input comparison failed: {error}")
+    if not setup_completed and (
+        (run_directory / "result.json").exists()
+        or (run_directory / "mpi_runtime_audit").exists()
+    ):
+        errors.append(f"{prefix} pre-setup failure contains execution artifacts")
 
     logs = sorted(run_directory.glob("OUT.*/running_scf.log"))
     if len(logs) > 1:
@@ -1834,6 +2018,9 @@ def validate(
             "--map-root-user",
             "--kill-child=KILL",
             "--mount",
+            "--pid",
+            "--fork",
+            "--mount-proc",
             "--propagation",
             "private",
             tools.get("bash", {}).get("path"),
@@ -1847,6 +2034,9 @@ def validate(
         "host_uid": os.getuid(),
         "host_gid": os.getgid(),
         "namespace_effective_uid": 0,
+        "pid_namespace_required": True,
+        "namespace_init_pid": 1,
+        "host_proc_pid_namespace_empty_after_exit_required": True,
         "external_old_root_must_survive": True,
         "total_wall_timeout_seconds": 7260,
         "timeout_requires_zero_residual_processes": True,
@@ -1857,6 +2047,8 @@ def validate(
         "launcher_count": 1,
         "rank_count": 4,
         "runtime_wall_timeout_seconds": 7200,
+        "absolute_deadline_watchdog_seconds": 7200,
+        "known_pid_terminal_proof_required": True,
         "mapping_observation_scope": "final_prterun_and_four_abacus_ranks",
         "mpirun_and_support_daemon_maps_out_of_scope": True,
         "rank_handshake_required": True,
@@ -2224,6 +2416,28 @@ def validate(
                 errors.append(f"{replay_id}: recorded reference mpirun identity mismatch")
         except (FileNotFoundError, KeyError, TypeError, ValueError, json.JSONDecodeError) as error:
             errors.append(f"{replay_id}: reference raw-log validation failed: {error}")
+
+    registered_smoke = source.get("runtime_relocation_smoke")
+    smoke_row = next(
+        (row for row in rows if row.get("reference_experiment_id") == "S1-20260805-074"),
+        None,
+    )
+    if not isinstance(registered_smoke, dict) or smoke_row is None:
+        errors.append("registered managed 074 smoke evidence is missing")
+    else:
+        try:
+            smoke_summary_path = path_from_project(
+                project_root, str(registered_smoke["summary_path"])
+            )
+            current_smoke = validate_smoke(
+                project_root, config, smoke_row, smoke_summary_path
+            )
+            smoke_tracked_paths = current_smoke.pop("tracked_paths")
+            frozen_paths.extend(smoke_tracked_paths)
+            if current_smoke != registered_smoke:
+                errors.append("managed 074 smoke evidence differs from registration")
+        except (KeyError, FileNotFoundError, TypeError, ValueError, json.JSONDecodeError) as error:
+            errors.append(f"managed 074 smoke validation failed: {error}")
 
     if seen != set(expected_by_replay):
         errors.append(f"manifest replay IDs differ: {sorted(seen)}")

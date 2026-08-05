@@ -20,7 +20,9 @@ import analyze_s1_mpi_prefix_equivalence as ANALYZER  # noqa: E402
 import generate_s1_mpi_prefix_equivalence as GENERATOR  # noqa: E402
 import runtime_relocation_audit_launcher as AUDIT  # noqa: E402
 import runtime_relocation_namespace_launcher as NAMESPACE  # noqa: E402
+import run_s1_runtime_relocation_smoke as SMOKE_RUNNER  # noqa: E402
 import s1_mpi_prefix_equivalence_common as COMMON  # noqa: E402
+import s1_runtime_relocation_smoke as SMOKE  # noqa: E402
 import s1_runtime_relocation_elf as ELF  # noqa: E402
 import validate_s1_mpi_prefix_equivalence as VALIDATOR  # noqa: E402
 from parse_s1_single import parse_log  # noqa: E402
@@ -338,6 +340,74 @@ class S1MpiPrefixEquivalenceTest(unittest.TestCase):
             )
             self.assertNotIn(999, AUDIT._descendants(100, proc))
 
+    def test_deadline_and_terminal_pid_evidence_are_fail_closed(self) -> None:
+        timing = {
+            "started_at_utc": "2026-08-05T00:00:00+00:00",
+            "ended_at_utc": "2026-08-05T02:00:01+00:00",
+            "started_epoch_seconds": 0.0,
+            "ended_epoch_seconds": 7201.0,
+            "elapsed_seconds": 7201.0,
+        }
+        self.assertTrue(
+            any(
+                "exceeds absolute deadline" in failure
+                for failure in VALIDATOR._timing_evidence_failures(
+                    timing, 7200, "runtime audit"
+                )
+            )
+        )
+
+        known = {
+            123: {
+                "pid": 123,
+                "sources": {"strace_trace_file", "rank_handshake"},
+                "observed_start_time_ticks": 9,
+            }
+        }
+        with mock.patch.object(AUDIT, "_proc_start_time_ticks", return_value=None), mock.patch.object(
+            AUDIT, "_process_group_members", return_value=[]
+        ):
+            gone = AUDIT._prove_known_pids_gone(known, time.monotonic() + 1, 100)
+        self.assertTrue(gone["all_known_pids_gone"])
+        self.assertEqual(gone["known_pids"][0]["terminal_state"], "gone")
+
+        known[123]["observed_start_time_ticks"] = None
+        with mock.patch.object(AUDIT, "_proc_start_time_ticks", return_value=9), mock.patch.object(
+            AUDIT, "_process_group_members", return_value=[]
+        ):
+            unproven = AUDIT._prove_known_pids_gone(known, time.monotonic(), 100)
+        self.assertFalse(unproven["all_known_pids_gone"])
+
+        with mock.patch.object(NAMESPACE, "_pid_namespace_members", return_value=([], [])):
+            namespace_gone = NAMESPACE._prove_pid_namespace_empty(
+                456, time.monotonic() + 1
+            )
+        self.assertTrue(namespace_gone["all_namespace_members_gone"])
+        with mock.patch.object(
+            NAMESPACE,
+            "_pid_namespace_members",
+            return_value=([], ["cannot_stat_pid_namespace:7"]),
+        ):
+            namespace_unknown = NAMESPACE._prove_pid_namespace_empty(
+                456, time.monotonic() + 1
+            )
+        self.assertFalse(namespace_unknown["all_namespace_members_gone"])
+
+    def test_version_probe_timeout_is_part_of_absolute_deadline(self) -> None:
+        identity = {
+            "path": "/synthetic/tool",
+            "realpath": "/synthetic/tool",
+            "sha256": "0" * 64,
+        }
+        with mock.patch.object(ELF, "file_identity", return_value=identity), mock.patch.object(
+            ELF.subprocess,
+            "run",
+            side_effect=subprocess.TimeoutExpired(["/synthetic/tool", "--version"], 1),
+        ), self.assertRaisesRegex(TimeoutError, "tool --version"):
+            ELF.versioned_tool_identity(
+                Path("/synthetic/tool"), "tool", deadline=time.monotonic() + 1
+            )
+
     def test_rank_wrapper_waits_for_explicit_release_before_exec(self) -> None:
         with tempfile.TemporaryDirectory() as temporary:
             handshake = Path(temporary) / "handshake"
@@ -495,6 +565,8 @@ class S1MpiPrefixEquivalenceTest(unittest.TestCase):
             "schema_version": 2,
             "status": "accepted",
             "runtime_relocation_mode": True,
+            "setup_completed": True,
+            "failure_stage": None,
             "workflow_exit_code": 0,
             "invocation_exit_code": 0,
             "launcher_exit_code": 0,
@@ -529,6 +601,8 @@ class S1MpiPrefixEquivalenceTest(unittest.TestCase):
                 "launcher_exit_code": run_status["launcher_exit_code"],
                 "parser_exit_code": run_status["parser_exit_code"],
                 "core_validation_exit_code": core_exit,
+                "setup_completed": run_status["setup_completed"],
+                "failure_stage": run_status["failure_stage"],
                 "runtime_audit_failure_reasons": [],
                 "retry_requires_committed_archive": True,
             }
@@ -543,6 +617,7 @@ class S1MpiPrefixEquivalenceTest(unittest.TestCase):
         parser_failed.update(
             {
                 "status": "rejected",
+                "failure_stage": "runtime_invocation_or_parser",
                 "workflow_exit_code": 7,
                 "parser_exit_code": 7,
                 "result_json_present": False,
@@ -607,10 +682,203 @@ class S1MpiPrefixEquivalenceTest(unittest.TestCase):
                 VALIDATOR._failed_archive_chain_failures(repository, experiment_id), []
             )
 
+    def test_failed_archive_requires_exact_complete_git_tree(self) -> None:
+        experiment_id = "S1-20260805-113"
+
+        def make_archive(root: Path, mutation: str) -> tuple[Path, Path]:
+            self._git(root, "init")
+            self._git(root, "config", "user.name", "Unit Test")
+            self._git(root, "config", "user.email", "unit@example.invalid")
+            (root / "base.txt").write_text("base\n")
+            self._git(root, "add", ".")
+            self._git(root, "commit", "-m", "base")
+            base = subprocess.check_output(
+                ["git", "rev-parse", "HEAD"], cwd=root, text=True
+            ).strip()
+            run = root / "runs" / experiment_id
+            run.mkdir(parents=True)
+            (run / "experiment_metadata.json").write_text(
+                json.dumps({"code_commit": base}) + "\n"
+            )
+            (run / "failure.json").write_text("{}\n")
+            executable = run / "nested/tool"
+            executable.parent.mkdir()
+            executable.write_text("tool\n")
+            executable.chmod(0o755)
+            self._git(root, "add", "runs")
+            self._git(root, "commit", "-m", "failed attempt")
+            failure_commit = subprocess.check_output(
+                ["git", "rev-parse", "HEAD"], cwd=root, text=True
+            ).strip()
+            archive = (
+                root
+                / "failed_runs/runtime_relocation"
+                / experiment_id
+                / f"attempt-{failure_commit[:12]}"
+            )
+            archive.parent.mkdir(parents=True)
+            self._git(root, "mv", str(run), str(archive))
+            if mutation == "delete":
+                (archive / "failure.json").unlink()
+                self._git(root, "add", "-u")
+            elif mutation == "add":
+                (archive / "injected.txt").write_text("injected\n")
+                self._git(root, "add", str(archive / "injected.txt"))
+            elif mutation == "mode":
+                (archive / "nested/tool").chmod(0o644)
+                self._git(root, "add", str(archive / "nested/tool"))
+            self._git(root, "commit", "-m", f"archive with {mutation}")
+            return archive, root
+
+        for mutation in ("delete", "add", "mode"):
+            with self.subTest(mutation=mutation), tempfile.TemporaryDirectory() as temporary:
+                repository = Path(temporary)
+                make_archive(repository, mutation)
+                failures = VALIDATOR._failed_archive_chain_failures(
+                    repository, experiment_id
+                )
+                self.assertTrue(
+                    any("archive tree differs from failed run" in item for item in failures),
+                    failures,
+                )
+
+        with tempfile.TemporaryDirectory() as temporary:
+            repository = Path(temporary)
+            archive, _ = make_archive(repository, "none")
+            (archive / "untracked-extra.txt").write_text("untracked\n")
+            failures = VALIDATOR._failed_archive_chain_failures(
+                repository, experiment_id
+            )
+            self.assertTrue(
+                any("archive worktree differs from HEAD" in item for item in failures),
+                failures,
+            )
+
+    def test_failed_managed_smoke_is_archived_before_retry(self) -> None:
+        with tempfile.TemporaryDirectory() as temporary:
+            repository = Path(temporary)
+            self._git(repository, "init")
+            self._git(repository, "config", "user.name", "Unit Test")
+            self._git(repository, "config", "user.email", "unit@example.invalid")
+            (repository / "base.txt").write_text("base\n")
+            self._git(repository, "add", ".")
+            self._git(repository, "commit", "-m", "base")
+            smoke_root = repository / COMMON.RUNTIME_SMOKE_ROOT
+            run = smoke_root / "run"
+            run.mkdir(parents=True)
+            (run / "replay_status.json").write_text(
+                json.dumps({"status": "rejected"}) + "\n"
+            )
+            (run / "failure.json").write_text("{}\n")
+            self._git(repository, "add", ".")
+            self._git(repository, "commit", "-m", "failed managed smoke")
+            failure_commit = subprocess.check_output(
+                ["git", "rev-parse", "HEAD"], cwd=repository, text=True
+            ).strip()
+            SMOKE_RUNNER._archive_existing_failed_smoke(repository, smoke_root)
+            archive = (
+                repository
+                / "failed_runs/runtime_relocation_smoke"
+                / f"attempt-{failure_commit[:12]}"
+            )
+            self.assertFalse(smoke_root.exists())
+            self.assertTrue((archive / "run/failure.json").is_file())
+            self.assertEqual(
+                subprocess.check_output(
+                    ["git", "status", "--porcelain"], cwd=repository, text=True
+                ),
+                "",
+            )
+
+    def test_smoke_evidence_manifest_covers_complete_regular_file_tree(self) -> None:
+        with tempfile.TemporaryDirectory() as temporary:
+            root = Path(temporary)
+            run = root / "run"
+            (run / "nested").mkdir(parents=True)
+            (run / "a.txt").write_text("a\n")
+            executable = run / "nested/tool"
+            executable.write_text("tool\n")
+            executable.chmod(0o755)
+            manifest = root / "evidence.tsv"
+            rows = SMOKE.write_evidence_manifest(run, manifest)
+            self.assertEqual(rows, SMOKE._evidence_rows(run))
+            (run / "injected.txt").write_text("injected\n")
+            self.assertNotEqual(rows, SMOKE._evidence_rows(run))
+            if hasattr(os, "symlink"):
+                (run / "link").symlink_to("a.txt")
+                with self.assertRaisesRegex(ValueError, "regular files only"):
+                    SMOKE._evidence_rows(run)
+
+    def test_managed_smoke_status_gates_require_complete_acceptance(self) -> None:
+        with tempfile.TemporaryDirectory() as temporary:
+            run = Path(temporary) / "run"
+            namespace = run / "mpi_runtime_audit" / "namespace"
+            namespace.mkdir(parents=True)
+            run_status = {
+                "status": "accepted",
+                "setup_completed": True,
+                "failure_stage": None,
+            }
+            payloads = {
+                run / "run_status.json": run_status,
+                run / "replay_status.json": {
+                    "status": "accepted",
+                    "core_validation_exit_code": 0,
+                    "run_status": run_status,
+                },
+                run / "mpi_runtime_audit" / "audit.json": {"status": "accepted"},
+                namespace / "host_status.json": {"status": "accepted"},
+                run / "mpi_runtime_audit" / "counterpart_audit.json": {
+                    "status": "accepted"
+                },
+            }
+            for path, payload in payloads.items():
+                path.parent.mkdir(parents=True, exist_ok=True)
+                path.write_text(json.dumps(payload), encoding="utf-8")
+
+            gates = SMOKE._status_gates(run)
+            self.assertEqual(
+                set(gates),
+                {
+                    "run_status",
+                    "replay_status",
+                    "runtime_audit",
+                    "namespace_host",
+                    "counterpart_audit",
+                },
+            )
+            (run / "failure.json").write_text("{}", encoding="utf-8")
+            with self.assertRaisesRegex(ValueError, "status gates"):
+                SMOKE._status_gates(run)
+
+    def test_smoke_implementation_closure_is_bound_to_execution_commit(self) -> None:
+        with tempfile.TemporaryDirectory() as temporary:
+            repository = Path(temporary)
+            script = repository / "scripts/entry.py"
+            script.parent.mkdir(parents=True)
+            script.write_text("print('frozen')\n")
+            self._git(repository, "init")
+            self._git(repository, "config", "user.name", "Unit Test")
+            self._git(repository, "config", "user.email", "unit@example.invalid")
+            self._git(repository, "add", ".")
+            self._git(repository, "commit", "-m", "freeze smoke implementation")
+            commit = subprocess.check_output(
+                ["git", "rev-parse", "HEAD"], cwd=repository, text=True
+            ).strip()
+            with mock.patch.object(
+                SMOKE, "SMOKE_IMPLEMENTATION_PATHS", ("scripts/entry.py",)
+            ):
+                closure = SMOKE._implementation_closure(repository, commit)
+                self.assertEqual(closure[0]["path"], "scripts/entry.py")
+                script.write_text("print('tampered')\n")
+                with self.assertRaisesRegex(ValueError, "differs from code_commit"):
+                    SMOKE._implementation_closure(repository, commit)
+
     def test_generator_and_validator_freeze_complete_synthetic_references(self) -> None:
         with tempfile.TemporaryDirectory() as temporary:
             repository = Path(temporary)
             fixture = self._make_repository(repository)
+            smoke_payload = self._smoke_validation_payload(fixture)
             config_path = repository / COMMON.CANONICAL_CONFIG_PATH
             manifest_path = repository / COMMON.CANONICAL_MANIFEST_PATH
             with mock.patch.object(
@@ -629,6 +897,10 @@ class S1MpiPrefixEquivalenceTest(unittest.TestCase):
                 GENERATOR,
                 "relocation_equivalence_evidence",
                 side_effect=self._fake_elf_evidence,
+            ), mock.patch.object(
+                GENERATOR,
+                "validate_smoke",
+                return_value=dict(smoke_payload),
             ), mock.patch.object(
                 VALIDATOR,
                 "versioned_tool_identity",
@@ -650,6 +922,7 @@ class S1MpiPrefixEquivalenceTest(unittest.TestCase):
                     fixture["r8_manifest"],
                     fixture["r8_summary"],
                     reference_mpirun=fixture["reference_mpirun"],
+                    smoke_summary_path=fixture["r8_summary"],
                 )
             self.assertEqual(payload["experiment_count"], 6)
             frozen_config = json.loads(config_path.read_text())
@@ -678,6 +951,10 @@ class S1MpiPrefixEquivalenceTest(unittest.TestCase):
                 VALIDATOR,
                 "relocation_equivalence_evidence",
                 side_effect=self._fake_elf_evidence,
+            ), mock.patch.object(
+                VALIDATOR,
+                "validate_smoke",
+                return_value=dict(smoke_payload),
             ):
                 validation = VALIDATOR.validate(repository, config_path, manifest_path)
             self.assertEqual(validation["first_experiment_id"], "S1-20260805-113")
@@ -691,6 +968,10 @@ class S1MpiPrefixEquivalenceTest(unittest.TestCase):
                 VALIDATOR,
                 "relocation_equivalence_evidence",
                 side_effect=self._fake_elf_evidence,
+            ), mock.patch.object(
+                VALIDATOR,
+                "validate_smoke",
+                return_value=dict(smoke_payload),
             ):
                 committed_validation = VALIDATOR.validate(
                     repository,
@@ -716,6 +997,10 @@ class S1MpiPrefixEquivalenceTest(unittest.TestCase):
                 VALIDATOR,
                 "relocation_equivalence_evidence",
                 side_effect=self._fake_elf_evidence,
+            ), mock.patch.object(
+                VALIDATOR,
+                "validate_smoke",
+                return_value=dict(smoke_payload),
             ), self.assertRaisesRegex(ValueError, "INPUT: SHA-256 mismatch"):
                 VALIDATOR.validate(repository, config_path, manifest_path)
 
@@ -751,9 +1036,28 @@ class S1MpiPrefixEquivalenceTest(unittest.TestCase):
                     fixture["r8_manifest"],
                     fixture["r8_summary"],
                     require_clean_worktree=False,
+                    smoke_summary_path=fixture["r8_summary"],
                 )
             self.assertFalse(config_path.exists())
             self.assertFalse(manifest_path.exists())
+
+    def test_formal_generator_refuses_missing_managed_smoke(self) -> None:
+        with tempfile.TemporaryDirectory() as temporary:
+            repository = Path(temporary)
+            fixture = self._make_repository(repository)
+            with self.assertRaisesRegex(ValueError, "requires an accepted --smoke-summary"):
+                GENERATOR.generate(
+                    repository,
+                    fixture["recovery_prefix"],
+                    repository / "retired/conda_prefix",
+                    fixture["abacus"],
+                    fixture["mpirun"],
+                    repository / COMMON.CANONICAL_CONFIG_PATH,
+                    repository / COMMON.CANONICAL_MANIFEST_PATH,
+                    fixture["r8_config"],
+                    fixture["r8_manifest"],
+                    fixture["r8_summary"],
+                )
 
     def test_relative_old_prefix_is_rejected_before_freezing(self) -> None:
         with tempfile.TemporaryDirectory() as temporary:
@@ -773,6 +1077,7 @@ class S1MpiPrefixEquivalenceTest(unittest.TestCase):
                     fixture["r8_config"],
                     fixture["r8_manifest"],
                     fixture["r8_summary"],
+                    smoke_summary_path=fixture["r8_summary"],
                 )
             self.assertFalse(config_path.exists())
             self.assertFalse(manifest_path.exists())
@@ -1116,6 +1421,31 @@ class S1MpiPrefixEquivalenceTest(unittest.TestCase):
                 fixture["r8_manifest"].read_bytes()
             ).hexdigest(),
             "preregistration_commit": "0" * 40,
+        }
+
+    @staticmethod
+    def _smoke_validation_payload(fixture: dict[str, Path]) -> dict:
+        return {
+            "status": "accepted",
+            "smoke_id": COMMON.RUNTIME_SMOKE_ID,
+            "reference_experiment_id": COMMON.RUNTIME_SMOKE_REFERENCE_ID,
+            "summary_path": fixture["r8_summary"].relative_to(
+                fixture["r8_summary"].parents[3]
+            ).as_posix(),
+            "summary_sha256": hashlib.sha256(
+                fixture["r8_summary"].read_bytes()
+            ).hexdigest(),
+            "run_directory": COMMON.RUNTIME_SMOKE_RUN_DIRECTORY.as_posix(),
+            "evidence_manifest_path": COMMON.RUNTIME_SMOKE_EVIDENCE_MANIFEST.as_posix(),
+            "evidence_manifest_sha256": "1" * 64,
+            "evidence_file_count": 1,
+            "code_commit": "0" * 40,
+            "smoke_commit": "3" * 40,
+            "runtime_registration_sha256": "2" * 64,
+            "runtime_identities": {},
+            "status_gates": {},
+            "scientific_equivalence": {"status": "accepted"},
+            "tracked_paths": [fixture["r8_summary"]],
         }
 
     @staticmethod

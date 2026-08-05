@@ -9,6 +9,7 @@ import json
 import os
 import re
 import subprocess
+import time
 from pathlib import Path
 
 
@@ -36,15 +37,50 @@ READELF_COMMANDS = {
 }
 
 
-def sha256(path: Path) -> str:
+def remaining_seconds(deadline: float | None, label: str) -> float | None:
+    if deadline is None:
+        return None
+    remaining = deadline - time.monotonic()
+    if remaining <= 0:
+        raise TimeoutError(f"absolute deadline exceeded during {label}")
+    return remaining
+
+
+def read_bytes_deadline(path: Path, deadline: float | None, label: str) -> bytes:
+    chunks = []
+    with path.open("rb") as handle:
+        while True:
+            remaining_seconds(deadline, label)
+            chunk = handle.read(1024 * 1024)
+            remaining_seconds(deadline, label)
+            if not chunk:
+                break
+            chunks.append(chunk)
+    return b"".join(chunks)
+
+
+def sha256(path: Path, deadline: float | None = None, label: str = "SHA-256") -> str:
     digest = hashlib.sha256()
     with path.open("rb") as handle:
-        for chunk in iter(lambda: handle.read(1024 * 1024), b""):
+        while True:
+            remaining_seconds(deadline, label)
+            chunk = handle.read(1024 * 1024)
+            remaining_seconds(deadline, label)
+            if not chunk:
+                break
             digest.update(chunk)
+    remaining_seconds(deadline, label)
     return digest.hexdigest()
 
 
-def file_identity(path: Path, label: str, *, require_elf: bool = False) -> dict:
+def file_identity(
+    path: Path,
+    label: str,
+    *,
+    require_elf: bool = False,
+    deadline: float | None = None,
+) -> dict:
+    remaining_seconds(deadline, f"{label} identity")
     path = path.expanduser()
     if not path.is_absolute():
         raise ValueError(f"{label} path must be absolute")
@@ -62,7 +98,7 @@ def file_identity(path: Path, label: str, *, require_elf: bool = False) -> dict:
     return {
         "path": str(invocation_path),
         "realpath": str(realpath),
-        "sha256": sha256(realpath),
+        "sha256": sha256(realpath, deadline, f"{label} hashing"),
     }
 
 
@@ -71,14 +107,20 @@ def versioned_tool_identity(
     label: str,
     *,
     version_arguments: tuple[str, ...] = ("--version",),
+    deadline: float | None = None,
 ) -> dict:
-    identity = file_identity(path, label, require_elf=True)
-    completed = subprocess.run(
-        [identity["path"], *version_arguments],
-        stdout=subprocess.PIPE,
-        stderr=subprocess.STDOUT,
-        check=False,
-    )
+    identity = file_identity(path, label, require_elf=True, deadline=deadline)
+    try:
+        completed = subprocess.run(
+            [identity["path"], *version_arguments],
+            stdout=subprocess.PIPE,
+            stderr=subprocess.STDOUT,
+            check=False,
+            timeout=remaining_seconds(deadline, f"{label} --version"),
+        )
+    except subprocess.TimeoutExpired as error:
+        raise TimeoutError(f"absolute deadline exceeded during {label} --version") from error
+    remaining_seconds(deadline, f"{label} --version")
     if completed.returncode != 0 or not completed.stdout:
         raise ValueError(
             f"cannot capture {label} version (exit {completed.returncode})"
@@ -94,13 +136,24 @@ def versioned_tool_identity(
     return identity
 
 
-def _run_readelf(readelf: dict, binary: dict, arguments: tuple[str, ...]) -> bytes:
-    completed = subprocess.run(
-        [readelf["path"], *arguments, binary["realpath"]],
-        stdout=subprocess.PIPE,
-        stderr=subprocess.PIPE,
-        check=False,
-    )
+def _run_readelf(
+    readelf: dict,
+    binary: dict,
+    arguments: tuple[str, ...],
+    deadline: float | None = None,
+) -> bytes:
+    label = f"readelf {' '.join(arguments)}"
+    try:
+        completed = subprocess.run(
+            [readelf["path"], *arguments, binary["realpath"]],
+            stdout=subprocess.PIPE,
+            stderr=subprocess.PIPE,
+            check=False,
+            timeout=remaining_seconds(deadline, label),
+        )
+    except subprocess.TimeoutExpired as error:
+        raise TimeoutError(f"absolute deadline exceeded during {label}") from error
+    remaining_seconds(deadline, label)
     if completed.returncode != 0:
         detail = completed.stderr.decode("utf-8", errors="replace").strip()
         raise ValueError(
@@ -174,9 +227,11 @@ def _normalized_dynamic(text: str) -> str:
     )
 
 
-def readelf_evidence(binary: dict, readelf: dict) -> tuple[dict, dict[str, bytes]]:
+def readelf_evidence(
+    binary: dict, readelf: dict, deadline: float | None = None
+) -> tuple[dict, dict[str, bytes]]:
     outputs = {
-        name: _run_readelf(readelf, binary, arguments)
+        name: _run_readelf(readelf, binary, arguments, deadline)
         for name, arguments in READELF_COMMANDS.items()
     }
     decoded = {
@@ -209,13 +264,23 @@ def relocation_equivalence_evidence(
     old_prefix: Path,
     readelf_path: Path,
     chrpath_path: Path,
+    deadline: float | None = None,
 ) -> dict:
-    reference = file_identity(reference_path, "reference ABACUS", require_elf=True)
-    replay = file_identity(replay_path, "relocated replay ABACUS", require_elf=True)
-    readelf = versioned_tool_identity(readelf_path, "readelf")
-    chrpath = versioned_tool_identity(chrpath_path, "chrpath")
-    reference_elf, reference_outputs = readelf_evidence(reference, readelf)
-    replay_elf, replay_outputs = readelf_evidence(replay, readelf)
+    identity_deadline = {"deadline": deadline} if deadline is not None else {}
+    reference = file_identity(
+        reference_path, "reference ABACUS", require_elf=True, **identity_deadline
+    )
+    replay = file_identity(
+        replay_path, "relocated replay ABACUS", require_elf=True, **identity_deadline
+    )
+    readelf = versioned_tool_identity(readelf_path, "readelf", **identity_deadline)
+    chrpath = versioned_tool_identity(chrpath_path, "chrpath", **identity_deadline)
+    if deadline is None:
+        reference_elf, reference_outputs = readelf_evidence(reference, readelf)
+        replay_elf, replay_outputs = readelf_evidence(replay, readelf)
+    else:
+        reference_elf, reference_outputs = readelf_evidence(reference, readelf, deadline)
+        replay_elf, replay_outputs = readelf_evidence(replay, readelf, deadline)
 
     errors: list[str] = []
     if reference["sha256"] != REFERENCE_ABACUS_SHA256:
@@ -255,8 +320,13 @@ def relocation_equivalence_evidence(
     if any(str(old_prefix.resolve(strict=False)) in value for value in replay_dynamic_paths):
         errors.append("replay ELF RPATH/RUNPATH contains the old prefix")
 
-    reference_bytes = Path(reference["realpath"]).read_bytes()
-    replay_bytes = Path(replay["realpath"]).read_bytes()
+    reference_bytes = read_bytes_deadline(
+        Path(reference["realpath"]), deadline, "reference ABACUS byte comparison"
+    )
+    replay_bytes = read_bytes_deadline(
+        Path(replay["realpath"]), deadline, "replay ABACUS byte comparison"
+    )
+    remaining_seconds(deadline, "ELF byte comparison")
     if len(reference_bytes) != len(replay_bytes):
         errors.append("reference and replay ELF file sizes differ")
         differences: list[int] = []

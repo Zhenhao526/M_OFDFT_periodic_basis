@@ -194,64 +194,50 @@ write_replay_status() {
     local run_directory=$1
     local workflow_exit=$2
     local core_validation_exit=$3
-    "$python_tool" - "$run_directory" "$workflow_exit" "$core_validation_exit" <<'PY'
+    "$python_tool" - "$project_root" "$run_directory" "$workflow_exit" "$core_validation_exit" <<'PY'
 import json
-import os
 import sys
 from pathlib import Path
 
-run = Path(sys.argv[1])
-workflow_exit = int(sys.argv[2])
-core_validation_exit = int(sys.argv[3])
+project_root = Path(sys.argv[1])
+run = Path(sys.argv[2])
+workflow_exit = int(sys.argv[3])
+core_validation_exit = int(sys.argv[4])
+sys.path.insert(0, str(project_root / "scripts"))
+from write_s1_runtime_relocation_status import write_status
+
 run_status_path = run / "run_status.json"
-audit_path = run / "mpi_runtime_audit" / "audit.json"
-run_status = json.loads(run_status_path.read_text(encoding="utf-8")) if run_status_path.is_file() else None
-audit = json.loads(audit_path.read_text(encoding="utf-8")) if audit_path.is_file() else None
-if not isinstance(run_status, dict):
-    raise SystemExit("run_status.json is required before replay status")
-if run_status.get("workflow_exit_code") != workflow_exit:
-    raise SystemExit("captured workflow exit differs from run_status.json")
-accepted = (
-    workflow_exit == 0
-    and core_validation_exit == 0
-    and run_status.get("status") == "accepted"
+try:
+    run_status = json.loads(run_status_path.read_text(encoding="utf-8"))
+except (FileNotFoundError, json.JSONDecodeError):
+    run_status = {}
+invocation_exit = run_status.get("invocation_exit_code")
+parser_exit = run_status.get("parser_exit_code")
+if not isinstance(invocation_exit, int) or not isinstance(parser_exit, int):
+    invocation_exit = workflow_exit if workflow_exit != 0 else 97
+    parser_exit = 97
+setup_completed = run_status.get("setup_completed") is True
+failure_stage = run_status.get("failure_stage")
+metadata = run / "experiment_metadata.json"
+try:
+    code_commit = json.loads(metadata.read_text(encoding="utf-8"))["code_commit"]
+except (FileNotFoundError, KeyError, json.JSONDecodeError):
+    import subprocess
+    code_commit = subprocess.check_output(
+        ["git", "-C", str(project_root), "rev-parse", "HEAD"], text=True
+    ).strip()
+experiment_id = run.name
+write_status(
+    run,
+    experiment_id=experiment_id,
+    code_commit=code_commit,
+    workflow_exit=workflow_exit,
+    invocation_exit=invocation_exit,
+    parser_exit=parser_exit,
+    core_validation_exit=core_validation_exit,
+    setup_completed=setup_completed,
+    failure_stage=failure_stage or "outer_status_synthesis",
 )
-payload = {
-    "schema_version": 2,
-    "status": "accepted" if accepted else "rejected",
-    "workflow_exit_code": workflow_exit,
-    "invocation_exit_code": run_status.get("invocation_exit_code"),
-    "launcher_exit_code": run_status.get("launcher_exit_code"),
-    "parser_exit_code": run_status.get("parser_exit_code"),
-    "core_validation_exit_code": core_validation_exit,
-    "run_status": run_status,
-    "runtime_audit_status": audit.get("status") if isinstance(audit, dict) else None,
-    "runtime_audit_failure_reasons": audit.get("failure_reasons", []) if isinstance(audit, dict) else [],
-    "safe_retry_policy": "archive_committed_failure_then_retry_same_registered_id",
-}
-output = run / "replay_status.json"
-temporary = output.with_name(f".{output.name}.tmp-{os.getpid()}")
-temporary.write_text(json.dumps(payload, indent=2, sort_keys=True) + "\n", encoding="utf-8")
-os.replace(temporary, output)
-failure = run / "failure.json"
-if accepted:
-    if failure.exists():
-        raise SystemExit("accepted run unexpectedly has failure.json")
-else:
-    failure_payload = {
-        "schema_version": 2,
-        "status": "failed_attempt_preserved",
-        "workflow_exit_code": workflow_exit,
-        "invocation_exit_code": run_status.get("invocation_exit_code"),
-        "launcher_exit_code": run_status.get("launcher_exit_code"),
-        "parser_exit_code": run_status.get("parser_exit_code"),
-        "core_validation_exit_code": core_validation_exit,
-        "runtime_audit_failure_reasons": payload["runtime_audit_failure_reasons"],
-        "retry_requires_committed_archive": True,
-    }
-    temporary = failure.with_name(f".{failure.name}.tmp-{os.getpid()}")
-    temporary.write_text(json.dumps(failure_payload, indent=2, sort_keys=True) + "\n", encoding="utf-8")
-    os.replace(temporary, failure)
 PY
 }
 
@@ -375,10 +361,18 @@ while IFS=$'\t' read -r replay_id reference_id input_directory material series_i
     scripts/run_s1_single.sh "$replay_id" "$input_directory" 9<&- </dev/null || workflow_status=$?
 
     core_validation_status=0
+    run_directory_missing=0
+    if [[ ! -d "$run_directory" ]]; then
+        mkdir -p "$run_directory"
+        core_validation_status=97
+        run_directory_missing=1
+    fi
     if [[ -d "$run_directory" ]]; then
-        "$python_tool" scripts/validate_s1_mpi_prefix_equivalence.py \
-            "$manifest" --config "$config" --check-run-core "$replay_id" \
-            >/dev/null || core_validation_status=$?
+        if [[ $run_directory_missing -eq 0 ]]; then
+            "$python_tool" scripts/validate_s1_mpi_prefix_equivalence.py \
+                "$manifest" --config "$config" --check-run-core "$replay_id" \
+                >/dev/null || core_validation_status=$?
+        fi
         write_replay_status "$run_directory" "$workflow_status" "$core_validation_status"
         if [[ $workflow_status -eq 0 && $core_validation_status -eq 0 ]]; then
             "$python_tool" scripts/validate_s1_mpi_prefix_equivalence.py \

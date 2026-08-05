@@ -28,14 +28,14 @@ record_state() {
     local phase=$1
     local mountinfo_path="$namespace_directory/mountinfo.$phase"
     local state_path="$namespace_directory/state.$phase.json"
-    "$python_tool" - "$phase" "$old_root" "$old_prefix" "$mountinfo_path" "$state_path" <<'PY'
+    "$python_tool" - "$phase" "$old_root" "$old_prefix" "$mountinfo_path" "$state_path" "$BASHPID" <<'PY'
 import json
 import os
 import stat
 import sys
 from pathlib import Path
 
-phase, old_root_value, old_prefix_value, mountinfo_value, output_value = sys.argv[1:]
+phase, old_root_value, old_prefix_value, mountinfo_value, output_value, init_pid_value = sys.argv[1:]
 old_root = Path(old_root_value)
 old_prefix = Path(old_prefix_value)
 mountinfo = Path(mountinfo_value)
@@ -73,6 +73,17 @@ payload = {
     "schema_version": 1,
     "phase": phase,
     "pid": os.getpid(),
+    "namespace_init_pid": int(init_pid_value),
+    "pid_namespace_inode": Path("/proc/self/ns/pid").stat().st_ino,
+    "pid_namespace_link": os.readlink("/proc/self/ns/pid"),
+    "nspid": next(
+        (
+            [int(value) for value in line.split()[1:]]
+            for line in Path("/proc/self/status").read_text(encoding="utf-8").splitlines()
+            if line.startswith("NSpid:")
+        ),
+        [],
+    ),
     "uid": os.getuid(),
     "effective_uid": os.geteuid(),
     "old_root": str(old_root),
@@ -109,6 +120,8 @@ payload = {
     "audit_launcher_exit_code": int(exit_code),
     "uid": os.getuid(),
     "effective_uid": os.geteuid(),
+    "pid_namespace_inode": Path("/proc/self/ns/pid").stat().st_ino,
+    "pid_namespace_link": os.readlink("/proc/self/ns/pid"),
 }
 path = Path(output)
 temporary = path.with_name(f".{path.name}.tmp-{os.getpid()}")

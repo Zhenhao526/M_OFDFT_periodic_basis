@@ -21,7 +21,7 @@ from parse_s1_single import (
 )
 
 
-PROTOCOL_REVISION = "S1-R8-RUNTIME-RELOCATION-R1"
+PROTOCOL_REVISION = "S1-R8-RUNTIME-RELOCATION-R2"
 CANONICAL_CONFIG_PATH = Path("config/S1_runtime_relocation_equivalence.json")
 CANONICAL_MANIFEST_PATH = Path(
     "config/S1_runtime_relocation_equivalence_manifest.tsv"
@@ -31,6 +31,12 @@ LEGACY_MANIFEST_PATH = Path("config/S1_mpi_prefix_equivalence_manifest.tsv")
 R8_CONFIG_PATH = Path("config/S1_non_equilibrium_convergence.json")
 R8_MANIFEST_PATH = Path("config/S1_non_equilibrium_run_manifest.tsv")
 DEFAULT_R8_SUMMARY_PATH = Path("analysis/s1/non_equilibrium_convergence_20260805/summary.json")
+RUNTIME_SMOKE_ID = "S1-RUNTIME-SMOKE-20260805-074"
+RUNTIME_SMOKE_REFERENCE_ID = "S1-20260805-074"
+RUNTIME_SMOKE_ROOT = Path("analysis/s1/runtime_relocation_smoke_20260805")
+RUNTIME_SMOKE_RUN_DIRECTORY = RUNTIME_SMOKE_ROOT / "run"
+DEFAULT_RUNTIME_SMOKE_SUMMARY_PATH = RUNTIME_SMOKE_ROOT / "summary.json"
+RUNTIME_SMOKE_EVIDENCE_MANIFEST = RUNTIME_SMOKE_ROOT / "evidence_manifest.tsv"
 
 FIXED_PAIRS = (
     ("S1-20260805-113", "S1-20260805-074", "al", "ofdft_next_cutoff"),
