@@ -69,6 +69,11 @@ run directories. The analyzer requires six complete seven-point BM3 fits,
 `<1 meV/atom` maximum fit residual, and the strict double-sigma limits above.
 Finite-smearing pressure is retained as a diagnostic because the primary KS
 fit observable is the zero-temperature extrapolated energy.
+The discrete lowest sampled point is also reported as a shape diagnostic, not
+an additional gate: the hard bracketing check is that the continuous fitted
+equilibrium volume lies strictly inside the sampled volume range. This matters
+when an equilibrium lies between the first two samples, so the lower endpoint
+can have the smallest sampled energy even though the fitted minimum is inside.
 
 Generated inputs are candidates until the convergence results are committed.
 S2 must not start before every G1 acceptance item has evidence.

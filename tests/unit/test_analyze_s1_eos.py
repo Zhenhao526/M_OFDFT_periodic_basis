@@ -56,6 +56,32 @@ class AnalyzeS1EosTest(unittest.TestCase):
         self.assertEqual(comparison["status"], "rejected")
         self.assertFalse(comparison["equilibrium_volume_passed"])
 
+    def test_endpoint_sampled_minimum_is_diagnostic_when_fit_is_bracketed(self) -> None:
+        points = [
+            {
+                "energy_ev_per_atom": energy,
+                "volume_per_atom_angstrom3": volume,
+                "volume_ratio": ratio,
+            }
+            for ratio, volume, energy in (
+                (0.90, 21.0, -1.0000),
+                (0.94, 22.0, -0.9998),
+                (0.97, 23.0, -0.9900),
+                (1.00, 24.0, -0.9700),
+            )
+        ]
+        fit = {
+            "v0_angstrom3_per_atom": 21.4,
+            "b0_gpa": 37.0,
+            "max_abs_residual_mev_per_atom": 0.01,
+        }
+        passed, failures = MODULE._fit_quality(points, fit, 1.0)
+        diagnostic = MODULE._sampled_shape_diagnostic(points)
+        self.assertTrue(passed)
+        self.assertEqual(failures, [])
+        self.assertTrue(diagnostic["discrete_minimum_at_sampled_endpoint"])
+        self.assertEqual(diagnostic["acceptance_role"], "diagnostic_only")
+
 
 if __name__ == "__main__":
     unittest.main()

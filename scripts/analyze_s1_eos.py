@@ -2,15 +2,25 @@
 from __future__ import annotations
 
 import argparse
+import hashlib
 import itertools
 import json
 import math
+import subprocess
 from collections import defaultdict
 from pathlib import Path
 
 
 EV_PER_ANGSTROM3_TO_GPA = 160.21766208
 EXPECTED_SERIES = ("ofdft", "ksdft_standard", "ksdft_half")
+
+
+def sha256(path: Path) -> str:
+    digest = hashlib.sha256()
+    with path.open("rb") as handle:
+        for chunk in iter(lambda: handle.read(1024 * 1024), b""):
+            digest.update(chunk)
+    return digest.hexdigest()
 
 
 def bm3_energy(volume: float, e0: float, v0: float, b0: float, bp: float) -> float:
@@ -164,10 +174,6 @@ def _energy_for_point(metadata: dict, result: dict) -> float:
 
 def _fit_quality(points: list[dict], fit: dict, max_residual_mev: float) -> tuple[bool, list[str]]:
     failures = []
-    energies = [point["energy_ev_per_atom"] for point in points]
-    minimum_index = energies.index(min(energies))
-    if minimum_index in (0, len(points) - 1):
-        failures.append("discrete_minimum_at_endpoint")
     volumes = [point["volume_per_atom_angstrom3"] for point in points]
     if not volumes[0] < fit["v0_angstrom3_per_atom"] < volumes[-1]:
         failures.append("fitted_v0_outside_sample_range")
@@ -176,6 +182,19 @@ def _fit_quality(points: list[dict], fit: dict, max_residual_mev: float) -> tupl
     if fit["max_abs_residual_mev_per_atom"] >= max_residual_mev:
         failures.append("fit_residual_threshold_failed")
     return not failures, failures
+
+
+def _sampled_shape_diagnostic(points: list[dict]) -> dict:
+    energies = [float(point["energy_ev_per_atom"]) for point in points]
+    minimum_index = energies.index(min(energies))
+    return {
+        "acceptance_role": "diagnostic_only",
+        "discrete_minimum_at_sampled_endpoint": minimum_index in (0, len(points) - 1),
+        "discrete_minimum_volume_ratio": float(points[minimum_index]["volume_ratio"]),
+        "reason": (
+            "continuous_BM3_minimum_and_fit_quality_are_the_registered_acceptance_checks"
+        ),
+    }
 
 
 def _pressure_diagnostic(points: list[dict]) -> dict:
@@ -199,6 +218,7 @@ def main() -> int:
     )
     args = parser.parse_args()
     config = json.loads(args.config.read_text(encoding="utf-8"))
+    config_digest = sha256(args.config)
     expected_ratios = [round(float(value), 12) for value in config["volume_ratios"]]
     attempts: dict[tuple[str, str, float], list[dict]] = defaultdict(list)
     global_failures = []
@@ -249,6 +269,10 @@ def main() -> int:
         failed_attempts += sum(not item["converged"] for item in values)
         converged = [item for item in values if item["converged"]]
         selected[key] = converged[-1] if converged else values[-1]
+
+    input_config_digests = sorted({point["config_sha256"] for point in selected.values()})
+    if input_config_digests and input_config_digests != [config_digest]:
+        global_failures.append("input metadata configuration hash does not match analysis config")
 
     series_payload = {}
     points_tsv = [
@@ -310,6 +334,7 @@ def main() -> int:
                 "fit": fit,
                 "fit_quality_failures": quality_failures,
                 "pressure_diagnostic": _pressure_diagnostic(points),
+                "sampled_shape_diagnostic": _sampled_shape_diagnostic(points),
                 "points": points,
             }
 
@@ -383,6 +408,21 @@ def main() -> int:
     else:
         core_status = "accepted"
     payload = {
+        "analysis_provenance": {
+            "analyzer_code_commit": subprocess.check_output(
+                ["git", "-C", str(project_root), "rev-parse", "HEAD"], text=True
+            ).strip(),
+            "analyzer_script_sha256": sha256(Path(__file__).resolve()),
+            "config_path": str(args.config.resolve()),
+            "config_sha256": config_digest,
+            "input_abacus_sha256_values": sorted(
+                {point["abacus_sha256"] for point in selected.values()}
+            ),
+            "input_code_commits": sorted(
+                {point["code_commit"] for point in selected.values()}
+            ),
+            "input_config_sha256_values": input_config_digests,
+        },
         "core_eos_status": core_status,
         "expected_calculations": 42,
         "selected_calculations": len(selected),
