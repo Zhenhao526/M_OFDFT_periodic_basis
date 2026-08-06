@@ -1,0 +1,13 @@
+{
+  "core_validation_exit_code": 97,
+  "failure_stage": "runtime_invocation_or_parser",
+  "invocation_exit_code": 97,
+  "launcher_exit_code": 97,
+  "parser_exit_code": 97,
+  "retry_requires_committed_archive": true,
+  "runtime_audit_failure_reasons": [],
+  "schema_version": 2,
+  "setup_completed": true,
+  "status": "failed_attempt_preserved",
+  "workflow_exit_code": 97
+}

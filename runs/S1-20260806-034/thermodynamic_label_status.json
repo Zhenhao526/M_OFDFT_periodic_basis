@@ -1,0 +1,12 @@
+{
+  "authoritative_for_r1": true,
+  "core_validator_exit_code": 97,
+  "experiment_id": "S1-20260806-034",
+  "failure_stage": "workflow",
+  "parser_exit_code": 97,
+  "protocol_revision": "S1-G1-THERMODYNAMIC-LABEL-AUDIT-R1",
+  "retry_policy": "new_protocol_revision_and_new_experiment_ids_only",
+  "schema_version": 1,
+  "status": "indeterminate",
+  "workflow_exit_code": 97
+}

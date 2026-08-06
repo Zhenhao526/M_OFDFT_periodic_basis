@@ -1,0 +1,29 @@
+{
+  "core_validation_exit_code": 97,
+  "invocation_exit_code": 97,
+  "launcher_exit_code": 97,
+  "parser_exit_code": 97,
+  "run_status": {
+    "counterpart_audit_status": null,
+    "failure_stage": "runtime_invocation_or_parser",
+    "invocation_exit_code": 97,
+    "launcher_exit_code": 97,
+    "namespace_host_status": null,
+    "parser_exit_code": 97,
+    "result_converged": null,
+    "result_json_present": false,
+    "runtime_audit_json_present": false,
+    "runtime_audit_status": null,
+    "runtime_relocation_mode": true,
+    "schema_version": 2,
+    "setup_completed": true,
+    "status": "rejected",
+    "workflow_exit_code": 97
+  },
+  "runtime_audit_failure_reasons": [],
+  "runtime_audit_status": null,
+  "safe_retry_policy": "archive_committed_failure_then_retry_same_registered_id",
+  "schema_version": 2,
+  "status": "rejected",
+  "workflow_exit_code": 97
+}
