@@ -1,0 +1,30 @@
+{
+  "experiment_id": "S1-20260806-041",
+  "failure_categories": [
+    "thermodynamic_identity"
+  ],
+  "failure_class": "complete_numerical_or_runtime_contract_rejection",
+  "failure_component": "thermodynamic_label_parser",
+  "failure_reasons": [
+    "Traceback (most recent call last):",
+    "  File \"/home/shenwei01/M_OFDFT_periodic_basis/scripts/parse_s1_g1_thermodynamic_labels_r2.py\", line 196, in <module>",
+    "    raise SystemExit(main())",
+    "  File \"/home/shenwei01/M_OFDFT_periodic_basis/scripts/parse_s1_g1_thermodynamic_labels_r2.py\", line 177, in main",
+    "    payload = parse_run(",
+    "  File \"/home/shenwei01/M_OFDFT_periodic_basis/scripts/parse_s1_g1_thermodynamic_labels_r2.py\", line 137, in parse_run",
+    "    payload = r1_parser.parse_run(",
+    "  File \"/home/shenwei01/M_OFDFT_periodic_basis/scripts/parse_s1_g1_thermodynamic_labels.py\", line 185, in parse_run",
+    "    config, rows = _validate_registration(config_path.resolve(), manifest_path.resolve())",
+    "  File \"/home/shenwei01/M_OFDFT_periodic_basis/scripts/parse_s1_g1_thermodynamic_labels.py\", line 98, in _validate_registration",
+    "    require(",
+    "  File \"/home/shenwei01/M_OFDFT_periodic_basis/scripts/s1_g1_thermodynamic_label_common.py\", line 106, in require",
+    "    raise ValueError(message)",
+    "ValueError: configuration execution order differs",
+    "thermodynamic_label_parser_exit_code=1"
+  ],
+  "logical_experiment_id": "S1-20260806-034",
+  "protocol_revision": "S1-G1-THERMODYNAMIC-LABEL-AUDIT-R2",
+  "retry_policy": "new_protocol_revision_and_new_experiment_ids_only",
+  "schema_version": 1,
+  "status": "rejected"
+}

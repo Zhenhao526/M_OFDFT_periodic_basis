@@ -1,0 +1,14 @@
+Traceback (most recent call last):
+  File "/home/shenwei01/M_OFDFT_periodic_basis/scripts/parse_s1_g1_thermodynamic_labels_r2.py", line 196, in <module>
+    raise SystemExit(main())
+  File "/home/shenwei01/M_OFDFT_periodic_basis/scripts/parse_s1_g1_thermodynamic_labels_r2.py", line 177, in main
+    payload = parse_run(
+  File "/home/shenwei01/M_OFDFT_periodic_basis/scripts/parse_s1_g1_thermodynamic_labels_r2.py", line 137, in parse_run
+    payload = r1_parser.parse_run(
+  File "/home/shenwei01/M_OFDFT_periodic_basis/scripts/parse_s1_g1_thermodynamic_labels.py", line 185, in parse_run
+    config, rows = _validate_registration(config_path.resolve(), manifest_path.resolve())
+  File "/home/shenwei01/M_OFDFT_periodic_basis/scripts/parse_s1_g1_thermodynamic_labels.py", line 98, in _validate_registration
+    require(
+  File "/home/shenwei01/M_OFDFT_periodic_basis/scripts/s1_g1_thermodynamic_label_common.py", line 106, in require
+    raise ValueError(message)
+ValueError: configuration execution order differs

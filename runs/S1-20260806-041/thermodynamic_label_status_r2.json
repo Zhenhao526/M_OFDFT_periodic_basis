@@ -1,0 +1,13 @@
+{
+  "authoritative_for_r2": true,
+  "core_validator_exit_code": 97,
+  "experiment_id": "S1-20260806-041",
+  "failure_stage": "thermodynamic_label_parser",
+  "logical_experiment_id": "S1-20260806-034",
+  "parser_exit_code": 1,
+  "protocol_revision": "S1-G1-THERMODYNAMIC-LABEL-AUDIT-R2",
+  "retry_policy": "new_protocol_revision_and_new_experiment_ids_only",
+  "schema_version": 1,
+  "status": "rejected",
+  "workflow_exit_code": 0
+}
