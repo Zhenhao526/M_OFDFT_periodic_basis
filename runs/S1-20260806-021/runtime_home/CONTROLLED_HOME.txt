@@ -1,0 +1,1 @@
+Controlled empty HOME for S1 runtime-relocation replay.
