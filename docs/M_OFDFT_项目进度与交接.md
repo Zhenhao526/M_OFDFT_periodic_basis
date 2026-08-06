@@ -2,35 +2,38 @@
 
 > 本文件是项目状态的唯一人工入口。任何人接手前先读本文件，再读项目书和当前阶段 README。  
 > 状态词仅使用：`not_started`、`in_progress`、`blocked`、`accepted`、`rejected`、`paused`。  
-> 更新时间：2026-08-06 02:53 CST
-> 文档版本：V3.1
+> 更新时间：2026-08-06 16:02 CST
+> 文档版本：V3.2
 
 ## 0. 十分钟上手摘要
 
 | 项目 | 当前值 |
 |---|---|
-| 当前总状态 | `in_progress`（G0 数值/归档恢复结论保留；runtime-isolation 在“重定位 ABACUS + 私有 user/mount/PID namespace + 严格审计”登记范围内 `accepted`；S1-R8 已验收；G1 独立电子数积分子项 `accepted`，G1 总体仍为 `pending`，1/6） |
+| 当前总状态 | `in_progress`（G0 数值/归档恢复结论保留；runtime-isolation 在登记范围内 `accepted`；S1-R8 与 G1 独立电子数积分子项已验收；G1 标签审计 R1 因宿主后置证据缺失为 `paused/indeterminate`，R2 预注册准备中，G1 总体仍为 `pending`，1/6） |
 | 当前阶段 | S1：平面波 OFDFT/KSDFT 基准闭环 |
-| 当前闸门 | G1，执行中 |
+| 当前闸门 | G1，执行中；R1 `paused`，R2 预注册准备中 |
 | 当前负责人 | 远端账户 `shenwei01`；本轮执行与记录：Codex |
 | 当前工作分支 | `main`；本地未跟踪 `tmp/`、`audit.json`、`objects.tsv` 属其他产物，保留未动 |
-| 最近可用提交 | `c94796d`（G1 电子数 R2 正式分析）；实现 `f4a816a`、顺序验证硬化 `125dd37`、R2 预注册 `b18106b`、结果终点 `c722c81` |
+| 最近可用提交 | `b0b7db5`（G1 标签 R1 的 034 相邻失败归档）；实现 `64ce08e`、预注册 `f71dd6b`、10 个 accepted 点终点 `9096ca3`、失败证据 `df57f9b` |
 | 最近通过的数值 smoke | `S1-RUNTIME-SMOKE-20260805-074`：`storage_exact`，五类状态门全部 `accepted`；幂等重验返回 `accepted_committed` |
 | 最近通过的正式分析 | `analysis/s1/electron_number_audit_r2_20260805/`：90/90 accepted；60 KS + 11 R1 reused OF + 19 R2 executed OF；G1 仅关闭电子数子项 |
-| 当前阻塞 | G1 剩余五项尚未形成完整闭环；node01 无第二套独立 OFDFT/KSDFT 程序；许可证与 LPP 条款仍限制发布 |
-| 下一项唯一动作 | 预注册并执行 G1 第三 smearing/稠密 k 点标签审计，采用 `σ/σ/2/σ/4` 或“两宽度 + 极密 k”参考，统一 F、TS、内部能/熵修正估计量及密度、势、导数口径，并保持 `ΔVeq <0.2%`、锚定相对能量变化 `<2 meV/atom` |
+| 当前阻塞 | G1 标签审计 R1 在 `S1-20260806-034` 因 SSH/PTY 宿主编排中断而缺失 `host_status`、counterpart 与 result 闭包；R1 已停止且禁止重跑；其余四个 G1 缺口、第二 OF/KS 程序及发布条款仍未闭合 |
+| 下一项唯一动作 | 预注册 G1 标签审计 R2 continuation：把 R1 的 10 个 accepted 点登记为不可变复用证据，为原 034/040 与 28 个 P2 点分配 30 个新 ID，并用脱离 SSH 生命周期的受管启动方式执行 |
 
 ### 必读文件
 
 1. [V2.1 项目书](M_OFDFT_周期金属原子密度基组研究计划书.md)
-2. [G1 电子数 R2 协议](S1_G1_ELECTRON_NUMBER_AUDIT_R2_PROTOCOL.md)
-3. G1 电子数 R2 正式分析：`analysis/s1/electron_number_audit_r2_20260805/README.md`、`analysis/s1/electron_number_audit_r2_20260805/summary.json`
-4. [扩大文献调研与可行性再评估](M_OFDFT_扩大文献调研与可行性再评估_2026-08.md)
-5. [扩展文献逐篇研判](references/M_OFDFT_extended/M_OFDFT_扩展文献逐篇研判.md)
-6. [扩展参考文献包索引](references/M_OFDFT_extended/README.md)
-7. [初次可行性复核](M_OFDFT_任务书可行性复核.md)
-8. [原参考文献精读报告](references/M_OFDFT/M_OFDFT_参考文献逐篇精读报告.md)
-9. [原参考文献包索引](references/M_OFDFT/README.md)
+2. [G1 标签审计 R1 协议](S1_G1_THERMODYNAMIC_LABEL_AUDIT_R1_PROTOCOL.md)
+3. G1 标签审计 R1 预注册：`config/S1_g1_thermodynamic_label_audit_r1.json`、`config/S1_g1_thermodynamic_label_audit_r1_manifest.tsv`
+4. R1 034 失败闭包：`failed_runs/runtime_relocation/S1-20260806-034/attempt-df57f9b610d8/thermodynamic_label_failure_classification.json`、`thermodynamic_label_status.json`、`thermodynamic_label_failure_artifact_inventory.json`
+5. [G1 电子数 R2 协议](S1_G1_ELECTRON_NUMBER_AUDIT_R2_PROTOCOL.md)
+6. G1 电子数 R2 正式分析：`analysis/s1/electron_number_audit_r2_20260805/README.md`、`analysis/s1/electron_number_audit_r2_20260805/summary.json`
+7. [扩大文献调研与可行性再评估](M_OFDFT_扩大文献调研与可行性再评估_2026-08.md)
+8. [扩展文献逐篇研判](references/M_OFDFT_extended/M_OFDFT_扩展文献逐篇研判.md)
+9. [扩展参考文献包索引](references/M_OFDFT_extended/README.md)
+10. [初次可行性复核](M_OFDFT_任务书可行性复核.md)
+11. [原参考文献精读报告](references/M_OFDFT/M_OFDFT_参考文献逐篇精读报告.md)
+12. [原参考文献包索引](references/M_OFDFT/README.md)
 
 ### 最近可运行命令
 
@@ -40,6 +43,7 @@ ssh -p 2200 shenwei01@localhost
 cd /home/shenwei01/M_OFDFT_periodic_basis
 ./scripts/run_unit_tests.sh
 python3 scripts/validate_s1_electron_number_audit_r2.py --require-committed --require-all-runs
+python3 scripts/validate_s1_g1_thermodynamic_label_audit_r1.py config/S1_g1_thermodynamic_label_audit_r1_manifest.tsv --config config/S1_g1_thermodynamic_label_audit_r1.json --require-committed --check-failure-archives S1-20260806-034
 ./scripts/run_smoke.sh S0-YYYYMMDD-NNN
 ```
 
@@ -102,6 +106,11 @@ python3 scripts/validate_s1_electron_number_audit_r2.py --require-committed --re
 - [x] 以 `b18106b` 预注册 S1-130–148 的 19 点 R2 continuation，完成 19/19 新执行点且 R2 新失败为 0，结果终点为 `c722c81`；
 - [x] 以 `c94796d` 固化正式电子数分析：90/90 accepted，覆盖 84 个 primary baseline 与 6 个 supplemental runtime replay；证据拆分为 60 KS、11 R1 reused OF 和 19 R2 executed OF；
 - [x] 电子数审计最大 `certified_relative_error` 为 `1.0127696865884852e-11`（源点 `S1-20260805-044`），30/30 OF 科学等价、120/120 KMP rank lifecycles、360/360 成功 syscall 均通过，四类 failure ID 列表全空；
+- [x] 以 `64ce08e` 实现并以 `f71dd6b` 预注册 G1 第三 smearing/稠密 k 标签审计 R1；协议、输入与 40 个固定 ID 均在首个正式运行前冻结；
+- [x] R1 P0 4/4 通过，P1 前 6/8 通过；共 10 个新运行逐点 accepted，执行顺序为 `024,036,031,039,021,035,027,037,028,038`，结果终点 `9096ca3`；
+- [x] `S1-20260806-034` 的 ABACUS 与 namespace 内部 runtime audit 完成，但 SSH/PTY 宿主编排在后置核验前中断，缺失 `host_status.json`、`counterpart_audit.json` 与 `result.json`；冻结分类为 `indeterminate`、`workflow_or_runtime_capability_failure`、`runtime_kmp`；
+- [x] 以 `df57f9b` 固化 034 的 71 文件失败闭包，以紧邻提交 `b0b7db5` 将同一 tree 移至 `failed_runs/runtime_relocation/S1-20260806-034/attempt-df57f9b610d8/`；committed archive validator 通过，R1 停止且 034 永久禁止同 ID 重跑；
+- [x] 将 R1 accepted/失败/归档证据经校验 bundle 同步至本地并推送 GitHub `main`；本地 `audit.json`、`objects.tsv`、`tmp/` 保持未跟踪且未修改；
 - [x] 扩大调研至原包 8 篇核心文献、扩展包 13 篇全文/241 页、1 篇网页全文及 20 余篇方法/软件补充证据；
 - [x] 识别 AMD-OFDFT 2014 直接先例，收窄“原子中心密度 + 变分 + Pulay 力”的创新主张；
 - [x] 完成闸门式项目再评估：整体 66/100、S0–S4A 核心 73/100、全范围 S0–S7 约 43/100；
@@ -111,21 +120,22 @@ python3 scripts/validate_s1_electron_number_audit_r2.py --require-committed --re
 
 ### 下次开始位置
 
-从 S1 的下一个 G1 缺口开始；不要重跑已经严格验收的 42 点、074、113–118 或电子数审计 S1-119–148，也不要进入 S2 混合基或 ML：
+从 G1 标签审计 R1 的暂停点开始；不要重跑已经严格验收的 42 点、074、113–118、电子数审计 S1-119–148，或 R1 的 001–040 任一 ID，也不要进入 S2 混合基或 ML：
 
 1. 阅读 `analysis/s1/electron_number_audit_r2_20260805/summary.json`、`points.tsv`、`docs/S1_G1_ELECTRON_NUMBER_AUDIT_R2_PROTOCOL.md`，再回看 runtime-relocation 与 S1-R8 summary；
 2. 独立电子数积分子项已经 `accepted`：90/90 覆盖、每点认证相对误差严格 `<1e-10`；旧 R1 S1-130 失败尝试只作根因档案且对分母贡献 0，不得重算或重复计数；
-3. 预注册并执行第三 smearing/稠密 k 点标签审计；冻结 `σ/σ/2/σ/4` 或“两宽度 + 极密 k”参考、F/TS/内部能/熵修正估计量、密度、势和导数口径，并应用 `ΔVeq <0.2%`、锚定相对能量变化 `<2 meV/atom` 的既定门槛；
-4. G1 总体保持 `pending`（1/6）；标签审计之外的四个缺口仍是独立 OF 交叉代码、KS-NL→KS-L→OF-L 三层验证、位移/应变参考数据和 10 例单命令重生；
-5. runtime-isolation 的 `accepted` 仅适用于已登记的重定位二进制、私有 namespace 和严格审计启动路径；不得把原 S0 归档本身倒推称为天然 hermetic；
-6. 许可证和 LPP 再分发条款继续跟踪。
+3. 阅读 R1 protocol、config/manifest 与 034 归档中的 classification/status/inventory；承认 R1 `indeterminate_paused`，不得把 late inner audit 后处理成 accepted；
+4. 预注册 R2 continuation：显式绑定 R1 的 10 个 accepted run 的提交/tree，只为原 034/040 与 28 个 P2 点分配 30 个新 ID；启动方式必须脱离 SSH/PTY 生命周期且仍保留唯一 PID、日志和退出状态证据；
+5. G1 总体保持 `pending`（1/6）；标签审计之外的四个缺口仍是独立 OF 交叉代码、KS-NL→KS-L→OF-L 三层验证、位移/应变参考数据和 10 例单命令重生；
+6. runtime-isolation 的 `accepted` 仅适用于已登记的重定位二进制、私有 namespace 和严格审计启动路径；不得把原 S0 归档本身倒推称为天然 hermetic；
+7. 许可证和 LPP 再分发条款继续跟踪。
 
 ## 2. 阶段总览
 
 | 阶段 | 名称 | 状态 | 开始日期 | 结束日期 | 闸门 | 证据链接 | 下一动作 |
 |---|---|---|---|---|---|---|---|
 | S0 | 初始化与复现协议 | `accepted` | 2026-08-05 | 2026-08-05 | G0 | `docs/G0_ACCEPTANCE.md`; `analysis/s1/runtime_relocation_equivalence_20260805/` | 数值/归档恢复结论保留；登记的 namespace runtime-isolation 路径已验收，原归档本身不称 hermetic |
-| S1 | 平面波基准闭环 | `in_progress` | 2026-08-05 | — | G1 | `analysis/s1/non_equilibrium_convergence_20260805/`; `analysis/s1/runtime_relocation_equivalence_20260805/`; `analysis/s1/electron_number_audit_r2_20260805/` | 预注册并执行第三 smearing/稠密 k 点标签审计 |
+| S1 | 平面波基准闭环 | `in_progress` | 2026-08-05 | — | G1 | `analysis/s1/non_equilibrium_convergence_20260805/`; `analysis/s1/runtime_relocation_equivalence_20260805/`; `analysis/s1/electron_number_audit_r2_20260805/`; R1 034 失败归档 `b0b7db5` | 预注册标签审计 R2 continuation；复用 10 点并新执行 30 个新 ID |
 | S2 | 混合密度基表示 | `not_started` | — | — | G2 | — | 等待 G1 |
 | S3 | 固定 KEDF 自洽求解 | `not_started` | — | — | G3 | — | 等待 G2 |
 | S4A | 固定晶胞解析力 | `not_started` | — | — | G4A | — | 等待 G3 |
@@ -162,6 +172,8 @@ python3 scripts/validate_s1_electron_number_audit_r2.py --require-committed --re
 | 参考文献证据 | [原包索引](references/M_OFDFT/README.md)；[扩展包索引](references/M_OFDFT_extended/README.md) | 已完成 | 原创研判与索引入库；PDF/全文抽取保留在受控本地包，不公开再分发 |
 | G1 电子数 R2 协议 | `docs/S1_G1_ELECTRON_NUMBER_AUDIT_R2_PROTOCOL.md` | 已执行 | 复用 R1 accepted 11 点并新执行 R2 19 点；只关闭电子数子项 |
 | G1 电子数 R2 分析 | `analysis/s1/electron_number_audit_r2_20260805/` | `accepted` | 90/90；分析提交 `c94796d`；G1 总体 1/6 |
+| G1 标签审计 R1 协议 | `docs/S1_G1_THERMODYNAMIC_LABEL_AUDIT_R1_PROTOCOL.md` | 已执行并停止 | 实现 `64ce08e`；预注册 `f71dd6b`；R1 ID 不得重跑 |
+| G1 标签审计 R1 证据 | `runs/S1-20260806-021/` 等 10 个 accepted 目录；`failed_runs/runtime_relocation/S1-20260806-034/attempt-df57f9b610d8/` | `indeterminate_paused` | 10 accepted；034 capability failure `df57f9b`→相邻归档 `b0b7db5`；无最终 analysis，G1 仍 1/6 |
 | 代码仓库 | `https://github.com/Zhenhao526/M_OFDFT_periodic_basis` | 已建立 | 服务器路径 `/home/shenwei01/M_OFDFT_periodic_basis`；node01 通过校验 bundle 中转，由本地推送并以 `ls-remote` 核验 |
 | 环境锁 | `/home/shenwei01/M_OFDFT_periodic_basis/environment/` | 已建立 | 包清单、CMake、系统快照 |
 | 软件清单 | `/home/shenwei01/M_OFDFT_periodic_basis/manifests/` | 已建立 | 二进制、源码包与 LPP 哈希 |
@@ -172,7 +184,7 @@ python3 scripts/validate_s1_electron_number_audit_r2.py --require-committed --re
 
 ## 3A. 当前阶段：S1
 
-- 状态：`in_progress`；G1 尚未验收。
+- 状态：`in_progress`；标签审计 R1 已严格停止并单独 `paused`，G1 尚未验收，R2 预注册准备中。
 - 核心材料：fcc Al、hcp Mg；每种至少七个体积点 `0.90, 0.94, 0.97, 1.00, 1.03, 1.06, 1.10 V0`。
 - 当前工作仅限基准协议、输入生成、收敛扫描、EOS 与交叉核验；不得提前进入 S2 或 ML。
 - 当前结果：Al WT 在 V0 的 20→30 Ry 变化为 0.011269 meV/atom、0.0000990 GPa；20 Ry 为最小通过候选。
@@ -184,9 +196,11 @@ python3 scripts/validate_s1_electron_number_audit_r2.py --require-committed --re
 - 六组正式指标（最大相对能量差 / 最大压力差 / BM3 最大残差，单位 meV/atom / GPa / meV/atom）：Al OF cutoff `0.001538733 / 0.0001703 / 0.017076344`；Al KS cutoff `0.006794400 / 0.0071189 / 0.009295506`；Al KS kmesh `0.392503700 / 0.0307428（诊断） / 0.008623252`；Mg OF cutoff `0.000007179 / 0.0000431 / 0.002466982`；Mg KS cutoff `0.000705450 / 0.0001021 / 0.003863243`；Mg KS kmesh `0.403149550 / 0.0171684（诊断） / 0.004079008`。
 - 当前结果：074 受管 smoke、正式预注册和 S1-113–118 六点复演均已完成；正式分析 `a01ac70` 为 6/6 `storage_exact`、6/6 runtime accepted、6/6 R8 替换结论不变。
 - 当前结果：G1 电子数 R2 正式分析 `c94796d` 为 90/90 `accepted`；84 个 primary + 6 个 supplemental，60 KS + 11 R1 reused OF + 19 R2 executed OF，最大认证相对误差 `1.0127696865884852e-11`，30/30 OF 科学等价及 120/120、360/360 KMP 门全部通过，R2 新失败为 0。
+- 当前结果：G1 标签审计 R1 已接受 10 个新运行（P0 4/4、P1 前 6/8）；P0 字段门通过，Al/Mg V100 common→extra-quarter 的绝对 Eec 差分别为 1.0504/0.9370 meV/atom；Mg 0.90 V0 锚点差为 0.8496 meV/atom。
+- 当前结果：R1 034 因宿主后置证据闭包缺失为 `indeterminate_paused`，不是数值 rejection；失败 `df57f9b` 与归档 `b0b7db5` 相邻且 tree 一致，040/P2 未执行，R1 不产生最终 analysis。
 - G1 仍为 `pending`（1/6）：独立电子数积分子项已经 `accepted`；剩余五项是第三 smearing/稠密 k 的密度、势和导数标签审计、独立 OFDFT 跨代码 EOS/压力、KS-NL→KS-L→OF-L 三层验证、小位移/应变参考密度与能量分量、10 例单命令重生失败率。
 - runtime-isolation 复核：原 `ldd` 外推仍撤回；登记的重定位 ABACUS + 私有 namespace + 严格审计路径已通过 074 和六点正式复演，因此该限定子项 `accepted`。锁定归档本身仍不得称为天然 hermetic。
-- 当前唯一动作：预注册并执行 G1 第三 smearing/稠密 k 点标签审计；不得重跑电子数审计、已经验收的 runtime 六点或进入 S2/ML。
+- 当前唯一动作：预注册 G1 标签审计 R2 continuation，显式复用 R1 10 个 accepted 点并用 30 个新 ID 完成剩余运行；不得重跑 R1 ID、电子数审计、runtime 六点或进入 S2/ML。
 
 ## 4. 闸门决策记录
 
@@ -201,6 +215,7 @@ python3 scripts/validate_s1_electron_number_audit_r2.py --require-committed --re
 | 2026-08-05 | G0 | `accepted` | Codex | 锁定二进制归档从空目录恢复 11.13 s；恢复加单测/smoke 23.46 s；动态库旧前缀引用 0；重复差 0.0 meV/atom；单测 2/2 | `docs/G0_ACCEPTANCE.md`; `S0-20260805-003` | 允许内部 S1；许可证/LPP 再分发继续限制发布 |
 | 2026-08-05 | G0/runtime-isolation | `paused` | Codex | 原“旧前缀引用 0”仅为 ABACUS `ldd` 解析；whole-runtime 追踪发现恢复 `mpirun` 转调旧前缀 `prterun` 且存在旧路径成功访问 | `docs/G0_ACCEPTANCE.md` | 保留归档恢复与数值观察；修复协议→074 smoke→113–118，未通过前撤回 hermetic 主张 |
 | 2026-08-05 | G0/runtime-isolation | `accepted` | Codex | 074 与 S1-113–118 在登记的重定位+私有 namespace 路径下全部通过；每点成功旧访问/执行/映射、未知探针均为 0，六点数值逐存储位一致 | `analysis/s1/runtime_relocation_equivalence_20260805/`; `a01ac70` | 接受限定部署路径；保留 S0-003 erratum，不把原归档本身称为天然 hermetic |
+| 2026-08-06 | G1/thermodynamic-label R1 | `paused` | Codex | 10 个新运行 accepted；034 的 SCF 与 inner audit 完成，但宿主 `host_status`/counterpart/result 闭包缺失；权威分类 `indeterminate`，71 文件失败证据与相邻归档均通过 validator | `df57f9b`; `b0b7db5`; `failed_runs/runtime_relocation/S1-20260806-034/attempt-df57f9b610d8/` | R1 停止且所有 R1 ID 禁止重跑；G1 保持 1/6；只允许新 revision + 新 IDs continuation |
 
 ## 5. 实验台账
 
@@ -232,6 +247,7 @@ python3 scripts/validate_s1_electron_number_audit_r2.py --require-committed --re
 | S1-RUNTIME-SMOKE-20260805-074 | 2026-08-05 | S1 | 以 074 冻结输入验证重定位 ABACUS、私有 namespace 与严格 whole-runtime 审计入口 | 执行代码 `22eff38`；证据提交 `92e513f` | `analysis/s1/runtime_relocation_smoke_20260805/summary.json` | `analysis/s1/runtime_relocation_smoke_20260805/run/` | 66 个证据文件；能量/压力 `storage_exact`；五类状态门 accepted；三次历史失败归档保留 | `accepted`；幂等重验 `accepted_committed` | 是 |
 | S1-20260805-113–118 | 2026-08-05 | S1 | 用重定位 ABACUS 与私有 namespace 复演六个 v100 映射点，复核 whole-runtime 隔离及 R8 结论 | 预注册 `9a0fd7d`；逐点 `8ad4ea8`、`a96896b`、`9800067`、`ce7da88`、`12d2867`、`ce51927`；分析 `a01ac70` | `config/S1_runtime_relocation_equivalence.json`; `config/S1_runtime_relocation_equivalence_manifest.tsv` | `runs/S1-20260805-113/`–`runs/S1-20260805-118/`; `analysis/s1/runtime_relocation_equivalence_20260805/` | 6/6 `storage_exact`；6/6 runtime accepted；每点 22 个登记 ENOENT，成功旧访问/执行/映射和未知探针均为 0；R8 替换结论 6/6 不变 | runtime-relocation equivalence `accepted`；G1 仍 pending | 6 次 |
 | S1-20260805-119–148 | 2026-08-05/06 | S1 | 对 90 个已验收基准点独立积分电子数；为 30 个 OF 点输出高精度密度并复核科学/runtime 等价 | R1 accepted 119–129；R2 预注册 `b18106b`；结果终点 `c722c81`；分析 `c94796d` | `config/S1_electron_number_audit.json`; `config/S1_electron_number_audit_r2.json` | `runs/S1-20260805-119/`–`runs/S1-20260805-148/`; `analysis/s1/electron_number_audit_r2_20260805/` | 90/90 accepted；60 KS + 11 R1 reused OF + 19 R2 executed OF；最大认证相对误差 `1.0127696865884852e-11`；30/30 OF 科学等价；KMP 120/120、360/360；R2 新失败 0 | G1 电子数子项 `accepted`；G1 总体 1/6 | R1 复用 11 点 + R2 新执行 19 点 |
+| S1-20260806-001–040（R1） | 2026-08-06 | S1 | 第三 smearing/稠密 k 点 thermodynamic-label 审计 | 实现 `64ce08e`；预注册 `f71dd6b`；accepted 终点 `9096ca3`；失败 `df57f9b`；归档 `b0b7db5` | `config/S1_g1_thermodynamic_label_audit_r1.json`; `config/S1_g1_thermodynamic_label_audit_r1_manifest.tsv` | 10 个 active accepted run；`failed_runs/runtime_relocation/S1-20260806-034/attempt-df57f9b610d8/` | P0 4/4、P1 6/8 accepted；034 capability failure/indeterminate；040 与 28 个 P2 点未执行；最终 40/42/6-fit 总门不可判定 | R1 `indeterminate_paused`；G1 仍 1/6 | 10 个 accepted 可在新协议显式复用；R1 ID 全部禁止重跑 |
 
 ## 6. 当前指标看板
 
@@ -269,6 +285,8 @@ python3 scripts/validate_s1_electron_number_audit_r2.py --require-committed --re
 | G1 电子数 KMP/runtime | 30/30 OF；120/120 rank lifecycles；360/360 成功 syscall | 精确等于 120/360；旧前缀成功访问/映射、unexpected/unhashed mapping 为 0 | 同上 | 通过 |
 | G1 电子数失败清单 | density/scientific/KMP/point failure IDs 均为空；R2 新失败 0 | 四类均为 0 | 同上 | 通过 |
 | R1 S1-130 历史失败尝试 | 仅作根因档案；验收分母贡献 0；当前 R2 同 ID 结果计 1 次 | 历史失败不删除、不重复计数 | 同上 | 保留并排除 |
+| G1 标签 R1 执行覆盖 | 40 个注册点中 10 accepted、1 indeterminate、29 not run；P0 4/4，P1 6 accepted + 034 indeterminate + 040 not run，P2 0/28 | R1 要求 40/40；未完成不得分析 | S1-20260806-001–040；`b0b7db5` | `paused` |
+| G1 标签 R1 034 失败闭包 | `indeterminate`；`workflow_or_runtime_capability_failure`；`runtime_kmp`；71 文件；failure/archive/HEAD tree 一致 | 能力证据缺失不得判 accepted/rejected；失败提交与归档必须相邻 | `df57f9b`→`b0b7db5` | 通过失败处置；R1 停止 |
 | G1 待闭合项 | 1/6 闭合 | 6/6 | `analysis/s1/electron_number_audit_r2_20260805/summary.json` | `pending` |
 | runtime-relocation 六点科学/R8 等价 | 6/6 `storage_exact`；R8 替换结论 6/6 不变 | `|dE|<0.1 meV/atom`、`|dP|<0.02 GPa`；6/6 不翻转 | S1-20260805-113–118；`a01ac70` | `accepted` |
 | whole-runtime 旧前缀隔离 | 074 + 六点均为成功旧访问/执行/映射 0、未知探针 0；每点恰有 22 个登记 ENOENT | 同左；登记探针计数必须精确 | `analysis/s1/runtime_relocation_smoke_20260805/`; `analysis/s1/runtime_relocation_equivalence_20260805/` | 限定 namespace 部署路径 `accepted` |
@@ -293,6 +311,7 @@ python3 scripts/validate_s1_electron_number_audit_r2.py --require-committed --re
 | B-005 | 2026-08-05 | node01 直连 GitHub HTTPS 超时，不能在计算节点直接推送 | S0–S7 | Codex | 暂用完整 Git bundle 经跳板机传回本机后原子推送；后续可配置可审计的出口代理 | 否 | `paused` |
 | B-006 | 2026-08-05 | node01 未发现第二套独立 OFDFT/KSDFT 程序 | S1 | 待填写 | 评估 DFTpy/Quantum ESPRESSO 的可审计安装或在其他主机交叉核验 | 否 | `in_progress` |
 | B-007 | 2026-08-05 | 原 runtime-isolation 证据只覆盖 ABACUS `ldd`；恢复 `mpirun` 可转调旧前缀 `prterun`，运行中也有旧路径成功访问 | G0/S1 | Codex | 已以登记的重定位+私有 namespace 协议完成 074 和六点复演；冻结身份改变时重新打开 | 否 | `accepted` |
+| B-008 | 2026-08-06 | R1 034 的 SSH/PTY 宿主编排在 namespace 子会话完成前中断，使宿主后置 `host_status`、counterpart 与 result 闭包缺失 | S1/G1 | Codex | 在 R2 预注册中冻结脱离 SSH 生命周期的受管启动、唯一 PID/日志/退出状态和同等失败闭包；R1 不重跑 | 否 | `paused` |
 
 ### 活跃风险
 
@@ -303,7 +322,7 @@ python3 scripts/validate_s1_electron_number_audit_r2.py --require-committed --re
 | 显式 Gaussian⊕PW 病态或偏慢 | 高 | 高 | 原子/PW 近线性相关、端到端慢于 FFT | 四路线 G2 竞赛；优先原子基+FFT/范围分离；性能闸门淘汰 | 未验证 |
 | 系数规范不唯一 | 中 | 高 | 同密度不同能量 | 固定最小范数规范、零空间测试 | 未验证 |
 | LPP 不可迁移 | 中 | 高 | EOS/相能系统偏差 | 先 Al/Mg、固定同 LPP 对照 | 未验证 |
-| 金属展宽标签热力学不一致 | 高 | 高 | 标量能量稳定但密度/势随 sigma 改变 | 三宽度或密 k 参考；F/TS/估计量/密度/导数同口径 | S1B 待验证 |
+| 金属展宽标签热力学不一致 | 高 | 高 | 标量能量稳定但密度/势随 sigma 改变 | 三宽度或密 k 参考；F/TS/估计量/密度/导数同口径 | R1 P0 与部分 P1 正常，但 034 能力闭包失败；等待 R2，未形成科学结论 |
 | 锁定归档并非 whole-runtime hermetic | 已发生 | 高 | ABACUS `ldd` 通过但 MPI/UCX 转调或访问旧前缀 | 重定位二进制；私有 namespace 遮蔽旧根；严格 `strace` 门；六点数值复演 | 登记路径已缓解并 accepted；原归档口径限制保留 |
 | ML 离线准确但自洽失败 | 高 | 高 | 优化逃离训练流形 | 导数/轨迹/响应联合训练 | 未启动 |
 | Pulay 导数不连续 | 中 | 高 | FD 无二阶收敛区 | 固定基维数和可微裁剪 | 未启动 |
@@ -350,16 +369,17 @@ python3 scripts/validate_s1_electron_number_audit_r2.py --require-committed --re
 | 2026-08-05 | D-034 | 接受登记的 runtime-relocation + 私有 namespace 部署路径并关闭六点等价复演；G1 保持 pending | 074 与正式六点均通过全部 runtime 门；六点 `storage_exact`，R8 替换结论 6/6 不变；分析 `a01ac70` 无失败 | 把 S0 `ldd` 结果继续当 whole-runtime 证明，或把六点通过误报为完整 G1 通过 | G0/runtime-isolation 限定子项改为 accepted；下一步转入 G1 电子数独立积分审计 |
 | 2026-08-06 | D-035 | 采用增量电子数 R2：复用 R1 已接受的 11 点并新执行 19 点；KMP 登记对象必须由 raw create/read/unlink 生命周期证明 | R1 119–129 均可严格重验；旧 S1-130 只因 sampler 捕获合法短命 KMP 对象而失败；R2 对 30 个 OF 点证明 120/120 lifecycles、360/360 syscall | 重试等待 sampler 漏采、追溯改写 R1，或无证据重跑全部 30 点 | R1 证据与失败档案保持不可变；R2 新失败 0；结果终点 `c722c81` |
 | 2026-08-06 | D-036 | 接受 G1 独立电子数积分子项，但完整 G1 保持 `pending`（1/6） | 正式分析 `c94796d` 为 90/90 accepted；最大认证相对误差 `1.0127696865884852e-11`；30/30 OF 科学等价及 KMP 总门通过，四类 failure ID 全空 | 用 ABACUS 名义电子数代替独立积分，或把一个子项通过误报为完整 G1 通过 | 下一唯一动作转为预注册并执行第三 smearing/稠密 k 点标签审计；不得进入 S2/ML |
+| 2026-08-06 | D-037 | 将 G1 标签审计 R1 判为 `indeterminate_paused` 并永久消费 034；保留 10 个 accepted 点但不形成子项结论 | 034 的 SCF 与 inner runtime audit 完成，SSH/PTY 宿主会话先中断，导致 `host_status`、counterpart、result 缺失；冻结 validator 重算为 capability failure；`df57f9b`/`b0b7db5` 完成相邻失败归档 | 把 late inner audit 升格为 accepted、同 ID 重跑 034、跳过 034 继续 040/P2，或把能力缺失误报为数值 rejection | R1 停止；G1 保持 1/6；继续时必须新 revision + 新 IDs，并显式绑定复用证据 |
 
 ## 9. 最近可用状态
 
 此节必须始终指向一个可运行、可复现的状态；若暂无则明确写“无”。
 
-- 最近可用状态：提交 `c94796d`；包含 G1 电子数 R2 正式分析。电子数证据链为实现 `f4a816a`→顺序验证硬化 `125dd37`→R2 预注册 `b18106b`→19 点结果终点 `c722c81`→正式分析 `c94796d`；既有 runtime-relocation 证据链仍保留在 `a01ac70`。
+- 最近可用状态：提交 `b0b7db5`；包含 G1 标签 R1 的 10 个 accepted run、034 权威 `indeterminate` 失败证据与相邻归档。标签 R1 证据链为实现 `64ce08e`→预注册 `f71dd6b`→accepted 终点 `9096ca3`→失败 `df57f9b`→归档 `b0b7db5`；电子数正式分析 `c94796d` 与 runtime-relocation `a01ac70` 继续有效。
 - 对应环境：`environment/`，ABACUS v3.11.0-beta.5 CPU + OpenMPI 5.0.10 + LibXC 7.0.0。
-- 已通过测试：123/123 单元测试；42/42 S1-R8 数值收敛；074 受管 smoke accepted；113–118 六点 committed validator 6/6；电子数 R1 复用 11/11、R2 执行 19/19、最终 90/90 accepted，KMP 120/120 lifecycles 与 360/360 syscall。
-- 已知失败/暂停：`S1-20260805-004` 初始严格阈值失败已复核；三次 runtime smoke 失败 attempt 已完整归档且未删除；旧 R1 S1-130 失败尝试保留为根因档案且对电子数分母贡献 0，R2 新失败为 0；G1 剩余五项仍 pending；node01 第二程序与公开发布许可仍未闭合。
-- 恢复方法：按“最近可运行命令”登录并运行 123/123 单元测试及 R2 committed validator；读取已提交的电子数 summary/points，不得无理由重算 119–148 或重复计入旧 S1-130 失败尝试；下一步只预注册并执行第三 smearing/稠密 k 点标签审计。
+- 已通过测试：147/147 单元测试（R1 执行前）；42/42 S1-R8 数值收敛；074 受管 smoke accepted；113–118 六点 committed validator 6/6；电子数最终 90/90 accepted；标签 R1 的 10 个 accepted run 与 034 committed archive validator 均通过。
+- 已知失败/暂停：`S1-20260805-004`、runtime smoke 与旧电子数 R1 失败档案均保留；标签 R1 034 为 workflow/runtime capability failure、权威状态 `indeterminate`，R1 已停止；G1 仍只有 1/6，第二程序与发布许可仍未闭合。
+- 恢复方法：按“最近可运行命令”登录并运行 147/147 单元测试、电子数 committed validator 与标签 R1 archive validator；读取 R1 protocol/config/manifest 和 034 classification/status/inventory；不得重跑 R1 001–040。下一步只预注册 R2 continuation，并在新 ID 下完成剩余 30 点。
 - 同步方法：node01 执行 `git bundle create ... --all` 并 `git bundle verify`，经跳板机传至本机；三端 SHA-256 一致后，从临时 clone 使用 `git push --atomic origin main --tags`，最后以 `git ls-remote` 核验。
 
 ## 10. 交接说明
@@ -409,6 +429,7 @@ python3 scripts/validate_s1_electron_number_audit_r2.py --require-committed --re
 | 2026-08-05 20:17 CST | S1-R8 验收与 runtime 勘误 | Codex | S1 | raw `300a2aa`；硬化 `9010eed`；正式分析 `d28126b` | 49/49 单测；42/42 收敛；6/6 accepted；runtime replay 未执行 | 固化六组指标和 G1 六项 pending；G0 runtime-isolation 子项 `paused`；唯一下一动作是修协议→074 smoke→113–118 |
 | 2026-08-05 23:44 CST | runtime-relocation 六点闭环 | Codex | S1 | 074 `92e513f`；预注册 `9a0fd7d`；六点终点 `ce51927`；分析 `a01ac70` | 92/92 单测；074 accepted；六点 6/6 `storage_exact`、runtime accepted、R8 结论不变 | G0/runtime-isolation 在登记 namespace 路径内 accepted；G1 仍 pending；下一动作是电子数独立积分审计 |
 | 2026-08-06 02:53 CST | G1 电子数 R2 闭环 | Codex | S1 | 预注册 `b18106b`；结果终点 `c722c81`；分析 `c94796d` | 123/123 单测；R1 11/11 + R2 19/19；90/90 accepted；KMP 120/120、360/360 | 仅 G1 电子数子项 accepted，G1 总体 1/6；下一动作是第三 smearing/稠密 k 点标签审计 |
+| 2026-08-06 16:02 CST | G1 标签 R1 暂停闭环 | Codex | S1 | 实现 `64ce08e`；预注册 `f71dd6b`；accepted 终点 `9096ca3`；失败 `df57f9b`；归档 `b0b7db5` | 147/147 执行前单测；10 个 run accepted；034 failure/archive validator 通过；R1 无最终 analysis | 034 因 SSH/PTY 宿主后置证据缺失为 indeterminate；R1 停止且 ID 禁止重跑；G1 保持 1/6；下一动作 R2 复用 10 点 + 30 新 ID |
 
 ## 11. 文档变更记录
 
@@ -436,3 +457,4 @@ python3 scripts/validate_s1_electron_number_audit_r2.py --require-committed --re
 | 2026-08-05 | V2.9 | Codex | 记录 S1-R8 42/42、6/6 accepted 与 `300a2aa`/`9010eed`/`d28126b` 证据链；新增 G0 runtime-isolation 勘误、B-007、D-031–033、六组指标、113–118 预留和严格下一动作；未宣称复演通过 |
 | 2026-08-05 | V3.0 | Codex | 记录 074 受管 smoke、正式预注册、S1-113–118 六点逐点提交与 `a01ac70` 6/6 正式分析；限定接受 namespace runtime-isolation 路径，保留原 S0 hermetic 勘误与 G1 pending；下一动作转为电子数独立积分审计 |
 | 2026-08-06 | V3.1 | Codex | 记录电子数增量 R2 的 11+19 证据拆分、90/90 正式验收、最大认证误差、KMP 120/360 与零新增失败；只关闭 G1 电子数子项并将总体更新为 1/6，下一动作转为第三 smearing/稠密 k 点标签审计 |
+| 2026-08-06 | V3.2 | Codex | 记录标签审计 R1 实现/预注册、10 个 accepted run、034 SSH/PTY 宿主后置闭包失败、`df57f9b`/`b0b7db5` 相邻失败归档与 GitHub 同步；R1 为 indeterminate_paused，G1 保持 1/6，下一动作改为显式复用 10 点并以 30 个新 ID 执行 R2 continuation |
