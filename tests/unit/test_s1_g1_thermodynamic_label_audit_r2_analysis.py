@@ -35,8 +35,15 @@ class S1G1ThermodynamicLabelAuditR2AnalysisTest(unittest.TestCase):
             config_path.write_text("{}\n", encoding="utf-8")
             manifest_path.write_text("x\n", encoding="utf-8")
             output = temporary / "analysis"
+            replay_registration_paths: list[tuple[Path, Path]] = []
 
-            def replay(_root, _config, _rows, logical, **_kwargs):
+            def replay(_root, _config, _rows, logical, **kwargs):
+                replay_registration_paths.append(
+                    (
+                        kwargs["scientific_config_path"],
+                        kwargs["scientific_manifest_path"],
+                    )
+                )
                 payload = {
                     "electron_number_integration": {"accepted": True},
                     "kmp_runtime_contract": {
@@ -89,6 +96,9 @@ class S1G1ThermodynamicLabelAuditR2AnalysisTest(unittest.TestCase):
                     mock.patch.object(ANALYZER, "validate_registration", return_value=({}, [], {}))
                 )
                 stack.enter_context(
+                    mock.patch.object(ANALYZER, "_manifest_from_bytes", return_value=[])
+                )
+                stack.enter_context(
                     mock.patch.object(
                         ANALYZER,
                         "logical_effective_id",
@@ -137,6 +147,11 @@ class S1G1ThermodynamicLabelAuditR2AnalysisTest(unittest.TestCase):
             persisted = json.loads((output / "summary.json").read_text(encoding="utf-8"))
             self.assertEqual(persisted["runtime_kmp_aggregate"]["rank_lifecycle_count"], 160)
             self.assertEqual(persisted["runtime_kmp_aggregate"]["successful_syscall_count"], 480)
+            self.assertEqual(len(replay_registration_paths), 40)
+            self.assertEqual(len(set(replay_registration_paths)), 1)
+            snapshot_config, snapshot_manifest = replay_registration_paths[0]
+            self.assertFalse(snapshot_config.exists())
+            self.assertFalse(snapshot_manifest.exists())
 
 
 if __name__ == "__main__":

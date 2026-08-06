@@ -202,9 +202,11 @@ launcher 还必须核对当前解释器与登记 Python 的 realpath/SHA-256。v
 detached supervisor 子进程显式传入这 10 键，runner 则只能额外获得 6 个已登记的
 supervisor binding 变量。runner 不通过 shebang/PATH 选择 shell，必须由经
 path/realpath/SHA-256 重验的登记绝对 Bash 路径启动。`launch.json.environment`
-必须记录同一 exact keys/values/canonical hash 结构。标准命令前缀固定为：
+必须记录同一 exact keys/values/canonical hash 结构；所有 mutating launcher 入口及
+supervisor 的 `umask` 必须精确为 `0022`。标准命令前缀固定为：
 
 ```bash
+umask 0022
 /usr/bin/env -i HOME=/home/shenwei01 LC_ALL=C LOGNAME=shenwei01 \
   PATH=/usr/bin:/bin PYTHONHASHSEED=0 PYTHONIOENCODING=UTF-8 \
   PYTHONNOUSERSITE=1 PYTHONUTF8=1 TZ=UTC USER=shenwei01 \
@@ -216,6 +218,18 @@ path/realpath/SHA-256 重验的登记绝对 Bash 路径启动。`launch.json.env
 - 监督进程必须使用新 session，stdin 为 `/dev/null`，stdout/stderr 指向固定日志，
   并通过非阻塞 `flock` 证明唯一 writer；
 - 监督进程必须先写入并 fsync `launch.json` 与 append-only journal，再等待 GO；
+- `launch.json` 必须使用冻结的 exact key set，并逐项绑定 schema/status、launch method、
+  restart policy、project/working directory、hostname、`0022` umask、environment、state/lock/log
+  路径、boot/process/Git 身份、registered files、runner argv 与 UTC；其 `launcher` 子对象必须
+  精确绑定官方 launcher 路径/SHA-256 及登记 Python 的 path/realpath/SHA-256；
+- supervisor 必须以同一次 `O_NOFOLLOW` 稳定读取获得 runner、manifest 和 config 的原始字节及
+  SHA-256，再分别复制到 Linux sealed memfd `200/201/202`。三者最终 seal mask 必须精确为
+  `15 = F_SEAL_SEAL|F_SEAL_SHRINK|F_SEAL_GROW|F_SEAL_WRITE`；`launch.json` 的
+  `sealed_execution_inputs` 必须登记模式、固定 FD、`/proc/self/fd/*` 路径、canonical provenance
+  路径、SHA-256、seal 名称/mask 与 `pass_fds`。登记 Bash 实际执行 `/proc/self/fd/200`，所有科学
+  config/manifest 内容只能从 `/proc/self/fd/202` 和 `/proc/self/fd/201` 读取；canonical 路径仅供
+  Git/validator provenance 使用。GO 前 validator 必须从 supervisor 的 `/proc/<pid>/fd/200..202`
+  独立复核字节哈希与 exact seals；runner 启动并继承三者后，supervisor 关闭自己的副本；
 - launch/GO/terminal/detachment/completion 等单文件回执必须先在同目录临时文件完整写入并
   fsync，再以不覆盖既有目标的原子 hard-link 发布并 fsync 目录；观察者不得看到空白或部分
   JSON，任何同名目标已存在都必须 fail closed；
@@ -224,6 +238,16 @@ path/realpath/SHA-256 重验的登记绝对 Bash 路径启动。`launch.json.env
   `orchestration/s1/g1_thermodynamic_label_audit_r2_20260806/detachment.json`；
 - detachment attestation 必须独立提交，GO 必须绑定 launch hash、attestation hash、
   boot-id 和 supervisor start time；
+- supervisor 在派生 runner 前必须对 GO 的 exact 13-key schema/status、全部登记文件、冻结
+  attestation 路径/哈希及当前 Git HEAD 重新验真，并再次运行 committed detachment validator；
+  第 13 个键 `sealed_execution_inputs_sha256` 必须绑定 `launch.json` 中上述 sealed record 的
+  canonical SHA-256；
+  监督进程必须固定单次稳定读取所得的 GO 原始字节 SHA-256，journal、Popen 环境和 runner
+  preflight 只能复用该固定 SHA，禁止在校验后重新解释或重新绑定路径中的新字节；runner 还须
+  在 solver 前独立复验 exact 13-key GO、attestation、当前 Git HEAD 与 journal 的固定哈希；
+  最终完成复验必须证明 `GO.git_head`、detachment introduction commit 和
+  `journal.go_accepted.git_head` 三者相等，且首个 attempt-marker commit 的 parent 正是
+  该 GO HEAD；
 - runner 只能由该监督进程作为仍存活的直接子进程派生；启动时必须同时核对 Bash PPID、
   supervisor PID/start-time/session/process-group/TTY、boot-id、launch hash 与 GO hash，任何手工
   调用、陈旧 state 或父进程替换都必须在 solver 前拒绝；
@@ -243,13 +267,20 @@ schema_version, protocol_revision, experiment_id, logical_experiment_id,
 status, retry_policy, created_utc, config_path, config_sha256, manifest_path,
 manifest_sha256, git_head_before_attempt, supervisor_state_directory,
 supervisor_launch_path, supervisor_launch_sha256, supervisor_pid,
-supervisor_start_time_ticks, boot_id
+supervisor_start_time_ticks, boot_id, supervisor_go_path,
+supervisor_go_sha256, go_git_head
 ```
 
 `status` 固定为 `formal_attempt_started`，`retry_policy` 固定为
 `new_protocol_revision_and_new_experiment_ids_only`。任一外部或 Git marker 的存在都代表
 该 ID 已消耗；若其后没有得到 immutable accepted run，也只能保留并启动新修订、
 新 ID，不得重新调用 solver。
+首个 marker 的提交 parent 必须同时等于 `GO.git_head` 与 detachment attestation 的唯一
+introduction commit；runner 必须在任何 solver 进程创建前用 committed validator 验收该 marker。
+因此，detachment 提交之后插入任何额外 clean commit 都会在首点计算前 fail closed，而不是留到
+最终 completion 才发现。
+其后每个 marker 的提交 parent 必须精确等于执行顺序中前一个 accepted run 的 introduction
+commit；点间插入文档或其他 clean commit 同样会在下一个 solver 前拒绝。
 
 监督进程正常结束也不能只靠外部 `terminal.json` 宣布整个 R2 协议 accepted。runner
 可以在全部科学门通过后写出 `audit_status=accepted` 的科学 summary；这一状态只说明冻结的
@@ -262,6 +293,14 @@ launcher 的 `finalize` 动作必须在 runner 退出码为 0 且外部 terminal
 ```text
 orchestration/s1/g1_thermodynamic_label_audit_r2_20260806/supervisor_completion.json
 ```
+
+`finalize` 在消费这个不可覆盖路径之前，必须用不跟随符号链接的稳定读取一次性
+绑定 launch、GO、terminal、journal、log、analysis、config 和 manifest 的原始字节与
+SHA-256；terminal 与 journal 必须通过 exact key set、strict JSON integer、PID/start-time、
+GO 事件和时序验证，launch/detachment 记录必须再次通过已提交 validator。写入前
+还必须逐项复验原始字节未变、工作树仍 clean，且 Git HEAD 与首次对照 terminal 时
+冻结的 HEAD 完全相同。正式模型要求所有合作进程遵守 single-writer/lock 协议；不遵守
+锁且持续篡改同 UID 外部 state 的恶意进程不在可恢复性承诺内。
 
 随后只以这一个路径创建 exact-scope completion commit。completion JSON 必须绑定
 config/manifest、Git HEAD、supervisor PID/start-time/boot-id、launch/terminal/journal、

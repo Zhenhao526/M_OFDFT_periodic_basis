@@ -158,6 +158,38 @@ RUNNER_BINDING_ENVIRONMENT_KEYS = (
     "M_OFDFT_G1_R2_LAUNCH_SHA256",
     "M_OFDFT_G1_R2_GO_SHA256",
 )
+SEALED_EXECUTION_INPUT_MODE = "linux_memfd_sealed_v1"
+SEALED_EXECUTION_INPUT_FDS = {
+    "runner": 200,
+    "manifest": 201,
+    "config": 202,
+}
+SEALED_EXECUTION_INPUT_PROC_PATHS = {
+    name: f"/proc/self/fd/{descriptor}"
+    for name, descriptor in SEALED_EXECUTION_INPUT_FDS.items()
+}
+SEALED_EXECUTION_INPUT_SEAL_NAMES = (
+    "F_SEAL_SEAL",
+    "F_SEAL_SHRINK",
+    "F_SEAL_GROW",
+    "F_SEAL_WRITE",
+)
+SEALED_EXECUTION_INPUT_SEAL_MASK = 15
+GO_PAYLOAD_REQUIRED_KEYS = (
+    "schema_version",
+    "protocol_revision",
+    "status",
+    "launch_sha256",
+    "boot_id",
+    "supervisor_pid",
+    "supervisor_start_time_ticks",
+    "attestation_path",
+    "attestation_sha256",
+    "git_head",
+    "registered_files",
+    "sealed_execution_inputs_sha256",
+    "created_utc",
+)
 SUPERVISOR_COMPLETION_REQUIRED_KEYS = (
     "schema_version",
     "protocol_revision",
@@ -223,6 +255,9 @@ ATTEMPT_MARKER_REQUIRED_KEYS = (
     "supervisor_pid",
     "supervisor_start_time_ticks",
     "boot_id",
+    "supervisor_go_path",
+    "supervisor_go_sha256",
+    "go_git_head",
 )
 
 EXPECTED_REUSED_RUNS = {
@@ -1182,6 +1217,10 @@ def prepare(
             "append_only_journal_required": True,
             "atomic_supervisor_evidence_publish_required": True,
             "runner_live_parent_binding_required": True,
+            "exact_go_payload_required_before_runner": True,
+            "go_validated_bytes_sha256_binding_required": True,
+            "runner_exact_go_revalidation_required": True,
+            "go_payload_required_keys_exact": list(GO_PAYLOAD_REQUIRED_KEYS),
             "runner_parent_binding_fields": [
                 "state_directory",
                 "supervisor_pid",
@@ -1195,6 +1234,7 @@ def prepare(
                 "values_exact": dict(FROZEN_AMBIENT_ENVIRONMENT_VALUES),
                 "canonical_values_sha256": FROZEN_AMBIENT_ENVIRONMENT_SHA256,
                 "mutating_launcher_exact_match_required": True,
+                "supervisor_umask_exact": "0022",
                 "python_no_user_site_required": True,
                 "validator_subprocess_explicit_environment_required": True,
                 "supervisor_subprocess_explicit_environment_required": True,
@@ -1202,6 +1242,19 @@ def prepare(
                     RUNNER_BINDING_ENVIRONMENT_KEYS
                 ),
                 "runner_registered_bash_required": True,
+            },
+            "sealed_execution_inputs": {
+                "mode": SEALED_EXECUTION_INPUT_MODE,
+                "fixed_fds_exact": dict(SEALED_EXECUTION_INPUT_FDS),
+                "proc_paths_exact": dict(SEALED_EXECUTION_INPUT_PROC_PATHS),
+                "seal_mask_exact": SEALED_EXECUTION_INPUT_SEAL_MASK,
+                "seal_names_exact": list(SEALED_EXECUTION_INPUT_SEAL_NAMES),
+                "popen_pass_fds_exact": list(
+                    SEALED_EXECUTION_INPUT_FDS.values()
+                ),
+                "registered_bash_executes_runner_fd": True,
+                "scientific_config_manifest_from_sealed_fds_required": True,
+                "canonical_paths_provenance_only": True,
             },
             "supervisor_state_directory": SUPERVISOR_STATE_DIRECTORY,
             "attempt_ledger_root": ATTEMPT_LEDGER_ROOT.as_posix(),
@@ -1249,6 +1302,10 @@ def prepare(
                 "creation_contract": "O_CREAT|O_EXCL_then_file_fsync_then_parent_directory_fsync_before_solver",
                 "commit_scope": "exactly_one_attempt_ledger_marker",
                 "run_introduction_parent_must_equal_marker_commit": True,
+                "first_marker_commit_parent_must_equal_go_git_head": True,
+                "subsequent_marker_commit_parent_must_equal_previous_accepted_run_introduction": True,
+                "go_git_head_must_equal_detachment_introduction_commit": True,
+                "validator_must_accept_marker_before_solver": True,
                 "working_tree_clean_after_marker_commit": True,
                 "same_id_retry_forbidden": True,
                 "required_keys_exact": list(ATTEMPT_MARKER_REQUIRED_KEYS),

@@ -111,6 +111,7 @@ python3 scripts/validate_s1_g1_thermodynamic_label_audit_r1.py config/S1_g1_ther
 - [x] `S1-20260806-034` 的 ABACUS 与 namespace 内部 runtime audit 完成，但 SSH/PTY 宿主编排在后置核验前中断，缺失 `host_status.json`、`counterpart_audit.json` 与 `result.json`；冻结分类为 `indeterminate`、`workflow_or_runtime_capability_failure`、`runtime_kmp`；
 - [x] 以 `df57f9b` 固化 034 的 71 文件失败闭包，以紧邻提交 `b0b7db5` 将同一 tree 移至 `failed_runs/runtime_relocation/S1-20260806-034/attempt-df57f9b610d8/`；committed archive validator 通过，R1 停止且 034 永久禁止同 ID 重跑；
 - [x] 将 R1 accepted/失败/归档证据经校验 bundle 同步至本地并推送 GitHub `main`；本地 `audit.json`、`objects.tsv`、`tmp/` 保持未跟踪且未修改；
+- [x] 完成标签审计 R2 执行前六轮复核与硬化：sealed memfd `200/201/202`、全重放链科学输入贯通、GO/marker 因果门、terminal/journal exact type 以及 finalize 稳定字节/HEAD 复验均已封闭；本地 206/206、远端 Linux 206/206 单测通过，第六轮无 P0/P1；
 - [x] 扩大调研至原包 8 篇核心文献、扩展包 13 篇全文/241 页、1 篇网页全文及 20 余篇方法/软件补充证据；
 - [x] 识别 AMD-OFDFT 2014 直接先例，收窄“原子中心密度 + 变分 + Pulay 力”的创新主张；
 - [x] 完成闸门式项目再评估：整体 66/100、S0–S4A 核心 73/100、全范围 S0–S7 约 43/100；
@@ -371,6 +372,8 @@ python3 scripts/validate_s1_g1_thermodynamic_label_audit_r1.py config/S1_g1_ther
 | 2026-08-06 | D-036 | 接受 G1 独立电子数积分子项，但完整 G1 保持 `pending`（1/6） | 正式分析 `c94796d` 为 90/90 accepted；最大认证相对误差 `1.0127696865884852e-11`；30/30 OF 科学等价及 KMP 总门通过，四类 failure ID 全空 | 用 ABACUS 名义电子数代替独立积分，或把一个子项通过误报为完整 G1 通过 | 下一唯一动作转为预注册并执行第三 smearing/稠密 k 点标签审计；不得进入 S2/ML |
 | 2026-08-06 | D-037 | 将 G1 标签审计 R1 判为 `indeterminate_paused` 并永久消费 034；保留 10 个 accepted 点但不形成子项结论 | 034 的 SCF 与 inner runtime audit 完成，SSH/PTY 宿主会话先中断，导致 `host_status`、counterpart、result 缺失；冻结 validator 重算为 capability failure；`df57f9b`/`b0b7db5` 完成相邻失败归档 | 把 late inner audit 升格为 accepted、同 ID 重跑 034、跳过 034 继续 040/P2，或把能力缺失误报为数值 rejection | R1 停止；G1 保持 1/6；继续时必须新 revision + 新 IDs，并显式绑定复用证据 |
 | 2026-08-06 | D-038 | G1 标签 R2 的 launcher ambient environment 冻结为 10 键 exact map，所有 Python 进程禁用 user site，runner 只增加 6 个 supervisor binding 键并由登记绝对 Bash 启动 | SSH/login shell 可携带 `BASH_ENV`、`PYTHONPATH`、user-site 和其他未登记状态；R1-034 证明 host orchestration 本身必须进入证据边界 | 继承 `os.environ`、依赖 shebang/PATH 选择 Bash，或只在 solver 内再清理环境 | config 登记 exact map 及 canonical SHA `ef6a2022...6b6`；mutating launcher 在任何写入前 fail closed，launch record 保留同一环境结构 |
+| 2026-08-06 | D-039 | G1 标签 R2 的 runner/config/manifest 改为 Linux sealed-memfd 执行边界，且首个 marker parent 必须是 GO/detachment introduction | 复核发现“先验哈希、后按路径打开”仍存在 runner/config/manifest TOCTOU，而额外 clean commit 可将首个 marker 与 GO 拆开 | 仅重复路径哈希，或只在 completion 阶段发现 Git parent 不符 | 固定 FD `200/201/202`、seal mask `15`、GO 13 键并绑定 sealed record SHA；GO 前从 `/proc/<pid>/fd` 复核，首个 solver 前即验 marker parent |
+| 2026-08-06 | D-040 | R2 所有科学重放必须贯通 sealed config/manifest；finalize 在消费单次 completion 路径前必须严格验 terminal/journal/launch 并冻结稳定原始字节与首次 HEAD | 第五/六轮反例发现 canonical 路径重开、barrier argv 不一致、JSON `false==0`、terminal schema 和 HEAD 二次捕获可造成不可重试失败 | 仅在最终 validator 拒绝，但允许 O_EXCL completion 路径先被消费 | analyzer/replay/parser 全链传递 202/201；completion 用私有只读快照；strict int/exact key/sequence 及写前 raw+HEAD unchanged 复验；六轮复核无 P0/P1 |
 
 ## 9. 最近可用状态
 
@@ -378,10 +381,11 @@ python3 scripts/validate_s1_g1_thermodynamic_label_audit_r1.py config/S1_g1_ther
 
 - 最近可用状态：提交 `b0b7db5`；包含 G1 标签 R1 的 10 个 accepted run、034 权威 `indeterminate` 失败证据与相邻归档。标签 R1 证据链为实现 `64ce08e`→预注册 `f71dd6b`→accepted 终点 `9096ca3`→失败 `df57f9b`→归档 `b0b7db5`；电子数正式分析 `c94796d` 与 runtime-relocation `a01ac70` 继续有效。
 - 对应环境：`environment/`，ABACUS v3.11.0-beta.5 CPU + OpenMPI 5.0.10 + LibXC 7.0.0。
-- 已通过测试：147/147 单元测试（R1 执行前）；42/42 S1-R8 数值收敛；074 受管 smoke accepted；113–118 六点 committed validator 6/6；电子数最终 90/90 accepted；标签 R1 的 10 个 accepted run 与 034 committed archive validator 均通过。
+- 已通过测试：R2 最终执行前本地 206/206、远端 Linux 冻结环境 206/206（包含真实 `/proc`、memfd seal、detachment/finalize 及 JSON 布尔反例）；42/42 S1-R8 数值收敛；074 受管 smoke accepted；113–118 六点 committed validator 6/6；电子数最终 90/90 accepted；标签 R1 的 10 个 accepted run 与 034 committed archive validator 均通过。
 - 已知失败/暂停：`S1-20260805-004`、runtime smoke 与旧电子数 R1 失败档案均保留；标签 R1 034 为 workflow/runtime capability failure、权威状态 `indeterminate`，R1 已停止；G1 仍只有 1/6，第二程序与发布许可仍未闭合。
 - 恢复方法：按“最近可运行命令”登录并运行 147/147 单元测试、电子数 committed validator 与标签 R1 archive validator；读取 R1 protocol/config/manifest 和 034 classification/status/inventory；不得重跑 R1 001–040。下一步只预注册 R2 continuation，并在新 ID 下完成剩余 30 点。
 - 同步方法：node01 执行 `git bundle create ... --all` 并 `git bundle verify`，经跳板机传至本机；三端 SHA-256 一致后，从临时 clone 使用 `git push --atomic origin main --tags`，最后以 `git ls-remote` 核验。
+- 当前 R2 交接点：六轮执行前复核已闭环，最终差异无 P0/P1；本地与远端 Linux 全量各 206/206 通过。正式 R2 config/manifest/input 仍未生成或提交，远端 single-use state 仍不存在。下一唯一动作是提交这一实现父边界，然后在远端精确环境中生成并单独提交 30 点 R2 预注册。
 
 ## 10. 交接说明
 
@@ -400,6 +404,7 @@ python3 scripts/validate_s1_g1_thermodynamic_label_audit_r1.py config/S1_g1_ther
 
    ```bash
    cd /home/shenwei01/M_OFDFT_periodic_basis
+   umask 0022
    /usr/bin/env -i HOME=/home/shenwei01 LC_ALL=C LOGNAME=shenwei01 \
      PATH=/usr/bin:/bin PYTHONHASHSEED=0 PYTHONIOENCODING=UTF-8 \
      PYTHONNOUSERSITE=1 PYTHONUTF8=1 TZ=UTC USER=shenwei01 \
@@ -412,6 +417,7 @@ python3 scripts/validate_s1_g1_thermodynamic_label_audit_r1.py config/S1_g1_ther
 
    ```bash
    cd /home/shenwei01/M_OFDFT_periodic_basis
+   umask 0022
    /usr/bin/env -i HOME=/home/shenwei01 LC_ALL=C LOGNAME=shenwei01 \
      PATH=/usr/bin:/bin PYTHONHASHSEED=0 PYTHONIOENCODING=UTF-8 \
      PYTHONNOUSERSITE=1 PYTHONUTF8=1 TZ=UTC USER=shenwei01 \
@@ -438,6 +444,7 @@ python3 scripts/validate_s1_g1_thermodynamic_label_audit_r1.py config/S1_g1_ther
    手工调用 runner：
 
    ```bash
+   umask 0022
    /usr/bin/env -i HOME=/home/shenwei01 LC_ALL=C LOGNAME=shenwei01 \
      PATH=/usr/bin:/bin PYTHONHASHSEED=0 PYTHONIOENCODING=UTF-8 \
      PYTHONNOUSERSITE=1 PYTHONUTF8=1 TZ=UTC USER=shenwei01 \
@@ -464,6 +471,7 @@ python3 scripts/validate_s1_g1_thermodynamic_label_audit_r1.py config/S1_g1_ther
 
    ```bash
    cd /home/shenwei01/M_OFDFT_periodic_basis
+   umask 0022
    /usr/bin/env -i HOME=/home/shenwei01 LC_ALL=C LOGNAME=shenwei01 \
      PATH=/usr/bin:/bin PYTHONHASHSEED=0 PYTHONIOENCODING=UTF-8 \
      PYTHONNOUSERSITE=1 PYTHONUTF8=1 TZ=UTC USER=shenwei01 \
@@ -536,6 +544,7 @@ python3 scripts/validate_s1_g1_thermodynamic_label_audit_r1.py config/S1_g1_ther
 | 2026-08-05 23:44 CST | runtime-relocation 六点闭环 | Codex | S1 | 074 `92e513f`；预注册 `9a0fd7d`；六点终点 `ce51927`；分析 `a01ac70` | 92/92 单测；074 accepted；六点 6/6 `storage_exact`、runtime accepted、R8 结论不变 | G0/runtime-isolation 在登记 namespace 路径内 accepted；G1 仍 pending；下一动作是电子数独立积分审计 |
 | 2026-08-06 02:53 CST | G1 电子数 R2 闭环 | Codex | S1 | 预注册 `b18106b`；结果终点 `c722c81`；分析 `c94796d` | 123/123 单测；R1 11/11 + R2 19/19；90/90 accepted；KMP 120/120、360/360 | 仅 G1 电子数子项 accepted，G1 总体 1/6；下一动作是第三 smearing/稠密 k 点标签审计 |
 | 2026-08-06 16:02 CST | G1 标签 R1 暂停闭环 | Codex | S1 | 实现 `64ce08e`；预注册 `f71dd6b`；accepted 终点 `9096ca3`；失败 `df57f9b`；归档 `b0b7db5` | 147/147 执行前单测；10 个 run accepted；034 failure/archive validator 通过；R1 无最终 analysis | 034 因 SSH/PTY 宿主后置证据缺失为 indeterminate；R1 停止且 ID 禁止重跑；G1 保持 1/6；下一动作 R2 复用 10 点 + 30 新 ID |
+| 2026-08-06 | R2 执行前冻结 | Codex | S1 | 待提交实现父边界 | 本地 206/206；远端 Linux 206/206；第六轮无 P0/P1 | sealed 200/201/202 科学链、GO/marker 因果门、strict JSON type、barrier argv、completion 稳定字节/HEAD 均已闭环；正式 state/solver 未启动 |
 
 ## 11. 文档变更记录
 
@@ -564,3 +573,5 @@ python3 scripts/validate_s1_g1_thermodynamic_label_audit_r1.py config/S1_g1_ther
 | 2026-08-05 | V3.0 | Codex | 记录 074 受管 smoke、正式预注册、S1-113–118 六点逐点提交与 `a01ac70` 6/6 正式分析；限定接受 namespace runtime-isolation 路径，保留原 S0 hermetic 勘误与 G1 pending；下一动作转为电子数独立积分审计 |
 | 2026-08-06 | V3.1 | Codex | 记录电子数增量 R2 的 11+19 证据拆分、90/90 正式验收、最大认证误差、KMP 120/360 与零新增失败；只关闭 G1 电子数子项并将总体更新为 1/6，下一动作转为第三 smearing/稠密 k 点标签审计 |
 | 2026-08-06 | V3.2 | Codex | 记录标签审计 R1 实现/预注册、10 个 accepted run、034 SSH/PTY 宿主后置闭包失败、`df57f9b`/`b0b7db5` 相邻失败归档与 GitHub 同步；R1 为 indeterminate_paused，G1 保持 1/6，下一动作改为显式复用 10 点并以 30 个新 ID 执行 R2 continuation |
+| 2026-08-06 | V3.3 | Codex | 记录 R2 执行前 TOCTOU/Git-parent 复核及 sealed-memfd、GO 13 键、首 marker 即时验收硬化；明确当前尚未预注册、未启动远端 solver |
+| 2026-08-06 | V3.4 | Codex | 记录六轮 R2 执行前复核、206/206 本地与 Linux 回归、sealed 科学输入贯通、strict type/barrier 失败闭包以及 finalize 稳定字节/HEAD 复验；下一动作为提交实现父边界并单独预注册 |

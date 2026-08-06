@@ -249,7 +249,7 @@ class S1G1ThermodynamicLabelAuditR2GeneratorTest(unittest.TestCase):
             GENERATOR.ATTEMPT_LEDGER_ROOT.as_posix(),
             "orchestration/s1/g1_thermodynamic_label_audit_r2_20260806/attempts",
         )
-        self.assertEqual(len(GENERATOR.ATTEMPT_MARKER_REQUIRED_KEYS), 18)
+        self.assertEqual(len(GENERATOR.ATTEMPT_MARKER_REQUIRED_KEYS), 21)
         self.assertEqual(
             set(GENERATOR.ATTEMPT_MARKER_REQUIRED_KEYS),
             {
@@ -271,6 +271,9 @@ class S1G1ThermodynamicLabelAuditR2GeneratorTest(unittest.TestCase):
                 "supervisor_pid",
                 "supervisor_start_time_ticks",
                 "boot_id",
+                "supervisor_go_path",
+                "supervisor_go_sha256",
+                "go_git_head",
             },
         )
 
@@ -437,6 +440,44 @@ class S1G1ThermodynamicLabelAuditR2GeneratorTest(unittest.TestCase):
             list(GENERATOR.RUNNER_BINDING_ENVIRONMENT_KEYS),
         )
         self.assertTrue(ambient["runner_registered_bash_required"])
+        self.assertEqual(
+            config["execution"]["go_payload_required_keys_exact"],
+            list(GENERATOR.GO_PAYLOAD_REQUIRED_KEYS),
+        )
+        self.assertEqual(len(GENERATOR.GO_PAYLOAD_REQUIRED_KEYS), 13)
+        sealed = config["execution"]["sealed_execution_inputs"]
+        self.assertEqual(sealed["mode"], "linux_memfd_sealed_v1")
+        self.assertEqual(sealed["fixed_fds_exact"], {"runner": 200, "manifest": 201, "config": 202})
+        self.assertEqual(
+            sealed["proc_paths_exact"],
+            {
+                "runner": "/proc/self/fd/200",
+                "manifest": "/proc/self/fd/201",
+                "config": "/proc/self/fd/202",
+            },
+        )
+        self.assertEqual(sealed["seal_mask_exact"], 15)
+        self.assertEqual(
+            sealed["seal_names_exact"],
+            ["F_SEAL_SEAL", "F_SEAL_SHRINK", "F_SEAL_GROW", "F_SEAL_WRITE"],
+        )
+        self.assertEqual(sealed["popen_pass_fds_exact"], [200, 201, 202])
+        self.assertTrue(sealed["registered_bash_executes_runner_fd"])
+        self.assertTrue(
+            sealed["scientific_config_manifest_from_sealed_fds_required"]
+        )
+        self.assertTrue(sealed["canonical_paths_provenance_only"])
+        marker = config["execution"]["attempt_marker"]
+        self.assertTrue(marker["first_marker_commit_parent_must_equal_go_git_head"])
+        self.assertTrue(
+            marker[
+                "subsequent_marker_commit_parent_must_equal_previous_accepted_run_introduction"
+            ]
+        )
+        self.assertTrue(
+            marker["go_git_head_must_equal_detachment_introduction_commit"]
+        )
+        self.assertTrue(marker["validator_must_accept_marker_before_solver"])
         self.assertEqual(
             config["new_run_matrix"][0]["r1_manifest_row_sha256"],
             sha256_bytes(canonical_json_bytes(self.r1_rows[33])),

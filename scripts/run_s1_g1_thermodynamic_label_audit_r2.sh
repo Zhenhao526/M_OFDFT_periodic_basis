@@ -2,75 +2,18 @@
 set -euo pipefail
 trap '' HUP
 
-if [[ $# -gt 2 ]]; then
-    echo "Usage: $0 [MANIFEST_TSV [CONFIG_JSON]]" >&2
-    exit 2
-fi
-
-project_root=$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)
-manifest=$(realpath "${1:-$project_root/config/S1_g1_thermodynamic_label_audit_r2_manifest.tsv}")
-config=$(realpath "${2:-$project_root/config/S1_g1_thermodynamic_label_audit_r2.json}")
-cd "$project_root"
-
-if [[ -n $(git status --porcelain=v1 --untracked-files=all) ]]; then
-    echo "Refusing thermodynamic-label R2 audit from a dirty worktree" >&2
+if [[ $# -ne 5 ]]; then
+    echo "Usage: /usr/bin/bash /proc/self/fd/200 PROJECT_ROOT CANONICAL_MANIFEST CANONICAL_CONFIG /proc/self/fd/201 /proc/self/fd/202" >&2
     exit 2
 fi
 
 bootstrap_python=/usr/bin/python3
-mapfile -d '' registered_paths < <(
-    "$bootstrap_python" -s - "$config" <<'PY'
-import json
-import sys
-
-config = json.load(open(sys.argv[1], encoding="utf-8"))
-values = (
-    config["runtime"]["tools"]["python"]["path"],
-    config["execution"]["supervisor_state_directory"],
-    config["execution"]["attempt_ledger_root"],
-    config["execution"]["detachment_attestation_path"],
-    config["execution"]["barrier_failure_root"],
-)
-for value in values:
-    if "\0" in value:
-        raise SystemExit("registered path contains a NUL")
-    sys.stdout.write(value + "\0")
-PY
-)
-if [[ ${#registered_paths[@]} -ne 5 ]]; then
-    echo "R2 execution path registration is incomplete" >&2
-    exit 2
-fi
-python_tool=${registered_paths[0]}
-state_directory=${registered_paths[1]}
-attempt_ledger_root=${registered_paths[2]}
-detachment_attestation=${registered_paths[3]}
-barrier_failure_root=${registered_paths[4]}
-
-validator="$project_root/scripts/validate_s1_g1_thermodynamic_label_audit_r2.py"
-parser="$project_root/scripts/parse_s1_g1_thermodynamic_labels_r2.py"
-analyzer="$project_root/scripts/analyze_s1_g1_thermodynamic_label_audit_r2.py"
-analysis_directory="$project_root/analysis/s1/g1_thermodynamic_label_audit_r2_20260806"
-
-for evidence in "$state_directory/launch.json" "$state_directory/go.json"; do
-    if [[ ! -f "$evidence" || -L "$evidence" ]]; then
-        echo "Detached supervisor evidence is missing: $evidence" >&2
-        exit 2
-    fi
-done
-if [[ ! -f "$project_root/$detachment_attestation" || -L "$project_root/$detachment_attestation" ]]; then
-    echo "Committed detachment attestation is missing: $detachment_attestation" >&2
-    exit 2
-fi
-git ls-files --error-unmatch -- "$detachment_attestation" >/dev/null
-git diff --quiet HEAD -- "$detachment_attestation" || {
-    echo "Detachment attestation differs from HEAD" >&2
-    exit 2
-}
-if [[ -e "$state_directory/terminal.json" ]]; then
-    echo "Single-use detached supervisor already has a terminal record" >&2
-    exit 97
-fi
+runner_fd_path=$0
+project_root=$1
+canonical_manifest=$2
+canonical_config=$3
+frozen_manifest=$4
+frozen_config=$5
 
 : "${M_OFDFT_G1_R2_SUPERVISOR_STATE_DIRECTORY:?missing supervisor state binding}"
 : "${M_OFDFT_G1_R2_SUPERVISOR_PID:?missing supervisor PID binding}"
@@ -78,38 +21,156 @@ fi
 : "${M_OFDFT_G1_R2_BOOT_ID:?missing supervisor boot binding}"
 : "${M_OFDFT_G1_R2_LAUNCH_SHA256:?missing supervisor launch binding}"
 : "${M_OFDFT_G1_R2_GO_SHA256:?missing supervisor GO binding}"
-"$python_tool" -s - "$state_directory" "$PPID" \
+
+# This fixed bootstrap is the only executable used before the sealed runner,
+# config, manifest, canonical provenance twins, exact argv, and GO are checked.
+# Command substitution propagates a failed preflight; process substitution does not.
+preflight_output=$("$bootstrap_python" -s - \
+    "$runner_fd_path" "$project_root" "$canonical_manifest" "$canonical_config" \
+    "$frozen_manifest" "$frozen_config" "$$" "$PPID" \
     "$M_OFDFT_G1_R2_SUPERVISOR_STATE_DIRECTORY" \
     "$M_OFDFT_G1_R2_SUPERVISOR_PID" \
     "$M_OFDFT_G1_R2_SUPERVISOR_START_TIME_TICKS" \
     "$M_OFDFT_G1_R2_BOOT_ID" \
     "$M_OFDFT_G1_R2_LAUNCH_SHA256" \
     "$M_OFDFT_G1_R2_GO_SHA256" <<'PY'
+import fcntl
 import hashlib
 import json
 import os
+import re
+import stat
+import subprocess
 import sys
-from pathlib import Path
+from pathlib import Path, PurePosixPath
 
-state = Path(sys.argv[1]).resolve()
-bash_parent = int(sys.argv[2])
-bound_state = Path(sys.argv[3]).resolve()
-bound_pid = int(sys.argv[4])
-bound_start = int(sys.argv[5])
-bound_boot = sys.argv[6]
-bound_launch_hash = sys.argv[7]
-bound_go_hash = sys.argv[8]
-if state != bound_state:
-    raise SystemExit("runner supervisor state binding differs")
+PROTOCOL = "S1-G1-THERMODYNAMIC-LABEL-AUDIT-R2"
+RUNNER_RELATIVE = "scripts/run_s1_g1_thermodynamic_label_audit_r2.sh"
+MANIFEST_RELATIVE = "config/S1_g1_thermodynamic_label_audit_r2_manifest.tsv"
+CONFIG_RELATIVE = "config/S1_g1_thermodynamic_label_audit_r2.json"
+FIXED_FDS = {"runner": 200, "manifest": 201, "config": 202}
+PROC_PATHS = {name: f"/proc/self/fd/{fd}" for name, fd in FIXED_FDS.items()}
+SEAL_NAMES = ["F_SEAL_SEAL", "F_SEAL_SHRINK", "F_SEAL_GROW", "F_SEAL_WRITE"]
+SEAL_MASK = 15
+HEX40 = re.compile(r"[0-9a-f]{40}\Z")
+HEX64 = re.compile(r"[0-9a-f]{64}\Z")
+UTC = re.compile(
+    r"20[0-9]{2}-[0-9]{2}-[0-9]{2}T[0-9]{2}:[0-9]{2}:[0-9]{2}"
+    r"(?:\.[0-9]{1,9})?Z\Z"
+)
 
-def read(path):
-    value = json.loads(path.read_text(encoding="utf-8"))
+(
+    runner_fd_path,
+    project_root_value,
+    canonical_manifest_value,
+    canonical_config_value,
+    frozen_manifest_path,
+    frozen_config_path,
+    runner_bash_pid_value,
+    supervisor_parent_value,
+    bound_state_value,
+    bound_pid_value,
+    bound_start_value,
+    bound_boot,
+    bound_launch_hash,
+    bound_go_hash,
+) = sys.argv[1:]
+runner_bash_pid = int(runner_bash_pid_value)
+supervisor_parent = int(supervisor_parent_value)
+bound_pid = int(bound_pid_value)
+bound_start = int(bound_start_value)
+project_root = Path(project_root_value)
+state = Path(bound_state_value)
+
+if sys.executable != "/usr/bin/python3" or sys.flags.no_user_site != 1:
+    raise SystemExit("runner bootstrap Python is not fixed /usr/bin/python3 -s")
+if (
+    runner_fd_path != PROC_PATHS["runner"]
+    or frozen_manifest_path != PROC_PATHS["manifest"]
+    or frozen_config_path != PROC_PATHS["config"]
+):
+    raise SystemExit("runner sealed FD argv differs from the frozen 200/201/202 registration")
+if (
+    not project_root.is_absolute()
+    or str(project_root.resolve()) != project_root_value
+    or not state.is_absolute()
+    or str(state.resolve()) != bound_state_value
+):
+    raise SystemExit("runner project/state path is not absolute canonical")
+
+def canonical(payload):
+    return (json.dumps(payload, indent=2, sort_keys=True, allow_nan=False) + "\n").encode()
+
+def stable_bytes(path):
+    nofollow = getattr(os, "O_NOFOLLOW", None)
+    if nofollow is None:
+        raise SystemExit("runner stable reads require O_NOFOLLOW")
+    flags = os.O_RDONLY | os.O_NONBLOCK | getattr(os, "O_CLOEXEC", 0) | nofollow
+    descriptor = os.open(path, flags)
+    try:
+        before = os.fstat(descriptor)
+        if not stat.S_ISREG(before.st_mode):
+            raise SystemExit(f"runner provenance path is not regular: {path}")
+        chunks = []
+        while True:
+            chunk = os.read(descriptor, 1024 * 1024)
+            if not chunk:
+                break
+            chunks.append(chunk)
+        after = os.fstat(descriptor)
+    finally:
+        os.close(descriptor)
+    identity = (
+        "st_dev", "st_ino", "st_mode", "st_nlink", "st_uid", "st_gid",
+        "st_rdev", "st_size", "st_mtime_ns", "st_ctime_ns",
+    )
+    if any(getattr(before, name) != getattr(after, name) for name in identity):
+        raise SystemExit(f"runner provenance path changed while reading: {path}")
+    data = b"".join(chunks)
+    if len(data) != before.st_size:
+        raise SystemExit(f"runner provenance path was read short: {path}")
+    return data, hashlib.sha256(data).hexdigest()
+
+def read_stable(path):
+    data, digest = stable_bytes(path)
+    value = json.loads(data.decode("utf-8"))
     if not isinstance(value, dict):
         raise SystemExit(f"non-object supervisor record: {path}")
-    return value
+    return value, digest
 
-def digest(path):
-    return hashlib.sha256(path.read_bytes()).hexdigest()
+def sealed_bytes(name):
+    descriptor = FIXED_FDS[name]
+    before = os.fstat(descriptor)
+    if not stat.S_ISREG(before.st_mode):
+        raise SystemExit(f"sealed execution {name} FD is not regular")
+    kernel_mask = 0
+    for seal_name in SEAL_NAMES:
+        value = getattr(fcntl, seal_name, None)
+        if type(value) is not int:
+            raise SystemExit(f"sealed execution constant is unavailable: {seal_name}")
+        kernel_mask |= value
+    if kernel_mask != SEAL_MASK or fcntl.fcntl(descriptor, fcntl.F_GET_SEALS) != SEAL_MASK:
+        raise SystemExit(f"sealed execution {name} seal mask differs")
+    chunks = []
+    offset = 0
+    while offset < before.st_size:
+        block = os.pread(descriptor, min(1024 * 1024, before.st_size - offset), offset)
+        if not block:
+            break
+        chunks.append(block)
+        offset += len(block)
+    after = os.fstat(descriptor)
+    identity = (
+        "st_dev", "st_ino", "st_mode", "st_nlink", "st_uid", "st_gid",
+        "st_rdev", "st_size", "st_mtime_ns", "st_ctime_ns",
+    )
+    if (
+        any(getattr(before, field) != getattr(after, field) for field in identity)
+        or offset != before.st_size
+    ):
+        raise SystemExit(f"sealed execution {name} FD changed or was read short")
+    data = b"".join(chunks)
+    return data, hashlib.sha256(data).hexdigest()
 
 def process(pid):
     raw = Path(f"/proc/{pid}/stat").read_text(encoding="ascii").strip()
@@ -123,33 +184,304 @@ def process(pid):
         "start_time_ticks": int(fields[19]),
     }
 
+def git(*arguments):
+    return subprocess.check_output(
+        ["git", "-C", str(project_root), *arguments], text=True
+    ).strip()
+
 launch_path = state / "launch.json"
 go_path = state / "go.json"
-launch = read(launch_path)
-go = read(go_path)
+launch, launch_hash = read_stable(launch_path)
+go, go_hash = read_stable(go_path)
+if (
+    launch.get("protocol_revision") != PROTOCOL
+    or launch.get("status") != "waiting_for_detachment_attestation"
+):
+    raise SystemExit("runner launch protocol/status differs")
+if (
+    not HEX64.fullmatch(bound_launch_hash)
+    or not HEX64.fullmatch(bound_go_hash)
+):
+    raise SystemExit("runner bound launch/GO SHA-256 is invalid")
+sealed_payloads = {}
+sealed_hashes = {}
+for name in FIXED_FDS:
+    sealed_payloads[name], sealed_hashes[name] = sealed_bytes(name)
+try:
+    config_payload = json.loads(sealed_payloads["config"].decode("utf-8"))
+except (UnicodeDecodeError, json.JSONDecodeError) as error:
+    raise SystemExit("sealed execution config is not UTF-8 JSON") from error
+if not isinstance(config_payload, dict):
+    raise SystemExit("sealed execution config root is not an object")
+if (
+    config_payload.get("protocol_revision") != PROTOCOL
+    or config_payload.get("status") != "preregistered"
+):
+    raise SystemExit("sealed execution config registration differs")
+execution = config_payload.get("execution")
+runtime = config_payload.get("runtime")
+if not isinstance(execution, dict) or not isinstance(runtime, dict):
+    raise SystemExit("sealed execution config runtime/execution table is missing")
+sealed_contract = {
+    "mode": "linux_memfd_sealed_v1",
+    "fixed_fds_exact": FIXED_FDS,
+    "proc_paths_exact": PROC_PATHS,
+    "seal_mask_exact": SEAL_MASK,
+    "seal_names_exact": SEAL_NAMES,
+    "popen_pass_fds_exact": list(FIXED_FDS.values()),
+    "registered_bash_executes_runner_fd": True,
+    "scientific_config_manifest_from_sealed_fds_required": True,
+    "canonical_paths_provenance_only": True,
+}
+if execution.get("sealed_execution_inputs") != sealed_contract:
+    raise SystemExit("runner sealed-execution-input configuration contract differs")
+if execution.get("supervisor_state_directory") != str(state):
+    raise SystemExit("runner frozen supervisor state directory differs")
+
+canonical_paths = {
+    "runner": project_root / RUNNER_RELATIVE,
+    "manifest": project_root / MANIFEST_RELATIVE,
+    "config": project_root / CONFIG_RELATIVE,
+}
+if (
+    canonical_manifest_value != str(canonical_paths["manifest"])
+    or canonical_config_value != str(canonical_paths["config"])
+):
+    raise SystemExit("runner canonical manifest/config argv differs")
+canonical_hashes = {}
+for name, path in canonical_paths.items():
+    _, canonical_hashes[name] = stable_bytes(path)
+    if canonical_hashes[name] != sealed_hashes[name]:
+        raise SystemExit(f"canonical {name} SHA-256 differs from sealed execution input")
+
+registered_files = {
+    "config_path": CONFIG_RELATIVE,
+    "config_sha256": sealed_hashes["config"],
+    "manifest_path": MANIFEST_RELATIVE,
+    "manifest_sha256": sealed_hashes["manifest"],
+    "runner_path": RUNNER_RELATIVE,
+    "runner_sha256": sealed_hashes["runner"],
+}
+sealed_record = {
+    "mode": "linux_memfd_sealed_v1",
+    "seal_mask": SEAL_MASK,
+    "seal_names": SEAL_NAMES,
+    "pass_fds": list(FIXED_FDS.values()),
+    "inputs": {
+        name: {
+            "fd": FIXED_FDS[name],
+            "proc_path": PROC_PATHS[name],
+            "canonical_path": str(canonical_paths[name]),
+            "sha256": sealed_hashes[name],
+        }
+        for name in FIXED_FDS
+    },
+}
+sealed_record_sha256 = hashlib.sha256(canonical(sealed_record)).hexdigest()
+if launch.get("registered_files") != registered_files:
+    raise SystemExit("runner launch registered files differ from sealed/canonical bytes")
+if launch.get("sealed_execution_inputs") != sealed_record:
+    raise SystemExit("runner launch sealed-execution-input record differs")
+
+tools = runtime.get("tools")
+if not isinstance(tools, dict):
+    raise SystemExit("runner frozen tool table is missing")
+python_registration = tools.get("python")
+bash_registration = tools.get("bash")
+if not isinstance(python_registration, dict) or not isinstance(bash_registration, dict):
+    raise SystemExit("runner frozen Python/Bash registration is missing")
+if python_registration.get("path") != "/usr/bin/python3":
+    raise SystemExit("runner registered Python is not fixed /usr/bin/python3")
+for label, registration in (("python", python_registration), ("bash", bash_registration)):
+    path_value = registration.get("path")
+    realpath_value = registration.get("realpath")
+    sha256_value = registration.get("sha256")
+    if (
+        not isinstance(path_value, str)
+        or not Path(path_value).is_absolute()
+        or not isinstance(realpath_value, str)
+        or not Path(realpath_value).is_absolute()
+        or not isinstance(sha256_value, str)
+        or not HEX64.fullmatch(sha256_value)
+        or str(Path(path_value).resolve()) != realpath_value
+        or stable_bytes(Path(realpath_value))[1] != sha256_value
+    ):
+        raise SystemExit(f"runner registered {label} identity differs")
+
+expected_runner_argv = [
+    bash_registration["path"],
+    PROC_PATHS["runner"],
+    str(project_root),
+    str(canonical_paths["manifest"]),
+    str(canonical_paths["config"]),
+    PROC_PATHS["manifest"],
+    PROC_PATHS["config"],
+]
+try:
+    actual_runner_argv = [
+        item.decode("utf-8")
+        for item in Path(f"/proc/{runner_bash_pid}/cmdline").read_bytes().split(b"\0")
+        if item
+    ]
+except UnicodeDecodeError as error:
+    raise SystemExit("runner live argv is not UTF-8") from error
+if (
+    len(expected_runner_argv) != 7
+    or launch.get("runner_argv") != expected_runner_argv
+    or actual_runner_argv != expected_runner_argv
+    or str(Path(f"/proc/{runner_bash_pid}/exe").resolve())
+    != bash_registration["realpath"]
+):
+    raise SystemExit("runner launch/actual argv is not the exact seven-item registration")
+
 identity = launch.get("process")
 if not isinstance(identity, dict):
     raise SystemExit("runner launch process identity is missing")
+go_keys = {
+    "schema_version",
+    "protocol_revision",
+    "status",
+    "launch_sha256",
+    "boot_id",
+    "supervisor_pid",
+    "supervisor_start_time_ticks",
+    "attestation_path",
+    "attestation_sha256",
+    "git_head",
+    "registered_files",
+    "sealed_execution_inputs_sha256",
+    "created_utc",
+}
+registered_attestation = execution.get("detachment_attestation_path")
+if not isinstance(registered_attestation, str) or not registered_attestation:
+    raise SystemExit("runner frozen attestation path is missing")
+attestation_relative = Path(registered_attestation)
+if (
+    attestation_relative.is_absolute()
+    or ".." in attestation_relative.parts
+    or PurePosixPath(registered_attestation).as_posix() != registered_attestation
+):
+    raise SystemExit("runner frozen attestation path is invalid")
+attestation, attestation_hash = read_stable(project_root / attestation_relative)
+git_head = git("rev-parse", "HEAD")
+if not HEX40.fullmatch(git_head):
+    raise SystemExit("runner current Git HEAD is invalid")
+introduction_commits = [
+    value
+    for value in git(
+        "log", "--format=%H", "--diff-filter=A", "--", registered_attestation
+    ).splitlines()
+    if value
+]
+if introduction_commits != [git_head]:
+    raise SystemExit("runner GO Git HEAD is not the unique detachment introduction commit")
+created_utc = go.get("created_utc")
+if (
+    set(go) != go_keys
+    or type(go.get("schema_version")) is not int
+    or go.get("schema_version") != 1
+    or go.get("protocol_revision") != PROTOCOL
+    or go.get("status") != "go"
+    or not isinstance(created_utc, str)
+    or not UTC.fullmatch(created_utc)
+    or go.get("registered_files") != registered_files
+    or go.get("sealed_execution_inputs_sha256") != sealed_record_sha256
+    or go.get("attestation_path") != registered_attestation
+    or go.get("attestation_sha256") != attestation_hash
+    or go.get("git_head") != git_head
+    or attestation.get("status") != "accepted"
+):
+    raise SystemExit("runner GO exact registration differs")
 observed = process(bound_pid)
+runner_observed = process(runner_bash_pid)
 boot = Path("/proc/sys/kernel/random/boot_id").read_text(encoding="ascii").strip()
 if not (
-    bash_parent == bound_pid == identity.get("pid") == go.get("supervisor_pid")
+    supervisor_parent == bound_pid == identity.get("pid") == go.get("supervisor_pid")
+    and runner_observed["ppid"] == bound_pid
+    and runner_observed["session_id"] == bound_pid
+    and runner_observed["process_group_id"] == bound_pid
+    and runner_observed["tty_nr"] == 0
     and bound_start == identity.get("start_time_ticks") == go.get("supervisor_start_time_ticks")
     and observed["start_time_ticks"] == bound_start
     and observed["session_id"] == bound_pid
     and observed["process_group_id"] == bound_pid
     and observed["tty_nr"] == 0
     and boot == bound_boot == launch.get("boot_id") == go.get("boot_id")
-    and digest(launch_path) == bound_launch_hash == go.get("launch_sha256")
-    and digest(go_path) == bound_go_hash
+    and launch_hash == bound_launch_hash == go.get("launch_sha256")
+    and go_hash == bound_go_hash
 ):
     raise SystemExit("runner is not a live child of the attested single-use supervisor")
-if (state / "terminal.json").exists():
+if launch.get("project_root") != str(project_root) or launch.get("state_directory") != str(state):
+    raise SystemExit("runner launch project/state registration differs")
+if git("status", "--porcelain=v1", "--untracked-files=all"):
+    raise SystemExit("refusing thermodynamic-label R2 audit from a dirty worktree")
+for relative in (RUNNER_RELATIVE, MANIFEST_RELATIVE, CONFIG_RELATIVE, registered_attestation):
+    subprocess.check_call(
+        ["git", "-C", str(project_root), "ls-files", "--error-unmatch", "--", relative],
+        stdout=subprocess.DEVNULL,
+        stderr=subprocess.DEVNULL,
+    )
+    if subprocess.run(
+        ["git", "-C", str(project_root), "diff", "--quiet", "HEAD", "--", relative]
+    ).returncode != 0:
+        raise SystemExit(f"runner canonical provenance differs from HEAD: {relative}")
+
+go_accepted = []
+journal_raw, _ = stable_bytes(state / "journal.jsonl")
+for line in journal_raw.decode("utf-8").splitlines():
+    event = json.loads(line)
+    if isinstance(event, dict) and event.get("event") == "go_accepted":
+        go_accepted.append(event)
+if (
+    len(go_accepted) != 1
+    or set(go_accepted[0]) != {"event", "pid", "utc", "git_head", "go_sha256"}
+    or go_accepted[0].get("pid") != bound_pid
+    or go_accepted[0].get("git_head") != git_head
+    or go_accepted[0].get("go_sha256") != bound_go_hash
+):
+    raise SystemExit("runner journal does not bind the validated GO bytes")
+if (state / "terminal.json").exists() or (state / "terminal.json").is_symlink():
     raise SystemExit("runner supervisor already has a terminal receipt")
+
+values = (
+    python_registration["path"],
+    str(state),
+    execution.get("attempt_ledger_root"),
+    registered_attestation,
+    execution.get("barrier_failure_root"),
+    bound_go_hash,
+    git_head,
+)
+for value in values:
+    if not isinstance(value, str) or not value or "\0" in value or "\n" in value:
+        raise SystemExit("runner registered path/GO binding is invalid")
+print("\n".join(values))
 PY
+)
+mapfile -t registered_paths <<<"$preflight_output"
+if [[ ${#registered_paths[@]} -ne 7 ]]; then
+    echo "R2 execution path/GO registration is incomplete" >&2
+    exit 2
+fi
+python_tool=${registered_paths[0]}
+state_directory=${registered_paths[1]}
+attempt_ledger_root=${registered_paths[2]}
+detachment_attestation=${registered_paths[3]}
+barrier_failure_root=${registered_paths[4]}
+go_sha256=${registered_paths[5]}
+go_git_head=${registered_paths[6]}
+readonly bootstrap_python runner_fd_path project_root canonical_manifest canonical_config
+readonly frozen_manifest frozen_config python_tool state_directory attempt_ledger_root
+readonly detachment_attestation barrier_failure_root go_sha256 go_git_head
+
+cd "$project_root"
+validator="$project_root/scripts/validate_s1_g1_thermodynamic_label_audit_r2.py"
+parser="$project_root/scripts/parse_s1_g1_thermodynamic_labels_r2.py"
+analyzer="$project_root/scripts/analyze_s1_g1_thermodynamic_label_audit_r2.py"
+analysis_directory="$project_root/analysis/s1/g1_thermodynamic_label_audit_r2_20260806"
 
 mapfile -d '' run_plan < <(
-    "$python_tool" -s - "$config" "$manifest" <<'PY'
+    "$python_tool" -s - "$frozen_config" "$frozen_manifest" <<'PY'
 import csv
 import json
 import sys
@@ -186,7 +518,7 @@ fi
 
 runtime_environment() {
     local run_directory=$1
-    "$python_tool" -s - "$config" "$run_directory" <<'PY'
+    "$python_tool" -s - "$frozen_config" "$run_directory" <<'PY'
 import json
 import sys
 
@@ -307,7 +639,7 @@ record_gate_failure() {
         exit 98
     fi
     local failure_relative="$barrier_failure_root/$gate_id.json"
-    "$python_tool" -s - "$project_root" "$config" "$manifest" "$failure_relative" \
+    "$python_tool" -s - "$project_root" "$canonical_config" "$canonical_manifest" "$failure_relative" \
         "$gate_id" "$after_effective_id" "$after_logical_id" "$gate_status" \
         "$state_directory" "$@" <<'PY'
 import hashlib
@@ -404,8 +736,9 @@ create_attempt_marker() {
     local experiment_id=$1
     local logical_id=$2
     local ledger_relative="$attempt_ledger_root/$experiment_id.json"
-    "$python_tool" -s - "$project_root" "$config" "$manifest" "$state_directory" \
-        "$ledger_relative" "$experiment_id" "$logical_id" <<'PY'
+    "$python_tool" -s - "$project_root" "$canonical_config" "$canonical_manifest" \
+        "$state_directory" "$ledger_relative" "$experiment_id" "$logical_id" \
+        "$go_sha256" "$go_git_head" <<'PY'
 import hashlib
 import json
 import os
@@ -421,6 +754,8 @@ state = Path(sys.argv[4]).resolve()
 ledger = root / sys.argv[5]
 experiment_id = sys.argv[6]
 logical_id = sys.argv[7]
+fixed_go_sha256 = sys.argv[8]
+fixed_go_git_head = sys.argv[9]
 
 def digest(path):
     return hashlib.sha256(path.read_bytes()).hexdigest()
@@ -428,6 +763,10 @@ def digest(path):
 launch_path = state / "launch.json"
 launch = json.loads(launch_path.read_text(encoding="utf-8"))
 process = launch["process"]
+go_path = state / "go.json"
+go = json.loads(go_path.read_text(encoding="utf-8"))
+if digest(go_path) != fixed_go_sha256 or go.get("git_head") != fixed_go_git_head:
+    raise SystemExit("attempt marker fixed GO bytes/head differ")
 payload = {
     "schema_version": 1,
     "protocol_revision": "S1-G1-THERMODYNAMIC-LABEL-AUDIT-R2",
@@ -446,6 +785,9 @@ payload = {
     "supervisor_state_directory": str(state),
     "supervisor_launch_path": str(launch_path),
     "supervisor_launch_sha256": digest(launch_path),
+    "supervisor_go_path": str(go_path),
+    "supervisor_go_sha256": fixed_go_sha256,
+    "go_git_head": fixed_go_git_head,
     "supervisor_pid": int(process["pid"]),
     "supervisor_start_time_ticks": int(process["start_time_ticks"]),
     "boot_id": launch["boot_id"],
@@ -475,7 +817,8 @@ PY
     git commit -m "start G1 thermodynamic-label audit R2 $experiment_id"
     assert_commit_scope "$ledger_relative"
     run_gate "attempt-marker-${experiment_id##*-}" "$experiment_id" "$logical_id" \
-        "$python_tool" -s "$validator" "$manifest" --config "$config" --require-committed \
+        "$python_tool" -s "$validator" "$canonical_manifest" --config "$canonical_config" \
+        --scientific-config "$frozen_config" --scientific-manifest "$frozen_manifest" --require-committed \
         --check-attempt-marker "$experiment_id"
 }
 
@@ -627,7 +970,8 @@ archive_and_stop() {
     git mv "$project_root/runs/$experiment_id" "$project_root/$archive_relative"
     git commit -m "archive failed G1 thermodynamic-label audit R2 $experiment_id"
     run_gate "failure-archive-${experiment_id##*-}" "$experiment_id" "$logical_id" \
-        "$python_tool" -s "$validator" "$manifest" --config "$config" --require-committed \
+        "$python_tool" -s "$validator" "$canonical_manifest" --config "$canonical_config" \
+        --scientific-config "$frozen_config" --scientific-manifest "$frozen_manifest" --require-committed \
         --check-failure-archives "$experiment_id"
     update_external_state "$experiment_id" "$logical_id" archived_stopped
     echo "STOP $experiment_id: failed formal R2 attempt committed and archived; retry forbidden" >&2
@@ -651,35 +995,41 @@ run_barriers() {
     if [[ -n "$quarter_id" ]]; then
         run_gate "half-quarter-${quarter_id##*-}-after-${effective_id##*-}" \
             "$effective_id" "$logical_id" \
-            "$python_tool" -s "$validator" "$manifest" --config "$config" \
+            "$python_tool" -s "$validator" "$canonical_manifest" --config "$canonical_config" \
+            --scientific-config "$frozen_config" --scientific-manifest "$frozen_manifest" \
             --require-committed --require-half-quarter-pair "$quarter_id"
     fi
     case "$logical_id" in
         S1-20260806-013)
             run_gate "eos-al-standard-half-after-${effective_id##*-}" \
                 "$effective_id" "$logical_id" \
-                "$python_tool" -s "$validator" "$manifest" --config "$config" --require-committed \
+                "$python_tool" -s "$validator" "$canonical_manifest" --config "$canonical_config" \
+                --scientific-config "$frozen_config" --scientific-manifest "$frozen_manifest" --require-committed \
                 --require-adjacent-eos al standard half ;;
         S1-20260806-020)
             run_gate "eos-mg-standard-half-after-${effective_id##*-}" \
                 "$effective_id" "$logical_id" \
-                "$python_tool" -s "$validator" "$manifest" --config "$config" --require-committed \
+                "$python_tool" -s "$validator" "$canonical_manifest" --config "$canonical_config" \
+                --scientific-config "$frozen_config" --scientific-manifest "$frozen_manifest" --require-committed \
                 --require-adjacent-eos mg standard half ;;
         S1-20260806-026)
             run_gate "eos-al-half-quarter-after-${effective_id##*-}" \
                 "$effective_id" "$logical_id" \
-                "$python_tool" -s "$validator" "$manifest" --config "$config" --require-committed \
+                "$python_tool" -s "$validator" "$canonical_manifest" --config "$canonical_config" \
+                --scientific-config "$frozen_config" --scientific-manifest "$frozen_manifest" --require-committed \
                 --require-adjacent-eos al half quarter ;;
         S1-20260806-033)
             run_gate "eos-mg-half-quarter-after-${effective_id##*-}" \
                 "$effective_id" "$logical_id" \
-                "$python_tool" -s "$validator" "$manifest" --config "$config" --require-committed \
+                "$python_tool" -s "$validator" "$canonical_manifest" --config "$canonical_config" \
+                --scientific-config "$frozen_config" --scientific-manifest "$frozen_manifest" --require-committed \
                 --require-adjacent-eos mg half quarter ;;
     esac
 }
 
 run_gate imported-p0-before-041 null null \
-    "$python_tool" -s "$validator" "$manifest" --config "$config" \
+    "$python_tool" -s "$validator" "$canonical_manifest" --config "$canonical_config" \
+    --scientific-config "$frozen_config" --scientific-manifest "$frozen_manifest" \
     --require-committed --require-pilot-gate
 
 for ((offset = 0; offset < ${#run_plan[@]}; offset += 6)); do
@@ -719,8 +1069,10 @@ for ((offset = 0; offset < ${#run_plan[@]}; offset += 6)); do
     label_parser_status=97
     if [[ $workflow_status -eq 0 ]]; then
         label_parser_status=0
-        "$python_tool" -s "$parser" "$run_directory" --config "$config" \
-            --manifest "$manifest" --write \
+        "$python_tool" -s "$parser" "$run_directory" --config "$canonical_config" \
+            --manifest "$canonical_manifest" \
+            --scientific-config "$frozen_config" \
+            --scientific-manifest "$frozen_manifest" --write \
             >"$run_directory/thermodynamic_label_parser.stdout.txt" \
             2>"$run_directory/thermodynamic_label_parser.stderr.txt" \
             || label_parser_status=$?
@@ -728,7 +1080,8 @@ for ((offset = 0; offset < ${#run_plan[@]}; offset += 6)); do
     core_status=97
     if [[ $workflow_status -eq 0 && $label_parser_status -eq 0 ]]; then
         core_status=0
-        "$python_tool" -s "$validator" "$manifest" --config "$config" \
+        "$python_tool" -s "$validator" "$canonical_manifest" --config "$canonical_config" \
+            --scientific-config "$frozen_config" --scientific-manifest "$frozen_manifest" \
             --check-run-core "$experiment_id" --write-core-failure-evidence \
             >"$run_directory/core_validator.stdout.txt" \
             2>"$run_directory/core_validator.stderr.txt" \
@@ -736,7 +1089,8 @@ for ((offset = 0; offset < ${#run_plan[@]}; offset += 6)); do
     fi
 
     if [[ $workflow_status -eq 0 && $label_parser_status -eq 0 && $core_status -eq 0 ]]; then
-        "$python_tool" -s "$validator" "$manifest" --config "$config" \
+        "$python_tool" -s "$validator" "$canonical_manifest" --config "$canonical_config" \
+            --scientific-config "$frozen_config" --scientific-manifest "$frozen_manifest" \
             --write-run-evidence "$experiment_id" >/dev/null
         write_authoritative_status "$run_directory" "$experiment_id" "$logical_id" accepted 0 0 0
     else
@@ -779,25 +1133,29 @@ PY
         archive_and_stop "$experiment_id" "$logical_id"
     fi
     run_gate "accepted-run-${experiment_id##*-}" "$experiment_id" "$logical_id" \
-        "$python_tool" -s "$validator" "$manifest" --config "$config" --require-committed \
+        "$python_tool" -s "$validator" "$canonical_manifest" --config "$canonical_config" \
+        --scientific-config "$frozen_config" --scientific-manifest "$frozen_manifest" --require-committed \
         --check-run "$experiment_id"
     update_external_state "$experiment_id" "$logical_id" accepted_committed
     run_barriers "$experiment_id" "$logical_id"
     if [[ "$experiment_id" == S1-20260806-042 ]]; then
         run_gate k-gate-after-042 "$experiment_id" "$logical_id" \
-            "$python_tool" -s "$validator" "$manifest" --config "$config" \
+            "$python_tool" -s "$validator" "$canonical_manifest" --config "$canonical_config" \
+            --scientific-config "$frozen_config" --scientific-manifest "$frozen_manifest" \
             --require-committed --require-k-gate
     fi
     echo "DONE $experiment_id logical=$logical_id"
 done
 
 run_gate final-all-after-070 S1-20260806-070 S1-20260806-033 \
-    "$python_tool" -s "$validator" "$manifest" --config "$config" \
+    "$python_tool" -s "$validator" "$canonical_manifest" --config "$canonical_config" \
+    --scientific-config "$frozen_config" --scientific-manifest "$frozen_manifest" \
     --require-committed --require-all-runs
 
 analysis_argv=(
-    "$python_tool" -s "$analyzer" "$analysis_directory" --config "$config"
-    --manifest "$manifest"
+    "$python_tool" -s "$analyzer" "$analysis_directory" --config "$canonical_config"
+    --manifest "$canonical_manifest" --scientific-config "$frozen_config"
+    --scientific-manifest "$frozen_manifest"
 )
 analysis_gate_state="$state_directory/barriers"
 mkdir -p "$analysis_gate_state"
@@ -815,6 +1173,7 @@ if [[ $analysis_exit -ne 0 ]]; then
         "$analysis_exit" "${analysis_argv[@]}"
 fi
 run_gate final-analysis-status S1-20260806-070 S1-20260806-033 \
-    "$python_tool" -s "$validator" "$manifest" --config "$config" \
+    "$python_tool" -s "$validator" "$canonical_manifest" --config "$canonical_config" \
+    --scientific-config "$frozen_config" --scientific-manifest "$frozen_manifest" \
     --require-committed --check-analysis-summary
 echo "SCIENTIFIC ANALYSIS ACCEPTED; awaiting detached supervisor completion receipt"

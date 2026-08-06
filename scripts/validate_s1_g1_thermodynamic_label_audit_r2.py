@@ -12,11 +12,13 @@ from __future__ import annotations
 
 import argparse
 import csv
+import fcntl
 import hashlib
 import json
 import math
 import os
 import re
+import stat
 import subprocess
 import tempfile
 from contextlib import contextmanager
@@ -180,6 +182,164 @@ _assert_static_namespace()
 def _git(project_root: Path, *args: str, text: bool = True) -> str | bytes:
     output = subprocess.check_output(["git", "-C", str(project_root), *args], text=text)
     return output.strip() if text else output
+
+
+def _canonical_supervisor_json(payload: object) -> bytes:
+    return (
+        json.dumps(payload, indent=2, sort_keys=True, allow_nan=False) + "\n"
+    ).encode("utf-8")
+
+
+def _stable_json_object(path: Path) -> tuple[bytes, dict[str, object], str]:
+    nofollow = getattr(os, "O_NOFOLLOW", None)
+    if nofollow is None:
+        raise ValueError("stable JSON read requires O_NOFOLLOW")
+    descriptor = os.open(
+        path,
+        os.O_RDONLY
+        | nofollow
+        | getattr(os, "O_CLOEXEC", 0)
+        | getattr(os, "O_NONBLOCK", 0),
+    )
+    try:
+        before = os.fstat(descriptor)
+        if not stat.S_ISREG(before.st_mode):
+            raise ValueError(f"stable JSON path is not regular: {path}")
+        blocks: list[bytes] = []
+        while True:
+            block = os.read(descriptor, 1024 * 1024)
+            if not block:
+                break
+            blocks.append(block)
+        after = os.fstat(descriptor)
+    finally:
+        os.close(descriptor)
+    fields = (
+        "st_dev",
+        "st_ino",
+        "st_mode",
+        "st_nlink",
+        "st_uid",
+        "st_gid",
+        "st_rdev",
+        "st_size",
+        "st_mtime_ns",
+        "st_ctime_ns",
+    )
+    raw = b"".join(blocks)
+    if any(getattr(before, key) != getattr(after, key) for key in fields) or len(
+        raw
+    ) != before.st_size:
+        raise ValueError(f"stable JSON changed while being read: {path}")
+    value = json.loads(raw.decode("utf-8"))
+    if not isinstance(value, dict):
+        raise ValueError(f"stable JSON root is not an object: {path}")
+    return raw, value, hashlib.sha256(raw).hexdigest()
+
+
+def _expected_registered_files(project_root: Path) -> dict[str, object]:
+    return {
+        "config_path": str(CONFIG_PATH),
+        "config_sha256": sha256(project_root / CONFIG_PATH),
+        "manifest_path": str(MANIFEST_PATH),
+        "manifest_sha256": sha256(project_root / MANIFEST_PATH),
+        "runner_path": "scripts/run_s1_g1_thermodynamic_label_audit_r2.sh",
+        "runner_sha256": sha256(
+            project_root / "scripts/run_s1_g1_thermodynamic_label_audit_r2.sh"
+        ),
+    }
+
+
+def _expected_sealed_execution_inputs(
+    project_root: Path, registered_files: dict[str, object]
+) -> dict[str, object]:
+    relative_paths = {
+        "runner": Path("scripts/run_s1_g1_thermodynamic_label_audit_r2.sh"),
+        "manifest": MANIFEST_PATH,
+        "config": CONFIG_PATH,
+    }
+    return {
+        "mode": registration.SEALED_EXECUTION_INPUT_MODE,
+        "seal_mask": registration.SEALED_EXECUTION_INPUT_SEAL_MASK,
+        "seal_names": list(registration.SEALED_EXECUTION_INPUT_SEAL_NAMES),
+        "pass_fds": list(registration.SEALED_EXECUTION_INPUT_FDS.values()),
+        "inputs": {
+            name: {
+                "fd": registration.SEALED_EXECUTION_INPUT_FDS[name],
+                "proc_path": registration.SEALED_EXECUTION_INPUT_PROC_PATHS[name],
+                "canonical_path": str(project_root / relative_paths[name]),
+                "sha256": registered_files[f"{name}_sha256"],
+            }
+            for name in registration.SEALED_EXECUTION_INPUT_FDS
+        },
+    }
+
+
+def _sealed_execution_inputs_sha256(record: dict[str, object]) -> str:
+    return hashlib.sha256(_canonical_supervisor_json(record)).hexdigest()
+
+
+def _read_fd_bytes(descriptor: int) -> bytes:
+    size = os.fstat(descriptor).st_size
+    blocks: list[bytes] = []
+    offset = 0
+    while offset < size:
+        block = os.pread(descriptor, min(1024 * 1024, size - offset), offset)
+        if not block:
+            break
+        blocks.append(block)
+        offset += len(block)
+    payload = b"".join(blocks)
+    if len(payload) != size:
+        raise ValueError("short read from live sealed execution input")
+    return payload
+
+
+def _validate_live_sealed_execution_inputs(
+    supervisor_pid: int, record: dict[str, object]
+) -> list[str]:
+    errors: list[str] = []
+    if not _positive_integer(supervisor_pid):
+        return ["live sealed execution supervisor PID is invalid"]
+    add_seals = getattr(fcntl, "F_ADD_SEALS", None)
+    get_seals = getattr(fcntl, "F_GET_SEALS", None)
+    mask = 0
+    for name in registration.SEALED_EXECUTION_INPUT_SEAL_NAMES:
+        value = getattr(fcntl, name, None)
+        if type(value) is not int:
+            errors.append(f"live sealed execution constant is unavailable: {name}")
+            return errors
+        mask |= value
+    if type(add_seals) is not int or type(get_seals) is not int:
+        return ["live sealed execution fcntl operations are unavailable"]
+    if mask != registration.SEALED_EXECUTION_INPUT_SEAL_MASK:
+        return ["live sealed execution kernel seal mask differs"]
+    inputs = record.get("inputs")
+    if not isinstance(inputs, dict):
+        return ["live sealed execution input table is missing"]
+    for name, fixed_fd in registration.SEALED_EXECUTION_INPUT_FDS.items():
+        item = inputs.get(name)
+        if not isinstance(item, dict):
+            errors.append(f"live sealed execution {name} record is missing")
+            continue
+        path = Path(f"/proc/{supervisor_pid}/fd/{fixed_fd}")
+        try:
+            descriptor = os.open(
+                path, os.O_RDONLY | getattr(os, "O_CLOEXEC", 0)
+            )
+            try:
+                if not stat.S_ISREG(os.fstat(descriptor).st_mode):
+                    raise ValueError("FD is not regular")
+                if fcntl.fcntl(descriptor, get_seals) != mask:
+                    raise ValueError("seal mask differs")
+                observed = hashlib.sha256(_read_fd_bytes(descriptor)).hexdigest()
+            finally:
+                os.close(descriptor)
+            if observed != item.get("sha256"):
+                errors.append(f"live sealed execution {name} SHA-256 differs")
+        except (OSError, ValueError) as error:
+            errors.append(f"live sealed execution {name} FD differs: {error}")
+    return errors
 
 
 def _relative(project_root: Path, path: Path) -> str:
@@ -860,7 +1020,7 @@ def _validate_config_contract(
     }
     if set(config) != expected_keys:
         errors.append("R2 config top-level key set differs")
-    if config.get("schema_version") != 2:
+    if type(config.get("schema_version")) is not int or config.get("schema_version") != 2:
         errors.append("R2 config schema version differs")
     if config.get("protocol_revision") != PROTOCOL_REVISION:
         errors.append("R2 config protocol revision differs")
@@ -889,6 +1049,12 @@ def _validate_config_contract(
         "append_only_journal_required": True,
         "atomic_supervisor_evidence_publish_required": True,
         "runner_live_parent_binding_required": True,
+        "exact_go_payload_required_before_runner": True,
+        "go_validated_bytes_sha256_binding_required": True,
+        "runner_exact_go_revalidation_required": True,
+        "go_payload_required_keys_exact": list(
+            registration.GO_PAYLOAD_REQUIRED_KEYS
+        ),
         "runner_parent_binding_fields": [
             "state_directory",
             "supervisor_pid",
@@ -904,6 +1070,7 @@ def _validate_config_contract(
                 registration.FROZEN_AMBIENT_ENVIRONMENT_SHA256
             ),
             "mutating_launcher_exact_match_required": True,
+            "supervisor_umask_exact": "0022",
             "python_no_user_site_required": True,
             "validator_subprocess_explicit_environment_required": True,
             "supervisor_subprocess_explicit_environment_required": True,
@@ -911,6 +1078,23 @@ def _validate_config_contract(
                 registration.RUNNER_BINDING_ENVIRONMENT_KEYS
             ),
             "runner_registered_bash_required": True,
+        },
+        "sealed_execution_inputs": {
+            "mode": registration.SEALED_EXECUTION_INPUT_MODE,
+            "fixed_fds_exact": dict(registration.SEALED_EXECUTION_INPUT_FDS),
+            "proc_paths_exact": dict(
+                registration.SEALED_EXECUTION_INPUT_PROC_PATHS
+            ),
+            "seal_mask_exact": registration.SEALED_EXECUTION_INPUT_SEAL_MASK,
+            "seal_names_exact": list(
+                registration.SEALED_EXECUTION_INPUT_SEAL_NAMES
+            ),
+            "popen_pass_fds_exact": list(
+                registration.SEALED_EXECUTION_INPUT_FDS.values()
+            ),
+            "registered_bash_executes_runner_fd": True,
+            "scientific_config_manifest_from_sealed_fds_required": True,
+            "canonical_paths_provenance_only": True,
         },
         "attempt_ledger_root": str(ATTEMPT_LEDGER_ROOT),
         "supervisor_state_directory": SUPERVISOR_STATE_DIRECTORY,
@@ -968,6 +1152,10 @@ def _validate_config_contract(
             ),
             "commit_scope": "exactly_one_attempt_ledger_marker",
             "run_introduction_parent_must_equal_marker_commit": True,
+            "first_marker_commit_parent_must_equal_go_git_head": True,
+            "subsequent_marker_commit_parent_must_equal_previous_accepted_run_introduction": True,
+            "go_git_head_must_equal_detachment_introduction_commit": True,
+            "validator_must_accept_marker_before_solver": True,
             "working_tree_clean_after_marker_commit": True,
             "same_id_retry_forbidden": True,
             "required_keys_exact": list(registration.ATTEMPT_MARKER_REQUIRED_KEYS),
@@ -981,6 +1169,27 @@ def _validate_config_contract(
     }
     if config.get("execution") != expected_execution:
         errors.append("R2 execution/no-retry/supervisor contract differs")
+    observed_execution = config.get("execution")
+    if isinstance(observed_execution, dict):
+        for contract_name in (
+            "supervisor_completion_contract",
+            "barrier_failure_contract",
+            "attempt_marker",
+        ):
+            observed_contract = observed_execution.get(contract_name)
+            if not isinstance(observed_contract, dict) or type(
+                observed_contract.get("schema_version")
+            ) is not int:
+                errors.append(f"R2 {contract_name} schema version type differs")
+        completion_contract = observed_execution.get(
+            "supervisor_completion_contract"
+        )
+        if (
+            not isinstance(completion_contract, dict)
+            or type(completion_contract.get("runner_exit_code")) is not int
+            or completion_contract.get("runner_exit_code") != 0
+        ):
+            errors.append("R2 supervisor completion runner-exit type differs")
     expected_coverage = {
         "logical_run_count": 40,
         "r1_reused_accepted_count": 10,
@@ -1244,6 +1453,7 @@ def validate_detachment_attestation(
     config: dict,
     *,
     require_committed: bool,
+    require_live_sealed_inputs: bool = False,
 ) -> tuple[dict[str, object], list[str]]:
     """Independently replay the one-shot SSH/PTY detachment and HUP gate."""
 
@@ -1259,6 +1469,10 @@ def validate_detachment_attestation(
     if not path.is_file() or path.is_symlink():
         return payload, ["detachment attestation is missing or symbolic"]
     try:
+        expected_registered = _expected_registered_files(project_root)
+        expected_sealed_inputs = _expected_sealed_execution_inputs(
+            project_root, expected_registered
+        )
         parsed = read_json(path)
         if not isinstance(parsed, dict):
             raise ValueError("detachment attestation root is not an object")
@@ -1281,7 +1495,8 @@ def validate_detachment_attestation(
         if set(payload) != expected_keys:
             errors.append("detachment attestation key set differs")
         if (
-            payload.get("schema_version") != 1
+            type(payload.get("schema_version")) is not int
+            or payload.get("schema_version") != 1
             or payload.get("protocol_revision") != PROTOCOL_REVISION
             or payload.get("status") != "accepted"
         ):
@@ -1310,14 +1525,58 @@ def validate_detachment_attestation(
             launch = launch_payload if isinstance(launch_payload, dict) else {}
             if payload.get("launch_sha256") != sha256(launch_path):
                 errors.append("detachment launch SHA-256 differs")
-            if (
-                launch.get("protocol_revision") != PROTOCOL_REVISION
-                or launch.get("status") != "waiting_for_detachment_attestation"
-                or launch.get("boot_id") != payload.get("boot_id")
-                or launch.get("state_directory") != SUPERVISOR_STATE_DIRECTORY
-                or launch.get("registered_files") != payload.get("registered_files")
+            launch_keys = {
+                "schema_version",
+                "protocol_revision",
+                "status",
+                "launch_method",
+                "restart_policy",
+                "project_root",
+                "hostname",
+                "working_directory",
+                "umask",
+                "environment",
+                "state_directory",
+                "lock_path",
+                "log_path",
+                "boot_id",
+                "process",
+                "git_head_at_launch",
+                "registered_files",
+                "sealed_execution_inputs",
+                "launcher",
+                "runner_argv",
+                "started_utc",
+            }
+            if set(launch) != launch_keys:
+                errors.append("detachment launch key set differs")
+            if type(launch.get("schema_version")) is not int:
+                errors.append("detachment launch schema_version differs")
+            state = Path(SUPERVISOR_STATE_DIRECTORY)
+            expected_launch_scalars = {
+                "schema_version": 1,
+                "protocol_revision": PROTOCOL_REVISION,
+                "status": "waiting_for_detachment_attestation",
+                "launch_method": "python_subprocess_start_new_session",
+                "restart_policy": "never",
+                "project_root": str(project_root),
+                "hostname": os.uname().nodename,
+                "working_directory": str(project_root),
+                "umask": "0022",
+                "state_directory": SUPERVISOR_STATE_DIRECTORY,
+                "lock_path": str(state / "supervisor.lock"),
+                "log_path": str(state / "supervisor.log"),
+                "boot_id": payload.get("boot_id"),
+                "git_head_at_launch": payload.get("git_head"),
+                "registered_files": payload.get("registered_files"),
+            }
+            for key, expected in expected_launch_scalars.items():
+                if launch.get(key) != expected:
+                    errors.append(f"detachment launch {key} differs")
+            if not isinstance(launch.get("started_utc"), str) or not _UTC.fullmatch(
+                str(launch["started_utc"])
             ):
-                errors.append("detachment launch identity/registration differs")
+                errors.append("detachment launch UTC timestamp differs")
             expected_ambient_contract = {
                 "keys_exact": list(registration.FROZEN_AMBIENT_ENVIRONMENT_KEYS),
                 "values_exact": dict(
@@ -1327,6 +1586,7 @@ def validate_detachment_attestation(
                     registration.FROZEN_AMBIENT_ENVIRONMENT_SHA256
                 ),
                 "mutating_launcher_exact_match_required": True,
+                "supervisor_umask_exact": "0022",
                 "python_no_user_site_required": True,
                 "validator_subprocess_explicit_environment_required": True,
                 "supervisor_subprocess_explicit_environment_required": True,
@@ -1347,10 +1607,15 @@ def validate_detachment_attestation(
             }
             if launch.get("environment") != expected_launch_environment:
                 errors.append("detachment launch ambient environment differs")
-            if launch.get("git_head_at_launch") != payload.get("git_head"):
-                errors.append("detachment launch Git HEAD differs")
+            if launch.get("registered_files") != expected_registered:
+                errors.append("detachment launch registered files differ")
+            if launch.get("sealed_execution_inputs") != expected_sealed_inputs:
+                errors.append("detachment launch sealed execution inputs differ")
             runtime = config.get("runtime")
             tools = runtime.get("tools") if isinstance(runtime, dict) else None
+            python_registration = (
+                tools.get("python") if isinstance(tools, dict) else None
+            )
             bash_registration = (
                 tools.get("bash") if isinstance(tools, dict) else None
             )
@@ -1364,15 +1629,33 @@ def validate_detachment_attestation(
             else:
                 expected_runner_argv = [
                     bash_path,
-                    str(
-                        project_root
-                        / "scripts/run_s1_g1_thermodynamic_label_audit_r2.sh"
-                    ),
+                    registration.SEALED_EXECUTION_INPUT_PROC_PATHS["runner"],
+                    str(project_root),
                     str(project_root / MANIFEST_PATH),
                     str(project_root / CONFIG_PATH),
+                    registration.SEALED_EXECUTION_INPUT_PROC_PATHS["manifest"],
+                    registration.SEALED_EXECUTION_INPUT_PROC_PATHS["config"],
                 ]
                 if launch.get("runner_argv") != expected_runner_argv:
                     errors.append("detachment launch runner argv differs")
+            launcher_path = (
+                project_root
+                / "scripts/launch_s1_g1_thermodynamic_label_audit_r2.py"
+            )
+            if not isinstance(python_registration, dict):
+                errors.append("detachment registered Python identity is missing")
+            elif not launcher_path.is_file() or launcher_path.is_symlink():
+                errors.append("detachment registered launcher is missing or symbolic")
+            else:
+                expected_launcher = {
+                    "path": str(launcher_path),
+                    "sha256": sha256(launcher_path),
+                    "python_path": python_registration.get("path"),
+                    "python_realpath": python_registration.get("realpath"),
+                    "python_sha256": python_registration.get("sha256"),
+                }
+                if launch.get("launcher") != expected_launcher:
+                    errors.append("detachment launch tool identity differs")
 
         process_keys = {
             "pid",
@@ -1393,14 +1676,18 @@ def validate_detachment_attestation(
                 errors.append(f"detachment {label}-HUP process record differs")
                 continue
             pid = process.get("pid")
-            start = process.get("start_time_ticks")
             if (
-                not isinstance(pid, int)
-                or isinstance(pid, bool)
-                or pid <= 0
-                or not isinstance(start, int)
-                or isinstance(start, bool)
-                or start <= 0
+                any(
+                    not _positive_integer(process.get(field))
+                    for field in (
+                        "pid",
+                        "ppid",
+                        "process_group_id",
+                        "session_id",
+                        "start_time_ticks",
+                    )
+                )
+                or type(process.get("tty_nr")) is not int
                 or process.get("session_id") != pid
                 or process.get("process_group_id") != pid
                 or process.get("tty_nr") != 0
@@ -1419,6 +1706,21 @@ def validate_detachment_attestation(
         else:
             if set(launch_process) != process_keys:
                 errors.append("detachment external launch process key set differs")
+            if (
+                any(
+                    not _positive_integer(launch_process.get(field))
+                    for field in (
+                        "pid",
+                        "ppid",
+                        "process_group_id",
+                        "session_id",
+                        "start_time_ticks",
+                    )
+                )
+                or type(launch_process.get("tty_nr")) is not int
+                or launch_process.get("tty_nr") != 0
+            ):
+                errors.append("detachment external launch process integers differ")
             stable_process_keys = process_keys - {"ppid"}
             for label, process in (("before", before), ("after", after)):
                 if not isinstance(process, dict):
@@ -1431,6 +1733,12 @@ def validate_detachment_attestation(
                         f"detachment {label}-HUP identity does not match external "
                         "launch process"
                     )
+            if require_live_sealed_inputs:
+                errors.extend(
+                    _validate_live_sealed_execution_inputs(
+                        int(launch_process.get("pid", 0)), expected_sealed_inputs
+                    )
+                )
         hup_before = payload.get("hup_event_count_before")
         hup_after = payload.get("hup_event_count_after")
         if (
@@ -1455,7 +1763,13 @@ def validate_detachment_attestation(
                 "waiting_for_go": {"event", "pid", "utc"},
                 "waiting_heartbeat": {"event", "pid", "utc"},
                 "sighup_received": {"event", "pid", "utc"},
-                "go_accepted": {"event", "pid", "utc", "git_head"},
+                "go_accepted": {
+                    "event",
+                    "pid",
+                    "utc",
+                    "git_head",
+                    "go_sha256",
+                },
                 "go_rejected": {"event", "pid", "utc", "reason"},
                 "runner_started": {
                     "event",
@@ -1500,9 +1814,11 @@ def validate_detachment_attestation(
                 if name == "go_accepted" and (
                     not isinstance(event.get("git_head"), str)
                     or not _HEX40.fullmatch(str(event["git_head"]))
+                    or not isinstance(event.get("go_sha256"), str)
+                    or not _HEX64.fullmatch(str(event["go_sha256"]))
                 ):
                     errors.append(
-                        f"detachment supervisor journal event {index} Git HEAD differs"
+                        f"detachment supervisor journal event {index} GO identity differs"
                     )
                 if name == "go_rejected" and not isinstance(
                     event.get("reason"), str
@@ -1565,16 +1881,6 @@ def validate_detachment_attestation(
             ):
                 errors.append("detachment supervisor journal runner-finish ordering differs")
 
-        expected_registered = {
-            "config_path": str(CONFIG_PATH),
-            "config_sha256": sha256(project_root / CONFIG_PATH),
-            "manifest_path": str(MANIFEST_PATH),
-            "manifest_sha256": sha256(project_root / MANIFEST_PATH),
-            "runner_path": "scripts/run_s1_g1_thermodynamic_label_audit_r2.sh",
-            "runner_sha256": sha256(
-                project_root / "scripts/run_s1_g1_thermodynamic_label_audit_r2.sh"
-            ),
-        }
         if payload.get("registered_files") != expected_registered:
             errors.append("detachment registered config/manifest/runner files differ")
 
@@ -1615,7 +1921,7 @@ def _external_object(path: Path, label: str) -> dict[str, object]:
 
 
 def _positive_integer(value: object) -> bool:
-    return isinstance(value, int) and not isinstance(value, bool) and value > 0
+    return type(value) is int and value > 0
 
 
 def validate_precompletion_analysis(
@@ -1797,6 +2103,15 @@ def validate_supervisor_completion(
             "analysis_audit_status": contract.get("analysis_audit_status"),
             "final_acceptance_policy": contract.get("final_acceptance_policy"),
         }
+        if type(payload.get("schema_version")) is not int:
+            errors.append("supervisor completion schema_version differs")
+        if (
+            type(contract.get("runner_exit_code")) is not int
+            or contract.get("runner_exit_code") != 0
+            or type(payload.get("runner_exit_code")) is not int
+            or payload.get("runner_exit_code") != 0
+        ):
+            errors.append("supervisor completion runner exit code type differs")
         for key, expected in expected_scalars.items():
             if payload.get(key) != expected:
                 errors.append(f"supervisor completion {key} differs")
@@ -1867,9 +2182,11 @@ def validate_supervisor_completion(
         if set(terminal) != terminal_keys:
             errors.append("supervisor terminal key set differs")
         if (
-            terminal.get("schema_version") != 1
+            type(terminal.get("schema_version")) is not int
+            or terminal.get("schema_version") != 1
             or terminal.get("protocol_revision") != PROTOCOL_REVISION
             or terminal.get("status") != "accepted"
+            or type(terminal.get("runner_return_code")) is not int
             or terminal.get("runner_return_code") != 0
         ):
             errors.append("supervisor terminal identity/status differs")
@@ -1895,46 +2212,44 @@ def validate_supervisor_completion(
 
         launch_process = launch.get("process")
         registered_files = launch.get("registered_files")
-        expected_registered = {
-            "config_path": str(CONFIG_PATH),
-            "config_sha256": sha256(project_root / CONFIG_PATH),
-            "manifest_path": str(MANIFEST_PATH),
-            "manifest_sha256": sha256(project_root / MANIFEST_PATH),
-            "runner_path": "scripts/run_s1_g1_thermodynamic_label_audit_r2.sh",
-            "runner_sha256": sha256(
-                project_root / "scripts/run_s1_g1_thermodynamic_label_audit_r2.sh"
-            ),
-        }
+        expected_registered = _expected_registered_files(project_root)
+        expected_sealed_inputs = _expected_sealed_execution_inputs(
+            project_root, expected_registered
+        )
         if (
             launch.get("protocol_revision") != PROTOCOL_REVISION
             or launch.get("status") != "waiting_for_detachment_attestation"
             or launch.get("state_directory") != SUPERVISOR_STATE_DIRECTORY
             or launch.get("boot_id") != payload.get("boot_id")
             or registered_files != expected_registered
+            or launch.get("sealed_execution_inputs") != expected_sealed_inputs
             or not isinstance(launch_process, dict)
         ):
             errors.append("supervisor completion launch identity/registration differs")
+        process_integer_fields = (
+            "pid",
+            "ppid",
+            "process_group_id",
+            "session_id",
+            "start_time_ticks",
+        )
+        if isinstance(launch_process, dict) and (
+            any(
+                not _positive_integer(launch_process.get(field))
+                for field in process_integer_fields
+            )
+            or type(launch_process.get("tty_nr")) is not int
+            or launch_process.get("tty_nr") != 0
+        ):
+            errors.append("supervisor completion launch process integers differ")
 
-        go_keys = {
-            "schema_version",
-            "protocol_revision",
-            "status",
-            "launch_sha256",
-            "boot_id",
-            "supervisor_pid",
-            "supervisor_start_time_ticks",
-            "attestation_path",
-            "attestation_sha256",
-            "git_head",
-            "registered_files",
-            "created_utc",
-        }
-        if set(go) != go_keys:
+        if set(go) != set(registration.GO_PAYLOAD_REQUIRED_KEYS):
             errors.append("supervisor GO key set differs")
         attestation_relative = str(registration.DETACHMENT_ATTESTATION_PATH)
         attestation_path = project_root / attestation_relative
         if (
-            go.get("schema_version") != 1
+            type(go.get("schema_version")) is not int
+            or go.get("schema_version") != 1
             or go.get("protocol_revision") != PROTOCOL_REVISION
             or go.get("status") != "go"
             or go.get("launch_sha256") != sha256(launch_path)
@@ -1942,14 +2257,21 @@ def validate_supervisor_completion(
             or go.get("attestation_path") != attestation_relative
             or go.get("attestation_sha256") != sha256(attestation_path)
             or go.get("registered_files") != expected_registered
+            or go.get("sealed_execution_inputs_sha256")
+            != _sealed_execution_inputs_sha256(expected_sealed_inputs)
         ):
             errors.append("supervisor completion GO identity/registration differs")
         if not isinstance(go.get("created_utc"), str) or not _UTC.fullmatch(
             str(go["created_utc"])
         ):
             errors.append("supervisor GO UTC timestamp differs")
+        go_head = go.get("git_head")
+        if not isinstance(go_head, str) or not _HEX40.fullmatch(go_head):
+            errors.append("supervisor GO Git HEAD is invalid")
         if isinstance(launch_process, dict) and (
-            launch_process.get("pid")
+            not _positive_integer(go.get("supervisor_pid"))
+            or not _positive_integer(go.get("supervisor_start_time_ticks"))
+            or launch_process.get("pid")
             != go.get("supervisor_pid")
             or launch_process.get("pid") != payload.get("supervisor_pid")
             or launch_process.get("start_time_ticks")
@@ -1987,14 +2309,32 @@ def validate_supervisor_completion(
             for index, event in enumerate(journal)
             if event.get("event") == "runner_finished"
         ]
+        accepted_go = [
+            (index, event)
+            for index, event in enumerate(journal)
+            if event.get("event") == "go_accepted"
+        ]
+        if (
+            len(accepted_go) != 1
+            or accepted_go[0][1].get("git_head") != go_head
+            or accepted_go[0][1].get("go_sha256") != sha256(go_path)
+        ):
+            errors.append("supervisor journal/GO identity or byte hash differs")
         if len(started) != 1 or len(finished) != 1:
             errors.append("supervisor journal runner event count differs")
         elif (
-            started[0][0] >= finished[0][0]
+            len(accepted_go) != 1
+            or accepted_go[0][0] >= started[0][0]
+            or started[0][0] >= finished[0][0]
             or finished[0][0] != len(journal) - 1
             or started[0][1].get("child_pid") != terminal.get("runner_pid")
             or started[0][1].get("child_start_time_ticks")
             != terminal.get("runner_start_time_ticks")
+            or not _positive_integer(started[0][1].get("child_pid"))
+            or not _positive_integer(
+                started[0][1].get("child_start_time_ticks")
+            )
+            or type(finished[0][1].get("return_code")) is not int
             or finished[0][1].get("return_code") != 0
         ):
             errors.append("supervisor journal terminal runner sequence differs")
@@ -2058,11 +2398,36 @@ def validate_supervisor_completion(
                 or any(not item.startswith(analysis_root) for item in analysis_changes)
             ):
                 errors.append("completion parent is not the exact R2 analysis commit")
-            go_head = go.get("git_head")
-            if not isinstance(go_head, str) or not _HEX40.fullmatch(go_head):
-                errors.append("supervisor GO Git HEAD is invalid")
-            elif _blob_at(project_root, go_head, attestation_relative) != attestation_path.read_bytes():
-                errors.append("supervisor GO did not bind the committed detachment attestation")
+            detachment_introduction = _introduction_commit(
+                project_root, attestation_relative
+            )
+            if go_head != detachment_introduction:
+                errors.append(
+                    "supervisor GO Git HEAD is not the detachment introduction"
+                )
+            elif _blob_at(
+                project_root, go_head, attestation_relative
+            ) != attestation_path.read_bytes():
+                errors.append(
+                    "supervisor GO did not bind the committed detachment attestation"
+                )
+            first_marker_relative = (
+                f"{ATTEMPT_LEDGER_ROOT.as_posix()}/{R2_AUDIT_IDS[0]}.json"
+            )
+            first_marker_introduction = _introduction_commit(
+                project_root, first_marker_relative
+            )
+            first_marker_parent = str(
+                _git(
+                    project_root,
+                    "rev-parse",
+                    f"{first_marker_introduction}^",
+                )
+            )
+            if first_marker_parent != go_head:
+                errors.append(
+                    "first R2 attempt marker parent is not the supervisor GO HEAD"
+                )
     except (
         FileNotFoundError,
         KeyError,
@@ -2089,6 +2454,10 @@ def _barrier_spec(
         str(project_root / MANIFEST_PATH),
         "--config",
         str(project_root / CONFIG_PATH),
+        "--scientific-config",
+        registration.SEALED_EXECUTION_INPUT_PROC_PATHS["config"],
+        "--scientific-manifest",
+        registration.SEALED_EXECUTION_INPUT_PROC_PATHS["manifest"],
         "--require-committed",
     ]
     if barrier_name == "imported-p0-before-041":
@@ -2110,6 +2479,10 @@ def _barrier_spec(
             str(project_root / CONFIG_PATH),
             "--manifest",
             str(project_root / MANIFEST_PATH),
+            "--scientific-config",
+            registration.SEALED_EXECUTION_INPUT_PROC_PATHS["config"],
+            "--scientific-manifest",
+            registration.SEALED_EXECUTION_INPUT_PROC_PATHS["manifest"],
         ]
     if barrier_name == "final-analysis-status":
         return R2_AUDIT_IDS[-1], NEW_TO_LOGICAL[R2_AUDIT_IDS[-1]], [
@@ -2327,6 +2700,8 @@ def validate_barrier_failures(
                 "supervisor_state_directory": SUPERVISOR_STATE_DIRECTORY,
                 "retry_policy": contract.get("retry_policy"),
             }
+            if type(payload.get("schema_version")) is not int:
+                errors.append(f"{path.name}: barrier failure schema_version differs")
             for key, expected in expected_scalars.items():
                 if payload.get(key) != expected:
                     errors.append(f"{barrier_name}: barrier failure {key} differs")
@@ -2422,27 +2797,7 @@ def validate_attempt_marker(
         if not isinstance(parsed, dict):
             raise ValueError("attempt marker root is not an object")
         payload = parsed
-        expected_keys = {
-            "schema_version",
-            "protocol_revision",
-            "experiment_id",
-            "logical_experiment_id",
-            "status",
-            "retry_policy",
-            "created_utc",
-            "config_path",
-            "config_sha256",
-            "manifest_path",
-            "manifest_sha256",
-            "git_head_before_attempt",
-            "supervisor_state_directory",
-            "supervisor_launch_path",
-            "supervisor_launch_sha256",
-            "supervisor_pid",
-            "supervisor_start_time_ticks",
-            "boot_id",
-        }
-        if set(payload) != expected_keys:
+        if set(payload) != set(registration.ATTEMPT_MARKER_REQUIRED_KEYS):
             errors.append(f"{experiment_id}: attempt marker key set differs")
         expected_scalars = {
             "schema_version": 1,
@@ -2457,6 +2812,8 @@ def validate_attempt_marker(
             "manifest_sha256": sha256(project_root / MANIFEST_PATH),
             "supervisor_state_directory": SUPERVISOR_STATE_DIRECTORY,
         }
+        if type(payload.get("schema_version")) is not int:
+            errors.append(f"{experiment_id}: attempt marker schema_version differs")
         for key, expected in expected_scalars.items():
             if payload.get(key) != expected:
                 errors.append(f"{experiment_id}: attempt marker {key} differs")
@@ -2491,6 +2848,78 @@ def validate_attempt_marker(
                 errors.append(f"{experiment_id}: supervisor launch SHA-256 is invalid")
             elif sha256(launch) != launch_digest:
                 errors.append(f"{experiment_id}: external supervisor launch SHA-256 differs")
+
+        go_value = payload.get("supervisor_go_path")
+        go_digest = payload.get("supervisor_go_sha256")
+        go_git_head = payload.get("go_git_head")
+        expected_go_path = Path(SUPERVISOR_STATE_DIRECTORY) / "go.json"
+        go: dict[str, object] = {}
+        if not isinstance(go_value, str) or Path(go_value) != expected_go_path:
+            errors.append(f"{experiment_id}: supervisor GO path differs")
+        elif not isinstance(go_digest, str) or not _HEX64.fullmatch(go_digest):
+            errors.append(f"{experiment_id}: supervisor GO SHA-256 is invalid")
+        elif not expected_go_path.is_file() or expected_go_path.is_symlink():
+            errors.append(
+                f"{experiment_id}: external supervisor GO record is missing or symbolic"
+            )
+        else:
+            _, go, observed_go_digest = _stable_json_object(expected_go_path)
+            if observed_go_digest != go_digest:
+                errors.append(
+                    f"{experiment_id}: external supervisor GO SHA-256 differs"
+                )
+            expected_registered = _expected_registered_files(project_root)
+            expected_sealed = _expected_sealed_execution_inputs(
+                project_root, expected_registered
+            )
+            if set(go) != set(registration.GO_PAYLOAD_REQUIRED_KEYS):
+                errors.append(f"{experiment_id}: supervisor GO key set differs")
+            attestation_path_value = execution.get("detachment_attestation_path")
+            attestation_path = (
+                project_root / str(attestation_path_value)
+                if isinstance(attestation_path_value, str)
+                else None
+            )
+            if (
+                type(go.get("schema_version")) is not int
+                or go.get("schema_version") != 1
+                or go.get("protocol_revision") != PROTOCOL_REVISION
+                or go.get("status") != "go"
+                or go.get("launch_sha256") != launch_digest
+                or go.get("boot_id") != payload.get("boot_id")
+                or go.get("supervisor_pid") != payload.get("supervisor_pid")
+                or go.get("supervisor_start_time_ticks")
+                != payload.get("supervisor_start_time_ticks")
+                or go.get("registered_files") != expected_registered
+                or go.get("sealed_execution_inputs_sha256")
+                != _sealed_execution_inputs_sha256(expected_sealed)
+                or go.get("attestation_path") != attestation_path_value
+                or attestation_path is None
+                or not attestation_path.is_file()
+                or attestation_path.is_symlink()
+                or go.get("attestation_sha256") != sha256(attestation_path)
+            ):
+                errors.append(
+                    f"{experiment_id}: supervisor GO identity/registration differs"
+                )
+            if not isinstance(go.get("created_utc"), str) or not _UTC.fullmatch(
+                str(go.get("created_utc"))
+            ):
+                errors.append(f"{experiment_id}: supervisor GO UTC timestamp differs")
+            if (
+                not isinstance(go_git_head, str)
+                or not _HEX40.fullmatch(go_git_head)
+                or go.get("git_head") != go_git_head
+            ):
+                errors.append(f"{experiment_id}: marker/GO Git HEAD differs")
+            if isinstance(attestation_path_value, str):
+                attestation_introduction = _introduction_commit(
+                    project_root, attestation_path_value
+                )
+                if go_git_head != attestation_introduction:
+                    errors.append(
+                        f"{experiment_id}: GO Git HEAD is not the detachment introduction"
+                    )
 
         attestation_relative = execution.get("detachment_attestation_path")
         if not isinstance(attestation_relative, str):
@@ -2537,6 +2966,28 @@ def validate_attempt_marker(
             parent = str(_git(project_root, "rev-parse", f"{commit}^"))
             if payload.get("git_head_before_attempt") != parent:
                 errors.append(f"{experiment_id}: attempt marker parent differs from its pre-attempt HEAD")
+            if (
+                experiment_id == EXECUTION_ORDER[0]
+                and (
+                    parent != payload.get("go_git_head")
+                    or payload.get("git_head_before_attempt")
+                    != payload.get("go_git_head")
+                )
+            ):
+                errors.append(
+                    f"{experiment_id}: first marker parent is not the GO/detachment introduction"
+                )
+            elif experiment_id != EXECUTION_ORDER[0]:
+                predecessor = EXECUTION_ORDER[
+                    EXECUTION_ORDER.index(experiment_id) - 1
+                ]
+                predecessor_introduction = _introduction_commit(
+                    project_root, f"runs/{predecessor}"
+                )
+                if parent != predecessor_introduction:
+                    errors.append(
+                        f"{experiment_id}: marker parent is not the previous accepted run introduction"
+                    )
             if _blob_at(project_root, commit, marker_relative) != marker.read_bytes():
                 errors.append(f"{experiment_id}: attempt marker differs from its introduction blob")
             prereg = _introduction_commit(project_root, str(CONFIG_PATH))
@@ -2978,8 +3429,14 @@ def replay_evidence(
     *,
     require_committed: bool,
     require_replay_status: bool,
+    scientific_config_path: Path | None = None,
+    scientific_manifest_path: Path | None = None,
 ) -> tuple[dict[str, object], list[str]]:
     experiment_id = row["experiment_id"]
+    if (scientific_config_path is None) != (scientific_manifest_path is None):
+        return {}, [
+            f"{experiment_id}: scientific config and manifest must be supplied together"
+        ]
     logical = logical_id(experiment_id)
     run = project_root / "runs" / experiment_id
     role = r1._role(row)
@@ -3010,6 +3467,8 @@ def replay_evidence(
             run,
             config_path=project_root / CONFIG_PATH,
             manifest_path=project_root / MANIFEST_PATH,
+            scientific_config_path=scientific_config_path,
+            scientific_manifest_path=scientific_manifest_path,
         )
         if labels != reparsed:
             errors.append(f"{experiment_id}: thermodynamic labels differ from R2 recomputation")
@@ -3164,6 +3623,8 @@ def replay_effective_evidence(
     *,
     require_committed: bool,
     require_replay_status: bool,
+    scientific_config_path: Path | None = None,
+    scientific_manifest_path: Path | None = None,
 ) -> tuple[dict[str, object], list[str]]:
     if logical_experiment_id in R1_REUSED_AUDIT_IDS:
         r1_config = read_json(project_root / R1_CONFIG_PATH)
@@ -3181,6 +3642,8 @@ def replay_effective_evidence(
         row_for_logical(project_root, rows, logical_experiment_id),
         require_committed=require_committed,
         require_replay_status=require_replay_status,
+        scientific_config_path=scientific_config_path,
+        scientific_manifest_path=scientific_manifest_path,
     )
 
 
@@ -3558,6 +4021,9 @@ def _validate_gate_runs(
     config: dict,
     rows: list[dict[str, str]],
     logical_ids: tuple[str, ...],
+    *,
+    scientific_config_path: Path | None = None,
+    scientific_manifest_path: Path | None = None,
 ) -> None:
     for logical in logical_ids:
         _, failures = replay_logical_evidence(
@@ -3567,6 +4033,8 @@ def _validate_gate_runs(
             logical,
             require_committed=True,
             require_replay_status=True,
+            scientific_config_path=scientific_config_path,
+            scientific_manifest_path=scientific_manifest_path,
         )
         if failures:
             raise ValueError(
@@ -3580,6 +4048,8 @@ def main() -> int:
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument("manifest", nargs="?", type=Path, default=project_root / MANIFEST_PATH)
     parser.add_argument("--config", type=Path, default=project_root / CONFIG_PATH)
+    parser.add_argument("--scientific-config", type=Path)
+    parser.add_argument("--scientific-manifest", type=Path)
     parser.add_argument("--require-committed", action="store_true")
     parser.add_argument("--check-run-core")
     parser.add_argument("--check-run")
@@ -3587,6 +4057,9 @@ def main() -> int:
     parser.add_argument("--check-failure-archives")
     parser.add_argument("--check-attempt-marker")
     parser.add_argument("--check-detachment-attestation", action="store_true")
+    parser.add_argument(
+        "--check-detachment-attestation-record", action="store_true"
+    )
     parser.add_argument("--check-analysis-summary", action="store_true")
     parser.add_argument("--require-supervisor-completion", action="store_true")
     parser.add_argument("--write-run-evidence")
@@ -3614,6 +4087,15 @@ def main() -> int:
         parser.error("--check-attempt-marker cannot be combined with a per-run evidence mode")
     if args.write_core_failure_evidence and args.check_run_core is None:
         parser.error("--write-core-failure-evidence requires --check-run-core")
+    if (
+        args.check_detachment_attestation
+        and args.check_detachment_attestation_record
+    ):
+        parser.error("select only one detachment-attestation validation mode")
+    if (args.scientific_config is None) != (args.scientific_manifest is None):
+        parser.error(
+            "--scientific-config and --scientific-manifest must be supplied together"
+        )
     require_registration_commit = (
         args.require_committed or args.require_supervisor_completion
     )
@@ -3627,11 +4109,12 @@ def main() -> int:
     by_id = {row["experiment_id"]: row for row in rows}
     checked: list[str] = []
     supervisor_completion: dict[str, object] | None = None
-    if args.check_detachment_attestation:
+    if args.check_detachment_attestation or args.check_detachment_attestation_record:
         _, failures = validate_detachment_attestation(
             project_root,
             config,
             require_committed=args.require_committed,
+            require_live_sealed_inputs=args.check_detachment_attestation,
         )
         if failures:
             raise ValueError(
@@ -3725,6 +4208,8 @@ def main() -> int:
                 row,
                 require_committed=args.require_committed,
                 require_replay_status=args.check_run is not None,
+                scientific_config_path=args.scientific_config,
+                scientific_manifest_path=args.scientific_manifest,
             )
             if failures:
                 if args.check_run_core and args.write_core_failure_evidence:
@@ -3749,7 +4234,14 @@ def main() -> int:
         quarter_to_half = dict((quarter, half) for half, quarter in HALF_QUARTER_LOGICAL_PAIRS)
         if logical not in quarter_to_half:
             raise ValueError("--require-half-quarter-pair requires logical slot 021--034 or its effective ID")
-        _validate_gate_runs(project_root, config, rows, (quarter_to_half[logical], logical))
+        _validate_gate_runs(
+            project_root,
+            config,
+            rows,
+            (quarter_to_half[logical], logical),
+            scientific_config_path=args.scientific_config,
+            scientific_manifest_path=args.scientific_manifest,
+        )
         half_quarter = evaluate_half_quarter_pair(
             project_root, config, rows, logical, require_committed=True
         )
@@ -3762,7 +4254,14 @@ def main() -> int:
         logicals: tuple[str, ...] = ()
         for level in {coarse, fine} - {"standard"}:
             logicals += _logical_series(material, level)
-        _validate_gate_runs(project_root, config, rows, logicals)
+        _validate_gate_runs(
+            project_root,
+            config,
+            rows,
+            logicals,
+            scientific_config_path=args.scientific_config,
+            scientific_manifest_path=args.scientific_manifest,
+        )
         adjacent = evaluate_adjacent_eos_gate(
             project_root, config, rows, material, coarse, fine, require_committed=True
         )
@@ -3778,7 +4277,14 @@ def main() -> int:
     k_gate: dict[str, object] | None = None
     if args.require_k_gate:
         logicals = tuple(value for pair in K_LOGICAL_PAIRS for value in pair)
-        _validate_gate_runs(project_root, config, rows, logicals)
+        _validate_gate_runs(
+            project_root,
+            config,
+            rows,
+            logicals,
+            scientific_config_path=args.scientific_config,
+            scientific_manifest_path=args.scientific_manifest,
+        )
         k_gate = evaluate_k_gate(project_root, config, rows, require_committed=True)
         if k_gate["accepted"] is not True:
             raise ValueError("R2 complete low-smearing k gate rejected: " + json.dumps(k_gate, sort_keys=True))
@@ -3792,6 +4298,8 @@ def main() -> int:
                 logical,
                 require_committed=True,
                 require_replay_status=True,
+                scientific_config_path=args.scientific_config,
+                scientific_manifest_path=args.scientific_manifest,
             )
             if failures:
                 raise ValueError(

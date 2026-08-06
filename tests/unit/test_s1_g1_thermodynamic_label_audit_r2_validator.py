@@ -3,6 +3,7 @@ from __future__ import annotations
 import inspect
 import hashlib
 import json
+import os
 import subprocess
 import sys
 import tempfile
@@ -42,6 +43,7 @@ def ambient_contract() -> dict[str, object]:
             VALIDATOR.registration.FROZEN_AMBIENT_ENVIRONMENT_SHA256
         ),
         "mutating_launcher_exact_match_required": True,
+        "supervisor_umask_exact": "0022",
         "python_no_user_site_required": True,
         "validator_subprocess_explicit_environment_required": True,
         "supervisor_subprocess_explicit_environment_required": True,
@@ -60,7 +62,131 @@ def launch_environment() -> dict[str, object]:
     }
 
 
+def exact_launch_record(
+    root: Path,
+    state: Path,
+    process: dict[str, object],
+    registered: dict[str, object],
+    boot_id: str,
+    git_head: str,
+) -> dict[str, object]:
+    launcher_path = (
+        root / "scripts/launch_s1_g1_thermodynamic_label_audit_r2.py"
+    )
+    return {
+        "schema_version": 1,
+        "protocol_revision": VALIDATOR.PROTOCOL_REVISION,
+        "status": "waiting_for_detachment_attestation",
+        "launch_method": "python_subprocess_start_new_session",
+        "restart_policy": "never",
+        "project_root": str(root),
+        "hostname": os.uname().nodename,
+        "working_directory": str(root),
+        "umask": "0022",
+        "environment": launch_environment(),
+        "state_directory": str(state),
+        "lock_path": str(state / "supervisor.lock"),
+        "log_path": str(state / "supervisor.log"),
+        "boot_id": boot_id,
+        "process": process,
+        "git_head_at_launch": git_head,
+        "registered_files": registered,
+        "sealed_execution_inputs": VALIDATOR._expected_sealed_execution_inputs(
+            root, registered
+        ),
+        "launcher": {
+            "path": str(launcher_path),
+            "sha256": hashlib.sha256(launcher_path.read_bytes()).hexdigest(),
+            "python_path": "/registered/python",
+            "python_realpath": "/registered/python-real",
+            "python_sha256": "1" * 64,
+        },
+        "runner_argv": [
+            "/registered/bash",
+            "/proc/self/fd/200",
+            str(root),
+            str(root / VALIDATOR.MANIFEST_PATH),
+            str(root / VALIDATOR.CONFIG_PATH),
+            "/proc/self/fd/201",
+            "/proc/self/fd/202",
+        ],
+        "started_utc": "2026-08-06T12:00:00.000000Z",
+    }
+
+
 class S1G1ThermodynamicLabelAuditR2ValidatorTest(unittest.TestCase):
+    def test_cli_detachment_mode_requires_live_sealed_inputs(self) -> None:
+        config = logical_config()
+        argv = [
+            str(SCRIPTS / "validate_s1_g1_thermodynamic_label_audit_r2.py"),
+            "--check-detachment-attestation",
+        ]
+        with (
+            mock.patch.object(sys, "argv", argv),
+            mock.patch.object(
+                VALIDATOR,
+                "validate_registration",
+                return_value=(
+                    config,
+                    [],
+                    {
+                        "preregistration_commit": "a" * 40,
+                        "r1_bridge": {"reused": {}},
+                    },
+                ),
+            ),
+            mock.patch.object(
+                VALIDATOR,
+                "validate_detachment_attestation",
+                return_value=({"status": "accepted"}, []),
+            ) as detachment_check,
+            mock.patch.object(VALIDATOR, "sha256", return_value="0" * 64),
+            mock.patch("builtins.print"),
+        ):
+            self.assertEqual(VALIDATOR.main(), 0)
+        detachment_check.assert_called_once_with(
+            PROJECT_ROOT,
+            config,
+            require_committed=False,
+            require_live_sealed_inputs=True,
+        )
+
+    def test_cli_detachment_record_mode_allows_closed_sealed_inputs(self) -> None:
+        config = logical_config()
+        argv = [
+            str(SCRIPTS / "validate_s1_g1_thermodynamic_label_audit_r2.py"),
+            "--check-detachment-attestation-record",
+        ]
+        with (
+            mock.patch.object(sys, "argv", argv),
+            mock.patch.object(
+                VALIDATOR,
+                "validate_registration",
+                return_value=(
+                    config,
+                    [],
+                    {
+                        "preregistration_commit": "a" * 40,
+                        "r1_bridge": {"reused": {}},
+                    },
+                ),
+            ),
+            mock.patch.object(
+                VALIDATOR,
+                "validate_detachment_attestation",
+                return_value=({"status": "accepted"}, []),
+            ) as detachment_check,
+            mock.patch.object(VALIDATOR, "sha256", return_value="0" * 64),
+            mock.patch("builtins.print"),
+        ):
+            self.assertEqual(VALIDATOR.main(), 0)
+        detachment_check.assert_called_once_with(
+            PROJECT_ROOT,
+            config,
+            require_committed=False,
+            require_live_sealed_inputs=False,
+        )
+
     def test_cli_completion_mode_forces_committed_registration_and_revalidation(
         self,
     ) -> None:
@@ -196,6 +322,10 @@ class S1G1ThermodynamicLabelAuditR2ValidatorTest(unittest.TestCase):
                     Path("scripts/run_s1_g1_thermodynamic_label_audit_r2.sh"),
                     b"#!/bin/sh\n",
                 ),
+                (
+                    Path("scripts/launch_s1_g1_thermodynamic_label_audit_r2.py"),
+                    b"# frozen launcher\n",
+                ),
             ):
                 path = root / relative
                 path.parent.mkdir(parents=True, exist_ok=True)
@@ -229,25 +359,9 @@ class S1G1ThermodynamicLabelAuditR2ValidatorTest(unittest.TestCase):
             launch_path = state / "launch.json"
             launch_path.write_text(
                 json.dumps(
-                    {
-                        "protocol_revision": VALIDATOR.PROTOCOL_REVISION,
-                        "status": "waiting_for_detachment_attestation",
-                        "boot_id": boot_id,
-                        "state_directory": str(state),
-                        "environment": launch_environment(),
-                        "git_head_at_launch": "0" * 40,
-                        "process": process,
-                        "registered_files": registered,
-                        "runner_argv": [
-                            "/registered/bash",
-                            str(
-                                root
-                                / "scripts/run_s1_g1_thermodynamic_label_audit_r2.sh"
-                            ),
-                            str(root / VALIDATOR.MANIFEST_PATH),
-                            str(root / VALIDATOR.CONFIG_PATH),
-                        ],
-                    }
+                    exact_launch_record(
+                        root, state, process, registered, boot_id, "0" * 40
+                    )
                 ),
                 encoding="utf-8",
             )
@@ -293,7 +407,16 @@ class S1G1ThermodynamicLabelAuditR2ValidatorTest(unittest.TestCase):
                     ),
                     "ambient_environment": ambient_contract(),
                 },
-                "runtime": {"tools": {"bash": {"path": "/registered/bash"}}},
+                "runtime": {
+                    "tools": {
+                        "bash": {"path": "/registered/bash"},
+                        "python": {
+                            "path": "/registered/python",
+                            "realpath": "/registered/python-real",
+                            "sha256": "1" * 64,
+                        },
+                    }
+                },
             }
             subprocess.check_call(["git", "init", "-q", str(root)])
             subprocess.check_call(
@@ -311,6 +434,7 @@ class S1G1ThermodynamicLabelAuditR2ValidatorTest(unittest.TestCase):
                     str(VALIDATOR.CONFIG_PATH),
                     str(VALIDATOR.MANIFEST_PATH),
                     "scripts/run_s1_g1_thermodynamic_label_audit_r2.sh",
+                    "scripts/launch_s1_g1_thermodynamic_label_audit_r2.py",
                 ]
             )
             subprocess.check_call(
@@ -344,14 +468,86 @@ class S1G1ThermodynamicLabelAuditR2ValidatorTest(unittest.TestCase):
                     root, config, require_committed=True
                 )
                 self.assertEqual(errors, [])
+                with (state / "journal.jsonl").open("a", encoding="utf-8") as handle:
+                    for event in (
+                        {
+                            "event": "go_accepted",
+                            "pid": process["pid"],
+                            "utc": "2026-08-06T12:00:00.000003Z",
+                            "git_head": prereg,
+                            "go_sha256": "a" * 64,
+                        },
+                        {
+                            "event": "runner_started",
+                            "pid": process["pid"],
+                            "utc": "2026-08-06T12:00:00.000004Z",
+                            "child_pid": 4321,
+                            "child_start_time_ticks": 777,
+                        },
+                        {
+                            "event": "runner_finished",
+                            "pid": process["pid"],
+                            "utc": "2026-08-06T12:00:00.000005Z",
+                            "return_code": 0,
+                        },
+                    ):
+                        handle.write(json.dumps(event, sort_keys=True) + "\n")
+                _, completed_journal_errors = (
+                    VALIDATOR.validate_detachment_attestation(
+                        root, config, require_committed=True
+                    )
+                )
+                self.assertEqual(completed_journal_errors, [])
+                exact_launch = json.loads(launch_path.read_text(encoding="utf-8"))
+                forged_launch = deepcopy(exact_launch)
+                forged_launch.pop("launcher")
+                launch_path.write_text(json.dumps(forged_launch), encoding="utf-8")
+                attestation["launch_sha256"] = digest(launch_path)
+                attestation_path.write_text(json.dumps(attestation), encoding="utf-8")
+                _, launch_errors = VALIDATOR.validate_detachment_attestation(
+                    root, config, require_committed=False
+                )
+                self.assertTrue(
+                    any("launch key set differs" in failure for failure in launch_errors)
+                )
+                self.assertTrue(
+                    any("launch tool identity differs" in failure for failure in launch_errors)
+                )
+                forged_launch = deepcopy(exact_launch)
+                forged_launch["schema_version"] = True
+                launch_path.write_text(json.dumps(forged_launch), encoding="utf-8")
+                attestation["launch_sha256"] = digest(launch_path)
+                attestation_path.write_text(json.dumps(attestation), encoding="utf-8")
+                _, launch_errors = VALIDATOR.validate_detachment_attestation(
+                    root, config, require_committed=False
+                )
+                self.assertTrue(
+                    any(
+                        "launch schema_version differs" in failure
+                        for failure in launch_errors
+                    )
+                )
+                launch_path.write_text(json.dumps(exact_launch), encoding="utf-8")
+                attestation["launch_sha256"] = digest(launch_path)
                 attestation["hup_event_count_after"] = 2
                 attestation["supervisor_process_after_hup"]["tty_nr"] = 7
                 attestation_path.write_text(json.dumps(attestation), encoding="utf-8")
                 _, errors = VALIDATOR.validate_detachment_attestation(
                     root, config, require_committed=False
                 )
+                attestation["hup_event_count_after"] = 1
+                attestation["supervisor_process_after_hup"] = dict(process)
+                attestation["supervisor_process_after_hup"]["ppid"] = "1"
+                attestation["supervisor_process_after_hup"]["tty_nr"] = False
+                attestation_path.write_text(json.dumps(attestation), encoding="utf-8")
+                _, integer_errors = VALIDATOR.validate_detachment_attestation(
+                    root, config, require_committed=False
+                )
             self.assertTrue(any("HUP event count" in failure for failure in errors))
             self.assertTrue(any("fully detached" in failure for failure in errors))
+            self.assertTrue(
+                any("fully detached" in failure for failure in integer_errors)
+            )
 
     def test_detachment_rejects_static_launch_and_hup_journal_forgery(self) -> None:
         with tempfile.TemporaryDirectory() as temporary:
@@ -364,6 +560,10 @@ class S1G1ThermodynamicLabelAuditR2ValidatorTest(unittest.TestCase):
                 (
                     Path("scripts/run_s1_g1_thermodynamic_label_audit_r2.sh"),
                     b"#!/bin/sh\n",
+                ),
+                (
+                    Path("scripts/launch_s1_g1_thermodynamic_label_audit_r2.py"),
+                    b"# frozen launcher\n",
                 ),
             ):
                 path = root / relative
@@ -399,25 +599,14 @@ class S1G1ThermodynamicLabelAuditR2ValidatorTest(unittest.TestCase):
             launch_path = state / "launch.json"
             launch_path.write_text(
                 json.dumps(
-                    {
-                        "protocol_revision": VALIDATOR.PROTOCOL_REVISION,
-                        "status": "waiting_for_detachment_attestation",
-                        "boot_id": boot_id,
-                        "state_directory": str(state),
-                        "environment": launch_environment(),
-                        "git_head_at_launch": "0" * 40,
-                        "process": {"pid": 700, "start_time_ticks": 88},
-                        "registered_files": registered,
-                        "runner_argv": [
-                            "/registered/bash",
-                            str(
-                                root
-                                / "scripts/run_s1_g1_thermodynamic_label_audit_r2.sh"
-                            ),
-                            str(root / VALIDATOR.MANIFEST_PATH),
-                            str(root / VALIDATOR.CONFIG_PATH),
-                        ],
-                    },
+                    exact_launch_record(
+                        root,
+                        state,
+                        {"pid": 700, "start_time_ticks": 88},
+                        registered,
+                        boot_id,
+                        "0" * 40,
+                    ),
                     sort_keys=True,
                 )
                 + "\n",
@@ -475,7 +664,16 @@ class S1G1ThermodynamicLabelAuditR2ValidatorTest(unittest.TestCase):
                     ),
                     "ambient_environment": ambient_contract(),
                 },
-                "runtime": {"tools": {"bash": {"path": "/registered/bash"}}},
+                "runtime": {
+                    "tools": {
+                        "bash": {"path": "/registered/bash"},
+                        "python": {
+                            "path": "/registered/python",
+                            "realpath": "/registered/python-real",
+                            "sha256": "1" * 64,
+                        },
+                    }
+                },
             }
             with mock.patch.object(
                 VALIDATOR, "SUPERVISOR_STATE_DIRECTORY", str(state)
@@ -566,10 +764,6 @@ class S1G1ThermodynamicLabelAuditR2ValidatorTest(unittest.TestCase):
                 "scripts/run_s1_g1_thermodynamic_label_audit_r2.sh",
                 b"#!/bin/sh\n",
             )
-            attestation_path = write(
-                VALIDATOR.registration.DETACHMENT_ATTESTATION_PATH,
-                b'{"status":"accepted"}\n',
-            )
             subprocess.check_call(["git", "init", "-q", str(root)])
             subprocess.check_call(
                 ["git", "-C", str(root), "config", "user.email", "r2@test.invalid"]
@@ -581,7 +775,34 @@ class S1G1ThermodynamicLabelAuditR2ValidatorTest(unittest.TestCase):
             subprocess.check_call(
                 ["git", "-C", str(root), "commit", "-q", "-m", "registered"]
             )
+            attestation_path = write(
+                VALIDATOR.registration.DETACHMENT_ATTESTATION_PATH,
+                b'{"status":"accepted"}\n',
+            )
+            subprocess.check_call(
+                [
+                    "git",
+                    "-C",
+                    str(root),
+                    "add",
+                    str(VALIDATOR.registration.DETACHMENT_ATTESTATION_PATH),
+                ]
+            )
+            subprocess.check_call(
+                ["git", "-C", str(root), "commit", "-q", "-m", "detachment"]
+            )
             go_head = git("rev-parse", "HEAD")
+            first_marker = write(
+                VALIDATOR.ATTEMPT_LEDGER_ROOT
+                / f"{VALIDATOR.R2_AUDIT_IDS[0]}.json",
+                b"{}\n",
+            )
+            subprocess.check_call(
+                ["git", "-C", str(root), "add", str(first_marker.relative_to(root))]
+            )
+            subprocess.check_call(
+                ["git", "-C", str(root), "commit", "-q", "-m", "first marker"]
+            )
 
             analysis_relative = Path(
                 "analysis/s1/g1_thermodynamic_label_audit_r2_20260806/summary.json"
@@ -619,6 +840,9 @@ class S1G1ThermodynamicLabelAuditR2ValidatorTest(unittest.TestCase):
                 "runner_path": "scripts/run_s1_g1_thermodynamic_label_audit_r2.sh",
                 "runner_sha256": digest(runner_path),
             }
+            sealed_inputs = VALIDATOR._expected_sealed_execution_inputs(
+                root, registered
+            )
             boot_id = "11111111-2222-3333-4444-555555555555"
             supervisor_pid = 111
             supervisor_start = 222
@@ -632,9 +856,14 @@ class S1G1ThermodynamicLabelAuditR2ValidatorTest(unittest.TestCase):
                         "boot_id": boot_id,
                         "process": {
                             "pid": supervisor_pid,
+                            "ppid": 1,
+                            "process_group_id": supervisor_pid,
+                            "session_id": supervisor_pid,
+                            "tty_nr": 0,
                             "start_time_ticks": supervisor_start,
                         },
                         "registered_files": registered,
+                        "sealed_execution_inputs": sealed_inputs,
                     },
                     sort_keys=True,
                 )
@@ -658,6 +887,11 @@ class S1G1ThermodynamicLabelAuditR2ValidatorTest(unittest.TestCase):
                         "attestation_sha256": digest(attestation_path),
                         "git_head": go_head,
                         "registered_files": registered,
+                        "sealed_execution_inputs_sha256": (
+                            VALIDATOR._sealed_execution_inputs_sha256(
+                                sealed_inputs
+                            )
+                        ),
                         "created_utc": "2026-08-06T12:00:00.000001Z",
                     },
                     sort_keys=True,
@@ -673,6 +907,13 @@ class S1G1ThermodynamicLabelAuditR2ValidatorTest(unittest.TestCase):
                     "event": "waiting_for_go",
                     "pid": supervisor_pid,
                     "utc": "2026-08-06T12:00:00.000002Z",
+                },
+                {
+                    "event": "go_accepted",
+                    "pid": supervisor_pid,
+                    "utc": "2026-08-06T12:00:00.000002Z",
+                    "git_head": go_head,
+                    "go_sha256": digest(go_path),
                 },
                 {
                     "event": "runner_started",
@@ -813,13 +1054,86 @@ class S1G1ThermodynamicLabelAuditR2ValidatorTest(unittest.TestCase):
                     root, config, require_committed=True
                 )
                 self.assertEqual(errors, [])
+                frozen_go = go_path.read_bytes()
+                frozen_journal = journal_path.read_bytes()
+                frozen_terminal = terminal_path.read_bytes()
+                frozen_completion = completion_path.read_bytes()
+                forged_go = json.loads(frozen_go)
+                forged_go["git_head"] = analysis_commit
+                go_path.write_text(json.dumps(forged_go), encoding="utf-8")
+                forged_journal = [dict(item) for item in journal]
+                forged_go_event = next(
+                    item
+                    for item in forged_journal
+                    if item.get("event") == "go_accepted"
+                )
+                forged_go_event["git_head"] = analysis_commit
+                forged_go_event["go_sha256"] = digest(go_path)
+                journal_path.write_text(
+                    "".join(
+                        json.dumps(item, sort_keys=True) + "\n"
+                        for item in forged_journal
+                    ),
+                    encoding="utf-8",
+                )
+                forged_terminal = json.loads(frozen_terminal)
+                forged_terminal["go_sha256"] = digest(go_path)
+                forged_terminal["journal_sha256"] = digest(journal_path)
+                terminal_path.write_text(json.dumps(forged_terminal), encoding="utf-8")
+                forged_completion = json.loads(frozen_completion)
+                forged_completion["supervisor_terminal_sha256"] = digest(
+                    terminal_path
+                )
+                forged_completion["supervisor_journal_sha256"] = digest(journal_path)
+                completion_path.write_text(
+                    json.dumps(forged_completion), encoding="utf-8"
+                )
+                _, causal_errors = VALIDATOR.validate_supervisor_completion(
+                    root, config, require_committed=True
+                )
+                self.assertTrue(
+                    any(
+                        "GO Git HEAD is not the detachment introduction" in failure
+                        for failure in causal_errors
+                    )
+                )
+                self.assertTrue(
+                    any(
+                        "first R2 attempt marker parent" in failure
+                        for failure in causal_errors
+                    )
+                )
+                go_path.write_bytes(frozen_go)
+                journal_path.write_bytes(frozen_journal)
+                terminal_path.write_bytes(frozen_terminal)
+                completion_path.write_bytes(frozen_completion)
                 terminal = json.loads(terminal_path.read_text(encoding="utf-8"))
                 terminal["journal_sha256"] = "0" * 64
                 terminal_path.write_text(json.dumps(terminal), encoding="utf-8")
                 _, errors = VALIDATOR.validate_supervisor_completion(
                     root, config, require_committed=True
                 )
-            self.assertEqual(detachment_replay.call_count, 3)
+                terminal_path.write_bytes(frozen_terminal)
+                boolean_terminal = json.loads(frozen_terminal)
+                boolean_terminal["runner_return_code"] = False
+                terminal_path.write_text(
+                    json.dumps(boolean_terminal), encoding="utf-8"
+                )
+                _, boolean_errors = VALIDATOR.validate_supervisor_completion(
+                    root, config, require_committed=True
+                )
+                terminal_path.write_bytes(frozen_terminal)
+                boolean_completion = json.loads(frozen_completion)
+                boolean_completion["runner_exit_code"] = False
+                completion_path.write_text(
+                    json.dumps(boolean_completion), encoding="utf-8"
+                )
+                _, completion_boolean_errors = (
+                    VALIDATOR.validate_supervisor_completion(
+                        root, config, require_committed=True
+                    )
+                )
+            self.assertEqual(detachment_replay.call_count, 6)
             detachment_replay.assert_called_with(
                 root, config, require_committed=True
             )
@@ -828,6 +1142,18 @@ class S1G1ThermodynamicLabelAuditR2ValidatorTest(unittest.TestCase):
             )
             self.assertTrue(
                 any("supervisor_terminal_sha256" in failure for failure in errors)
+            )
+            self.assertTrue(
+                any(
+                    "terminal identity/status differs" in failure
+                    for failure in boolean_errors
+                )
+            )
+            self.assertTrue(
+                any(
+                    "runner exit code type differs" in failure
+                    for failure in completion_boolean_errors
+                )
             )
             self.assertTrue(completion_path.is_file())
 
@@ -874,6 +1200,10 @@ class S1G1ThermodynamicLabelAuditR2ValidatorTest(unittest.TestCase):
                 str(root / VALIDATOR.MANIFEST_PATH),
                 "--config",
                 str(root / VALIDATOR.CONFIG_PATH),
+                "--scientific-config",
+                "/proc/self/fd/202",
+                "--scientific-manifest",
+                "/proc/self/fd/201",
                 "--require-committed",
                 "--require-pilot-gate",
             ]
@@ -1079,8 +1409,30 @@ class S1G1ThermodynamicLabelAuditR2ValidatorTest(unittest.TestCase):
             str(root / VALIDATOR.MANIFEST_PATH),
             "--config",
             str(root / VALIDATOR.CONFIG_PATH),
+            "--scientific-config",
+            "/proc/self/fd/202",
+            "--scientific-manifest",
+            "/proc/self/fd/201",
             "--require-committed",
         ]
+        for barrier_name, expected_identity, suffix in (
+            ("imported-p0-before-041", (None, None), ["--require-pilot-gate"]),
+            (
+                "k-gate-after-042",
+                ("S1-20260806-042", "S1-20260806-040"),
+                ["--require-k-gate"],
+            ),
+            (
+                "final-all-after-070",
+                ("S1-20260806-070", "S1-20260806-033"),
+                ["--require-all-runs"],
+            ),
+        ):
+            effective, logical, command = VALIDATOR._barrier_spec(
+                root, config, barrier_name
+            )
+            self.assertEqual((effective, logical), expected_identity)
+            self.assertEqual(command, [*prefix, *suffix])
         for stem, option in (
             ("attempt-marker", "--check-attempt-marker"),
             ("accepted-run", "--check-run"),
@@ -1091,6 +1443,36 @@ class S1G1ThermodynamicLabelAuditR2ValidatorTest(unittest.TestCase):
             )
             self.assertEqual((effective, logical), (experiment_id, logical_id))
             self.assertEqual(command, [*prefix, option, experiment_id])
+
+        half_effective = VALIDATOR.effective_id("S1-20260806-007")
+        effective, logical, command = VALIDATOR._barrier_spec(
+            root,
+            config,
+            f"half-quarter-021-after-{half_effective.rsplit('-', 1)[1]}",
+        )
+        self.assertEqual((effective, logical), (half_effective, "S1-20260806-007"))
+        self.assertEqual(
+            command,
+            [*prefix, "--require-half-quarter-pair", "S1-20260806-021"],
+        )
+
+        for stem, logical_id, arguments in (
+            ("eos-al-standard-half", "S1-20260806-013", ["al", "standard", "half"]),
+            ("eos-mg-standard-half", "S1-20260806-020", ["mg", "standard", "half"]),
+            ("eos-al-half-quarter", "S1-20260806-026", ["al", "half", "quarter"]),
+            ("eos-mg-half-quarter", "S1-20260806-033", ["mg", "half", "quarter"]),
+        ):
+            expected_effective = VALIDATOR.effective_id(logical_id)
+            barrier_name = (
+                f"{stem}-after-{expected_effective.rsplit('-', 1)[1]}"
+            )
+            effective, logical, command = VALIDATOR._barrier_spec(
+                root, config, barrier_name
+            )
+            self.assertEqual((effective, logical), (expected_effective, logical_id))
+            self.assertEqual(
+                command, [*prefix, "--require-adjacent-eos", *arguments]
+            )
 
         effective, logical, command = VALIDATOR._barrier_spec(
             root, config, "final-analysis"
@@ -1110,6 +1492,10 @@ class S1G1ThermodynamicLabelAuditR2ValidatorTest(unittest.TestCase):
                 str(root / VALIDATOR.CONFIG_PATH),
                 "--manifest",
                 str(root / VALIDATOR.MANIFEST_PATH),
+                "--scientific-config",
+                "/proc/self/fd/202",
+                "--scientific-manifest",
+                "/proc/self/fd/201",
             ],
         )
         _, _, status_command = VALIDATOR._barrier_spec(
@@ -1349,6 +1735,8 @@ class S1G1ThermodynamicLabelAuditR2ValidatorTest(unittest.TestCase):
         with mock.patch.object(
             VALIDATOR, "replay_evidence", return_value=({"source": "r2"}, [])
         ) as replay_r2:
+            scientific_config = Path("/proc/self/fd/202")
+            scientific_manifest = Path("/proc/self/fd/201")
             payload, failures = VALIDATOR.replay_effective_evidence(
                 PROJECT_ROOT,
                 config,
@@ -1356,6 +1744,8 @@ class S1G1ThermodynamicLabelAuditR2ValidatorTest(unittest.TestCase):
                 "S1-20260806-001",
                 require_committed=False,
                 require_replay_status=False,
+                scientific_config_path=scientific_config,
+                scientific_manifest_path=scientific_manifest,
             )
         self.assertEqual(payload, {"source": "r2"})
         self.assertEqual(failures, [])
@@ -1365,7 +1755,59 @@ class S1G1ThermodynamicLabelAuditR2ValidatorTest(unittest.TestCase):
             new_row,
             require_committed=False,
             require_replay_status=False,
+            scientific_config_path=scientific_config,
+            scientific_manifest_path=scientific_manifest,
         )
+
+    def test_replay_passes_sealed_scientific_paths_to_label_parser(self) -> None:
+        with tempfile.TemporaryDirectory() as temporary:
+            root = Path(temporary)
+            experiment_id = "S1-20260806-043"
+            run = root / "runs" / experiment_id
+            run.mkdir(parents=True)
+            (run / VALIDATOR.LABEL_NAME).write_text("{}\n", encoding="utf-8")
+            scientific_config = Path("/proc/self/fd/202")
+            scientific_manifest = Path("/proc/self/fd/201")
+            with (
+                mock.patch.object(R1, "_role", return_value="standard_replay"),
+                mock.patch.object(
+                    VALIDATOR,
+                    "validate_attempt_marker",
+                    return_value=({}, "a" * 40, []),
+                ),
+                mock.patch.object(
+                    VALIDATOR.runtime_validation,
+                    "validate_replay_run",
+                    return_value=[],
+                ),
+                mock.patch.object(
+                    VALIDATOR,
+                    "parse_label_run",
+                    side_effect=ValueError("stop after forwarding assertion"),
+                ) as parse_labels,
+            ):
+                _, failures = VALIDATOR.replay_evidence(
+                    root,
+                    {},
+                    {
+                        "experiment_id": experiment_id,
+                        "source_experiment_id": "S1-20260806-001",
+                    },
+                    require_committed=False,
+                    require_replay_status=False,
+                    scientific_config_path=scientific_config,
+                    scientific_manifest_path=scientific_manifest,
+                )
+            parse_labels.assert_called_once_with(
+                run,
+                config_path=root / VALIDATOR.CONFIG_PATH,
+                manifest_path=root / VALIDATOR.MANIFEST_PATH,
+                scientific_config_path=scientific_config,
+                scientific_manifest_path=scientific_manifest,
+            )
+            self.assertTrue(
+                any("stop after forwarding assertion" in failure for failure in failures)
+            )
 
     def test_analyzer_facing_public_signatures_are_stable(self) -> None:
         self.assertEqual(
@@ -1387,6 +1829,8 @@ class S1G1ThermodynamicLabelAuditR2ValidatorTest(unittest.TestCase):
                 "logical_experiment_id",
                 "require_committed",
                 "require_replay_status",
+                "scientific_config_path",
+                "scientific_manifest_path",
             ),
         )
         self.assertIn("config", inspect.signature(VALIDATOR.evaluate_k_gate).parameters)

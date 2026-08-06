@@ -5,9 +5,13 @@ from __future__ import annotations
 
 import argparse
 import csv
+import hashlib
+import io
 import json
 import os
+import stat
 import subprocess
+import tempfile
 from pathlib import Path
 
 from analyze_s1_g1_thermodynamic_label_audit_r1 import (
@@ -21,7 +25,7 @@ from analyze_s1_g1_thermodynamic_label_audit_r1 import (
     compare_adjacent,
     has_capability_or_evidence_failure,
 )
-from s1_g1_thermodynamic_label_common import sha256_regular_file
+from s1_g1_thermodynamic_label_common import MANIFEST_FIELDS
 from validate_s1_g1_thermodynamic_label_audit_r2 import (
     COMMON_QUARTER_LOGICAL_IDS,
     CONFIG_PATH,
@@ -54,6 +58,80 @@ def _atomic_write(path: Path, data: str) -> None:
     temporary = path.with_name(f".{path.name}.tmp-{os.getpid()}")
     temporary.write_text(data, encoding="utf-8")
     os.replace(temporary, path)
+
+
+def _stable_content_bytes(path: Path, *, allow_proc_fd: bool) -> tuple[bytes, str]:
+    flags = os.O_RDONLY | getattr(os, "O_CLOEXEC", 0) | getattr(os, "O_NONBLOCK", 0)
+    if not allow_proc_fd:
+        nofollow = getattr(os, "O_NOFOLLOW", None)
+        if nofollow is None:
+            raise ValueError("stable analysis registration read requires O_NOFOLLOW")
+        flags |= nofollow
+    descriptor = os.open(path, flags)
+    try:
+        before = os.fstat(descriptor)
+        if not stat.S_ISREG(before.st_mode):
+            raise ValueError(f"analysis registration input is not regular: {path}")
+        blocks: list[bytes] = []
+        offset = 0
+        while offset < before.st_size:
+            block = os.pread(
+                descriptor, min(1024 * 1024, before.st_size - offset), offset
+            )
+            if not block:
+                break
+            blocks.append(block)
+            offset += len(block)
+        after = os.fstat(descriptor)
+    finally:
+        os.close(descriptor)
+    fields = (
+        "st_dev",
+        "st_ino",
+        "st_mode",
+        "st_nlink",
+        "st_uid",
+        "st_gid",
+        "st_rdev",
+        "st_size",
+        "st_mtime_ns",
+        "st_ctime_ns",
+    )
+    payload = b"".join(blocks)
+    if any(getattr(before, name) != getattr(after, name) for name in fields) or len(
+        payload
+    ) != before.st_size:
+        raise ValueError(f"analysis registration input changed or was read short: {path}")
+    return payload, hashlib.sha256(payload).hexdigest()
+
+
+def _write_readonly_snapshot(path: Path, payload: bytes) -> None:
+    descriptor = os.open(path, os.O_WRONLY | os.O_CREAT | os.O_EXCL, 0o600)
+    try:
+        view = memoryview(payload)
+        while view:
+            written = os.write(descriptor, view)
+            if written <= 0:
+                raise ValueError("short analysis registration snapshot write")
+            view = view[written:]
+        os.fsync(descriptor)
+    finally:
+        os.close(descriptor)
+    os.chmod(path, 0o400)
+
+
+def _manifest_from_bytes(payload: bytes) -> list[dict[str, str]]:
+    with io.StringIO(payload.decode("utf-8"), newline="") as handle:
+        reader = csv.DictReader(handle, delimiter="\t")
+        if tuple(reader.fieldnames or ()) != MANIFEST_FIELDS:
+            raise ValueError("sealed scientific manifest header differs")
+        rows = list(reader)
+    if not all(
+        None not in row and all(value is not None for value in row.values())
+        for row in rows
+    ):
+        raise ValueError("sealed scientific manifest row is malformed")
+    return rows
 
 
 def _logical_series(material: str, level: str) -> tuple[str, ...]:
@@ -102,19 +180,51 @@ def analyze(
     *,
     require_committed: bool = True,
     skip_terminal_evidence_validation: bool = False,
+    scientific_config_path: Path | None = None,
+    scientific_manifest_path: Path | None = None,
 ) -> dict[str, object]:
     project_root = project_root.resolve()
+    if (scientific_config_path is None) != (scientific_manifest_path is None):
+        raise ValueError(
+            "scientific config and manifest must be supplied together"
+        )
     if output_directory.exists() or output_directory.is_symlink():
         raise ValueError(f"refusing to overwrite analysis output: {output_directory}")
     if require_committed and not _git_clean(project_root):
         raise ValueError("refusing final R2 analysis from a dirty worktree")
-    config, rows, registration = validate_registration(
+    validated_config, validated_rows, registration = validate_registration(
         project_root,
         config_path.resolve(),
         manifest_path.resolve(),
         require_committed=require_committed,
         skip_terminal_evidence_validation=skip_terminal_evidence_validation,
     )
+    content_config_path = scientific_config_path or config_path
+    content_manifest_path = scientific_manifest_path or manifest_path
+    config_raw, content_config_sha256 = _stable_content_bytes(
+        content_config_path, allow_proc_fd=scientific_config_path is not None
+    )
+    manifest_raw, content_manifest_sha256 = _stable_content_bytes(
+        content_manifest_path, allow_proc_fd=scientific_manifest_path is not None
+    )
+    config = json.loads(config_raw.decode("utf-8"))
+    rows = _manifest_from_bytes(manifest_raw)
+    if config != validated_config or rows != validated_rows:
+        raise ValueError(
+            "sealed scientific config/manifest differ from canonical provenance"
+        )
+    registration_snapshot: tempfile.TemporaryDirectory[str] | None = None
+    replay_scientific_config = scientific_config_path
+    replay_scientific_manifest = scientific_manifest_path
+    if replay_scientific_config is None:
+        registration_snapshot = tempfile.TemporaryDirectory(
+            prefix="m-ofdft-g1-r2-analysis-registration-"
+        )
+        snapshot_root = Path(registration_snapshot.name)
+        replay_scientific_config = snapshot_root / "config.json"
+        replay_scientific_manifest = snapshot_root / "manifest.tsv"
+        _write_readonly_snapshot(replay_scientific_config, config_raw)
+        _write_readonly_snapshot(replay_scientific_manifest, manifest_raw)
 
     logical_to_effective = {
         logical: logical_effective_id(config, logical) for logical in LOGICAL_IDS
@@ -136,6 +246,8 @@ def analyze(
             logical,
             require_committed=require_committed,
             require_replay_status=True,
+            scientific_config_path=replay_scientific_config,
+            scientific_manifest_path=replay_scientific_manifest,
         )
         effective = logical_to_effective[logical]
         if run_failures:
@@ -443,8 +555,8 @@ def analyze(
         "authorized_scope": "no_G1_advancement",
         "zero_temperature_exact_claim": False,
         "registration": registration,
-        "config_sha256": sha256_regular_file(config_path),
-        "manifest_sha256": sha256_regular_file(manifest_path),
+        "config_sha256": content_config_sha256,
+        "manifest_sha256": content_manifest_sha256,
     }
 
     output_directory.mkdir(parents=True, exist_ok=False)
@@ -504,6 +616,8 @@ def analyze(
         writer.writeheader()
         writer.writerows(label_metrics)
     _atomic_write(output_directory / "README.md", _readme(summary))
+    if registration_snapshot is not None:
+        registration_snapshot.cleanup()
     return summary
 
 
@@ -515,6 +629,8 @@ def main() -> int:
     )
     parser.add_argument("--config", type=Path, default=project_root / CONFIG_PATH)
     parser.add_argument("--manifest", type=Path, default=project_root / MANIFEST_PATH)
+    parser.add_argument("--scientific-config", type=Path)
+    parser.add_argument("--scientific-manifest", type=Path)
     parser.add_argument("--allow-uncommitted", action="store_true")
     arguments = parser.parse_args()
     summary = analyze(
@@ -523,6 +639,8 @@ def main() -> int:
         arguments.manifest.resolve(),
         arguments.output_directory.resolve(),
         require_committed=not arguments.allow_uncommitted,
+        scientific_config_path=arguments.scientific_config,
+        scientific_manifest_path=arguments.scientific_manifest,
     )
     print(
         json.dumps(
