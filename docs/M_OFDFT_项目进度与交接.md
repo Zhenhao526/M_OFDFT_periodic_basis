@@ -370,6 +370,7 @@ python3 scripts/validate_s1_g1_thermodynamic_label_audit_r1.py config/S1_g1_ther
 | 2026-08-06 | D-035 | 采用增量电子数 R2：复用 R1 已接受的 11 点并新执行 19 点；KMP 登记对象必须由 raw create/read/unlink 生命周期证明 | R1 119–129 均可严格重验；旧 S1-130 只因 sampler 捕获合法短命 KMP 对象而失败；R2 对 30 个 OF 点证明 120/120 lifecycles、360/360 syscall | 重试等待 sampler 漏采、追溯改写 R1，或无证据重跑全部 30 点 | R1 证据与失败档案保持不可变；R2 新失败 0；结果终点 `c722c81` |
 | 2026-08-06 | D-036 | 接受 G1 独立电子数积分子项，但完整 G1 保持 `pending`（1/6） | 正式分析 `c94796d` 为 90/90 accepted；最大认证相对误差 `1.0127696865884852e-11`；30/30 OF 科学等价及 KMP 总门通过，四类 failure ID 全空 | 用 ABACUS 名义电子数代替独立积分，或把一个子项通过误报为完整 G1 通过 | 下一唯一动作转为预注册并执行第三 smearing/稠密 k 点标签审计；不得进入 S2/ML |
 | 2026-08-06 | D-037 | 将 G1 标签审计 R1 判为 `indeterminate_paused` 并永久消费 034；保留 10 个 accepted 点但不形成子项结论 | 034 的 SCF 与 inner runtime audit 完成，SSH/PTY 宿主会话先中断，导致 `host_status`、counterpart、result 缺失；冻结 validator 重算为 capability failure；`df57f9b`/`b0b7db5` 完成相邻失败归档 | 把 late inner audit 升格为 accepted、同 ID 重跑 034、跳过 034 继续 040/P2，或把能力缺失误报为数值 rejection | R1 停止；G1 保持 1/6；继续时必须新 revision + 新 IDs，并显式绑定复用证据 |
+| 2026-08-06 | D-038 | G1 标签 R2 的 launcher ambient environment 冻结为 10 键 exact map，所有 Python 进程禁用 user site，runner 只增加 6 个 supervisor binding 键并由登记绝对 Bash 启动 | SSH/login shell 可携带 `BASH_ENV`、`PYTHONPATH`、user-site 和其他未登记状态；R1-034 证明 host orchestration 本身必须进入证据边界 | 继承 `os.environ`、依赖 shebang/PATH 选择 Bash，或只在 solver 内再清理环境 | config 登记 exact map 及 canonical SHA `ef6a2022...6b6`；mutating launcher 在任何写入前 fail closed，launch record 保留同一环境结构 |
 
 ## 9. 最近可用状态
 
@@ -383,6 +384,111 @@ python3 scripts/validate_s1_g1_thermodynamic_label_audit_r1.py config/S1_g1_ther
 - 同步方法：node01 执行 `git bundle create ... --all` 并 `git bundle verify`，经跳板机传至本机；三端 SHA-256 一致后，从临时 clone 使用 `git push --atomic origin main --tags`，最后以 `git ls-remote` 核验。
 
 ## 10. 交接说明
+
+### G1 标签 R2 可复制执行手册（预注册后唯一流程）
+
+以下命令均在计算节点 `/home/shenwei01/M_OFDFT_periodic_basis` 执行；本地先经
+`ssh -p 39987 liangkun@180.184.249.155` 进入跳板机，再运行
+`ssh -p 2200 shenwei01@localhost`。固定外部状态目录为
+`/home/shenwei01/.local/state/m_ofdft/g1_thermodynamic_label_audit_r2_20260806`，不得删除、
+复用或换目录绕过单次执行约束。
+本手册中的所有外部命令都用 `/usr/bin/env -i` 显式传入已登记的 10 键；
+任何裸 `python3`、遗漏 `-s` 或继承式 launcher 调用都不属于正式流程。
+
+1. 确认远端已快进到正式预注册提交、`git status --short` 为空，并运行全量单测与 committed
+   validator。随后启动脱离 SSH/PTY 的单次监督进程：
+
+   ```bash
+   cd /home/shenwei01/M_OFDFT_periodic_basis
+   /usr/bin/env -i HOME=/home/shenwei01 LC_ALL=C LOGNAME=shenwei01 \
+     PATH=/usr/bin:/bin PYTHONHASHSEED=0 PYTHONIOENCODING=UTF-8 \
+     PYTHONNOUSERSITE=1 PYTHONUTF8=1 TZ=UTC USER=shenwei01 \
+     /usr/bin/python3 -s scripts/launch_s1_g1_thermodynamic_label_audit_r2.py start \
+     --project-root /home/shenwei01/M_OFDFT_periodic_basis
+   ```
+
+2. 退出当前 SSH；从一条全新的 SSH 会话复核同一 PID/start-time/boot-id、发送 HUP 探针并
+   生成 detachment。detachment 必须作为紧邻预注册的单文件提交：
+
+   ```bash
+   cd /home/shenwei01/M_OFDFT_periodic_basis
+   /usr/bin/env -i HOME=/home/shenwei01 LC_ALL=C LOGNAME=shenwei01 \
+     PATH=/usr/bin:/bin PYTHONHASHSEED=0 PYTHONIOENCODING=UTF-8 \
+     PYTHONNOUSERSITE=1 PYTHONUTF8=1 TZ=UTC USER=shenwei01 \
+     /usr/bin/python3 -s scripts/launch_s1_g1_thermodynamic_label_audit_r2.py verify \
+     --project-root /home/shenwei01/M_OFDFT_periodic_basis
+   /usr/bin/env -i HOME=/home/shenwei01 LC_ALL=C LOGNAME=shenwei01 \
+     PATH=/usr/bin:/bin PYTHONHASHSEED=0 PYTHONIOENCODING=UTF-8 \
+     PYTHONNOUSERSITE=1 PYTHONUTF8=1 TZ=UTC USER=shenwei01 \
+     /usr/bin/git add -- orchestration/s1/g1_thermodynamic_label_audit_r2_20260806/detachment.json
+   /usr/bin/env -i HOME=/home/shenwei01 LC_ALL=C LOGNAME=shenwei01 \
+     PATH=/usr/bin:/bin PYTHONHASHSEED=0 PYTHONIOENCODING=UTF-8 \
+     PYTHONNOUSERSITE=1 PYTHONUTF8=1 TZ=UTC USER=shenwei01 \
+     /usr/bin/git commit -m "attest detached G1 thermodynamic-label R2 supervisor"
+   /usr/bin/env -i HOME=/home/shenwei01 LC_ALL=C LOGNAME=shenwei01 \
+     PATH=/usr/bin:/bin PYTHONHASHSEED=0 PYTHONIOENCODING=UTF-8 \
+     PYTHONNOUSERSITE=1 PYTHONUTF8=1 TZ=UTC USER=shenwei01 \
+     /usr/bin/python3 -s scripts/validate_s1_g1_thermodynamic_label_audit_r2.py \
+     config/S1_g1_thermodynamic_label_audit_r2_manifest.tsv \
+     --config config/S1_g1_thermodynamic_label_audit_r2.json \
+     --require-committed --check-detachment-attestation
+   ```
+
+3. 只有上一步接受且工作树干净时创建 GO；runner 必须由这个仍存活的监督进程直接派生，禁止
+   手工调用 runner：
+
+   ```bash
+   /usr/bin/env -i HOME=/home/shenwei01 LC_ALL=C LOGNAME=shenwei01 \
+     PATH=/usr/bin:/bin PYTHONHASHSEED=0 PYTHONIOENCODING=UTF-8 \
+     PYTHONNOUSERSITE=1 PYTHONUTF8=1 TZ=UTC USER=shenwei01 \
+     /usr/bin/python3 -s scripts/launch_s1_g1_thermodynamic_label_audit_r2.py go \
+     --project-root /home/shenwei01/M_OFDFT_periodic_basis
+   ```
+
+4. 监控只读状态与日志，不发送终止信号、不修改仓库、不重启相同 ID：
+
+   ```bash
+   /usr/bin/env -i HOME=/home/shenwei01 LC_ALL=C LOGNAME=shenwei01 \
+     PATH=/usr/bin:/bin PYTHONHASHSEED=0 PYTHONIOENCODING=UTF-8 \
+     PYTHONNOUSERSITE=1 PYTHONUTF8=1 TZ=UTC USER=shenwei01 \
+     /usr/bin/python3 -s scripts/launch_s1_g1_thermodynamic_label_audit_r2.py status
+   /usr/bin/env -i HOME=/home/shenwei01 LC_ALL=C LOGNAME=shenwei01 \
+     PATH=/usr/bin:/bin PYTHONHASHSEED=0 PYTHONIOENCODING=UTF-8 \
+     PYTHONNOUSERSITE=1 PYTHONUTF8=1 TZ=UTC USER=shenwei01 \
+     /usr/bin/tail -n 80 /home/shenwei01/.local/state/m_ofdft/g1_thermodynamic_label_audit_r2_20260806/supervisor.log
+   ```
+
+5. 仅在 external `terminal.json` 为 accepted、runner 退出码为 0、科学 summary 为 accepted
+   时导入 completion；completion 必须紧邻 analysis 的单文件提交，随后再做最终 committed
+   复验：
+
+   ```bash
+   cd /home/shenwei01/M_OFDFT_periodic_basis
+   /usr/bin/env -i HOME=/home/shenwei01 LC_ALL=C LOGNAME=shenwei01 \
+     PATH=/usr/bin:/bin PYTHONHASHSEED=0 PYTHONIOENCODING=UTF-8 \
+     PYTHONNOUSERSITE=1 PYTHONUTF8=1 TZ=UTC USER=shenwei01 \
+     /usr/bin/python3 -s scripts/launch_s1_g1_thermodynamic_label_audit_r2.py finalize \
+     --project-root /home/shenwei01/M_OFDFT_periodic_basis
+   /usr/bin/env -i HOME=/home/shenwei01 LC_ALL=C LOGNAME=shenwei01 \
+     PATH=/usr/bin:/bin PYTHONHASHSEED=0 PYTHONIOENCODING=UTF-8 \
+     PYTHONNOUSERSITE=1 PYTHONUTF8=1 TZ=UTC USER=shenwei01 \
+     /usr/bin/git add -- orchestration/s1/g1_thermodynamic_label_audit_r2_20260806/supervisor_completion.json
+   /usr/bin/env -i HOME=/home/shenwei01 LC_ALL=C LOGNAME=shenwei01 \
+     PATH=/usr/bin:/bin PYTHONHASHSEED=0 PYTHONIOENCODING=UTF-8 \
+     PYTHONNOUSERSITE=1 PYTHONUTF8=1 TZ=UTC USER=shenwei01 \
+     /usr/bin/git commit -m "complete G1 thermodynamic-label R2 supervisor evidence"
+   /usr/bin/env -i HOME=/home/shenwei01 LC_ALL=C LOGNAME=shenwei01 \
+     PATH=/usr/bin:/bin PYTHONHASHSEED=0 PYTHONIOENCODING=UTF-8 \
+     PYTHONNOUSERSITE=1 PYTHONUTF8=1 TZ=UTC USER=shenwei01 \
+     /usr/bin/python3 -s scripts/validate_s1_g1_thermodynamic_label_audit_r2.py \
+     config/S1_g1_thermodynamic_label_audit_r2_manifest.tsv \
+     --config config/S1_g1_thermodynamic_label_audit_r2.json \
+     --require-committed --require-all-runs --require-supervisor-completion
+   ```
+
+6. 最终复验后只允许更新本进度 MD、提交交接记录并同步 GitHub。若任一 barrier、单点或监督
+   失败，保留自动提交的 terminal evidence，禁止当前 revision 内继续或重试；只更新本进度
+   MD，交接到“新协议修订 + 全新实验 ID”的处理流程。
 
 ### 接手人第一小时
 
