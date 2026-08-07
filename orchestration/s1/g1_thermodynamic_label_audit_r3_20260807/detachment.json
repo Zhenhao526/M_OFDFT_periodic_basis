@@ -1,0 +1,42 @@
+{
+  "attested_utc": "2026-08-07T04:15:50.910986Z",
+  "boot_id": "58aa017a-f250-491d-be05-d0c89e39876f",
+  "git_head": "d6a09ba964bae82c8e85251ba55ea4ec60f131ff",
+  "hup_event_count_after": 1,
+  "hup_event_count_before": 0,
+  "launch_path": "/home/shenwei01/.local/state/m_ofdft/g1_thermodynamic_label_audit_r3_20260807/launch.json",
+  "launch_sha256": "8f87234e55c0fe4d5e4a8fc6d38e8ccf63141439d8802e76c07f44174606430b",
+  "protocol_revision": "S1-G1-THERMODYNAMIC-LABEL-AUDIT-R3",
+  "registered_files": {
+    "config_path": "config/S1_g1_thermodynamic_label_audit_r3.json",
+    "config_sha256": "cad5a7c0638b5019ac3525dbbfd4e5783bf8848665f7691218b271b18865383f",
+    "manifest_path": "config/S1_g1_thermodynamic_label_audit_r3_manifest.tsv",
+    "manifest_sha256": "90511215af832ff08619fd60e1f17e688c3daa491bde61d3d5ca9327a8211298",
+    "runner_path": "scripts/run_s1_g1_thermodynamic_label_audit_r3.sh",
+    "runner_sha256": "03d1d7ee1a0d6c3490a4b715e28fac8d4b6eec11a1bb236321aeb0d4ceef99d3"
+  },
+  "schema_version": 1,
+  "status": "accepted",
+  "supervisor_process_after_hup": {
+    "pid": 1818635,
+    "ppid": 1,
+    "process_group_id": 1818635,
+    "session_id": 1818635,
+    "start_time_ticks": 629903472,
+    "stderr": "/home/shenwei01/.local/state/m_ofdft/g1_thermodynamic_label_audit_r3_20260807/supervisor.log",
+    "stdin": "/dev/null",
+    "stdout": "/home/shenwei01/.local/state/m_ofdft/g1_thermodynamic_label_audit_r3_20260807/supervisor.log",
+    "tty_nr": 0
+  },
+  "supervisor_process_before_hup": {
+    "pid": 1818635,
+    "ppid": 1,
+    "process_group_id": 1818635,
+    "session_id": 1818635,
+    "start_time_ticks": 629903472,
+    "stderr": "/home/shenwei01/.local/state/m_ofdft/g1_thermodynamic_label_audit_r3_20260807/supervisor.log",
+    "stdin": "/dev/null",
+    "stdout": "/home/shenwei01/.local/state/m_ofdft/g1_thermodynamic_label_audit_r3_20260807/supervisor.log",
+    "tty_nr": 0
+  }
+}
