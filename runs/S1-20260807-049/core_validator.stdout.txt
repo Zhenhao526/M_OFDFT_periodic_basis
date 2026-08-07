@@ -1,0 +1,18 @@
+{
+  "adjacent_eos": null,
+  "checked_run_ids": [
+    "S1-20260807-049"
+  ],
+  "config_sha256": "b40788a3bb4e81725362dea3cc25db694716428b538945d950978b2a9dbcd9aa",
+  "half_quarter_pair": null,
+  "k_gate": null,
+  "logical_denominator": 40,
+  "manifest_sha256": "9d0c96f1d478bdafc919cbf866bebb4aec73be3cc348d4906f8d3ff9b5bff463",
+  "pilot_gate": null,
+  "preregistration_commit": null,
+  "protocol_revision": "S1-G1-THERMODYNAMIC-LABEL-AUDIT-R4",
+  "r1_historical_excluded_count": 10,
+  "r1_reused_count": 0,
+  "r4_new_count": 40,
+  "supervisor_completion": null
+}

@@ -1,0 +1,58 @@
+{
+  "controlled_home": "/home/shenwei01/M_OFDFT_periodic_basis/runs/S1-20260807-049/runtime_home",
+  "controlled_home_entries": [
+    "CONTROLLED_HOME.txt"
+  ],
+  "controlled_home_exists": true,
+  "controlled_home_lstat": {
+    "device": 64768,
+    "gid": 0,
+    "inode": 1633244897,
+    "is_symlink": false,
+    "mode": 16704,
+    "mode_type": 16384,
+    "mtime_ns": 1786092443352286598,
+    "realpath": "/home/shenwei01/M_OFDFT_periodic_basis/runs/S1-20260807-049/runtime_home",
+    "size": 33,
+    "uid": 0
+  },
+  "controlled_home_marker_sha256": "eff12e20044f5411f511d7f32f76fd51dc0cd96b30863381f8e4916d5dd48ab0",
+  "controlled_home_mountinfo_lines": [
+    "921 104 253:0 /home/shenwei01/M_OFDFT_periodic_basis/runs/S1-20260807-049/runtime_home /home/shenwei01/M_OFDFT_periodic_basis/runs/S1-20260807-049/runtime_home ro,nosuid,nodev,noexec,relatime - xfs /dev/mapper/ubuntu--vg-ubuntu--lv rw,attr2,inode64,logbufs=8,logbsize=32k,noquota"
+  ],
+  "effective_uid": 0,
+  "gid_map": "         0       1001          1\n",
+  "mountinfo_path": "/home/shenwei01/M_OFDFT_periodic_basis/runs/S1-20260807-049/mpi_runtime_audit/namespace/mountinfo.after_mount",
+  "namespace_init_pid": 1,
+  "nspid": [
+    9
+  ],
+  "old_prefix": "/home/shenwei01/wt_melting_runtime_20260724/conda_prefix",
+  "old_prefix_exists": false,
+  "old_prefix_lstat": null,
+  "old_root": "/home/shenwei01/wt_melting_runtime_20260724",
+  "old_root_exists": true,
+  "old_root_lstat": {
+    "device": 56,
+    "gid": 0,
+    "inode": 1,
+    "is_symlink": false,
+    "mode": 17407,
+    "mode_type": 16384,
+    "mtime_ns": 1786092443508288374,
+    "realpath": "/home/shenwei01/wt_melting_runtime_20260724",
+    "size": 40,
+    "uid": 0
+  },
+  "old_root_mountinfo_lines": [
+    "920 104 0:56 / /home/shenwei01/wt_melting_runtime_20260724 rw,nosuid,nodev,noexec,relatime - tmpfs tmpfs rw,size=1024k,uid=1001,gid=1001,inode64"
+  ],
+  "phase": "after_mount",
+  "pid": 9,
+  "pid_namespace_inode": 4026540922,
+  "pid_namespace_link": "pid:[4026540922]",
+  "schema_version": 1,
+  "shared_mount_lines": [],
+  "uid": 0,
+  "uid_map": "         0       1001          1\n"
+}
