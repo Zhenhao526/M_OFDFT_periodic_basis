@@ -1,0 +1,17 @@
+{
+  "counterpart_audit_status": null,
+  "failure_stage": "runtime_invocation_or_parser",
+  "invocation_exit_code": 98,
+  "launcher_exit_code": 98,
+  "namespace_host_status": "rejected",
+  "parser_exit_code": 1,
+  "result_converged": null,
+  "result_json_present": false,
+  "runtime_audit_json_present": true,
+  "runtime_audit_status": "rejected",
+  "runtime_relocation_mode": true,
+  "schema_version": 2,
+  "setup_completed": true,
+  "status": "rejected",
+  "workflow_exit_code": 98
+}
