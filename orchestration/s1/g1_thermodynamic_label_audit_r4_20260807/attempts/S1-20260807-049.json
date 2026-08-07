@@ -1,0 +1,23 @@
+{
+  "boot_id": "58aa017a-f250-491d-be05-d0c89e39876f",
+  "config_path": "config/S1_g1_thermodynamic_label_audit_r4.json",
+  "config_sha256": "b40788a3bb4e81725362dea3cc25db694716428b538945d950978b2a9dbcd9aa",
+  "created_utc": "2026-08-07T08:47:11.778668Z",
+  "experiment_id": "S1-20260807-049",
+  "git_head_before_attempt": "5a07536f3624ee92cbeedbd6bc21bc941d821b1e",
+  "go_git_head": "02af3f2dbdb5f647db1acfbf685341451cdcc91d",
+  "logical_experiment_id": "S1-20260806-027",
+  "manifest_path": "config/S1_g1_thermodynamic_label_audit_r4_manifest.tsv",
+  "manifest_sha256": "9d0c96f1d478bdafc919cbf866bebb4aec73be3cc348d4906f8d3ff9b5bff463",
+  "protocol_revision": "S1-G1-THERMODYNAMIC-LABEL-AUDIT-R4",
+  "retry_policy": "new_protocol_revision_and_new_experiment_ids_only",
+  "schema_version": 1,
+  "status": "formal_attempt_started",
+  "supervisor_go_path": "/home/shenwei01/.local/state/m_ofdft/g1_thermodynamic_label_audit_r4_20260807/go.json",
+  "supervisor_go_sha256": "f7d386504f19e20c0d716181423e8cc33ae364f46197924aaa751e9db5bf61ed",
+  "supervisor_launch_path": "/home/shenwei01/.local/state/m_ofdft/g1_thermodynamic_label_audit_r4_20260807/launch.json",
+  "supervisor_launch_sha256": "58751bc87f95db68fdefeecc365292de21d3fdf99fcff838d16fe63133bd3ec0",
+  "supervisor_pid": 1956139,
+  "supervisor_start_time_ticks": 630694420,
+  "supervisor_state_directory": "/home/shenwei01/.local/state/m_ofdft/g1_thermodynamic_label_audit_r4_20260807"
+}
