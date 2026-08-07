@@ -1,0 +1,22 @@
+INPUT_PARAMETERS
+suffix g1tlr3_mg_v106_quarter
+out_chg 1 17
+out_pot 1 17
+calculation scf
+esolver_type ksdft
+basis_type pw
+dft_functional XC_LDA_X+XC_LDA_C_PZ
+symmetry 0
+pseudo_dir .
+pseudo_rcut 16
+ecutwfc 40
+ecutrho 160
+scf_nmax 200
+cal_force 1
+cal_stress 1
+scf_thr 1e-10
+ks_solver cg
+smearing_method fd
+smearing_sigma 0.001837465
+mixing_type broyden
+mixing_beta 0.4
