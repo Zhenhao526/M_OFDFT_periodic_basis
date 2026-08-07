@@ -1,0 +1,401 @@
+{
+  "absolute_deadline_watchdog_seconds": 7260,
+  "accessible_host_pid_namespace_scan": {
+    "accessible_matching_member_count": 0,
+    "accessible_matching_members": [],
+    "fatal_errors": [],
+    "inaccessible_pid_count": 1596,
+    "inaccessible_pid_samples": [
+      {
+        "error": "[Errno 13] Permission denied: '/proc/1/ns/pid'",
+        "host_pid": 1
+      },
+      {
+        "error": "[Errno 13] Permission denied: '/proc/2/ns/pid'",
+        "host_pid": 2
+      },
+      {
+        "error": "[Errno 13] Permission denied: '/proc/3/ns/pid'",
+        "host_pid": 3
+      },
+      {
+        "error": "[Errno 13] Permission denied: '/proc/4/ns/pid'",
+        "host_pid": 4
+      },
+      {
+        "error": "[Errno 13] Permission denied: '/proc/5/ns/pid'",
+        "host_pid": 5
+      },
+      {
+        "error": "[Errno 13] Permission denied: '/proc/7/ns/pid'",
+        "host_pid": 7
+      },
+      {
+        "error": "[Errno 13] Permission denied: '/proc/11/ns/pid'",
+        "host_pid": 11
+      },
+      {
+        "error": "[Errno 13] Permission denied: '/proc/12/ns/pid'",
+        "host_pid": 12
+      },
+      {
+        "error": "[Errno 13] Permission denied: '/proc/13/ns/pid'",
+        "host_pid": 13
+      },
+      {
+        "error": "[Errno 13] Permission denied: '/proc/14/ns/pid'",
+        "host_pid": 14
+      },
+      {
+        "error": "[Errno 13] Permission denied: '/proc/15/ns/pid'",
+        "host_pid": 15
+      },
+      {
+        "error": "[Errno 13] Permission denied: '/proc/16/ns/pid'",
+        "host_pid": 16
+      },
+      {
+        "error": "[Errno 13] Permission denied: '/proc/17/ns/pid'",
+        "host_pid": 17
+      },
+      {
+        "error": "[Errno 13] Permission denied: '/proc/18/ns/pid'",
+        "host_pid": 18
+      },
+      {
+        "error": "[Errno 13] Permission denied: '/proc/19/ns/pid'",
+        "host_pid": 19
+      },
+      {
+        "error": "[Errno 13] Permission denied: '/proc/20/ns/pid'",
+        "host_pid": 20
+      },
+      {
+        "error": "[Errno 13] Permission denied: '/proc/21/ns/pid'",
+        "host_pid": 21
+      },
+      {
+        "error": "[Errno 13] Permission denied: '/proc/22/ns/pid'",
+        "host_pid": 22
+      },
+      {
+        "error": "[Errno 13] Permission denied: '/proc/24/ns/pid'",
+        "host_pid": 24
+      },
+      {
+        "error": "[Errno 13] Permission denied: '/proc/25/ns/pid'",
+        "host_pid": 25
+      }
+    ],
+    "no_accessible_matching_members": true,
+    "pid_namespace_inode": 4026540921,
+    "scan_passed": true,
+    "schema_version": 1
+  },
+  "command": [
+    "/usr/bin/unshare",
+    "--user",
+    "--map-root-user",
+    "--kill-child=KILL",
+    "--mount",
+    "--pid",
+    "--fork",
+    "--mount-proc",
+    "--propagation",
+    "private",
+    "/bin/bash",
+    "/home/shenwei01/M_OFDFT_periodic_basis/scripts/runtime_relocation_namespace_payload.sh",
+    "--bind-to",
+    "core",
+    "-np",
+    "4",
+    "/home/shenwei01/M_OFDFT_recovery_S0_20260805_001/source/abacus_pw_para_relocated_20260805"
+  ],
+  "counterpart_audit": {
+    "captured_recovery_component_count": 48,
+    "counterpart_byte_mismatch_count": 0,
+    "counterpart_missing_count": 0,
+    "exclusion_rules": {
+      "launcher_identity_gate": {
+        "byte_equality_required": true,
+        "reference": {
+          "path": "/home/shenwei01/wt_melting_runtime_20260724/conda_prefix/bin/prterun",
+          "realpath": "/home/shenwei01/wt_melting_runtime_20260724/conda_prefix/bin/prte",
+          "sha256": "8e61af4375677a82d3dff0ba1fd96b6bc45778de0fe0c86b477c2421a08b73ea"
+        },
+        "replay": {
+          "path": "/home/shenwei01/M_OFDFT_recovery_S0_20260805_001/conda_prefix/bin/prterun",
+          "realpath": "/home/shenwei01/M_OFDFT_recovery_S0_20260805_001/conda_prefix/bin/prte",
+          "sha256": "8e61af4375677a82d3dff0ba1fd96b6bc45778de0fe0c86b477c2421a08b73ea"
+        }
+      },
+      "mpirun_identity_gate": {
+        "byte_equality_required": true,
+        "reference": {
+          "path": "/home/shenwei01/M_OFDFT_recovery_S0_20260805_001/conda_prefix/bin/mpirun",
+          "realpath": "/home/shenwei01/M_OFDFT_recovery_S0_20260805_001/conda_prefix/bin/mpirun",
+          "sha256": "7ae46f275cdccb2b9783d283986f5eac82c837106b7693a6638ecad5e44cfa20"
+        },
+        "replay": {
+          "path": "/home/shenwei01/M_OFDFT_recovery_S0_20260805_001/conda_prefix/bin/mpirun",
+          "realpath": "/home/shenwei01/M_OFDFT_recovery_S0_20260805_001/conda_prefix/bin/mpirun",
+          "sha256": "7ae46f275cdccb2b9783d283986f5eac82c837106b7693a6638ecad5e44cfa20"
+        }
+      },
+      "relocated_abacus_elf_gate": {
+        "byte_equality_required": false,
+        "reference": {
+          "path": "/home/shenwei01/M_OFDFT_recovery_S0_20260805_001/source/abacus_pw_para",
+          "realpath": "/home/shenwei01/M_OFDFT_recovery_S0_20260805_001/source/abacus_pw_para",
+          "sha256": "2d68a57c7b25608b3550854dabc2e63601eeca956bf185ad7d0967052bdbb4ba"
+        },
+        "replay": {
+          "path": "/home/shenwei01/M_OFDFT_recovery_S0_20260805_001/source/abacus_pw_para_relocated_20260805",
+          "realpath": "/home/shenwei01/M_OFDFT_recovery_S0_20260805_001/source/abacus_pw_para_relocated_20260805",
+          "sha256": "438c74b9ada4c8df15ffbb66da6755907dfd2a3812ecf868fafd4d7dc4db62e1"
+        }
+      }
+    },
+    "failure_reasons": [],
+    "schema_version": 1,
+    "status": "accepted"
+  },
+  "elapsed_seconds": 292.100719710812,
+  "ended_at_utc": "2026-08-07T09:57:14.309856+00:00",
+  "ended_epoch_seconds": 1786096634.3098528,
+  "failure_reasons": [],
+  "host_old_runtime_after": {
+    "host_gid": 1001,
+    "host_uid": 1001,
+    "old_prefix": "/home/shenwei01/wt_melting_runtime_20260724/conda_prefix",
+    "old_prefix_exists": true,
+    "old_prefix_lstat": {
+      "device": 64768,
+      "gid": 1001,
+      "inode": 1613321538,
+      "is_symlink": false,
+      "mode": 16893,
+      "mode_type": 16384,
+      "mtime_ns": 1784863914716562007,
+      "realpath": "/home/shenwei01/wt_melting_runtime_20260724/conda_prefix",
+      "size": 150,
+      "uid": 1001
+    },
+    "old_root": "/home/shenwei01/wt_melting_runtime_20260724",
+    "old_root_exists": true,
+    "old_root_lstat": {
+      "device": 64768,
+      "gid": 1001,
+      "inode": 1074693069,
+      "is_symlink": false,
+      "mode": 16893,
+      "mode_type": 16384,
+      "mtime_ns": 1785241011263552162,
+      "realpath": "/home/shenwei01/wt_melting_runtime_20260724",
+      "size": 4096,
+      "uid": 1001
+    },
+    "old_root_mountinfo_lines": []
+  },
+  "host_old_runtime_before": {
+    "host_gid": 1001,
+    "host_uid": 1001,
+    "old_prefix": "/home/shenwei01/wt_melting_runtime_20260724/conda_prefix",
+    "old_prefix_exists": true,
+    "old_prefix_lstat": {
+      "device": 64768,
+      "gid": 1001,
+      "inode": 1613321538,
+      "is_symlink": false,
+      "mode": 16893,
+      "mode_type": 16384,
+      "mtime_ns": 1784863914716562007,
+      "realpath": "/home/shenwei01/wt_melting_runtime_20260724/conda_prefix",
+      "size": 150,
+      "uid": 1001
+    },
+    "old_root": "/home/shenwei01/wt_melting_runtime_20260724",
+    "old_root_exists": true,
+    "old_root_lstat": {
+      "device": 64768,
+      "gid": 1001,
+      "inode": 1074693069,
+      "is_symlink": false,
+      "mode": 16893,
+      "mode_type": 16384,
+      "mtime_ns": 1785241011263552162,
+      "realpath": "/home/shenwei01/wt_melting_runtime_20260724",
+      "size": 4096,
+      "uid": 1001
+    },
+    "old_root_mountinfo_lines": []
+  },
+  "namespace_payload_exit_code": 0,
+  "pid1_kernel_reap_proof": {
+    "all_namespace_members_reaped": true,
+    "authority": "linux_pid_namespace_init_exit_and_unshare_parent_wait",
+    "command_contract_satisfied": true,
+    "evidence_errors": [],
+    "expected_payload_argv": [
+      "/bin/bash",
+      "/home/shenwei01/M_OFDFT_periodic_basis/scripts/runtime_relocation_namespace_payload.sh",
+      "--bind-to",
+      "core",
+      "-np",
+      "4",
+      "/home/shenwei01/M_OFDFT_recovery_S0_20260805_001/source/abacus_pw_para_relocated_20260805"
+    ],
+    "expected_unshare_argv": [
+      "/usr/bin/unshare",
+      "--user",
+      "--map-root-user",
+      "--kill-child=KILL",
+      "--mount",
+      "--pid",
+      "--fork",
+      "--mount-proc",
+      "--propagation",
+      "private"
+    ],
+    "observed_command": [
+      "/usr/bin/unshare",
+      "--user",
+      "--map-root-user",
+      "--kill-child=KILL",
+      "--mount",
+      "--pid",
+      "--fork",
+      "--mount-proc",
+      "--propagation",
+      "private",
+      "/bin/bash",
+      "/home/shenwei01/M_OFDFT_periodic_basis/scripts/runtime_relocation_namespace_payload.sh",
+      "--bind-to",
+      "core",
+      "-np",
+      "4",
+      "/home/shenwei01/M_OFDFT_recovery_S0_20260805_001/source/abacus_pw_para_relocated_20260805"
+    ],
+    "payload_accepted_and_exit_zero": true,
+    "payload_status": {
+      "audit_launcher_exit_code": 0,
+      "pid_namespace_inode": 4026540921,
+      "status": "accepted"
+    },
+    "pid1_is_one": true,
+    "pid_namespace_inode": 4026540921,
+    "pid_namespace_inode_consistent": true,
+    "process_wait_completed_normally": true,
+    "process_wait_exit_code": 0,
+    "process_wait_exit_zero": true,
+    "schema_version": 1,
+    "state_after_run": {
+      "namespace_init_pid": 1,
+      "pid_namespace_inode": 4026540921
+    },
+    "state_before_mount": {
+      "namespace_init_pid": 1,
+      "pid_namespace_inode": 4026540921
+    }
+  },
+  "process_group_cleanup": {
+    "all_group_members_gone": true,
+    "members_after_cleanup": [],
+    "members_before_cleanup": [],
+    "tracee_pids_after_cleanup": [],
+    "tracee_pids_before_cleanup": [
+      2337879
+    ]
+  },
+  "schema_version": 1,
+  "started_at_utc": "2026-08-07T09:52:22.209134+00:00",
+  "started_epoch_seconds": 1786096342.2091331,
+  "status": "accepted",
+  "stdin": "/dev/null",
+  "timeout_triggered": false,
+  "tools_after": {
+    "bash": {
+      "path": "/bin/bash",
+      "realpath": "/usr/bin/bash",
+      "sha256": "59474588a312b6b6e73e5a42a59bf71e62b55416b6c9d5e4a6e1c630c2a9ecd4",
+      "version_arguments": [
+        "--version"
+      ],
+      "version_first_line": "GNU bash, version 5.1.16(1)-release (x86_64-pc-linux-gnu)",
+      "version_output_sha256": "51bd40ffa4710175920033d329a0e9e1667e6b7f56178e302432ff4610d554a7"
+    },
+    "mount": {
+      "path": "/usr/bin/mount",
+      "realpath": "/usr/bin/mount",
+      "sha256": "bad230d68e012eb1a2fcaa3b42688d912940f5c61f041ae9451eee7dfb858ff1",
+      "version_arguments": [
+        "--version"
+      ],
+      "version_first_line": "mount from util-linux 2.37.2 (libmount 2.37.2: selinux, smack, btrfs, verity, namespaces, assert, debug)",
+      "version_output_sha256": "0f39cf283734e19729339a127188aca796c00c49a8e5fc3ee38d8a5a91dffabf"
+    },
+    "python": {
+      "path": "/usr/bin/python3",
+      "realpath": "/usr/bin/python3.10",
+      "sha256": "7d51cd6b48b521277f5caa4610a82126e315fa2be4df069823a8b1eeb5bd4a86",
+      "version_arguments": [
+        "--version"
+      ],
+      "version_first_line": "Python 3.10.12",
+      "version_output_sha256": "f6b75e07f1488db28a89724a522725e3e01af3dc78f6fd365f17eb4059e41056"
+    },
+    "unshare": {
+      "path": "/usr/bin/unshare",
+      "realpath": "/usr/bin/unshare",
+      "sha256": "72a34e6ba98a59f1da0c7b4d8c9722b746b5ade54e4d7e8de8e519c2993858ad",
+      "version_arguments": [
+        "--version"
+      ],
+      "version_first_line": "unshare from util-linux 2.37.2",
+      "version_output_sha256": "5033a06a48f3a04eb5473577fa376f3a6c7b56becc2628a7e2b5c17d39e0e9b5"
+    }
+  },
+  "tools_before": {
+    "bash": {
+      "path": "/bin/bash",
+      "realpath": "/usr/bin/bash",
+      "sha256": "59474588a312b6b6e73e5a42a59bf71e62b55416b6c9d5e4a6e1c630c2a9ecd4",
+      "version_arguments": [
+        "--version"
+      ],
+      "version_first_line": "GNU bash, version 5.1.16(1)-release (x86_64-pc-linux-gnu)",
+      "version_output_sha256": "51bd40ffa4710175920033d329a0e9e1667e6b7f56178e302432ff4610d554a7"
+    },
+    "mount": {
+      "path": "/usr/bin/mount",
+      "realpath": "/usr/bin/mount",
+      "sha256": "bad230d68e012eb1a2fcaa3b42688d912940f5c61f041ae9451eee7dfb858ff1",
+      "version_arguments": [
+        "--version"
+      ],
+      "version_first_line": "mount from util-linux 2.37.2 (libmount 2.37.2: selinux, smack, btrfs, verity, namespaces, assert, debug)",
+      "version_output_sha256": "0f39cf283734e19729339a127188aca796c00c49a8e5fc3ee38d8a5a91dffabf"
+    },
+    "python": {
+      "path": "/usr/bin/python3",
+      "realpath": "/usr/bin/python3.10",
+      "sha256": "7d51cd6b48b521277f5caa4610a82126e315fa2be4df069823a8b1eeb5bd4a86",
+      "version_arguments": [
+        "--version"
+      ],
+      "version_first_line": "Python 3.10.12",
+      "version_output_sha256": "f6b75e07f1488db28a89724a522725e3e01af3dc78f6fd365f17eb4059e41056"
+    },
+    "unshare": {
+      "path": "/usr/bin/unshare",
+      "realpath": "/usr/bin/unshare",
+      "sha256": "72a34e6ba98a59f1da0c7b4d8c9722b746b5ade54e4d7e8de8e519c2993858ad",
+      "version_arguments": [
+        "--version"
+      ],
+      "version_first_line": "unshare from util-linux 2.37.2",
+      "version_output_sha256": "5033a06a48f3a04eb5473577fa376f3a6c7b56becc2628a7e2b5c17d39e0e9b5"
+    }
+  },
+  "total_wall_timeout_seconds": 7260
+}

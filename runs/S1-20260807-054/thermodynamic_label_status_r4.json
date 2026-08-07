@@ -1,0 +1,12 @@
+{
+  "authoritative_for_r4": true,
+  "core_validator_exit_code": 0,
+  "experiment_id": "S1-20260807-054",
+  "logical_experiment_id": "S1-20260806-002",
+  "parser_exit_code": 0,
+  "protocol_revision": "S1-G1-THERMODYNAMIC-LABEL-AUDIT-R4",
+  "retry_policy": "new_protocol_revision_and_new_experiment_ids_only",
+  "schema_version": 1,
+  "status": "accepted",
+  "workflow_exit_code": 0
+}
