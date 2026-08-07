@@ -1,0 +1,42 @@
+{
+  "expected_ranks": 4,
+  "incoming_environment_normalization": {
+    "cuda_cache_disable": "1",
+    "ld_library_path_entries": [
+      "/home/shenwei01/M_OFDFT_recovery_S0_20260805_001/conda_prefix/lib",
+      "/home/shenwei01/M_OFDFT_recovery_S0_20260805_001/conda_prefix/lib",
+      "/home/shenwei01/M_OFDFT_recovery_S0_20260805_001/conda_prefix/lib",
+      "/home/shenwei01/M_OFDFT_recovery_S0_20260805_001/conda_prefix/lib"
+    ],
+    "ld_library_path_raw": "/home/shenwei01/M_OFDFT_recovery_S0_20260805_001/conda_prefix/lib:/home/shenwei01/M_OFDFT_recovery_S0_20260805_001/conda_prefix/lib:/home/shenwei01/M_OFDFT_recovery_S0_20260805_001/conda_prefix/lib:/home/shenwei01/M_OFDFT_recovery_S0_20260805_001/conda_prefix/lib",
+    "normalization_action": "restore_four_recovery_prefixes_and_collapse_identical_library_entries",
+    "prefix_environment": {
+      "OPAL_PREFIX": "/home/shenwei01/M_OFDFT_recovery_S0_20260805_001/conda_prefix",
+      "PMIX_PREFIX": "/home/shenwei01/M_OFDFT_recovery_S0_20260805_001/conda_prefix",
+      "PRTE_PREFIX": null,
+      "UCX_MODULE_DIR": "/home/shenwei01/M_OFDFT_recovery_S0_20260805_001/conda_prefix"
+    },
+    "schema_version": 1
+  },
+  "pid": 22,
+  "prefix_environment": {
+    "OPAL_PREFIX": "/home/shenwei01/M_OFDFT_recovery_S0_20260805_001/conda_prefix",
+    "PMIX_PREFIX": "/home/shenwei01/M_OFDFT_recovery_S0_20260805_001/conda_prefix",
+    "PRTE_PREFIX": "/home/shenwei01/M_OFDFT_recovery_S0_20260805_001/conda_prefix",
+    "UCX_MODULE_DIR": "/home/shenwei01/M_OFDFT_recovery_S0_20260805_001/conda_prefix"
+  },
+  "rank": 2,
+  "runtime_environment": {
+    "CMAKE_PREFIX_PATH": "/home/shenwei01/M_OFDFT_recovery_S0_20260805_001/conda_prefix",
+    "CUDA_CACHE_DISABLE": "1",
+    "HOME": "/home/shenwei01/M_OFDFT_periodic_basis/runs/S1-20260807-071/runtime_home",
+    "LD_LIBRARY_PATH": "/home/shenwei01/M_OFDFT_recovery_S0_20260805_001/conda_prefix/lib",
+    "LD_PRELOAD": null,
+    "MKLROOT": "/home/shenwei01/M_OFDFT_recovery_S0_20260805_001/conda_prefix",
+    "OMP_NUM_THREADS": "1",
+    "PATH": "/home/shenwei01/M_OFDFT_recovery_S0_20260805_001/conda_prefix/bin:/usr/bin:/bin"
+  },
+  "schema_version": 1,
+  "target_abacus_realpath": "/home/shenwei01/M_OFDFT_recovery_S0_20260805_001/source/abacus_pw_para_relocated_20260805",
+  "wrapper_state": "ready_before_exec"
+}
