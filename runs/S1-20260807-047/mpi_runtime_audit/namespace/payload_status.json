@@ -1,0 +1,9 @@
+{
+  "audit_launcher_exit_code": 0,
+  "effective_uid": 0,
+  "pid_namespace_inode": 4026540922,
+  "pid_namespace_link": "pid:[4026540922]",
+  "schema_version": 1,
+  "status": "accepted",
+  "uid": 0
+}
