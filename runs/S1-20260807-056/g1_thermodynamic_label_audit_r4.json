@@ -1,0 +1,172 @@
+{
+  "charge_density": {
+    "dimensions": [
+      24,
+      24,
+      40
+    ],
+    "path": "runs/S1-20260807-056/OUT.g1tlr4_mg_v090_standard/chg.cube",
+    "sha256": "59ab03859c4512fb58dbd1db495460c945bd567236d435a4d7ff64dc5935af93"
+  },
+  "electron_number_integration": {
+    "absolute_error_electrons": 1.8984819590706995e-12,
+    "acceptance_limit": 1e-10,
+    "accepted": true,
+    "atom_count": 2,
+    "cell_volume_bohr3": 282.30712801913177,
+    "certified_relative_error": 4.746237691068231e-13,
+    "cube_header_volume_bohr3": 282.3072773503522,
+    "cube_header_volume_relative_delta": 5.289672333550235e-07,
+    "density_format": "abacus_cube_text_bohr_minus_3",
+    "density_path": "/home/shenwei01/M_OFDFT_periodic_basis/runs/S1-20260807-056/OUT.g1tlr4_mg_v090_standard/chg.cube",
+    "density_sha256": "59ab03859c4512fb58dbd1db495460c945bd567236d435a4d7ff64dc5935af93",
+    "expected_electrons": 4.0,
+    "file_size_bytes": 557320,
+    "floating_absolute_error_bound": 0.0,
+    "grid_count": 23040,
+    "grid_dimension_authority": "raw_running_scf_log",
+    "grid_dimensions": [
+      24,
+      24,
+      40
+    ],
+    "integrated_electrons": 3.9999999999981015,
+    "math_fsum_crosscheck_absolute_delta": 0.0,
+    "math_fsum_value_sum": 326.45296860414606,
+    "numerical_certification": "exact_fraction_for_printed_tokens_STRU_volume_and_rounding_bound",
+    "relative_error": 4.746204897676749e-13,
+    "spin_count": 1,
+    "summation_algorithm": "exact_scaled_integer_decimal_sum_with_math_fsum_crosscheck",
+    "text_rounding_absolute_error_bound": 1.3117356592920205e-17,
+    "volume_authority": "STRU_not_six_decimal_cube_axes"
+  },
+  "expected_electron_derivation": {
+    "cell_volume_bohr3": 282.30712801913177,
+    "cell_volume_exact_fraction": {
+      "denominator": 5000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000,
+      "numerator": 1411535640095658764587337218963557269721426583499776635217063783931936405520980884485138690544083
+    },
+    "components": {
+      "Mg": {
+        "atom_count": 2,
+        "electron_contribution": 4.0,
+        "pseudopotential": "mg.lda.lps",
+        "pseudopotential_sha256": "4b964580cfbd798708299bb0e0baef2f437983d29e6d7040f63b7532038b4259",
+        "zion": 2.0
+      }
+    },
+    "derivation": "sum_STRU_atom_count_times_local_pseudopotential_zion",
+    "expected_electrons_exact_fraction": {
+      "denominator": 1,
+      "numerator": 4
+    }
+  },
+  "experiment_id": "S1-20260807-056",
+  "kmp_runtime_contract": {
+    "accepted": true,
+    "captured_mapping_count": 0,
+    "contract_mode": "registered_r2",
+    "kmp_pattern": "^/dev/shm/__KMP_REGISTERED_LIB_[1-9][0-9]*_0$",
+    "libomp_mapping_count": 4,
+    "libomp_path": "/home/shenwei01/M_OFDFT_recovery_S0_20260805_001/conda_prefix/lib/libomp.so",
+    "libomp_realpath": "/home/shenwei01/M_OFDFT_recovery_S0_20260805_001/conda_prefix/lib/libomp.so",
+    "libomp_sha256": "3fe1a40e7676ecb914fde29f45a1083656b9eafea07c680970d8dc4bb8bd0e84",
+    "lifecycle_count": 4,
+    "protocol_revision": "S1-G1-ELECTRON-NUMBER-R2-KMP-RUNTIME-CONTRACT-v1",
+    "rank_count": 4,
+    "ranks": [
+      {
+        "captured_mapping_count": 0,
+        "kmp_path": "/dev/shm/__KMP_REGISTERED_LIB_20_0",
+        "libomp_mapping_count": 1,
+        "lifecycle": [
+          "create",
+          "read",
+          "unlink"
+        ],
+        "pid": 20,
+        "rank": 0,
+        "successful_syscall_count": 3
+      },
+      {
+        "captured_mapping_count": 0,
+        "kmp_path": "/dev/shm/__KMP_REGISTERED_LIB_21_0",
+        "libomp_mapping_count": 1,
+        "lifecycle": [
+          "create",
+          "read",
+          "unlink"
+        ],
+        "pid": 21,
+        "rank": 1,
+        "successful_syscall_count": 3
+      },
+      {
+        "captured_mapping_count": 0,
+        "kmp_path": "/dev/shm/__KMP_REGISTERED_LIB_22_0",
+        "libomp_mapping_count": 1,
+        "lifecycle": [
+          "create",
+          "read",
+          "unlink"
+        ],
+        "pid": 22,
+        "rank": 2,
+        "successful_syscall_count": 3
+      },
+      {
+        "captured_mapping_count": 0,
+        "kmp_path": "/dev/shm/__KMP_REGISTERED_LIB_23_0",
+        "libomp_mapping_count": 1,
+        "lifecycle": [
+          "create",
+          "read",
+          "unlink"
+        ],
+        "pid": 23,
+        "rank": 3,
+        "successful_syscall_count": 3
+      }
+    ],
+    "registered_mapping_pattern_required": true,
+    "schema_version": 1,
+    "successful_syscall_count": 12
+  },
+  "local_effective_potential": {
+    "dimensions": [
+      24,
+      24,
+      40
+    ],
+    "path": "runs/S1-20260807-056/OUT.g1tlr4_mg_v090_standard/pot.cube",
+    "sha256": "520dff7b1ed29bd39a099cba02ba58af07eda4c22ba3ba3b59083dbb465817c3",
+    "unit": "Ry"
+  },
+  "logical_experiment_id": "S1-20260806-004",
+  "protocol_revision": "S1-G1-THERMODYNAMIC-LABEL-AUDIT-R4",
+  "provenance": {
+    "config_path": "config/S1_g1_thermodynamic_label_audit_r4.json",
+    "config_sha256": "b40788a3bb4e81725362dea3cc25db694716428b538945d950978b2a9dbcd9aa",
+    "manifest_path": "config/S1_g1_thermodynamic_label_audit_r4_manifest.tsv",
+    "manifest_sha256": "9d0c96f1d478bdafc919cbf866bebb4aec73be3cc348d4906f8d3ff9b5bff463",
+    "preregistration_commit": "da1b65ff9cf8987e13f7138199d633a3faf190f8",
+    "r1_logical_input_tree_oid": "6c6c4204b00a56e1c5e03c11c643f43aef9cbe73",
+    "replay_code_commit": "ac736d8ec0a292a71e5f331b79e9eeb32f2ee3c4"
+  },
+  "run_role": "standard_replay",
+  "schema_version": 2,
+  "source_experiment_id": "S1-20260805-106",
+  "source_kind": "r4_executed",
+  "standard_replay_equivalence": {
+    "accepted": true,
+    "delta_energy_mev_per_atom": 0.0,
+    "delta_entropy_corrected_energy_mev_per_atom": 0.0,
+    "delta_free_energy_mev_per_atom": 0.0,
+    "delta_pressure_gpa": 0.0,
+    "energy_limit_mev_per_atom": 0.1,
+    "pressure_limit_gpa": 0.02
+  },
+  "status": "accepted",
+  "thermodynamic_labels_path": "runs/S1-20260807-056/thermodynamic_labels.json",
+  "thermodynamic_labels_sha256": "5f2a4d30c52c584aa5ad38d66e0bc0d0118d02e09e8fbafd5f56a1b4a91c97f2"
+}
