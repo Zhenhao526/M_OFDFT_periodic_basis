@@ -1,0 +1,1 @@
+/home/shenwei01/M_OFDFT_periodic_basis/runs/S1-20260807-070/thermodynamic_labels.json
