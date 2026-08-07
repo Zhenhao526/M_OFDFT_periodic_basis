@@ -2,23 +2,23 @@
 
 > 本文件是项目状态的唯一人工入口。任何人接手前先读本文件，再读项目书和当前阶段 README。  
 > 状态词仅使用：`not_started`、`in_progress`、`blocked`、`accepted`、`rejected`、`paused`。  
-> 更新时间：2026-08-06 23:38 CST
-> 文档版本：V3.5
+> 更新时间：2026-08-07 11:55 CST
+> 文档版本：V3.6
 
 ## 0. 十分钟上手摘要
 
 | 项目 | 当前值 |
 |---|---|
-| 当前总状态 | `in_progress`（G0 数值/归档恢复结论保留；runtime-isolation 在登记范围内 `accepted`；S1-R8 与 G1 独立电子数积分子项已验收；G1 标签审计 R1 为 `paused/indeterminate`，R2 在首个新运行 041 后因解析器注册契约缺陷为 `rejected/stopped`；G1 仍为 `pending`，1/6） |
+| 当前总状态 | `in_progress`（G1 标签审计 R3 的 0+40 全新重算实现已在 `e31f456` 冻结；R1/R2 保持只读且均不进入 R3 分母；正式 R3 预注册、远端 solver 与 supervisor state 尚未创建；G1 仍为 `pending`，1/6） |
 | 当前阶段 | S1：平面波 OFDFT/KSDFT 基准闭环 |
-| 当前闸门 | G1，执行中；R1 `paused`，R2 `rejected/stopped`，无活跃求解器或监督器 |
+| 当前闸门 | G1，R3 实现冻结完成、等待远端 Linux 集成复验和单独预注册；无活跃求解器或监督器 |
 | 当前负责人 | 远端账户 `shenwei01`；本轮执行与记录：Codex |
 | 当前工作分支 | `main`；本地未跟踪 `tmp/`、`audit.json`、`objects.tsv` 属其他产物，保留未动 |
-| 最近可用提交 | `f91a300`（R2 041 相邻失败归档）；R2 实现 `d73e2ba`、预注册 `329a200`、脱离监督证明 `99deacd`、起跑标记 `314ac53`、运行记录 `ff26667` |
+| 最近可用提交 | `e31f456`（R3 实现冻结）；R2 停止链 `d73e2ba`→`329a200`→`99deacd`→`314ac53`→`ff26667`→`f91a300` 保持不可变 |
 | 最近通过的数值 smoke | `S1-RUNTIME-SMOKE-20260805-074`：`storage_exact`，五类状态门全部 `accepted`；幂等重验返回 `accepted_committed` |
 | 最近通过的正式分析 | `analysis/s1/electron_number_audit_r2_20260805/`：90/90 accepted；60 KS + 11 R1 reused OF + 19 R2 executed OF；G1 仅关闭电子数子项 |
-| 当前阻塞 | R2 的 041 已 SCF 收敛且 runtime/KMP 验收通过，但 R2 适配器把“30 个新运行的 `execution_order`”交给要求 40 项全序的冻结 R1 解析器，触发 `configuration execution order differs`；R2 已一次性停止，041–070 全部禁止在当前 revision 内重跑 |
-| 下一项唯一动作 | 起草 G1 标签审计 R3：修复 R2→R1 解析器注册校验中写死的 40 项长度，用真实生成的 30 行 manifest + 30 项 execution order 增加端到端回归，并仅使用新协议修订和全新实验 ID |
+| 当前阻塞 | 无代码 P0/P1；正式执行前必须在远端 Linux 跑完本机跳过的 4 项 `/proc`/memfd 集成测试，并保持 R3 config/manifest/input/state 全部尚未消费 |
+| 下一项唯一动作 | 推送并同步 `e31f456`，在远端 Linux 复验 75 项 R3 测试后，以干净工作树单独预注册 40 个新 ID 和 160 个输入 blob |
 
 ### 必读文件
 
@@ -28,14 +28,15 @@
 4. R1 034 失败闭包：`failed_runs/runtime_relocation/S1-20260806-034/attempt-df57f9b610d8/thermodynamic_label_failure_classification.json`、`thermodynamic_label_status.json`、`thermodynamic_label_failure_artifact_inventory.json`
 5. [G1 标签审计 R2 协议](S1_G1_THERMODYNAMIC_LABEL_AUDIT_R2_PROTOCOL.md)、`config/S1_g1_thermodynamic_label_audit_r2.json`、`config/S1_g1_thermodynamic_label_audit_r2_manifest.tsv`
 6. R2 041 失败闭包：`failed_runs/runtime_relocation/S1-20260806-041/attempt-ff26667f881e/thermodynamic_label_failure_classification_r2.json`、`thermodynamic_label_status_r2.json`、`thermodynamic_label_parser.stderr.txt`
-7. [G1 电子数 R2 协议](S1_G1_ELECTRON_NUMBER_AUDIT_R2_PROTOCOL.md)
-8. G1 电子数 R2 正式分析：`analysis/s1/electron_number_audit_r2_20260805/README.md`、`analysis/s1/electron_number_audit_r2_20260805/summary.json`
-9. [扩大文献调研与可行性再评估](M_OFDFT_扩大文献调研与可行性再评估_2026-08.md)
-10. [扩展文献逐篇研判](references/M_OFDFT_extended/M_OFDFT_扩展文献逐篇研判.md)
-11. [扩展参考文献包索引](references/M_OFDFT_extended/README.md)
-12. [初次可行性复核](M_OFDFT_任务书可行性复核.md)
-13. [原参考文献精读报告](references/M_OFDFT/M_OFDFT_参考文献逐篇精读报告.md)
-14. [原参考文献包索引](references/M_OFDFT/README.md)
+7. [G1 标签审计 R3 协议](S1_G1_THERMODYNAMIC_LABEL_AUDIT_R3_PROTOCOL.md) 与实现冻结 `e31f456`
+8. [G1 电子数 R2 协议](S1_G1_ELECTRON_NUMBER_AUDIT_R2_PROTOCOL.md)
+9. G1 电子数 R2 正式分析：`analysis/s1/electron_number_audit_r2_20260805/README.md`、`analysis/s1/electron_number_audit_r2_20260805/summary.json`
+10. [扩大文献调研与可行性再评估](M_OFDFT_扩大文献调研与可行性再评估_2026-08.md)
+11. [扩展文献逐篇研判](references/M_OFDFT_extended/M_OFDFT_扩展文献逐篇研判.md)
+12. [扩展参考文献包索引](references/M_OFDFT_extended/README.md)
+13. [初次可行性复核](M_OFDFT_任务书可行性复核.md)
+14. [原参考文献精读报告](references/M_OFDFT/M_OFDFT_参考文献逐篇精读报告.md)
+15. [原参考文献包索引](references/M_OFDFT/README.md)
 
 ### 最近可运行命令
 
@@ -46,6 +47,8 @@ cd /home/shenwei01/M_OFDFT_periodic_basis
 ./scripts/run_unit_tests.sh
 python3 scripts/validate_s1_electron_number_audit_r2.py --require-committed --require-all-runs
 python3 scripts/validate_s1_g1_thermodynamic_label_audit_r1.py config/S1_g1_thermodynamic_label_audit_r1_manifest.tsv --config config/S1_g1_thermodynamic_label_audit_r1.json --require-committed --check-failure-archives S1-20260806-034
+python3 -s scripts/generate_s1_g1_thermodynamic_label_audit_r3.py --project-root "$PWD"
+python3 -m unittest -q tests.unit.test_s1_g1_thermodynamic_label_audit_r3_generator tests.unit.test_s1_g1_thermodynamic_label_audit_r3_parser tests.unit.test_s1_g1_thermodynamic_label_audit_r3_validator tests.unit.test_s1_g1_thermodynamic_label_audit_r3_analysis tests.unit.test_s1_g1_thermodynamic_label_audit_r3_runner tests.unit.test_s1_g1_thermodynamic_label_audit_r3_launcher
 ./scripts/run_smoke.sh S0-YYYYMMDD-NNN
 ```
 
@@ -118,6 +121,11 @@ python3 scripts/validate_s1_g1_thermodynamic_label_audit_r1.py config/S1_g1_ther
 - [x] 以 `99deacd` 固化脱离 SSH/PTY 的 supervisor 证明，GO 绑定 sealed runner/config/manifest 后启动；首个 marker `314ac53` 在 solver 前通过因果 barrier；
 - [x] R2 041 的 ABACUS 在 22:24.42 内收敛，`run_status=accepted`、runtime audit `accepted`、电子数 4.0/4.0；但 R2 解析器因 `configuration execution order differs` 返回 1，core validator 返回 97；
 - [x] 监督器将结果以 `ff26667` 记录，再以紧邻提交 `f91a300` 原样归档到 `failed_runs/runtime_relocation/S1-20260806-041/attempt-ff26667f881e/`；failure-archive barrier 通过，terminal `stopped`/97，042–070 未执行，无 completion；
+- [x] 再次只读复验 R1 的 10 个历史 accepted 候选：`021/035/037` 仍通过，另 7 点因当前 `/etc/ld.so.cache` SHA-256 `5050081a...1861f` 与历史 `f55b9dd8...cce50` 不同而 fail closed；未见科学阈值越界；
+- [x] 决定 R3 不选择性复用 3 个残余可重放点、不放宽 runtime 门：R1 historical reused/contribution 固定为 0，全部 40 个逻辑槽位使用 `S1-20260807-001`–`040` 在当前冻结环境重算；
+- [x] 以 `e31f456` 冻结 R3 协议、generator、生产 parser、validator、runner、launcher、analyzer 和六组测试；P1 为 001–012 的六个全新 common/extra 锚点对，k gate 后才释放 013–040；
+- [x] R3 本地 75/75 测试通过，另 4 项 Linux `/proc`/memfd 集成测试按平台预期跳过；三路独立冻结复核均为 P0=0、P1=0，dry-run 为 0 reused + 40 new、40 行 manifest、160 个 input blob；
+- [x] 截至实现冻结，R3 正式 config/manifest/input、run、attempt marker、detachment、analysis、completion 和外部 single-use state 均未创建；
 - [x] 扩大调研至原包 8 篇核心文献、扩展包 13 篇全文/241 页、1 篇网页全文及 20 余篇方法/软件补充证据；
 - [x] 识别 AMD-OFDFT 2014 直接先例，收窄“原子中心密度 + 变分 + Pulay 力”的创新主张；
 - [x] 完成闸门式项目再评估：整体 66/100、S0–S4A 核心 73/100、全范围 S0–S7 约 43/100；
@@ -127,22 +135,22 @@ python3 scripts/validate_s1_g1_thermodynamic_label_audit_r1.py config/S1_g1_ther
 
 ### 下次开始位置
 
-从 G1 标签审计 R2 的已封口失败点开始；不要 finalize、删除 external state、重跑 041–070，也不要进入 S2 混合基或 ML：
+从 R3 实现冻结 `e31f456` 开始；R1/R2 只读，不要 finalize、删除 R2 external state、重跑任何 R1/R2 ID，也不要进入 S2 混合基或 ML：
 
-1. 阅读 R2 protocol/config/manifest、`scripts/parse_s1_g1_thermodynamic_labels_r2.py`，以及 041 归档中的 classification/status/parser stderr；核对外部 terminal SHA-256 `d3b9752f...e0269`、journal `02f488f...fc8b`、log `21c6d336...6622`；
-2. 承认 R2 `rejected/stopped`：041 的 SCF 与 runtime 成功不等于标签审计 accepted；它对 40/40 分母贡献 0，042–070 对执行分母贡献 0；
-3. 新建 R3 协议修订与全新 ID；修复点不是放宽科学门槛，而是让冻结 R1 parser 的注册长度从已注入的 R2 ID 集合派生，不再写死为 40；
-4. R3 执行前必须使用真实生成的 30 行 manifest + 30 项 execution order 对 parser 做端到端正路回归，并保留长度或 ID 集合不一致的负路反例；
-5. 041 的不可变数值产物是失败档案，不得直接移回 `runs/`；是否显式复用必须由 R3 预注册单独决定并绑定 commit/tree，否则使用新 ID 重算；
-6. G1 总体保持 `pending`（1/6）；标签审计之外的四个缺口仍是独立 OF 交叉代码、KS-NL→KS-L→OF-L 三层验证、位移/应变参考数据和 10 例单命令重生；
-7. runtime-isolation 的 `accepted` 仅适用于已登记路径；许可证和 LPP 再分发条款继续跟踪。
+1. 阅读 R3 protocol 和本节，确认验收分母是 R1 reused `0` + R3 new `40`；10 个 R1 historical accepted 与 R1-034/R2-041 都只作 provenance、贡献 0；
+2. 将 `e31f456` 及本进度提交同步到远端，在 Linux 冻结环境运行全部 75 项 R3 测试，4 项 `/proc`/memfd 测试不得再跳过；
+3. 只有远端测试全绿且工作树 clean，才运行 generator `--write`；预注册提交只能包含 config、40 行 manifest 和 160 个输入 blob，不能包含 run/orchestration/state；
+4. 对已提交预注册运行 committed validator 和真实 production parser registration；39/41 行、重复/交换 ID、错误 index、sealed 字节不一致必须继续 fail closed；
+5. 按 launcher 的 start→HUP probe→独立 detachment commit→GO 顺序启动；任何 barrier 非零必须 exact-scope 保存后停止，任何 ID 不重试；
+6. 001–012 全部 accepted 且六对 k gate 通过后才允许 013–040；最终科学分母必须为 40/42/14/6/160/480，并在 committed supervisor completion 后复验；
+7. G1 在 R3 完整 accepted 前保持 `pending`（1/6）；runtime-isolation 的 `accepted` 仍只适用于登记路径，许可证和 LPP 再分发条款继续跟踪。
 
 ## 2. 阶段总览
 
 | 阶段 | 名称 | 状态 | 开始日期 | 结束日期 | 闸门 | 证据链接 | 下一动作 |
 |---|---|---|---|---|---|---|---|
 | S0 | 初始化与复现协议 | `accepted` | 2026-08-05 | 2026-08-05 | G0 | `docs/G0_ACCEPTANCE.md`; `analysis/s1/runtime_relocation_equivalence_20260805/` | 数值/归档恢复结论保留；登记的 namespace runtime-isolation 路径已验收，原归档本身不称 hermetic |
-| S1 | 平面波基准闭环 | `in_progress` | 2026-08-05 | — | G1 | `analysis/s1/non_equilibrium_convergence_20260805/`; `analysis/s1/runtime_relocation_equivalence_20260805/`; `analysis/s1/electron_number_audit_r2_20260805/`; R1 034 归档 `b0b7db5`；R2 041 归档 `f91a300` | 起草 R3：修复 parser 注册长度契约，加入真实预注册端到端回归，使用新 revision + 新 IDs |
+| S1 | 平面波基准闭环 | `in_progress` | 2026-08-05 | — | G1 | `analysis/s1/non_equilibrium_convergence_20260805/`; `analysis/s1/runtime_relocation_equivalence_20260805/`; `analysis/s1/electron_number_audit_r2_20260805/`; R1 034 归档 `b0b7db5`；R2 041 归档 `f91a300`；R3 实现 `e31f456` | 远端 Linux 全量复验后单独预注册 R3 的 40 个新 ID/160 blobs |
 | S2 | 混合密度基表示 | `not_started` | — | — | G2 | — | 等待 G1 |
 | S3 | 固定 KEDF 自洽求解 | `not_started` | — | — | G3 | — | 等待 G2 |
 | S4A | 固定晶胞解析力 | `not_started` | — | — | G4A | — | 等待 G3 |
@@ -183,6 +191,7 @@ python3 scripts/validate_s1_g1_thermodynamic_label_audit_r1.py config/S1_g1_ther
 | G1 标签审计 R1 证据 | `runs/S1-20260806-021/` 等 10 个 accepted 目录；`failed_runs/runtime_relocation/S1-20260806-034/attempt-df57f9b610d8/` | `indeterminate_paused` | 10 accepted；034 capability failure `df57f9b`→相邻归档 `b0b7db5`；无最终 analysis，G1 仍 1/6 |
 | G1 标签审计 R2 协议 | `docs/S1_G1_THERMODYNAMIC_LABEL_AUDIT_R2_PROTOCOL.md`；`config/S1_g1_thermodynamic_label_audit_r2.json`；`config/S1_g1_thermodynamic_label_audit_r2_manifest.tsv` | 已执行并停止 | 实现 `d73e2ba`；预注册 `329a200`；脱离证明 `99deacd`；R2 ID/state 不得复用 |
 | G1 标签审计 R2 失败证据 | `failed_runs/runtime_relocation/S1-20260806-041/attempt-ff26667f881e/` | `rejected` | 041 solver/runtime accepted，parser registration rejected；`ff26667`→相邻归档 `f91a300`；042–070 未执行，无 analysis/completion，G1 仍 1/6 |
+| G1 标签审计 R3 实现 | `docs/S1_G1_THERMODYNAMIC_LABEL_AUDIT_R3_PROTOCOL.md`；R3 scripts/tests | 实现已冻结、未预注册 | `e31f456`；0 R1 reused + 40 R3 new；P1 12/P2 28；本地 75/75，4 项待远端 Linux 实跑 |
 | 代码仓库 | `https://github.com/Zhenhao526/M_OFDFT_periodic_basis` | 已建立 | 服务器路径 `/home/shenwei01/M_OFDFT_periodic_basis`；node01 通过校验 bundle 中转，由本地推送并以 `ls-remote` 核验 |
 | 环境锁 | `/home/shenwei01/M_OFDFT_periodic_basis/environment/` | 已建立 | 包清单、CMake、系统快照 |
 | 软件清单 | `/home/shenwei01/M_OFDFT_periodic_basis/manifests/` | 已建立 | 二进制、源码包与 LPP 哈希 |
@@ -209,9 +218,12 @@ python3 scripts/validate_s1_g1_thermodynamic_label_audit_r1.py config/S1_g1_ther
 - 当前结果：R1 034 因宿主后置证据闭包缺失为 `indeterminate_paused`，不是数值 rejection；失败 `df57f9b` 与归档 `b0b7db5` 相邻且 tree 一致，040/P2 未执行，R1 不产生最终 analysis。
 - 当前结果：R2 完成预注册和脱离监督，041 的 SCF 收敛，`F=-24.5932301833`、`E_ec=-24.5928592294`、`U=-24.5924882754 eV/atom`，报告/期望电子数 4.0/4.0（归档 cube 独立只读积分相对误差约 `4.85e-13`），runtime audit `accepted`；这些只是已归档数值事实，不是正式标签验收。
 - 当前结果：R2 parser 在读取数值标签前，因冻结 R1 registration validator 写死 `len(execution_order)==40` 而拒绝合法的 30 行 R2 manifest/order；terminal `stopped`/97，041 验收分母贡献 0，042–070 未执行，无 R2 analysis/completion。
+- 当前结果：远端只读重放 R1 的 10 个历史 accepted 候选时，`021/035/037` 通过，其余 7 点因 `/etc/ld.so.cache` 当前 SHA-256 `5050081a...1861f` 不同于 R1 记录 `f55b9dd8...cce50` 而 fail closed；未观察到科学数值越阈。
+- 当前结果：R3 已冻结为 R1 reused `0`、historical excluded `10`、R3 new `40`；001–012 是六组全新 common/extra k 锚点，013–040 完成其余矩阵；dry-run 为 40 行 manifest、160 个输入 blob，最终 EOS/runtime 精确分母为 42/40/160/480。
+- 当前验证：R3 本地 75/75 测试通过，4 项 Linux integration 按平台跳过；三路独立复核均为 P0=0、P1=0。正式预注册、solver、supervisor state 和科学结果仍不存在。
 - G1 仍为 `pending`（1/6）：独立电子数积分子项已经 `accepted`；剩余五项是第三 smearing/稠密 k 的密度、势和导数标签审计、独立 OFDFT 跨代码 EOS/压力、KS-NL→KS-L→OF-L 三层验证、小位移/应变参考密度与能量分量、10 例单命令重生失败率。
 - runtime-isolation 复核：原 `ldd` 外推仍撤回；登记的重定位 ABACUS + 私有 namespace + 严格审计路径已通过 074 和六点正式复演，因此该限定子项 `accepted`。锁定归档本身仍不得称为天然 hermetic。
-- 当前唯一动作：起草并复核 G1 标签审计 R3，修复 parser 注册长度契约、用真实 30 行预注册做 solver 前端到端正/负回归，并仅用新 revision + 新 IDs；不得 finalize/重跑 R2 或进入 S2/ML。
+- 当前唯一动作：同步 `e31f456` 并在远端 Linux 跑完 75 项 R3 测试；全绿后才单独预注册 40 个新 ID/160 blobs，不得先创建 state、marker 或 solver。
 
 ## 4. 闸门决策记录
 
@@ -228,6 +240,7 @@ python3 scripts/validate_s1_g1_thermodynamic_label_audit_r1.py config/S1_g1_ther
 | 2026-08-05 | G0/runtime-isolation | `accepted` | Codex | 074 与 S1-113–118 在登记的重定位+私有 namespace 路径下全部通过；每点成功旧访问/执行/映射、未知探针均为 0，六点数值逐存储位一致 | `analysis/s1/runtime_relocation_equivalence_20260805/`; `a01ac70` | 接受限定部署路径；保留 S0-003 erratum，不把原归档本身称为天然 hermetic |
 | 2026-08-06 | G1/thermodynamic-label R1 | `paused` | Codex | 10 个新运行 accepted；034 的 SCF 与 inner audit 完成，但宿主 `host_status`/counterpart/result 闭包缺失；权威分类 `indeterminate`，71 文件失败证据与相邻归档均通过 validator | `df57f9b`; `b0b7db5`; `failed_runs/runtime_relocation/S1-20260806-034/attempt-df57f9b610d8/` | R1 停止且所有 R1 ID 禁止重跑；G1 保持 1/6；只允许新 revision + 新 IDs continuation |
 | 2026-08-06 | G1/thermodynamic-label R2 | `rejected` | Codex | 041 的 SCF、通用结果解析和 runtime/KMP 均 accepted；R2 parser 在数值标签解析前因 R1 registration validator 写死 40 项而拒绝合法 30 项 order；terminal stopped/97，042–070 未执行 | `ff26667`; `f91a300`; `failed_runs/runtime_relocation/S1-20260806-041/attempt-ff26667f881e/` | R2 停止，禁止 finalize/继续/重跑；041 不计 accepted；G1 保持 1/6；只允许新 R3 revision + 新 IDs |
+| 2026-08-07 | G1/thermodynamic-label R3 | `paused` | Codex | 0+40 实现冻结复核无 P0/P1；本地 75/75，4 项 Linux integration 待远端实跑；dry-run 为 40 行/160 blobs；尚未预注册或执行 | `docs/S1_G1_THERMODYNAMIC_LABEL_AUDIT_R3_PROTOCOL.md`; `e31f456` | 远端 Linux 全量复验后单独预注册；此前禁止 solver，G1 保持 1/6 |
 
 ## 5. 实验台账
 
@@ -328,7 +341,7 @@ python3 scripts/validate_s1_g1_thermodynamic_label_audit_r1.py config/S1_g1_ther
 | B-006 | 2026-08-05 | node01 未发现第二套独立 OFDFT/KSDFT 程序 | S1 | 待填写 | 评估 DFTpy/Quantum ESPRESSO 的可审计安装或在其他主机交叉核验 | 否 | `in_progress` |
 | B-007 | 2026-08-05 | 原 runtime-isolation 证据只覆盖 ABACUS `ldd`；恢复 `mpirun` 可转调旧前缀 `prterun`，运行中也有旧路径成功访问 | G0/S1 | Codex | 已以登记的重定位+私有 namespace 协议完成 074 和六点复演；冻结身份改变时重新打开 | 否 | `accepted` |
 | B-008 | 2026-08-06 | R1 034 的 SSH/PTY 宿主编排在 namespace 子会话完成前中断，使宿主后置 `host_status`、counterpart 与 result 闭包缺失 | S1/G1 | Codex | 在 R2 预注册中冻结脱离 SSH 生命周期的受管启动、唯一 PID/日志/退出状态和同等失败闭包；R1 不重跑 | 否 | `paused` |
-| B-009 | 2026-08-06 | R2 adapter 将 30 个 R2 ID 注入冻结 R1 parser，但 R1 registration validator 仍写死 `len(execution_order)==40`；真实预注册未被执行前正路 parser 回归覆盖 | S1/G1 | Codex | 新建 R3 revision/全新 IDs；从注入 ID 集合派生长度；在 solver 前以真实 30 行 config/manifest 做 parser 端到端正/负回归 | 否 | `in_progress` |
+| B-009 | 2026-08-06 | R2 adapter 将 30 个 R2 ID 注入冻结 R1 parser，但 R1 registration validator 仍写死 `len(execution_order)==40`；真实预注册未被执行前正路 parser 回归覆盖 | S1/G1 | Codex | R3 已使用自身 production registration contract；真实生成 40 行正路及 39/41、重复、换序、错误 index、sealed 字节负路均通过；待远端 Linux 和正式 committed registration 复验 | 否 | `in_progress` |
 
 ### 活跃风险
 
