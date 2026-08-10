@@ -2,9 +2,9 @@
   "schema_version": 1,
   "protocol_revision": "S1-G1-THREE-LAYER-ANALYSIS-20260810-R3",
   "capture": {
-    "implementation_commit": "__FREEZE_CAPTURE_IMPLEMENTATION_COMMIT__",
+    "implementation_commit": "c6d7450d0881e899e402446f13f25478f9949167",
     "capture_script_path": "scripts/capture_s1_g1_three_layer_r2_rejection.py",
-    "capture_script_sha256": "__FREEZE_CAPTURE_SCRIPT_SHA256__",
+    "capture_script_sha256": "a01175b4defb1b2704dc7b0d718eb7de63346359b0180def5e5c831ad056f711",
     "r2_runner_commit": "3205d4972366c8a53a01fee2c5de22a4028b01eb",
     "r2_worktree": "/home/shenwei01/wt_g1_three_layer_continuation_r2_20260810",
     "python": "/usr/bin/python3",
