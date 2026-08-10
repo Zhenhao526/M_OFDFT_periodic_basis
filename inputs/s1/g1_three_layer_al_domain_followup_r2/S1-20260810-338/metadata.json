@@ -44,7 +44,7 @@
     "INPUT_sha256": "72f73944aeb7b70f14f9ed1b09669b9f743a485afe576d3463742cbcbd54e015",
     "KPT_sha256": "0903e64e14f6e451103ae0d60e2b3afe07dbbee7aaabff907df214bfd1eb0bc8",
     "STRU_sha256": "ee1cfd58fda6adabbdce9c051564dead65a6594fd5287eb2448497e0e28c84b4",
-    "config_sha256": "a51145988bb8a53c774d0bd223e838d219e357e398d69c7b3c1b37baa0095d3c",
+    "config_sha256": "d790020b26f37a9cd21ad1001a6b1500415dda263a49f233bfcf57305ca8ea7d",
     "manifest_sha256": "3dac0173e17b927ff05f2faf027273cff89fdd0de433699fc890b14727d17455"
   },
   "kmesh": [

@@ -1,12 +1,14 @@
 # S1/G1 Al-domain 三层补充验证协议（R2）
 
 协议版本：`S1-G1-THREE-LAYER-AL-DOMAIN-FOLLOWUP-20260810-R2`
-实现提交：`64cd874e43e2fb14399349a9826f6b47700f9443`
+实现提交：`f26cdeaf889177fe974a526280162b38ec1dec7a`
 正式新 ID：`S1-20260810-335..342`。每个 ID 只允许一次正式尝试；任何失败均停止本 revision，禁止删除、覆盖或重试。
 
 ## 1. R1 关闭与 R2 前置源
 
 R1 follow-up 的预注册 `0785b61c3a414b3c1f31865d31c60093fee849a9` 不改写。其父 R1 在 306 accepted 后、写 P0 phase marker 前连接中断，307--318 永不执行，因此 319--326 以 `superseded_before_execution` 关闭：follow-up state 从未创建，attempt/run/solver 均为 0，八个 ID 永久不得重用。
+
+本 R2 的首个 prereg `3a3685b2acd3cccbe5e7d1a9f2130d299084e307` 经独立证据链审计拒绝，已由 `86b90318e5cb56464b0eaab1fa993de1cb1c09e5` 明确关闭为 `superseded_before_execution`：R2 state/attempt/run/solver/accepted 全为 0，旧 prereg 禁止执行。335--342 只因从未产生任何 attempt/state，才允许在本 replacement prereg 中重新冻结；这不是 solver retry。
 
 R2 runner 必须先 fail-closed 读取两个只读源：
 
@@ -40,7 +42,7 @@ R2 runner 必须先 fail-closed 读取两个只读源：
 
 核隔离不是一次 `comm` 扫描即可通过。正式命令必须提供外部 core-reservation ACK；冻结物理核为 40--43，完整 logical/SMT 冲突与 lock domain 为 `40,41,42,43,116,117,118,119`。runner 对这 8 个 logical CPU 全程持有 nonblocking exclusive advisory locks，在 session 前及每个 case 的 attempt 前扫描全部 ABACUS 进程和显式绑定的三层 rank wrapper；rank wrapper 对每 rank 实际 affinity fail closed 并留证。正式进程还必须以 `setsid` 成为无 TTY 的 session leader、忽略 SIGHUP，并把 detached proof 写入 session。无 ACK、任一 lock 失败、collision、detached proof 或 rank affinity 不符均不得继续。
 
-每个新点的 attempt、accepted marker、runner return、metadata、result orchestration identity 与 session 必须共同绑定 experiment ID、protocol、runner commit、config SHA 和 manifest SHA；accepted marker 必须绑定 result SHA。terminal 再以精确 8-ID `accepted_result_sha256` map 与 session SHA闭合，禁止仅凭 return code 或 status 接收。
+每个新点的 attempt、accepted marker、runner return、metadata、result orchestration identity 与 session 必须共同绑定 experiment ID、protocol、runner commit、config SHA 和 manifest SHA；accepted marker 必须绑定 result SHA。terminal 必须给出精确 8-ID attempted/accepted 分母与 count，并分别冻结 attempt marker、accepted marker、runner return、result、metadata SHA maps、`accepted_result_sha256` map 与 session SHA，禁止仅凭 return code 或 status 接收。
 
 state 固定为 `/home/shenwei01/.local/state/m_ofdft/s1_g1_three_layer_al_domain_followup_r2_20260810`。attempt 用 `O_CREAT|O_EXCL` 在 solver 前写入；既有 state/marker/run 即禁止重试。
 
@@ -56,6 +58,6 @@ state 固定为 `/home/shenwei01/.local/state/m_ofdft/s1_g1_three_layer_al_domai
 
 ## 5. 接收
 
-最终分母精确 8/8，失败/缺失/跳过/重试为 0；四个 strain 门和两个端点各三门全过；parent/recovery/phase、core ACK/locks/affinity、PP/Ne/cube/force/stress/thermodynamic 证据完整。R1 committed snapshot 复制 stored evidence 与 recovery `enhanced_raw_gates.evidence_files` 的并集并逐 SHA/size 重验；327--332 与 335--342 均从 committed raw 独立重放。UPF body 因仓库再分发政策不进入 Git：必须以 config 的 repository/commit/URL/git-blob/SHA/header、run 内 `pseudo_identity.json`、metadata runtime identity、result identity、log projector 总数多重绑定，并由服务器 external cache 做 full SHA/header validation 后在临时 hard-link replay workspace 注入；cache 缺失或任一身份不符即失败，不能静默跳过 PP 门。
+最终分母精确 8/8，失败/缺失/跳过/重试为 0；四个 strain 门和两个端点各三门全过；parent/recovery/phase、core ACK/locks/affinity、PP/Ne/cube/force/stress/thermodynamic 证据完整。R1 committed snapshot 复制 stored evidence 与 recovery `enhanced_raw_gates.evidence_files` 的并集并逐 SHA/size 重验；然后对 301--306（含 Mg）逐点重跑冻结 R1 base parser 和 recovery enhanced parser，分别与 stored result 字节及 barrier `enhanced_raw_gates` canonical bytes 完全一致。327--332 与 335--342 同样从 committed raw 独立重放。UPF body 因仓库再分发政策不进入 Git：必须以 config 的 repository/commit/URL/git-blob/SHA/header、run 内 `pseudo_identity.json`、metadata runtime identity、result identity、log projector 总数多重绑定，并由服务器 external cache 做 full SHA/header validation 后在临时 hard-link replay workspace 注入；cache 缺失或任一身份不符即失败，不能静默跳过 PP 门。
 
 terminal accepted 且 runner return 0 后才收集分析，提交 evidence 后以 `--require-committed` 确定性重放。当前只预注册，不创建 follow-up state 或启动正式 solver；前置条件是完整 327--332 `al_eos` phase accepted，而非仅 327/328 单点出现。
