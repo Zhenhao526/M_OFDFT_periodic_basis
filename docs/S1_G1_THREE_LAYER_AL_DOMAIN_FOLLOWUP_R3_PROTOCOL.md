@@ -1,7 +1,7 @@
 # S1/G1 Al-domain 三层补充验证协议（R3）
 
 协议版本：`S1-G1-THREE-LAYER-AL-DOMAIN-FOLLOWUP-20260810-R3`
-实现提交：`b282ef3c43a44ddc408055afb3de2ad9e5644679`
+实现提交：`11d679d282ebfd96e293004e7e4c9195eb612668`
 正式新 ID：`S1-20260810-343..350`。每个 ID 只允许一次正式尝试；任何失败均停止本 revision，禁止删除、覆盖或重试。
 
 ## 1. R1/R2 关闭与 R3 前置源
