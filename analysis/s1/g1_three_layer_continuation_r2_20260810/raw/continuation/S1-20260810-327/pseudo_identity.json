@@ -1,0 +1,21 @@
+{
+  "basename": "Al_std.upf",
+  "beta_angular_momenta": [
+    0,
+    0,
+    1,
+    1,
+    2,
+    2
+  ],
+  "core_correction": true,
+  "expanded_nonlocal_projectors_per_atom": 18,
+  "functional": "PBE",
+  "number_of_proj": 6,
+  "pp_beta_element_count": 6,
+  "pp_dij_present": true,
+  "pseudo_type": "NC",
+  "sha256": "b02eaa07c5d98f5eeae1bec4155854a7a94ea3635ca6b42e914f3f7ebd6912fb",
+  "upf_version": "2.0.1",
+  "z_valence": 3.0
+}

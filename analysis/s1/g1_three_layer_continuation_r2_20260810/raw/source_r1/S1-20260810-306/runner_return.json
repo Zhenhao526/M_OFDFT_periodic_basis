@@ -1,0 +1,25 @@
+{
+  "command": [
+    "/home/shenwei01/wt_melting_runtime_20260724/conda_prefix/bin/mpirun",
+    "--map-by",
+    "pe-list=30,31,32,33:ordered",
+    "--bind-to",
+    "core",
+    "--report-bindings",
+    "-np",
+    "4",
+    "/usr/bin/python3",
+    "/home/shenwei01/wt_g1_three_layer_r1_20260810/scripts/s1_g1_three_layer_rank_wrapper.py",
+    "--binary",
+    "/home/shenwei01/wt_melting_runtime_20260724/build-abacus-wt-cpu/source/abacus_pw_para",
+    "--evidence-dir",
+    "/home/shenwei01/.local/state/m_ofdft/s1_g1_three_layer_r1_20260810/runs/S1-20260810-306/affinity",
+    "--expected-cores",
+    "30,31,32,33"
+  ],
+  "duration_seconds": 2527.8163156723604,
+  "experiment_id": "S1-20260810-306",
+  "finished_utc": "2026-08-10T06:10:15.907356Z",
+  "return_code": 0,
+  "schema_version": 1
+}

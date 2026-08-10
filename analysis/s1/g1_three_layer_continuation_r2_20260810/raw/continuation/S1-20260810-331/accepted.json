@@ -1,0 +1,10 @@
+{
+  "created_utc": "2026-08-10T07:47:16.296651Z",
+  "duration_seconds": 359.1122027570382,
+  "experiment_id": "S1-20260810-331",
+  "protocol_revision": "S1-G1-THREE-LAYER-CONTINUATION-20260810-R2",
+  "result_sha256": "d36c1b0b4beae50b3f34ca15512c2ff8da1806007da6ac7346e6e514351716bd",
+  "runner_commit": "3205d4972366c8a53a01fee2c5de22a4028b01eb",
+  "schema_version": 1,
+  "status": "accepted"
+}

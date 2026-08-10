@@ -1,0 +1,28 @@
+{
+  "accepted": true,
+  "expected_physical_core_id": 33,
+  "hostname": "node01",
+  "local_rank": 3,
+  "logical_cpu_affinity": [
+    33,
+    109
+  ],
+  "physical_core_ids": [
+    33
+  ],
+  "pid_before_exec": 2065259,
+  "rank": 3,
+  "schema_version": 1,
+  "topology": [
+    {
+      "core_id": 33,
+      "logical_cpu": 33,
+      "socket_id": 0
+    },
+    {
+      "core_id": 33,
+      "logical_cpu": 109,
+      "socket_id": 0
+    }
+  ]
+}
