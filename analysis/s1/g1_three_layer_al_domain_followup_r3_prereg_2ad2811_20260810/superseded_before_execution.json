@@ -1,0 +1,41 @@
+{
+  "schema_version": 1,
+  "protocol_revision": "S1-G1-THREE-LAYER-AL-DOMAIN-FOLLOWUP-20260810-R3",
+  "status": "superseded_before_execution",
+  "superseded_implementation_commit": "b282ef3c43a44ddc408055afb3de2ad9e5644679",
+  "superseded_preregistration_commit": "2ad2811afdd7293fade9a0a5bbd9359dbb724d18",
+  "independent_review_disposition": "rejected_missing_exact_preregistration_and_execution_code_identity_chain",
+  "formal_ids": [
+    "S1-20260810-343",
+    "S1-20260810-344",
+    "S1-20260810-345",
+    "S1-20260810-346",
+    "S1-20260810-347",
+    "S1-20260810-348",
+    "S1-20260810-349",
+    "S1-20260810-350"
+  ],
+  "external_state_root": "/home/shenwei01/.local/state/m_ofdft/s1_g1_three_layer_al_domain_followup_r3_20260810",
+  "external_binding_smoke_root": "/home/shenwei01/.local/state/m_ofdft/s1_g1_three_layer_al_domain_followup_r3_binding_smoke_20260810",
+  "execution_counts": {
+    "state_roots_created": 0,
+    "binding_smoke_roots_created": 0,
+    "binding_smoke_rank_starts": 0,
+    "attempt_markers": 0,
+    "run_directories": 0,
+    "solver_starts": 0,
+    "accepted_markers": 0
+  },
+  "external_state_was_absent_at_closure": true,
+  "external_binding_smoke_root_was_absent_at_closure": true,
+  "old_preregistration_must_not_be_executed": true,
+  "id_policy": "same_ids_are_permitted_only_in_the_committed_replacement_preregistration_because_no_state_smoke_attempt_or_solver_ever_existed",
+  "replacement_requirements": [
+    "preregistration_has_implementation_as_its_unique_direct_parent",
+    "preregistration_exact_diff_is_config_protocol_and_eight_metadata_files_only",
+    "smoke_aggregate_freezes_smoke_driver_formal_runner_and_rank_wrapper_sha_size_and_git_blobs",
+    "formalization_has_preregistration_as_its_unique_parent_and_changes_only_the_versioned_smoke_aggregate",
+    "raw_topology_evidence_uses_os_logical_cpu_physical_package_sysfs_core_id_and_thread_siblings_without_ambiguous_physical_core_aliases",
+    "malicious_clean_descendant_and_merge_parent_negative_regressions"
+  ]
+}
