@@ -8,6 +8,14 @@ R2 continuation 在 accepted aggregate terminal 后必须先由原 R2 analyzer �
 
 R3 只读取已提交的 R2 analysis。它逐字冻结 R2 evidence commit、`summary.json`、`points.tsv`、`README.md`、terminal 与完整 analysis tree inventory；调用冻结 R2 analyzer 对 committed raw/terminal 做第二次完整 replay，要求 replay 输出与 R2 三个结果文件逐字一致。UPF 正文仍不进入 Git，replay 只从冻结 external cache 临时注入并核 SHA。
 
+## Capture 与 Git 闭包
+
+R2 terminal accepted 后，必须先在独立 R3 capture worktree 完成两次提交：implementation commit 冻结 capture 程序，再以**仅修改本协议配置 JSON**的单父 prereg commit 写入 implementation SHA 与 capture-script SHA。Capture 程序要求自己运行于 `python3 -s -B`、`PYTHONDONTWRITEBYTECODE=1`、`PYTHONNOUSERSITE=1`，且 R2 worktree clean、精确位于 `3205d4972366c8a53a01fee2c5de22a4028b01eb`、analysis root 事前不存在。它逐文件核 R2 analyzer/config/manifest/parser/common/fit 依赖与该 commit 的 Git blob 一致，并核原 R2 acceptance 门与本协议逐值相等。
+
+R2 analyzer 只能运行一次。预期 `--collect` 返回 2 且生成 `summary.status=rejected`；stdout/stderr 先写外部临时流文件，随后 capture 以 `O_EXCL` 在 analyzer 已生成的 tree 中恰好新增 `analysis.stdout`、`analysis.stderr`、`analysis_invocation.json` 三个 artifact。Invocation 必须冻结 exact argv/cwd、capture implementation/prereg/script blob、R2 dependency blobs、terminal SHA/size、最小隔离环境、exit=2、stream SHA/size 和新增 artifact 前的完整逐文件 inventory。analysis tree 中任何 UPF 文件或 UPF body signature 都 fail-closed。
+
+然后 R2 只提交该 analysis root，且 evidence commit 必须是 runner commit 的唯一子提交、diff 只含 analysis root。最终 R3 分支必须以这个 R2 evidence commit 为祖先；R3 implementation 后的 prereg commit 只能改配置来冻结 source tree/commit/invocation 身份。R3 analyzer 只能从 clean prereg 执行。最终 evidence commit 必须以 prereg 为唯一父提交，且 diff 恰好新增 R3 的 `README.md`、`gate_metrics.tsv`、`summary.json`。`--require-committed` 从 final 的唯一父反推 prereg，完整 replay 后逐字比较三个输出；因此不用也不允许在配置中伪造自指的 prereg commit SHA。
+
 ## 唯一可接受处置
 
 R3 必须确认：R2 terminal accepted、8/8 formal continuation、failed=0、retried=0、aggregate RC=0；P0 recovery accepted；Al 三条 BM3 fit 均 accepted；KS-L↔KS-NL `|ΔB0|<=10%`；唯一 hard rejection 是 KS-L↔KS-NL `|ΔV0|>0.5%`。Mg 始终 diagnostic-only，不得影响 disposition。
@@ -16,3 +24,4 @@ R3 必须确认：R2 terminal accepted、8/8 formal continuation、failed=0、re
 
 若 raw/terminal replay、来源 Git/SHA、denominator 或预注册 rejection signature 任一不一致，R3 必须 fail-closed；不得把证据错误归类为科学拒绝。
 
+R2 analyzer 的 exit 2 是预注册科学门拒绝，不是 solver/terminal failure；R3 validator 的 exit 0 只表示该拒绝结论被可信复现。任何一步都不得声称第二独立 KS/QE 已闭合或 G1 已达到 6/6。

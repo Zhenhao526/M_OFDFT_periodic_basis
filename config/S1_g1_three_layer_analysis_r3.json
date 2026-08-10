@@ -2,14 +2,54 @@
   "schema_version": 1,
   "protocol_revision": "S1-G1-THREE-LAYER-ANALYSIS-20260810-R3",
   "capture": {
+    "implementation_commit": "__FREEZE_CAPTURE_IMPLEMENTATION_COMMIT__",
+    "capture_script_path": "scripts/capture_s1_g1_three_layer_r2_rejection.py",
+    "capture_script_sha256": "__FREEZE_CAPTURE_SCRIPT_SHA256__",
     "r2_runner_commit": "3205d4972366c8a53a01fee2c5de22a4028b01eb",
+    "r2_worktree": "/home/shenwei01/wt_g1_three_layer_continuation_r2_20260810",
     "python": "/usr/bin/python3",
+    "python_args": ["-s", "-B"],
     "analyzer_path": "scripts/analyze_s1_g1_three_layer_continuation_r2.py",
     "analyzer_sha256": "cd814e9b598cb908a4b19cb2a04c48581e17356c0d60f4a43b978fb2ed6d4833",
     "r2_config_path": "config/S1_g1_three_layer_continuation_r2.json",
     "r2_config_sha256": "9c1447bc134362691357e80309a3df5ff49bfd2ce5eb5e8d4d8d47b935f79c76",
+    "minimal_environment": {
+      "HOME": "/home/shenwei01",
+      "USER": "shenwei01",
+      "LOGNAME": "shenwei01",
+      "PATH": "/usr/bin:/bin",
+      "LANG": "C.UTF-8",
+      "LC_ALL": "C.UTF-8",
+      "TZ": "UTC",
+      "PYTHONDONTWRITEBYTECODE": "1",
+      "PYTHONNOUSERSITE": "1",
+      "PYTHONHASHSEED": "0"
+    },
+    "r2_dependencies": [
+      {"path": "config/S1_g1_three_layer_continuation_r2.json", "sha256": "9c1447bc134362691357e80309a3df5ff49bfd2ce5eb5e8d4d8d47b935f79c76"},
+      {"path": "config/S1_g1_three_layer_continuation_r2_manifest.tsv", "sha256": "747d8f85eee5d0a62c2df72375fae5295ae45c6070648a7284318090b5b4dd5e"},
+      {"path": "config/S1_g1_three_layer_r1.json", "sha256": "6e644efe5851c85bb9d2631df485bf6e6447ee943939647a65d4067e3fd9fc04"},
+      {"path": "config/S1_g1_three_layer_r1_manifest.tsv", "sha256": "e3c6658314c0fac66e946b8c9c8025da012b19989dbf3c6ec2ddc56e0537bdbc"},
+      {"path": "scripts/analyze_s1_g1_three_layer_continuation_r2.py", "sha256": "cd814e9b598cb908a4b19cb2a04c48581e17356c0d60f4a43b978fb2ed6d4833"},
+      {"path": "scripts/analyze_s1_eos.py", "sha256": "81471bfb4b72a8b04ff9765310723b0387883dd1714a9151423d6dec26ffe583"},
+      {"path": "scripts/analyze_s1_g1_three_layer_r1.py", "sha256": "d9ebb8d27c045901e1b52e344b47abb486a7046ba3ee19fa9c8203afbdc9fa14"},
+      {"path": "scripts/parse_s1_g1_three_layer_continuation_r2.py", "sha256": "3ef131f24ddd3035a1210a07abc68042b1d5f43c69ead33f106d82cdcbe01674"},
+      {"path": "scripts/parse_s1_g1_three_layer_r1.py", "sha256": "3b9eb914ad0797508e5fdda5e92fbcaf08cea50d269f24d814c97edc79285342"},
+      {"path": "scripts/recover_s1_g1_three_layer_continuation_r2.py", "sha256": "2eae163699d154551f67970f7eb71d73f128044056ced5fa72a166f1465cfe7e"},
+      {"path": "scripts/s1_electron_number_common.py", "sha256": "608b4e21756adecad967aac9254a421ba56f2aa8a6c18899e136566345eab161"},
+      {"path": "scripts/s1_g1_three_layer_continuation_r2_common.py", "sha256": "2e5f6b8bb4712d38ca4bcd3c3b7befebba2fc3bb73fd3d2fecaa050d4118f048"},
+      {"path": "scripts/s1_g1_three_layer_common.py", "sha256": "38bffcad3a612292c5e58fa2013aebba0fc4b1abe9754d6a88b42786820800d5"},
+      {"path": "scripts/s1_g1_thermodynamic_label_common.py", "sha256": "d0d06a1a51ed8d676b2814f458941a0dddc7e6bf86fe438af0da56492fba5bbe"}
+    ],
     "expected_exit_code": 2,
     "expected_summary_status": "rejected"
+  },
+  "registration": {
+    "analysis_implementation_commit": "__FREEZE_AFTER_R2_EVIDENCE_BASE__",
+    "preregistered_parent_role": "exact_analysis_implementation_commit",
+    "final_parent_role": "analysis_preregistered_commit_inferred_from_single_parent",
+    "preregistered_allowed_changed_paths": ["config/S1_g1_three_layer_analysis_r3.json"],
+    "final_allowed_added_prefix": "analysis/s1/g1_three_layer_analysis_r3_20260810/"
   },
   "source_r2": {
     "analysis_root": "analysis/s1/g1_three_layer_continuation_r2_20260810",
@@ -25,6 +65,12 @@
     "analysis_invocation_sha256": "__FREEZE_AFTER_R2_EVIDENCE_COMMIT__",
     "analysis_stdout_sha256": "__FREEZE_AFTER_R2_EVIDENCE_COMMIT__",
     "analysis_stderr_sha256": "__FREEZE_AFTER_R2_EVIDENCE_COMMIT__",
+    "capture_implementation_commit": "__FREEZE_AFTER_R2_EVIDENCE_COMMIT__",
+    "capture_preregistered_commit": "__FREEZE_AFTER_R2_EVIDENCE_COMMIT__",
+    "capture_script_sha256": "__FREEZE_AFTER_R2_EVIDENCE_COMMIT__",
+    "capture_config_sha256": "__FREEZE_AFTER_R2_EVIDENCE_COMMIT__",
+    "capture_worktree": "/home/shenwei01/wt_g1_three_layer_analysis_r3_20260810",
+    "r2_worktree": "/home/shenwei01/wt_g1_three_layer_continuation_r2_20260810",
     "analysis_expected_exit_code": 2,
     "runner_commit": "3205d4972366c8a53a01fee2c5de22a4028b01eb",
     "recovery_barrier_sha256": "60765edd6b72fbdbe2ac190581b3c7aad1e91e6ef7d7616be1b6d24e29abf353"
@@ -37,6 +83,12 @@
     ],
     "equilibrium_volume_difference_percent_max": 0.5,
     "bulk_modulus_difference_percent_max": 10.0,
+    "r2_acceptance_thresholds": {
+      "al_ksl_vs_ksnl_equilibrium_volume_difference_percent_max": 0.5,
+      "al_ksl_vs_ksnl_bulk_modulus_difference_percent_max": 10.0,
+      "bm3_max_abs_residual_mev_per_atom_strictly_less_than": 1.0,
+      "failed_or_missing_required_runs_max": 0
+    },
     "require_all_bm3_fits_accepted": true,
     "require_al_p0_accepted": true,
     "require_mg_affects_overall_false": true

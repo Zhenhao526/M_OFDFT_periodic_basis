@@ -8,7 +8,9 @@ import csv
 import hashlib
 import io
 import json
+import os
 import subprocess
+import sys
 import tempfile
 from pathlib import Path
 
@@ -39,6 +41,12 @@ REGISTERED_CODE = (
     Path("scripts/validate_s1_g1_three_layer_analysis_r3.py"),
     Path("tests/test_s1_g1_three_layer_analysis_r3.py"),
 )
+CAPTURE_ARTIFACTS = (
+    "orchestration/analysis.stdout",
+    "orchestration/analysis.stderr",
+    "orchestration/analysis_invocation.json",
+)
+FINAL_OUTPUT_FILES = ("README.md", "gate_metrics.tsv", "summary.json")
 
 
 def load_config(project_root: Path) -> dict:
@@ -49,10 +57,80 @@ def load_config(project_root: Path) -> dict:
 
 
 def source_inventory(root: Path) -> dict:
-    files = sorted(path for path in root.rglob("*") if path.is_file())
-    require(files and not any(path.is_symlink() for path in root.rglob("*")), "unsafe R2 analysis tree")
-    lines = "".join(f"{sha256_file(path)}  {path.relative_to(root).as_posix()}\n" for path in files).encode("utf-8")
-    return {"file_count": len(files), "regular_file_bytes": sum(path.stat().st_size for path in files), "sha256sum_list_digest": hashlib.sha256(lines).hexdigest()}
+    require(root.is_dir() and not root.is_symlink(), "inventory root missing or unsafe")
+    all_paths = list(root.rglob("*"))
+    require(not any(path.is_symlink() for path in all_paths), "unsafe R2 analysis tree")
+    files = sorted((path for path in all_paths if path.is_file()), key=lambda path: path.relative_to(root).as_posix())
+    require(files, "empty R2 analysis tree")
+    entries = [
+        {"path": path.relative_to(root).as_posix(), "sha256": sha256_file(path), "size_bytes": path.stat().st_size}
+        for path in files
+    ]
+    lines = "".join(f"{row['sha256']}  {row['path']}\n" for row in entries).encode("utf-8")
+    return {
+        "file_count": len(entries),
+        "regular_file_bytes": sum(int(row["size_bytes"]) for row in entries),
+        "sha256sum_list_digest": hashlib.sha256(lines).hexdigest(),
+        "files": entries,
+    }
+
+
+def require_no_upf_body(root: Path) -> None:
+    for path in root.rglob("*"):
+        if not path.is_file():
+            continue
+        relative = path.relative_to(root).as_posix()
+        require(path.suffix.lower() != ".upf" and not path.name.lower().endswith(".upf"), f"UPF entered evidence tree: {relative}")
+        with path.open("rb") as handle:
+            prefix = handle.read(512).lstrip()
+        require(not prefix.startswith(b"<UPF") and b"<PP_HEADER" not in prefix, f"UPF body signature entered evidence tree: {relative}")
+
+
+def require_isolated_python() -> None:
+    require(sys.flags.no_user_site == 1, "R3 requires Python -s")
+    require(sys.dont_write_bytecode, "R3 requires Python -B")
+    require(os.environ.get("PYTHONDONTWRITEBYTECODE") == "1", "R3 requires PYTHONDONTWRITEBYTECODE=1")
+    require(os.environ.get("PYTHONNOUSERSITE") == "1", "R3 requires PYTHONNOUSERSITE=1")
+
+
+def git_blob_identity(project_root: Path, commit: str, relative: str) -> dict:
+    oid = git(project_root, "rev-parse", f"{commit}:{relative}")
+    completed = subprocess.run(
+        ["git", "cat-file", "blob", oid], cwd=project_root, check=True,
+        stdin=subprocess.DEVNULL, stdout=subprocess.PIPE, stderr=subprocess.PIPE,
+    )
+    path = project_root / relative
+    require(path.is_file() and not path.is_symlink(), f"replay dependency missing: {relative}")
+    require(path.read_bytes() == completed.stdout, f"replay dependency differs from runner: {relative}")
+    return {"path": relative, "git_blob_oid": oid, "sha256": hashlib.sha256(completed.stdout).hexdigest(), "size_bytes": len(completed.stdout)}
+
+
+def verify_r2_dependencies(project_root: Path, config: dict) -> list[dict]:
+    runner = config["source_r2"]["runner_commit"]
+    expected = config["capture"]["r2_dependencies"]
+    require(isinstance(expected, list) and expected, "R2 replay dependency denominator missing")
+    require(len({row["path"] for row in expected}) == len(expected), "R2 replay dependency paths duplicate")
+    actual = []
+    for row in expected:
+        identity = git_blob_identity(project_root, runner, row["path"])
+        require(identity["sha256"] == row["sha256"], f"R2 replay dependency SHA differs: {row['path']}")
+        actual.append(identity)
+    return actual
+
+
+def validate_preregistered_topology(project_root: Path, config: dict, head: str | None = None) -> dict:
+    prereg = head or git(project_root, "rev-parse", "HEAD")
+    implementation = config["registration"]["analysis_implementation_commit"]
+    require("__FREEZE" not in implementation, "R3 analysis implementation not frozen")
+    require(git(project_root, "rev-list", "--parents", "-n", "1", prereg).split() == [prereg, implementation], "R3 prereg parent differs")
+    changed = git(project_root, "diff", "--name-only", f"{implementation}..{prereg}").splitlines()
+    require(changed == config["registration"]["preregistered_allowed_changed_paths"], "R3 prereg changed-path denominator differs")
+    ancestor = subprocess.run(
+        ["git", "merge-base", "--is-ancestor", config["source_r2"]["evidence_commit"], prereg],
+        cwd=project_root, stdin=subprocess.DEVNULL, stdout=subprocess.PIPE, stderr=subprocess.PIPE,
+    )
+    require(ancestor.returncode == 0, "R2 evidence commit is not an ancestor of R3 prereg")
+    return {"analysis_implementation_commit": implementation, "analysis_preregistered_commit": prereg, "changed_paths": changed}
 
 
 def git_ancestor(project_root: Path, commit: str) -> None:
@@ -120,21 +198,111 @@ def rejection_signatures(summary: dict, r2_config: dict) -> list[str]:
     return signatures
 
 
-def replay(project_root: Path, config: dict) -> tuple[dict, bytes]:
+def inventory_from_entries(entries: list[dict]) -> dict:
+    normalized = sorted(entries, key=lambda row: row["path"])
+    require(len({row["path"] for row in normalized}) == len(normalized), "inventory paths duplicate")
+    lines = "".join(f"{row['sha256']}  {row['path']}\n" for row in normalized).encode("utf-8")
+    return {
+        "file_count": len(normalized),
+        "regular_file_bytes": sum(int(row["size_bytes"]) for row in normalized),
+        "sha256sum_list_digest": hashlib.sha256(lines).hexdigest(),
+        "files": normalized,
+    }
+
+
+def validate_capture_invocation(
+    source: Path,
+    config: dict,
+    inventory: dict,
+    dependencies: list[dict],
+    r2_config: dict,
+) -> dict:
+    source_spec = config["source_r2"]
+    capture_spec = config["capture"]
+    invocation_path = source / "orchestration/analysis_invocation.json"
+    invocation = read_json(invocation_path)
+    require(isinstance(invocation, dict), "R2 analysis invocation must be an object")
+    require(invocation.get("schema_version") == 2, "R2 analysis invocation schema differs")
+    require(invocation.get("protocol_revision") == config["protocol_revision"], "R2 analysis invocation protocol differs")
+    require(invocation.get("status") == "captured_expected_scientific_rejection", "R2 analysis invocation status differs")
+    expected_argv = [capture_spec["python"], *capture_spec["python_args"], capture_spec["analyzer_path"], "--project-root", ".", "--collect"]
+    require(invocation.get("argv") == expected_argv, "R2 analysis invocation argv differs")
+    require(invocation.get("cwd") == source_spec["r2_worktree"] == capture_spec["r2_worktree"], "R2 analysis invocation cwd differs")
+    require(invocation.get("capture_cwd") == source_spec["capture_worktree"], "capture invocation cwd differs")
+    require(invocation.get("r2_runner_commit") == source_spec["runner_commit"] == capture_spec["r2_runner_commit"], "R2 analysis invocation runner differs")
+    require(invocation.get("capture_implementation_commit") == source_spec["capture_implementation_commit"] == capture_spec["implementation_commit"], "capture implementation commit differs")
+    require(invocation.get("capture_preregistered_commit") == source_spec["capture_preregistered_commit"], "capture prereg commit differs")
+    require(invocation.get("capture_config_path") == CONFIG_PATH.as_posix(), "capture config path differs")
+    require(invocation.get("capture_config_sha256") == source_spec["capture_config_sha256"], "capture config SHA differs")
+    require(invocation.get("registration_changed_paths") == [CONFIG_PATH.as_posix()], "capture registration diff differs")
+    capture_script = invocation.get("capture_script")
+    require(isinstance(capture_script, dict), "capture script identity missing")
+    require(capture_script.get("path") == capture_spec["capture_script_path"], "capture script path differs")
+    require(capture_script.get("sha256") == source_spec["capture_script_sha256"] == capture_spec["capture_script_sha256"], "capture script SHA differs")
+    require(isinstance(capture_script.get("git_blob_oid"), str) and len(capture_script["git_blob_oid"]) == 40, "capture script blob missing")
+    require(int(capture_script.get("size_bytes", -1)) > 0, "capture script size missing")
+
+    require(invocation.get("r2_dependencies") == dependencies, "capture/R3 dependency blob inventory differs")
+    dependency_by_path = {row["path"]: row for row in dependencies}
+    require(dependency_by_path[capture_spec["analyzer_path"]]["sha256"] == capture_spec["analyzer_sha256"], "registered analyzer SHA cross-binding differs")
+    require(dependency_by_path[capture_spec["r2_config_path"]]["sha256"] == capture_spec["r2_config_sha256"], "registered R2 config SHA cross-binding differs")
+    require(invocation.get("analyzer") == dependency_by_path[capture_spec["analyzer_path"]], "capture analyzer identity differs")
+    require(invocation.get("r2_config") == dependency_by_path[capture_spec["r2_config_path"]], "capture R2 config identity differs")
+
+    terminal_path = source / "orchestration/terminal.json"
+    terminal_identity = invocation.get("terminal")
+    require(isinstance(terminal_identity, dict), "capture terminal identity missing")
+    expected_terminal_path = str(Path(r2_config["external_state_root"]) / "terminal.json")
+    require(terminal_identity.get("path") == expected_terminal_path, "capture external terminal path differs")
+    require(terminal_identity.get("sha256") == source_spec["terminal_sha256"] == sha256_file(terminal_path), "capture terminal SHA differs")
+    require(int(terminal_identity.get("size_bytes", -1)) == terminal_path.stat().st_size, "capture terminal size differs")
+
+    require(invocation.get("exit_code") == int(source_spec["analysis_expected_exit_code"]) == 2, "R2 analyzer exit semantics differ")
+    require(invocation.get("expected_summary_status") == config["expected_rejection"]["r2_summary_status"] == "rejected", "capture summary disposition differs")
+    require(invocation.get("summary_sha256") == source_spec["summary_sha256"] == sha256_file(source / "summary.json"), "capture summary SHA differs")
+    streams = {
+        "stdout": (source / CAPTURE_ARTIFACTS[0], source_spec["analysis_stdout_sha256"]),
+        "stderr": (source / CAPTURE_ARTIFACTS[1], source_spec["analysis_stderr_sha256"]),
+    }
+    for name, (path, expected_sha) in streams.items():
+        require(invocation.get(f"{name}_sha256") == expected_sha == sha256_file(path), f"capture {name} SHA differs")
+        require(int(invocation.get(f"{name}_size_bytes", -1)) == path.stat().st_size, f"capture {name} size differs")
+
+    environment = invocation.get("subprocess_environment")
+    require(isinstance(environment, dict), "capture environment missing")
+    expected_static = {str(key): str(value) for key, value in capture_spec["minimal_environment"].items()}
+    for key, expected in expected_static.items():
+        require(environment.get(key) == expected, f"capture environment differs: {key}")
+    require(environment.get("PYTHONPATH") == str(Path(source_spec["r2_worktree"]) / "scripts"), "capture PYTHONPATH differs")
+    temporary = environment.get("TMPDIR")
+    require(isinstance(temporary, str) and Path(temporary).name.startswith("g1_three_layer_r2_capture_"), "capture TMPDIR differs")
+    require(environment.get("PYTHONPYCACHEPREFIX") == str(Path(temporary) / "pycache"), "capture pycache isolation differs")
+    require(set(environment) == set(expected_static).union({"PYTHONPATH", "TMPDIR", "PYTHONPYCACHEPREFIX"}), "capture environment has unregistered keys")
+
+    require(invocation.get("capture_added_artifacts") == list(CAPTURE_ARTIFACTS), "capture artifact list differs")
+    final_by_path = {row["path"]: row for row in inventory["files"]}
+    require(set(CAPTURE_ARTIFACTS).issubset(final_by_path), "capture artifact missing from source tree")
+    before_rows = [row for row in inventory["files"] if row["path"] not in CAPTURE_ARTIFACTS]
+    before = inventory_from_entries(before_rows)
+    require(invocation.get("analyzer_output_inventory_before_capture_artifacts") == before, "capture pre-artifact inventory differs")
+    require(inventory["file_count"] == before["file_count"] + 3, "capture did not add exactly three artifacts")
+    require(sha256_file(invocation_path) == source_spec["analysis_invocation_sha256"], "capture invocation SHA differs")
+    return invocation
+
+
+def replay(project_root: Path, config: dict, analysis_preregistered_commit: str | None = None) -> tuple[dict, bytes]:
     source = project_root / config["source_r2"]["analysis_root"]
     require(source.is_dir() and not source.is_symlink(), "committed R2 analysis missing")
+    require_no_upf_body(source)
     inventory = source_inventory(source)
     require(inventory["file_count"] == int(config["source_r2"]["analysis_tree_file_count"]), "R2 analysis file count differs")
     require(inventory["regular_file_bytes"] == int(config["source_r2"]["analysis_tree_regular_file_bytes"]), "R2 analysis byte count differs")
     require(inventory["sha256sum_list_digest"] == config["source_r2"]["analysis_tree_sha256sum_list_digest"], "R2 analysis tree digest differs")
     commit_identity = verify_source_commit(project_root, config, source, inventory)
+    dependencies = verify_r2_dependencies(project_root, config)
     identities = {"summary.json": "summary_sha256", "points.tsv": "points_sha256", "README.md": "readme_sha256", "orchestration/terminal.json": "terminal_sha256", "orchestration/analysis_invocation.json": "analysis_invocation_sha256", "orchestration/analysis.stdout": "analysis_stdout_sha256", "orchestration/analysis.stderr": "analysis_stderr_sha256"}
     for relative, key in identities.items():
         require(sha256_file(source / relative) == config["source_r2"][key], f"R2 source SHA differs: {relative}")
-    invocation = read_json(source / "orchestration/analysis_invocation.json")
-    require(isinstance(invocation, dict) and invocation.get("exit_code") == int(config["source_r2"]["analysis_expected_exit_code"]) == 2, "R2 analyzer exit semantics differ")
-    require(invocation.get("head") == config["source_r2"]["runner_commit"], "R2 analysis invocation HEAD differs")
-    require(invocation.get("stdout_sha256") == config["source_r2"]["analysis_stdout_sha256"] and invocation.get("stderr_sha256") == config["source_r2"]["analysis_stderr_sha256"], "R2 invocation stream binding differs")
     terminal = read_json(source / "orchestration/terminal.json")
     require(isinstance(terminal, dict) and terminal.get("status") == "accepted", "R2 terminal rejected")
     require(terminal.get("runner_commit") == config["source_r2"]["runner_commit"], "R2 terminal runner differs")
@@ -142,6 +310,11 @@ def replay(project_root: Path, config: dict) -> tuple[dict, bytes]:
     require(terminal.get("attempted_count") == terminal.get("accepted_count") == 8, "R2 terminal denominator differs")
     require(terminal.get("failed_count") == terminal.get("retried_count") == terminal.get("runner_return_code") == 0, "R2 terminal failure/retry/RC differs")
     r2_config = load_r2_config(project_root)
+    validate_capture_invocation(source, config, inventory, dependencies, r2_config)
+    for key, expected in config["expected_rejection"]["r2_acceptance_thresholds"].items():
+        require(r2_config["acceptance"].get(key) == expected, f"R2/R3 threshold identity differs: {key}")
+    require(float(config["expected_rejection"]["equilibrium_volume_difference_percent_max"]) == float(r2_config["acceptance"]["al_ksl_vs_ksnl_equilibrium_volume_difference_percent_max"]), "R3 delta V0 threshold differs from R2")
+    require(float(config["expected_rejection"]["bulk_modulus_difference_percent_max"]) == float(r2_config["acceptance"]["al_ksl_vs_ksnl_bulk_modulus_difference_percent_max"]), "R3 delta B0 threshold differs from R2")
     rows = load_manifest(project_root)
     replayed, points, _ = build_final_analysis(project_root, r2_config, rows, (source / "raw").resolve())
     with tempfile.TemporaryDirectory(prefix="g1_three_layer_analysis_r3_replay_") as temporary:
@@ -161,6 +334,7 @@ def replay(project_root: Path, config: dict) -> tuple[dict, bytes]:
     require(abs(independent["bulk_modulus_difference_percent"] - comparison["bulk_modulus_difference_percent"]) < 1e-10, "independent delta B0 differs")
     require(abs(independent["anchored_curve_max_abs_difference_mev_per_atom"] - comparison["anchored_curve_max_abs_difference_mev_per_atom"]) < 1e-8, "independent anchored curve differs")
     volume_limit = float(config["expected_rejection"]["equilibrium_volume_difference_percent_max"])
+    prereg_commit = analysis_preregistered_commit or git(project_root, "rev-parse", "HEAD")
     output = {
         "schema_version": 1,
         "protocol_revision": config["protocol_revision"],
@@ -171,11 +345,15 @@ def replay(project_root: Path, config: dict) -> tuple[dict, bytes]:
         "evidence_valid": True,
         "scientific_gate_status": "rejected",
         "new_solver_run_count": 0,
+        "analysis_implementation_commit": config["registration"]["analysis_implementation_commit"],
+        "analysis_preregistered_commit": prereg_commit,
+        "analysis_preregistered_config_sha256": sha256_file(project_root / CONFIG_PATH),
         "source_r2_evidence_commit": config["source_r2"]["evidence_commit"],
         "source_r2_summary_sha256": config["source_r2"]["summary_sha256"],
         "source_r2_terminal_sha256": config["source_r2"]["terminal_sha256"],
         "source_r2_analysis_inventory": inventory,
         "source_r2_git_identity": {key: value for key, value in commit_identity.items() if key != "files"},
+        "r2_replay_dependency_count": len(dependencies),
         "hard_failure_signatures": signatures,
         "al_ks_l_vs_ks_nl": {
             "equilibrium_volume_difference_percent": comparison["equilibrium_volume_difference_percent"],
@@ -223,15 +401,19 @@ def main() -> int:
     parser.add_argument("--project-root", type=Path)
     parser.add_argument("--output-root", type=Path)
     args = parser.parse_args()
+    require_isolated_python()
     project_root = find_project_root(args.project_root)
     config = load_config(project_root)
-    require_clean_tree(project_root)
+    head = require_clean_tree(project_root)
     require_tracked_matches_head(project_root, REGISTERED_CODE)
-    git_ancestor(project_root, config["source_r2"]["evidence_commit"])
-    summary, gates = replay(project_root, config)
+    topology = validate_preregistered_topology(project_root, config, head)
+    summary, gates = replay(project_root, config, topology["analysis_preregistered_commit"])
     output = args.output_root or project_root / config["output_root"]
+    require(output.resolve() == (project_root / config["output_root"]).resolve(), "R3 output root differs from registration")
     require(not output.exists(), "R3 output already exists")
     write_output(output, summary, gates)
+    require(sorted(path.relative_to(output).as_posix() for path in output.rglob("*") if path.is_file()) == list(FINAL_OUTPUT_FILES), "R3 output denominator differs")
+    require_no_upf_body(output)
     print(json.dumps({"status": summary["status"], "output_root": str(output)}, sort_keys=True))
     return 0
 
