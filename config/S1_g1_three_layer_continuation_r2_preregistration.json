@@ -10,11 +10,14 @@
     "S1-20260810-333",
     "S1-20260810-334"
   ],
-  "implementation_commit": "f7c68bcfb2bc01108561b04db78a6f9142586dd0",
+  "implementation_commit": "70ea0f4d86f18fcb3af53c4226ace0a8a42647b0",
   "input_file_count": 32,
   "input_inventory_sha256": "6c4f39146ad7c9fdfce7528ffebcf2821d1defd06dda84d4fa793fef4e0d9363",
   "manifest_sha256": "747d8f85eee5d0a62c2df72375fae5295ae45c6070648a7284318090b5b4dd5e",
   "protocol_revision": "S1-G1-THREE-LAYER-CONTINUATION-20260810-R2",
+  "post_implementation_paths": [
+    "config/S1_g1_three_layer_continuation_r2_preregistration.json"
+  ],
   "schema_version": 1,
   "status": "frozen_preregistration"
 }
