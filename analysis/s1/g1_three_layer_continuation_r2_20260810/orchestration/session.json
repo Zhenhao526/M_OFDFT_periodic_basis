@@ -1,0 +1,18 @@
+{
+  "branch": "codex/g1-three-layer-continuation-r2",
+  "config_sha256": "9c1447bc134362691357e80309a3df5ff49bfd2ce5eb5e8d4d8d47b935f79c76",
+  "created_utc": "2026-08-10T07:16:21.815078Z",
+  "hostname": "node01",
+  "initial_core_collision_preflight_sha256": "26ec3dfb206a02ecb71c5d9e67fa480b84d743ef80263d0b706bb29c901038c2",
+  "initial_detached_launcher_proof_sha256": "b102fa3ed6dacadfb177239420ebd67add944d428cf190e70780074c4b858ddb",
+  "manifest_sha256": "747d8f85eee5d0a62c2df72375fae5295ae45c6070648a7284318090b5b4dd5e",
+  "project_root": "/home/shenwei01/wt_g1_three_layer_continuation_r2_20260810",
+  "protocol_revision": "S1-G1-THREE-LAYER-CONTINUATION-20260810-R2",
+  "recovery_barrier_sha256": "60765edd6b72fbdbe2ac190581b3c7aad1e91e6ef7d7616be1b6d24e29abf353",
+  "recovery_prereg_commit": "2c25900d02761f61fb9fe99a3086350f8ea6ab0a",
+  "recovery_source_runner_commit": "439bf90049551f2b54bf6a17e0fb8689f5dfb100",
+  "retry_policy": "same_id_forbidden_new_revision_and_new_ids_only",
+  "runner_commit": "3205d4972366c8a53a01fee2c5de22a4028b01eb",
+  "schema_version": 1,
+  "status": "active"
+}

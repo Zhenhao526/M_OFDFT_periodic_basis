@@ -1,0 +1,5 @@
+[node01:2092211] Rank 0 bound to package[0][core:L30]
+[node01:2092211] Rank 1 bound to package[0][core:L31]
+[node01:2092211] Rank 2 bound to package[0][core:L32]
+[node01:2092211] Rank 3 bound to package[0][core:L33]
+Info: Local MPI proc number: 4,OpenMP thread number: 1,Total thread number: 4,Local thread limit: 152

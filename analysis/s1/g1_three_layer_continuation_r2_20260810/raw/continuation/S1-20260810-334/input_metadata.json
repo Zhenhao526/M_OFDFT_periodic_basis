@@ -1,0 +1,42 @@
+{
+  "atom_count": 2,
+  "ecutrho_ry": 336,
+  "ecutwfc_ry": 84,
+  "expected_electrons": 20.0,
+  "experiment_id": "S1-20260810-334",
+  "input_identity": {
+    "INPUT_sha256": "9f2c672782f09d8043dbbcc00ae4055ac2f1e9295936c0013a67b5adc054bdfe",
+    "KPT_sha256": "d59f4a8d01e74f7ec8fb53fe7de304457198bb3b6da2d7dcebba6c08c3330c4f",
+    "STRU_sha256": "f761323a7cae2b31b9db1b21f82614e4ae0e548a73d5755fd3b1f407c217583a",
+    "config_sha256": "9c1447bc134362691357e80309a3df5ff49bfd2ce5eb5e8d4d8d47b935f79c76",
+    "manifest_sha256": "747d8f85eee5d0a62c2df72375fae5295ae45c6070648a7284318090b5b4dd5e"
+  },
+  "kmesh": [
+    24,
+    24,
+    16
+  ],
+  "material": "mg",
+  "phase": "mg_required",
+  "protocol_revision": "S1-G1-THREE-LAYER-CONTINUATION-20260810-R2",
+  "pseudo": {
+    "basename": "Mg_std.upf",
+    "format": "upf201",
+    "sha256": "15cdd9380687a47a1f4bc4ab5fe1f0c6d9c50891350fd8534c8f292b3ce0be14",
+    "upstream_commit": "823b18f7701b6303e0e69114eaa645173f706600",
+    "upstream_url": "https://raw.githubusercontent.com/PseudoDojo/ONCVPSP-PBE-SR/823b18f7701b6303e0e69114eaa645173f706600/Mg/Mg_std.upf"
+  },
+  "requirement": "mg_diagnostic_required",
+  "role": "normal_common_diag",
+  "schema_version": 1,
+  "suffix": "g1tlr2_mg_v110_normal_common",
+  "thermodynamic_semantics": {
+    "E_ec": "F-m/2; finite-smearing estimator",
+    "F": "E_KohnSham=!FINAL_ETOT_IS",
+    "U": "F-m",
+    "local_only_kinetic_decomposition_claim": false,
+    "m": "E_entropy(-TS)<=0",
+    "zero_temperature_exact_claim": false
+  },
+  "volume_ratio": "1.10"
+}

@@ -1,0 +1,27 @@
+{
+  "accepted_count": 2,
+  "accepted_ids": [
+    "S1-20260810-333",
+    "S1-20260810-334"
+  ],
+  "accepted_result_sha256": {
+    "S1-20260810-333": "2a511c4d3cb148cf0bc8e3e8cbad5bd51d6e2ac94f4bd390e3fa5ac6ac3112a1",
+    "S1-20260810-334": "7d5645eb476fecdf61b000f00d10af091187be085c9331fdb224e83853502130"
+  },
+  "config_sha256": "9c1447bc134362691357e80309a3df5ff49bfd2ce5eb5e8d4d8d47b935f79c76",
+  "created_utc": "2026-08-10T08:55:57.771682Z",
+  "detached_launcher_proof_sha256": "d7f2328a2f2cf66bb6b52a542c8a7c8149d473d0fd6dff105702b10fa836c705",
+  "manifest_sha256": "747d8f85eee5d0a62c2df72375fae5295ae45c6070648a7284318090b5b4dd5e",
+  "per_run_core_collision_preflight_sha256": {
+    "S1-20260810-333": "ed8f890d962e5d77dfcb347a88ec4725a27459c4fbe31dc279421d458a5b2676",
+    "S1-20260810-334": "a697aced7940f67b796e5ad980b4a0f8330e43fabc965ab4c20cc35fa1f2336b"
+  },
+  "phase": "mg_required",
+  "phase_core_collision_preflight_sha256": "096e907585f995cfd8d90dcd94d52083981963e648fb6e8127145f1bd76a0338",
+  "protocol_revision": "S1-G1-THREE-LAYER-CONTINUATION-20260810-R2",
+  "recovery_barrier_sha256": "60765edd6b72fbdbe2ac190581b3c7aad1e91e6ef7d7616be1b6d24e29abf353",
+  "runner_commit": "3205d4972366c8a53a01fee2c5de22a4028b01eb",
+  "schema_version": 1,
+  "session_sha256": "54d40ce86c21d39c823fed683b9e1e97b187f4ee36670be25fa77dff495a7b3f",
+  "status": "accepted"
+}

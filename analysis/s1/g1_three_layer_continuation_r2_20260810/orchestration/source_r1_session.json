@@ -1,0 +1,13 @@
+{
+  "branch": "codex/g1-three-layer-r1",
+  "config_sha256": "6e644efe5851c85bb9d2631df485bf6e6447ee943939647a65d4067e3fd9fc04",
+  "created_utc": "2026-08-10T03:58:51.486777Z",
+  "hostname": "node01",
+  "manifest_sha256": "e3c6658314c0fac66e946b8c9c8025da012b19989dbf3c6ec2ddc56e0537bdbc",
+  "project_root": "/home/shenwei01/wt_g1_three_layer_r1_20260810",
+  "protocol_revision": "S1-G1-THREE-LAYER-20260810-R1",
+  "retry_policy": "same_id_forbidden_new_revision_and_new_ids_only",
+  "runner_commit": "439bf90049551f2b54bf6a17e0fb8689f5dfb100",
+  "schema_version": 1,
+  "status": "active"
+}
