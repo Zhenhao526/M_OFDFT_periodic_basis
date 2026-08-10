@@ -66,7 +66,7 @@ def _density_integral(result: dict, density_path: Path) -> float:
     expected_shape = tuple(int(value) for value in result["grid"])
     if density.dtype != np.float64 or density.shape != expected_shape:
         raise ValueError(f"density array schema differs: {density_path}")
-    volume_bohr3 = float(result["cell_volume_angstrom3"]) / BOHR_TO_ANGSTROM**3
+    volume_bohr3 = float(result["cell_volume_bohr3"])
     return float(np.sum(density, dtype=np.float64) * volume_bohr3 / density.size)
 
 

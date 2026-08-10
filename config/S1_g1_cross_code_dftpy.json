@@ -1,5 +1,5 @@
 {
-  "protocol_revision": "S1-G1-CROSS-CODE-DFTPY-20260810-R1",
+  "protocol_revision": "S1-G1-CROSS-CODE-DFTPY-20260810-R2",
   "manifest": "config/S1_g1_cross_code_dftpy_manifest.tsv",
   "formal_run_count": 14,
   "materials": ["al", "mg"],
@@ -8,7 +8,7 @@
   "reference_implementation": "ABACUS v3.11.0-beta.5 OFDFT",
   "independent_implementation": "DFTpy 2.2.0 with pylibxc/LibXC 7.0.0",
   "python": "/home/shenwei01/.local/venvs/m_ofdft-dftpy-2.2.0-py311/bin/python",
-  "external_state_root": "/home/shenwei01/.local/state/m_ofdft/s1_g1_cross_code_dftpy_20260810",
+  "external_state_root": "/home/shenwei01/.local/state/m_ofdft/s1_g1_cross_code_dftpy_r2_20260810",
   "environment_lock": "environment/dftpy_2.2.0_pylibxc_7.0.0.lock.json",
   "functional_contract": {
     "kedf": "WT",
@@ -50,8 +50,10 @@
     ]
   },
   "pilot_policy": {
-    "description": "Al and Mg V/V0=1 compatibility smoke calculations performed before this freeze are diagnostic only",
+    "description": "The two V/V0=1 smoke points and R1 IDs 001--014 are diagnostic/rejected evidence only; R1 did not capture non-empty optimizer logs and used the wrong Angstrom/Bohr constant in its independent density reintegration",
     "included_in_formal_denominator": false,
-    "formal_runs_must_use_fresh_experiment_ids": true
+    "formal_runs_must_use_fresh_experiment_ids": true,
+    "rejected_r1_state_root": "/home/shenwei01/.local/state/m_ofdft/s1_g1_cross_code_dftpy_20260810",
+    "r1_ids_must_not_be_retried": true
   }
 }

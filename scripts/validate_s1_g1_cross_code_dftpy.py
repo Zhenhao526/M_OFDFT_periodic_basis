@@ -90,6 +90,12 @@ def main() -> int:
     observed_raw = {path.name for path in raw.iterdir() if path.is_dir()} if raw.is_dir() else set()
     if observed_raw != expected_raw:
         failures.append("raw formal-run denominator differs from manifest")
+    for experiment_id in sorted(expected_raw & observed_raw):
+        stdout_path = raw / experiment_id / "run.stdout"
+        if not stdout_path.is_file() or stdout_path.stat().st_size == 0:
+            failures.append(f"captured optimizer stdout is empty: {experiment_id}")
+        elif "Density Optimization Converged" not in stdout_path.read_text(encoding="utf-8"):
+            failures.append(f"captured optimizer stdout lacks convergence marker: {experiment_id}")
     runner_summary_path = raw / "runner_summary.json"
     if not runner_summary_path.is_file():
         failures.append("raw runner summary is missing")

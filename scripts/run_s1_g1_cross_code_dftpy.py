@@ -159,7 +159,7 @@ def run_point(project_root: Path, row: dict[str, str], config: dict, run_directo
     import numpy as np
     import dftpy
     import pylibxc
-    from dftpy.constants import ENERGY_CONV, STRESS_CONV
+    from dftpy.constants import ENERGY_CONV, STRESS_CONV, Units, environ as dftpy_environ
     from dftpy.field import DirectField
     from dftpy.functional import Functional, LocalPseudo, TotalFunctional
     from dftpy.grid import DirectGrid
@@ -179,8 +179,11 @@ def run_point(project_root: Path, row: dict[str, str], config: dict, run_directo
     opt_cfg = config["optimization"]
 
     with contextlib.redirect_stdout(stdout), contextlib.redirect_stderr(stdout):
+        dftpy_environ["STDOUT"] = stdout
         ions = Ions.from_ase(atoms)
         grid = DirectGrid(lattice=ions.cell, nr=nr, full=False)
+        if not np.array_equal(np.asarray(grid.nrR, dtype=int), nr):
+            raise ValueError("DFTpy direct-grid dimensions differ from manifest")
         pseudo = LocalPseudo(
             grid=grid,
             ions=ions,
@@ -214,8 +217,12 @@ def run_point(project_root: Path, row: dict[str, str], config: dict, run_directo
         parts = evaluator.get_energy_potential(rho, calcType={"E"}, split=True)
         stress = evaluator.get_stress(rho, split=True)
 
+    dftpy_environ["STDOUT"] = sys.stdout
+    stdout_text = stdout.getvalue()
+    if "Density Optimization Converged" not in stdout_text:
+        raise RuntimeError("DFTpy optimizer convergence marker is absent from captured stdout")
     run_directory.mkdir(parents=True, exist_ok=False)
-    (run_directory / "run.stdout").write_text(stdout.getvalue(), encoding="utf-8")
+    (run_directory / "run.stdout").write_text(stdout_text, encoding="utf-8")
     density = np.asarray(rho, dtype=np.float64)
     np.save(run_directory / "density.npy", density, allow_pickle=False)
     stress_gpa = np.asarray(stress["TOTAL"], dtype=float) * STRESS_CONV["Ha/Bohr3"]["GPa"]
@@ -232,6 +239,9 @@ def run_point(project_root: Path, row: dict[str, str], config: dict, run_directo
         "atom_count": ions.nat,
         "cell_angstrom": np.asarray(atoms.cell.array, dtype=float).tolist(),
         "cell_volume_angstrom3": float(atoms.get_volume()),
+        "cell_volume_bohr3": float(ions.cell.volume),
+        "grid_dv_bohr3": float(ions.cell.volume / np.prod(nr)),
+        "dftpy_bohr_to_angstrom": float(Units.Bohr),
         "volume_per_atom_angstrom3": float(atoms.get_volume() / ions.nat),
         "grid": nr.tolist(),
         "density_unit": "electron_per_Bohr3",
