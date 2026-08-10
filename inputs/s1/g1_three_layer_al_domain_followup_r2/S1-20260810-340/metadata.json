@@ -1,0 +1,58 @@
+{
+  "atom_count": 1,
+  "ecutrho_ry": 208,
+  "ecutwfc_ry": 52,
+  "expected_electrons": 3.0,
+  "experiment_id": "S1-20260810-340",
+  "geometry_binding": {
+    "accepted_common_id": "S1-20260810-327",
+    "construction_base_id": "S1-20260810-307",
+    "construction_base_path": "inputs/s1/g1_three_layer_r1/S1-20260810-307/STRU",
+    "construction_base_stru_sha256": "54b5c56f06469137e71ba046c5a53b9904b2013a16eaa3e7cc745d3360b4c5ad",
+    "construction_hard_gate": {
+      "accepted": true,
+      "accepted_common_id": "S1-20260810-327",
+      "complete_registered_stru_byte_identical": true,
+      "convention": "complete preregistered endpoint STRU byte identity; accepted 327/328 source is checked at runtime"
+    },
+    "geometry_payload_definition": "STRU bytes from LATTICE_CONSTANT marker through EOF",
+    "geometry_payload_sha256": "1425164522f9af507e33efc9351f390d379a14cbbafa3aa1b4c71c878bdc03ba",
+    "registered_geometry_id": "S1-20260810-307",
+    "registered_geometry_path": "inputs/s1/g1_three_layer_r1/S1-20260810-307/STRU",
+    "registered_geometry_stru_sha256": "54b5c56f06469137e71ba046c5a53b9904b2013a16eaa3e7cc745d3360b4c5ad"
+  },
+  "input_identity": {
+    "INPUT_sha256": "b674fe3339f0db217813eeedb334f907d1b91147a7d87af3ae62899e4cacf7df",
+    "KPT_sha256": "9676ccc0047fe4fd875b3027808ab834d234f73a9840b22c16948d3f3ede2cfd",
+    "STRU_sha256": "54b5c56f06469137e71ba046c5a53b9904b2013a16eaa3e7cc745d3360b4c5ad",
+    "config_sha256": "a51145988bb8a53c774d0bd223e838d219e357e398d69c7b3c1b37baa0095d3c",
+    "manifest_sha256": "3dac0173e17b927ff05f2faf027273cff89fdd0de433699fc890b14727d17455"
+  },
+  "kmesh": [
+    32,
+    32,
+    32
+  ],
+  "material": "al",
+  "phase": "endpoint",
+  "protocol_revision": "S1-G1-THREE-LAYER-AL-DOMAIN-FOLLOWUP-20260810-R2",
+  "pseudo": {
+    "basename": "Al_std.upf",
+    "expanded_nonlocal_projectors_per_atom": 18,
+    "format": "upf201",
+    "sha256": "b02eaa07c5d98f5eeae1bec4155854a7a94ea3635ca6b42e914f3f7ebd6912fb",
+    "z_valence": 3.0
+  },
+  "role": "v090_high_extra_k",
+  "schema_version": 1,
+  "suffix": "g1tlfu2_al_v090_high_extra",
+  "thermodynamic_semantics": {
+    "E_ec": "F-m/2 finite-smearing estimator",
+    "F": "E_KohnSham=!FINAL_ETOT_IS",
+    "U": "F-m",
+    "local_only_kinetic_decomposition_claim": false,
+    "m": "E_entropy(-TS)<=0",
+    "zero_temperature_exact_claim": false
+  },
+  "volume_ratio": "0.90"
+}

@@ -1,0 +1,276 @@
+{
+  "schema_version": 1,
+  "protocol_revision": "S1-G1-THREE-LAYER-AL-DOMAIN-FOLLOWUP-20260810-R2",
+  "base_main_commit": "f474f0ba7823a0b02b4c025251251c8053f132ed",
+  "implementation_commit": "64cd874e43e2fb14399349a9826f6b47700f9443",
+  "inherited_three_layer_preregistration_commit": "439bf90049551f2b54bf6a17e0fb8689f5dfb100",
+  "r1_followup_preregistration_commit": "0785b61c3a414b3c1f31865d31c60093fee849a9",
+  "r1_followup_closure_commit": "956729002f7da2249ff035a142b1a116702ebf9a",
+  "manifest": "config/S1_g1_three_layer_al_domain_followup_r2_manifest.tsv",
+  "input_root": "inputs/s1/g1_three_layer_al_domain_followup_r2",
+  "analysis_root": "analysis/s1/g1_three_layer_al_domain_followup_r2_20260810",
+  "external_state_root": "/home/shenwei01/.local/state/m_ofdft/s1_g1_three_layer_al_domain_followup_r2_20260810",
+  "external_pseudo_cache": "/home/shenwei01/.local/state/m_ofdft/pseudos/pseudodojo_oncvpsp_pbe_sr_823b18f",
+  "formal_ids": [
+    "S1-20260810-335",
+    "S1-20260810-336",
+    "S1-20260810-337",
+    "S1-20260810-338",
+    "S1-20260810-339",
+    "S1-20260810-340",
+    "S1-20260810-341",
+    "S1-20260810-342"
+  ],
+  "runtime": {
+    "required_hostname": "node01",
+    "binary": "/home/shenwei01/wt_melting_runtime_20260724/build-abacus-wt-cpu/source/abacus_pw_para",
+    "binary_sha256": "2d68a57c7b25608b3550854dabc2e63601eeca956bf185ad7d0967052bdbb4ba",
+    "abacus_version": "v3.11.0-beta.5",
+    "mpi": "/home/shenwei01/wt_melting_runtime_20260724/conda_prefix/bin/mpirun",
+    "prefix": "/home/shenwei01/wt_melting_runtime_20260724/conda_prefix",
+    "rank_count": 4,
+    "physical_core_ids": [40, 41, 42, 43],
+    "reserved_logical_cpu_ids": [40, 41, 42, 43, 116, 117, 118, 119],
+    "map_by": "pe-list=40,41,42,43:ordered",
+    "omp_num_threads": 1,
+    "per_run_timeout_seconds": 7200,
+    "core_lock_root": "/home/shenwei01/.local/state/m_ofdft/core_locks",
+    "formal_core_reservation_ack_required": true,
+    "exclusive_nonblocking_core_locks_required": true,
+    "live_hostname_core_and_abacus_affinity_preflight_required": true,
+    "smt_sibling_aware_collision_scan_before_session_and_each_case": true,
+    "detached_setsid_no_tty_sighup_ignored_proof_required": true,
+    "per_rank_affinity_evidence_required": true
+  },
+  "runtime_provenance": {
+    "new_ks_nl_binary_sha256": "2d68a57c7b25608b3550854dabc2e63601eeca956bf185ad7d0967052bdbb4ba",
+    "legacy_ks_l_relocated_binary_sha256": "438c74b9ada4c8df15ffbb66da6755907dfd2a3812ecf868fafd4d7dc4db62e1",
+    "storage_exact_bridge_commit": "a01ac707e8e4d2604ea01a947d9c32738aa264df",
+    "bridge_scope": "six_of_six_storage_exact_same_frozen_source_scientifically_equivalent_implementation_not_byte_identical_same_engine"
+  },
+  "pseudodojo": {
+    "repository": "PseudoDojo/ONCVPSP-PBE-SR",
+    "commit": "823b18f7701b6303e0e69114eaa645173f706600",
+    "license_note": "UPF bodies say GNU GPL, repository has no standalone LICENSE; cache exact upstream bytes outside this repository pending redistribution clarification",
+    "materials": {
+      "al": {
+        "basename": "Al_std.upf",
+        "url": "https://raw.githubusercontent.com/PseudoDojo/ONCVPSP-PBE-SR/823b18f7701b6303e0e69114eaa645173f706600/Al/Al_std.upf",
+        "sha256": "b02eaa07c5d98f5eeae1bec4155854a7a94ea3635ca6b42e914f3f7ebd6912fb",
+        "git_blob_sha1": "aee4e3ac1868beb75b7d36c7a400a79df147bf38",
+        "upf_version": "2.0.1",
+        "pseudo_type": "NC",
+        "functional": "PBE",
+        "z_valence": 3.0,
+        "number_of_proj_per_atom": 6,
+        "expanded_nonlocal_projectors_per_atom": 18,
+        "core_correction": true
+      },
+      "mg": {
+        "basename": "Mg_std.upf",
+        "url": "https://raw.githubusercontent.com/PseudoDojo/ONCVPSP-PBE-SR/823b18f7701b6303e0e69114eaa645173f706600/Mg/Mg_std.upf",
+        "sha256": "15cdd9380687a47a1f4bc4ab5fe1f0c6d9c50891350fd8534c8f292b3ce0be14",
+        "git_blob_sha1": "e5cb8378fd905e8639e3767380fdfe616fc841a4",
+        "upf_version": "2.0.1",
+        "pseudo_type": "NC",
+        "functional": "PBE",
+        "z_valence": 10.0,
+        "number_of_proj_per_atom": 4,
+        "expanded_nonlocal_projectors_per_atom": 8,
+        "core_correction": false
+      }
+    }
+  },
+  "input_contract": {
+    "smearing_method": "fd",
+    "smearing_sigma_ry": 0.001837465,
+    "scf_thr": 1e-10,
+    "scf_nmax": 200,
+    "ecutrho_over_ecutwfc": 4,
+    "density_cube_precision": 17,
+    "fresh_start_required": true,
+    "cal_force": true,
+    "cal_stress": true
+  },
+  "acceptance": {
+    "registered_attempted_completed_accepted_exact": 8,
+    "failed_missing_skipped_retried_exact": 0,
+    "expanded_nonlocal_projectors_total_exact": 18,
+    "electron_relative_error_strictly_less_than": 1e-10,
+    "nbands_exact": 12,
+    "last_band_occupation_strictly_less_than": 1e-8,
+    "cube_origin_exact_zero": true,
+    "cube_geometry_absolute_tolerance_bohr": 5e-5,
+    "stress_symmetry_abs_kbar_max": 1e-10,
+    "stress_trace_pressure_abs_kbar_strictly_less_than": 1e-6,
+    "strain_reconstruction_matrix_abs_tolerance_strictly_less_than": 5e-15,
+    "strain_determinant_abs_error_strictly_less_than": 1e-12,
+    "strain_anchored_difference_mev_per_atom_max": 20.0,
+    "endpoint_anchored_k_difference_mev_per_atom_strictly_less_than": 2.0,
+    "endpoint_anchored_cutoff_difference_mev_per_atom_strictly_less_than": 1.0,
+    "endpoint_cutoff_pressure_difference_gpa_strictly_less_than": 0.02
+  },
+  "scientific_scope": {
+    "material": "al",
+    "functional": "PBE",
+    "valence_electrons_per_atom": 3,
+    "interpretation": "same-engine NLPP-versus-local scheme plus construction discrepancy suitability bound",
+    "isolated_lpp_scheme_bias_claim": false,
+    "second_independent_ks_closed": false,
+    "qe_d026_scope_closed": false,
+    "g4_force_or_stress_closed": false,
+    "absolute_cross_pp_energy_gate": false,
+    "zero_temperature_exact_claim": false
+  },
+  "source_states": {
+    "r1_p0": {
+      "protocol_revision": "S1-G1-THREE-LAYER-20260810-R1",
+      "runner_commit": "439bf90049551f2b54bf6a17e0fb8689f5dfb100",
+      "external_state_root": "/home/shenwei01/.local/state/m_ofdft/s1_g1_three_layer_r1_20260810",
+      "session_sha256": "4954585ad425f3d9757ce1a64dd86f0a09333e953dcbf9718f45636f530b09c2",
+      "operational_status": "incomplete_missing_phase_marker_indeterminate_late_orchestration_disconnect",
+      "source_snapshot": {
+        "file_count": 151,
+        "regular_file_bytes": 84625288,
+        "absolute_path_sha256sum_list_digest": "d4a3c90826aab181c73f30ab8fe2dd44c1cd40413a736e561123b70e34784204"
+      },
+      "source_git_paths": [
+        "config/S1_g1_three_layer_r1.json",
+        "config/S1_g1_three_layer_r1_manifest.tsv"
+      ],
+      "required_accepted_ids": [
+        "S1-20260810-301",
+        "S1-20260810-302",
+        "S1-20260810-303",
+        "S1-20260810-304",
+        "S1-20260810-305",
+        "S1-20260810-306"
+      ],
+      "permanently_unexecuted_ids": [
+        "S1-20260810-307",
+        "S1-20260810-308",
+        "S1-20260810-309",
+        "S1-20260810-310",
+        "S1-20260810-311",
+        "S1-20260810-312",
+        "S1-20260810-313",
+        "S1-20260810-314",
+        "S1-20260810-315",
+        "S1-20260810-316",
+        "S1-20260810-317",
+        "S1-20260810-318"
+      ],
+      "state_is_read_only": true
+    },
+    "continuation_r2": {
+      "protocol_revision": "S1-G1-THREE-LAYER-CONTINUATION-20260810-R2",
+      "implementation_commit": "70ea0f4d86f18fcb3af53c4226ace0a8a42647b0",
+      "preregistration_commit": "2c25900d02761f61fb9fe99a3086350f8ea6ab0a",
+      "recovery_formalization_commit": "3205d4972366c8a53a01fee2c5de22a4028b01eb",
+      "recovery_barrier_sha256": "60765edd6b72fbdbe2ac190581b3c7aad1e91e6ef7d7616be1b6d24e29abf353",
+      "external_state_root": "/home/shenwei01/.local/state/m_ofdft/s1_g1_three_layer_continuation_r2_20260810",
+      "config_path": "config/S1_g1_three_layer_continuation_r2.json",
+      "manifest_path": "config/S1_g1_three_layer_continuation_r2_manifest.tsv",
+      "required_hostname": "node01",
+      "runtime_rank_count": 4,
+      "runtime_physical_socket_id": 0,
+      "runtime_physical_core_ids": [30, 31, 32, 33],
+      "runtime_reserved_logical_cpu_ids": [30, 31, 32, 33, 106, 107, 108, 109],
+      "recovery_barrier_relative_path": "barriers/r1_p0_recovery.json",
+      "versioned_recovery_barrier_path": "orchestration/s1/g1_three_layer_continuation_r2_20260810/r1_p0_recovery.json",
+      "endpoint_phase_marker_relative_path": "phases/al_eos.json",
+      "endpoint_phase": "al_eos",
+      "required_recovery_ids": [
+        "S1-20260810-301",
+        "S1-20260810-302",
+        "S1-20260810-303",
+        "S1-20260810-304",
+        "S1-20260810-305",
+        "S1-20260810-306"
+      ],
+      "required_accepted_ids": [
+        "S1-20260810-327",
+        "S1-20260810-328"
+      ],
+      "endpoint_phase_accepted_ids": [
+        "S1-20260810-327",
+        "S1-20260810-328",
+        "S1-20260810-329",
+        "S1-20260810-330",
+        "S1-20260810-331",
+        "S1-20260810-332"
+      ],
+      "formal_runner_must_wait_for_recovery_and_endpoint_phase": true,
+      "state_is_read_only": true
+    }
+  },
+  "legacy_local_references": {
+    "anchor": "S1-20260807-043",
+    "strain_points": [
+      "S1-20260810-204",
+      "S1-20260810-205",
+      "S1-20260810-206",
+      "S1-20260810-207"
+    ],
+    "energy_observable": "finite-smearing E_ec",
+    "displacement_analysis_evidence_commit": "28cd24923db08e072dfabc448eb45934aaff5e9f"
+  },
+  "geometry_bindings": {
+    "S1-20260810-335": {
+      "construction_base_id": "S1-20260807-043",
+      "construction_base_path": "runs/S1-20260807-043/STRU",
+      "registered_geometry_id": "S1-20260810-204",
+      "registered_geometry_path": "inputs/s1/g1_displacement_strain_reference_r1/S1-20260810-204/STRU",
+      "deformation_gradient": [[1.005, 0.0, 0.0], [0.0, 0.9975093361076329, 0.0], [0.0, 0.0, 0.9975093361076329]]
+    },
+    "S1-20260810-336": {
+      "construction_base_id": "S1-20260807-043",
+      "construction_base_path": "runs/S1-20260807-043/STRU",
+      "registered_geometry_id": "S1-20260810-205",
+      "registered_geometry_path": "inputs/s1/g1_displacement_strain_reference_r1/S1-20260810-205/STRU",
+      "deformation_gradient": [[0.995, 0.0, 0.0], [0.0, 1.002509414234171, 0.0], [0.0, 0.0, 1.002509414234171]]
+    },
+    "S1-20260810-337": {
+      "construction_base_id": "S1-20260807-043",
+      "construction_base_path": "runs/S1-20260807-043/STRU",
+      "registered_geometry_id": "S1-20260810-206",
+      "registered_geometry_path": "inputs/s1/g1_displacement_strain_reference_r1/S1-20260810-206/STRU",
+      "deformation_gradient": [[1.0, 0.005, 0.0], [0.0, 1.0, 0.0], [0.0, 0.0, 1.0]]
+    },
+    "S1-20260810-338": {
+      "construction_base_id": "S1-20260807-043",
+      "construction_base_path": "runs/S1-20260807-043/STRU",
+      "registered_geometry_id": "S1-20260810-207",
+      "registered_geometry_path": "inputs/s1/g1_displacement_strain_reference_r1/S1-20260810-207/STRU",
+      "deformation_gradient": [[1.0, -0.005, 0.0], [0.0, 1.0, 0.0], [0.0, 0.0, 1.0]]
+    },
+    "S1-20260810-339": {
+      "construction_base_id": "S1-20260810-307",
+      "construction_base_path": "inputs/s1/g1_three_layer_r1/S1-20260810-307/STRU",
+      "registered_geometry_id": "S1-20260810-307",
+      "registered_geometry_path": "inputs/s1/g1_three_layer_r1/S1-20260810-307/STRU",
+      "accepted_common_id": "S1-20260810-327"
+    },
+    "S1-20260810-340": {
+      "construction_base_id": "S1-20260810-307",
+      "construction_base_path": "inputs/s1/g1_three_layer_r1/S1-20260810-307/STRU",
+      "registered_geometry_id": "S1-20260810-307",
+      "registered_geometry_path": "inputs/s1/g1_three_layer_r1/S1-20260810-307/STRU",
+      "accepted_common_id": "S1-20260810-327"
+    },
+    "S1-20260810-341": {
+      "construction_base_id": "S1-20260810-308",
+      "construction_base_path": "inputs/s1/g1_three_layer_r1/S1-20260810-308/STRU",
+      "registered_geometry_id": "S1-20260810-308",
+      "registered_geometry_path": "inputs/s1/g1_three_layer_r1/S1-20260810-308/STRU",
+      "accepted_common_id": "S1-20260810-328"
+    },
+    "S1-20260810-342": {
+      "construction_base_id": "S1-20260810-308",
+      "construction_base_path": "inputs/s1/g1_three_layer_r1/S1-20260810-308/STRU",
+      "registered_geometry_id": "S1-20260810-308",
+      "registered_geometry_path": "inputs/s1/g1_three_layer_r1/S1-20260810-308/STRU",
+      "accepted_common_id": "S1-20260810-328"
+    }
+  }
+}
