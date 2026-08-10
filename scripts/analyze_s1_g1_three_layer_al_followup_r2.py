@@ -324,8 +324,16 @@ def verify_snapshot_source_identity(project_root: Path, config: dict, new_state:
     barrier_payload = _read_object(barrier_path)
     phase_payload = _read_object(phase_path)
     continuation_runner = continuation_session["runner_commit"]
+    require(sha256_file(barrier_path) == continuation_spec["recovery_barrier_sha256"], "snapshot barrier differs from frozen SHA")
+    formalized_bytes, formalized_blob = git_file_at_commit(
+        project_root,
+        continuation_spec["recovery_formalization_commit"],
+        continuation_spec["versioned_recovery_barrier_path"],
+    )
+    require(formalized_bytes == barrier_path.read_bytes(), "snapshot barrier differs from frozen formalization commit")
     versioned_bytes, versioned_blob = git_file_at_commit(project_root, continuation_runner, continuation_spec["versioned_recovery_barrier_path"])
     require(versioned_bytes == barrier_path.read_bytes(), "snapshot barrier differs from continuation runner Git blob")
+    require(versioned_blob == formalized_blob, "snapshot recovery barrier Git blob changed after formalization")
 
     barrier_rows = barrier_payload.get("per_run_recovery")
     require(isinstance(barrier_rows, list), "snapshot recovery inventory missing")
@@ -374,13 +382,15 @@ def verify_snapshot_source_identity(project_root: Path, config: dict, new_state:
     require(phase_payload.get("manifest_sha256") == continuation_session.get("manifest_sha256") == barrier_payload.get("manifest_sha256"), "snapshot phase/manifest SHA differs")
     require(phase_payload.get("recovery_barrier_sha256") == sha256_file(barrier_path), "snapshot phase/barrier SHA differs")
     phase_preflight = verify_continuation_phase_preflight(
-        continuation_state, continuation_session, phase_payload, list(CONTINUATION_PHASE_IDS)
+        continuation_state, continuation_session, phase_payload, list(CONTINUATION_PHASE_IDS), continuation_spec
     )
     observed = {
         "ready": True,
         "r1_session_sha256": sha256_file(r1_state / "session.json"),
         "r1_recovery_barrier_sha256": sha256_file(barrier_path),
         "r1_recovery_versioned_git_blob": versioned_blob,
+        "r1_recovery_formalization_commit": continuation_spec["recovery_formalization_commit"],
+        "r1_recovery_formalized_git_blob": formalized_blob,
         "continuation_runner_commit": continuation_runner,
         "continuation_session_sha256": sha256_file(continuation_state / "session.json"),
         "continuation_endpoint_phase_sha256": sha256_file(phase_path),

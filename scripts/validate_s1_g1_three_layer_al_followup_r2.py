@@ -71,9 +71,12 @@ def validate_preregistered(project_root: Path, config: dict, rows: list[dict[str
     require_ancestor(project_root, config["r1_followup_closure_commit"], head)
     require_ancestor(project_root, config["inherited_three_layer_preregistration_commit"], head)
     require_ancestor(project_root, continuation["implementation_commit"], continuation["preregistration_commit"])
+    require_ancestor(project_root, continuation["preregistration_commit"], continuation["recovery_formalization_commit"])
     # The continuation is an independent branch/state source; its exact commit
     # must exist locally but need not be merged into the follow-up branch.
     require_commit_object(project_root, continuation["preregistration_commit"])
+    require_commit_object(project_root, continuation["recovery_formalization_commit"])
+    require(isinstance(continuation["recovery_barrier_sha256"], str) and len(continuation["recovery_barrier_sha256"]) == 64, "frozen recovery barrier SHA differs")
     require(head != implementation, "formal preregistration must follow implementation commit")
     closure = read_json(project_root / "analysis/s1/g1_three_layer_al_domain_followup_r1_20260810/superseded_before_execution.json")
     require(isinstance(closure, dict) and closure.get("status") == "superseded_before_execution", "R1 follow-up closure missing")

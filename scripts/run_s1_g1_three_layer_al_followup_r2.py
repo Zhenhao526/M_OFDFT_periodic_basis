@@ -221,6 +221,7 @@ def verify_continuation_phase_preflight(
     continuation_session: dict,
     phase: dict,
     accepted_ids: list[str],
+    continuation_spec: dict,
 ) -> dict:
     detached_path = continuation_root / "preflight/al_eos_detached_launch.json"
     phase_core_path = continuation_root / "preflight/al_eos_core_collision.json"
@@ -236,7 +237,11 @@ def verify_continuation_phase_preflight(
     isatty = detached.get("isatty")
     require(isinstance(isatty, dict) and all(isatty.get(str(fd)) is False for fd in (0, 1, 2)), "continuation TTY detachment proof rejected")
     phase_core = _object(phase_core_path, "continuation phase core-collision preflight")
-    require(phase_core.get("accepted") is True and not phase_core.get("collisions"), "continuation phase core collision preflight rejected")
+    require(phase_core.get("accepted") is True and phase_core.get("collisions") == [], "continuation phase core collision preflight rejected")
+    require(phase_core.get("hostname") == continuation_spec["required_hostname"], "continuation phase core-preflight hostname differs")
+    require(phase_core.get("physical_socket_id") == continuation_spec["runtime_physical_socket_id"], "continuation phase core-preflight socket differs")
+    require(phase_core.get("physical_core_ids") == continuation_spec["runtime_physical_core_ids"], "continuation phase core-preflight physical cores differ")
+    require(phase_core.get("target_sibling_logical_cpus") == continuation_spec["runtime_reserved_logical_cpu_ids"], "continuation phase core-preflight logical/SMT domain differs")
     result_map = phase.get("per_run_core_collision_preflight_sha256")
     require(isinstance(result_map, dict) and list(result_map) == accepted_ids, "continuation per-run core-preflight denominator differs")
     per_run: dict[str, dict] = {}
@@ -245,7 +250,11 @@ def verify_continuation_phase_preflight(
         digest = sha256_file(path)
         require(result_map.get(experiment_id) == digest, f"continuation per-run core-preflight SHA differs: {experiment_id}")
         payload = _object(path, "continuation per-run core-collision preflight")
-        require(payload.get("accepted") is True and not payload.get("collisions"), f"continuation per-run core collision rejected: {experiment_id}")
+        require(payload.get("accepted") is True and payload.get("collisions") == [], f"continuation per-run core collision rejected: {experiment_id}")
+        require(payload.get("hostname") == continuation_spec["required_hostname"], f"continuation per-run core-preflight hostname differs: {experiment_id}")
+        require(payload.get("physical_socket_id") == continuation_spec["runtime_physical_socket_id"], f"continuation per-run core-preflight socket differs: {experiment_id}")
+        require(payload.get("physical_core_ids") == continuation_spec["runtime_physical_core_ids"], f"continuation per-run core-preflight physical cores differ: {experiment_id}")
+        require(payload.get("target_sibling_logical_cpus") == continuation_spec["runtime_reserved_logical_cpu_ids"], f"continuation per-run core-preflight logical/SMT domain differs: {experiment_id}")
         per_run[experiment_id] = {"path": f"preflight/{experiment_id}.json", "sha256": digest}
     return {
         "detached": {"path": "preflight/al_eos_detached_launch.json", "sha256": detached_sha},
@@ -332,6 +341,8 @@ def verify_parent_sources(config: dict, project_root: Path | None = None, rows: 
     require(isinstance(continuation_runner, str) and len(continuation_runner) == 40, "continuation runner commit differs")
     if project_root is not None:
         require_git_ancestor(project_root, continuation_spec["preregistration_commit"], continuation_runner)
+        require_git_ancestor(project_root, continuation_spec["preregistration_commit"], continuation_spec["recovery_formalization_commit"])
+        require_git_ancestor(project_root, continuation_spec["recovery_formalization_commit"], continuation_runner)
     require(continuation_session.get("recovery_prereg_commit") == continuation_spec["preregistration_commit"], "continuation recovery prereg binding differs")
     require(continuation_session.get("recovery_source_runner_commit") == old_spec["runner_commit"], "continuation recovery source runner differs")
 
@@ -340,6 +351,7 @@ def verify_parent_sources(config: dict, project_root: Path | None = None, rows: 
     require(barrier.get("status") == "accepted", "independent R1 P0 recovery rejected")
     require(barrier.get("protocol_revision") == continuation_spec["protocol_revision"], "recovery barrier protocol differs")
     barrier_sha = sha256_file(barrier_path)
+    require(barrier_sha == continuation_spec["recovery_barrier_sha256"], "frozen continuation recovery barrier SHA differs")
     require(continuation_session.get("recovery_barrier_sha256") == barrier_sha, "continuation session/recovery barrier SHA differs")
     require(barrier.get("continuation_prereg_commit") == continuation_spec["preregistration_commit"], "recovery barrier prereg binding differs")
     require(barrier.get("source_state_root") == str(old_root), "recovery source state differs")
@@ -358,8 +370,15 @@ def verify_parent_sources(config: dict, project_root: Path | None = None, rows: 
     barrier_inventory = _inventory_map(barrier.get("per_run_recovery"))
 
     if project_root is not None:
+        formalized_bytes, formalized_blob = git_file_at_commit(
+            project_root,
+            continuation_spec["recovery_formalization_commit"],
+            continuation_spec["versioned_recovery_barrier_path"],
+        )
+        require(formalized_bytes == barrier_path.read_bytes(), "external recovery barrier differs from frozen formalization commit")
         versioned_bytes, versioned_blob = git_file_at_commit(project_root, continuation_runner, continuation_spec["versioned_recovery_barrier_path"])
         require(versioned_bytes == barrier_path.read_bytes(), "external/versioned recovery barrier differs")
+        require(versioned_blob == formalized_blob, "recovery barrier Git blob changed after formalization")
         for relative, key in ((continuation_spec["config_path"], "config_sha256"), (continuation_spec["manifest_path"], "manifest_sha256")):
             committed, _ = git_file_at_commit(project_root, continuation_runner, relative)
             digest = sha256_bytes(committed)
@@ -373,6 +392,7 @@ def verify_parent_sources(config: dict, project_root: Path | None = None, rows: 
             require(sha256_bytes(committed) == identity.get("sha256") and len(committed) == identity.get("size_bytes"), "recovery source Git bytes differ")
     else:
         versioned_blob = "not_checked_without_project_root"
+        formalized_blob = "not_checked_without_project_root"
 
     recovered: dict[str, dict] = {}
     for experiment_id in old_spec["required_accepted_ids"]:
@@ -422,6 +442,7 @@ def verify_parent_sources(config: dict, project_root: Path | None = None, rows: 
         continuation_session,
         phase,
         continuation_spec["endpoint_phase_accepted_ids"],
+        continuation_spec,
     )
     for experiment_id in continuation_spec["endpoint_phase_accepted_ids"]:
         result = _object(continuation_root / "runs" / experiment_id / "result.json", "continuation Al EOS result")
@@ -450,6 +471,8 @@ def verify_parent_sources(config: dict, project_root: Path | None = None, rows: 
         "r1_session_sha256": old_session_sha,
         "r1_recovery_barrier_sha256": barrier_sha,
         "r1_recovery_versioned_git_blob": versioned_blob,
+        "r1_recovery_formalization_commit": continuation_spec["recovery_formalization_commit"],
+        "r1_recovery_formalized_git_blob": formalized_blob,
         "continuation_runner_commit": continuation_runner,
         "continuation_session_sha256": sha256_file(continuation_session_path),
         "continuation_endpoint_phase_sha256": sha256_file(phase_path),
