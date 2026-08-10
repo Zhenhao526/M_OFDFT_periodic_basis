@@ -1,0 +1,42 @@
+{
+  "atom_count": 1,
+  "ecutrho_ry": 160,
+  "ecutwfc_ry": 40,
+  "expected_electrons": 3.0,
+  "experiment_id": "S1-20260810-332",
+  "input_identity": {
+    "INPUT_sha256": "ade9c08e3ff1ccc0fbd68d1c2aa75aa9af0ce10d9ba4b32ed0b869add68f566b",
+    "KPT_sha256": "0903e64e14f6e451103ae0d60e2b3afe07dbbee7aaabff907df214bfd1eb0bc8",
+    "STRU_sha256": "c71466242930f0803bff2726532cdff8537da60d3a83192a627599f473bb166f",
+    "config_sha256": "d7b53b0cb2ae98b26eafdcddc20c6302171a192882c19e5ffc899d3d2a021f4b",
+    "manifest_sha256": "747d8f85eee5d0a62c2df72375fae5295ae45c6070648a7284318090b5b4dd5e"
+  },
+  "kmesh": [
+    28,
+    28,
+    28
+  ],
+  "material": "al",
+  "phase": "al_eos",
+  "protocol_revision": "S1-G1-THREE-LAYER-CONTINUATION-20260810-R2",
+  "pseudo": {
+    "basename": "Al_std.upf",
+    "format": "upf201",
+    "sha256": "b02eaa07c5d98f5eeae1bec4155854a7a94ea3635ca6b42e914f3f7ebd6912fb",
+    "upstream_commit": "823b18f7701b6303e0e69114eaa645173f706600",
+    "upstream_url": "https://raw.githubusercontent.com/PseudoDojo/ONCVPSP-PBE-SR/823b18f7701b6303e0e69114eaa645173f706600/Al/Al_std.upf"
+  },
+  "requirement": "al_hard_required",
+  "role": "normal_common_eos",
+  "schema_version": 1,
+  "suffix": "g1tlr2_al_v106_normal_common",
+  "thermodynamic_semantics": {
+    "E_ec": "F-m/2; finite-smearing estimator",
+    "F": "E_KohnSham=!FINAL_ETOT_IS",
+    "U": "F-m",
+    "local_only_kinetic_decomposition_claim": false,
+    "m": "E_entropy(-TS)<=0",
+    "zero_temperature_exact_claim": false
+  },
+  "volume_ratio": "1.06"
+}
