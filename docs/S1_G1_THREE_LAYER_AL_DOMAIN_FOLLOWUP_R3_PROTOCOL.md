@@ -14,6 +14,8 @@ R3 使用经只读查重确认未占用的新 ID 343--350、新 state 和新 smo
 
 R3 的首个 implementation/prereg `b282ef3c43a44ddc408055afb3de2ad9e5644679`/`2ad2811afdd7293fade9a0a5bbd9359dbb724d18` 在 smoke 前的独立审计中因缺少 exact prereg 唯一父与执行代码 blob 链被拒绝；`0c0f4a621a0dacb338d507d00a86983139f18754` 已将其关闭为 `superseded_before_execution`。该版 state/smoke root/attempt/rank/solver 均为 0，禁止执行。replacement 必须确保 prereg 的唯一直接父是 implementation，diff 仅为 config/protocol/8 个 metadata；smoke aggregate 冻结 smoke driver、formal runner 和 rank-wrapper 在 implementation/prereg 的 commit/blob/SHA/size，formalization 的唯一父是 exact prereg 且只改 aggregate。
 
+第二个 replacement implementation/prereg `11d679d282ebfd96e293004e7e4c9195eb612668`/`f5751517e5a6d2796cc164674f227ac744c8e7e1` 的静态 prereg 验证通过，但 smoke 前 live dry-run 发现其把新 R3 explicit-affinity parser 误用于 327--332 旧冻结 raw；`a057960a4df8acb775e1aea8bd07be5928cd6e15` 已在 state/smoke/attempt/solver 均为 0 时关闭该 prereg。最终 replacement 仅对新 343--350 强制 explicit `sysfs_core_id` schema；R1/continuation 只读源仍使用其历史注册的 legacy affinity schema 做 byte-exact replay，不冒充为新 R3 raw。
+
 R3 runner 必须先 fail-closed 读取两个只读科学源：
 
 1. 原 R1 的 301--306。accepted marker 必须以 `result_sha256` 绑定 result，result 的每个 evidence SHA/size、runner return、session SHA/runner commit 均须重验；continuation R2 的独立 P0 recovery barrier 必须声明原 R1 operational closure 为 `incomplete_missing_phase_marker`、301--306 no-retry/no-reuse，并给出逐 ID inventory 与独立 scientific P0 状态。

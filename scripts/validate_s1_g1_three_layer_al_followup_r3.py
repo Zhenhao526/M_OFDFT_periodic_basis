@@ -86,6 +86,8 @@ def validate_preregistered(project_root: Path, config: dict, rows: list[dict[str
     require_ancestor(project_root, config["r2_operational_failure_closure_commit"], implementation)
     require_ancestor(project_root, config["superseded_r3_preregistration_commit"], config["superseded_r3_preregistration_closure_commit"])
     require_ancestor(project_root, config["superseded_r3_preregistration_closure_commit"], implementation)
+    require_ancestor(project_root, config["superseded_r3_second_preregistration_commit"], config["superseded_r3_second_preregistration_closure_commit"])
+    require_ancestor(project_root, config["superseded_r3_second_preregistration_closure_commit"], implementation)
     require_ancestor(project_root, continuation["implementation_commit"], continuation["preregistration_commit"])
     require_ancestor(project_root, continuation["preregistration_commit"], continuation["recovery_formalization_commit"])
     # The continuation is an independent branch/state source; its exact commit
@@ -114,6 +116,14 @@ def validate_preregistered(project_root: Path, config: dict, rows: list[dict[str
     require(all(value == 0 for value in rejected_r3["execution_counts"].values()), "rejected R3 prereg execution count differs")
     require(sha256_file(rejected_r3_path) == config["superseded_r3_preregistration_closure_sha256"], "rejected R3 prereg closure SHA differs")
     require_tracked_matches_head(project_root, [Path(config["superseded_r3_preregistration_closure_path"])])
+    rejected_r3_second_path = project_root / config["superseded_r3_second_preregistration_closure_path"]
+    rejected_r3_second = read_json(rejected_r3_second_path)
+    require(isinstance(rejected_r3_second, dict) and rejected_r3_second.get("status") == "superseded_before_execution", "second rejected R3 prereg closure missing")
+    require(rejected_r3_second.get("superseded_preregistration_commit") == config["superseded_r3_second_preregistration_commit"], "second rejected R3 prereg identity differs")
+    require(rejected_r3_second.get("external_state_was_absent_at_closure") is True and rejected_r3_second.get("external_binding_smoke_root_was_absent_at_closure") is True, "second rejected R3 prereg external roots differ")
+    require(all(value == 0 for value in rejected_r3_second["execution_counts"].values()), "second rejected R3 prereg execution count differs")
+    require(sha256_file(rejected_r3_second_path) == config["superseded_r3_second_preregistration_closure_sha256"], "second rejected R3 prereg closure SHA differs")
+    require_tracked_matches_head(project_root, [Path(config["superseded_r3_second_preregistration_closure_path"])])
     require_tracked_matches_head(project_root, registered_paths(config, rows))
     r2_closure = verify_r2_operational_failure_closure(config, project_root, head)
     generate(project_root, mode="check")

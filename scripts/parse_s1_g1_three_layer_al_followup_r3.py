@@ -177,15 +177,21 @@ def validate_cube_geometry(run_dir: Path, cube_path: Path, config: dict) -> dict
 
 
 def parse_run(run_dir: Path, config: dict, *, require_followup_orchestration: bool = True) -> dict:
-    original_affinity_parser = base_parser.parse_affinity
-    base_parser.parse_affinity = parse_explicit_r3_affinity
-    try:
+    if require_followup_orchestration:
+        original_affinity_parser = base_parser.parse_affinity
+        base_parser.parse_affinity = parse_explicit_r3_affinity
+        try:
+            result = base_parser.parse_run(run_dir, config)
+        finally:
+            base_parser.parse_affinity = original_affinity_parser
+        result["affinity"]["sysfs_core_ids"] = result["affinity"].pop("physical_core_ids")
+        for row in result["affinity"]["ranks"]:
+            row.pop("physical_core_ids", None)
+    else:
+        # The frozen R1/continuation source evidence predates R3 and retains its
+        # registered legacy affinity schema. Replay it byte-exactly without
+        # relabelling that read-only source as newly generated R3 evidence.
         result = base_parser.parse_run(run_dir, config)
-    finally:
-        base_parser.parse_affinity = original_affinity_parser
-    result["affinity"]["sysfs_core_ids"] = result["affinity"].pop("physical_core_ids")
-    for row in result["affinity"]["ranks"]:
-        row.pop("physical_core_ids", None)
     require(result["material"] == "al" and result["atom_count"] == 1, "follow-up is Al/one-atom only")
     pseudo = result["pseudo_identity"]
     require(pseudo["z_valence"] == 3.0, "UPF zval differs")
