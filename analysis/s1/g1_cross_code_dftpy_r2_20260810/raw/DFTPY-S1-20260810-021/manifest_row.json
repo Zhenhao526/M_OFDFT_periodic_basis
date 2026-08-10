@@ -1,0 +1,14 @@
+{
+  "abacus_run_id": "S1-20260805-077",
+  "atom_count": "1",
+  "expected_electrons": "3.0",
+  "experiment_id": "DFTPY-S1-20260810-021",
+  "grid_nx": "20",
+  "grid_ny": "20",
+  "grid_nz": "20",
+  "material": "al",
+  "pseudopotential": "assets/pseudo/al.gga.psp",
+  "stru_path": "runs/S1-20260805-077/STRU",
+  "volume_ratio": "1.10",
+  "xc": "PBE"
+}

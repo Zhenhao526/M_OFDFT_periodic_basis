@@ -1,0 +1,128 @@
+{
+  "abacus_reference_result": {
+    "atom_count": 2,
+    "converged": true,
+    "electron_count_expected": 4.0,
+    "electron_count_nominal_relative_error": 0.0,
+    "electron_count_reported": 4.0,
+    "energy_ev": -49.21520626979602,
+    "energy_ev_kind": "total_energy",
+    "energy_ev_per_atom": -24.60760313489801,
+    "entropy_minus_ts_ev": null,
+    "entropy_minus_ts_ev_per_atom": null,
+    "failure_reason": null,
+    "free_energy_ev": null,
+    "free_energy_ev_per_atom": null,
+    "internal_energy_ev": null,
+    "internal_energy_ev_per_atom": null,
+    "pressure_gpa": -3.9977692,
+    "pressure_kbar": -39.977692,
+    "zero_temp_extrapolated_energy_ev": null,
+    "zero_temp_extrapolated_energy_ev_per_atom": null
+  },
+  "atom_count": 2,
+  "cell_angstrom": [
+    [
+      3.272345393722694,
+      0.0,
+      0.0
+    ],
+    [
+      -1.636172696861347,
+      2.8339342409208443,
+      0.0
+    ],
+    [
+      0.0,
+      0.0,
+      5.312998497417031
+    ]
+  ],
+  "cell_volume_angstrom3": 49.27068481196997,
+  "cell_volume_bohr3": 332.4950625285053,
+  "density_sha256": "e52c2e47dd61a43dec9956de9129827df2528698cecc68ec82844245847a0b3a",
+  "density_unit": "electron_per_Bohr3",
+  "dftpy_bohr_to_angstrom": 0.5291772105638411,
+  "dftpy_converged_code": 0,
+  "electron_count_abs_error": 8.881784197001252e-16,
+  "electron_count_expected": 4.0,
+  "electron_count_reported": 3.999999999999999,
+  "energy_components_ev": {
+    "HARTREE": 0.09055191997101736,
+    "II": -57.171315668845715,
+    "KEDF-NL": -0.4987022564924245,
+    "KEDF-TF": 16.670429990118457,
+    "KEDF-VW": 1.6315239054359632,
+    "PSEUDO": 12.880769164004043,
+    "TOTAL": -49.215190098875574,
+    "XC": -22.818447153066916
+  },
+  "energy_ev": -49.215190098875574,
+  "energy_ev_per_atom": -24.607595049437787,
+  "experiment_id": "DFTPY-S1-20260810-027",
+  "grid": [
+    25,
+    25,
+    45
+  ],
+  "grid_dv_bohr3": 0.011822046667680188,
+  "inputs": {
+    "abacus_result_sha256": "20a055c744b95db749616a13bee066896402fb06081679526da0279ed188db9a",
+    "manifest_row": {
+      "abacus_run_id": "S1-20260805-097",
+      "atom_count": "2",
+      "expected_electrons": "4.0",
+      "experiment_id": "DFTPY-S1-20260810-027",
+      "grid_nx": "25",
+      "grid_ny": "25",
+      "grid_nz": "45",
+      "material": "mg",
+      "pseudopotential": "assets/pseudo/mg.lda.lps",
+      "stru_path": "runs/S1-20260805-097/STRU",
+      "volume_ratio": "1.06",
+      "xc": "LDA"
+    },
+    "pseudopotential_sha256": "4b964580cfbd798708299bb0e0baef2f437983d29e6d7040f63b7532038b4259",
+    "stru_sha256": "bb0d40d53f0e969384656b0757876d5ea489208aafd6fec7592e2549cd6db331"
+  },
+  "material": "mg",
+  "pressure_gpa": -3.9976641313712933,
+  "pressure_sign_convention": "negative_trace_of_DFTpy_stress_over_three",
+  "runtime": {
+    "cpu_affinity": [
+      10
+    ],
+    "dftpy_version": "2.2.0",
+    "hostname": "node01",
+    "mkl_num_threads": "1",
+    "numpy_version": "2.4.6",
+    "omp_num_threads": "1",
+    "openblas_num_threads": "1",
+    "pylibxc_version": "7.0.0",
+    "python": "3.11.15 (main, Jul 18 2026, 17:02:49) [Clang 22.1.3 ]",
+    "python_executable": "/home/shenwei01/.local/venvs/m_ofdft-dftpy-2.2.0-py311/bin/python",
+    "slurm_job_id": null,
+    "slurm_job_name": null
+  },
+  "status": "accepted",
+  "stress_gpa": [
+    [
+      4.070812005237452,
+      1.5007844980260853e-05,
+      -1.4128409310519726e-08
+    ],
+    [
+      1.5007844980260853e-05,
+      4.070829304326937,
+      -5.5335026181141444e-08
+    ],
+    [
+      -1.4128409310519726e-08,
+      -5.5335026181141444e-08,
+      3.851351084549493
+    ]
+  ],
+  "volume_per_atom_angstrom3": 24.635342405984986,
+  "volume_ratio": 1.06,
+  "wall_seconds": 2.7072079181671143
+}

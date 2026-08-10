@@ -1,0 +1,134 @@
+{
+  "absolute_energy_convention_audit": {
+    "allowed_constant_removal": "Only one per-material constant is removed for the registered anchored relative-EOS metric.",
+    "hartree_G_zero": "Both calculations are neutral periodic cells. Equality of the total-energy shape and pressure is observed; equality of internal Hartree G=0 code paths is an inference, not a component-wise proof.",
+    "ion_ewald_and_self_energy": "DFTpy includes LocalPseudo.ewald in TotalFunctional; ABACUS does not expose a matching component table in these legacy logs. Raw absolute offsets and their centered RMS are therefore reported and no absolute-energy cancellation is hidden.",
+    "local_pseudopotential_headers": {
+      "al": "al_locpsp | realspace | Coulombic Tail @ 5.0 | Vg0 = 26.20 | VgCut @ 5.57 | Nov-2010 |GGA",
+      "mg": "mg_locpsp | realspace | Coulombic Tail= 8.5 | Vg=25.3 | TC=6.14 | Nov-04-2007 |LDA Perdew-Zunger"
+    },
+    "same_local_pseudopotential_bytes": true
+  },
+  "analysis_provenance": {
+    "analyzer_commit": "4643b65214075318476975f4876e03151c898476",
+    "config": "config/S1_g1_cross_code_dftpy.json",
+    "config_sha256": "b5459f8a622f41677cc6b626f3ea9fcce1109a51038ce56adc1e46339bdd20b7",
+    "environment_lock": "environment/dftpy_2.2.0_pylibxc_7.0.0.lock.json",
+    "environment_lock_sha256": "82f7d7440672249e99b6ef15b6bec0bbf51ae846f1dc775c9c58cca89d5746f4",
+    "manifest": "config/S1_g1_cross_code_dftpy_manifest.tsv",
+    "manifest_sha256": "0ca27fe0a33463c3752cb596fb096848b23068f6ca452ac73073a3ce2d8076bd",
+    "runner_summary_sha256": "7ec57882b9b31ea5aa4ebcce7d229c9859405d70d829274a504aac34f286c8fe"
+  },
+  "cross_code_status": "accepted",
+  "failures": [],
+  "formal_analyzed_points": 14,
+  "formal_expected_points": 14,
+  "g1_status_after_if_accepted": "pending (3/6)",
+  "g1_status_before": "pending (2/6)",
+  "materials": {
+    "al": {
+      "abacus_bm3": {
+        "b0_ev_per_angstrom3": 0.49020850789854775,
+        "b0_gpa": 78.54006106723054,
+        "b0_prime": 4.733343142271055,
+        "e0_ev_per_atom": -57.18377942007992,
+        "max_abs_residual_mev_per_atom": 0.017076272918359336,
+        "rmse_mev_per_atom": 0.011158044152489483,
+        "v0_angstrom3_per_atom": 16.769513414287104
+      },
+      "absolute_energy_offset_mev_per_atom": {
+        "centered_rms": 1.1083435560233213e-05,
+        "mean": 0.02096474682287765,
+        "range": 3.4593462316934165e-05,
+        "values": [
+          0.020939269383291048,
+          0.02096214169000632,
+          0.020966596906646373,
+          0.020966837979585762,
+          0.020973862845607982,
+          0.02097191772776341,
+          0.02097260122724265
+        ]
+      },
+      "anchored_relative_eos_rms_mev_per_atom": 1.1278984005473447e-05,
+      "dftpy_bm3": {
+        "b0_ev_per_angstrom3": 0.4902084232676947,
+        "b0_gpa": 78.54004750787311,
+        "b0_prime": 4.733336210250878,
+        "e0_ev_per_atom": -57.18375844954117,
+        "max_abs_residual_mev_per_atom": 0.017076890664213806,
+        "rmse_mev_per_atom": 0.011159250939154625,
+        "v0_angstrom3_per_atom": 16.769513353244125
+      },
+      "electron_number_max_abs_error": 3.552713678800501e-15,
+      "equilibrium_volume_difference_percent": 3.640116319481024e-07,
+      "gates": {
+        "all_points_accepted": true,
+        "anchored_relative_eos_rms": true,
+        "electron_number": true,
+        "equilibrium_volume": true,
+        "pressure": true
+      },
+      "max_abs_relative_energy_difference_mev_per_atom": 2.7568596294713643e-05,
+      "pressure_max_abs_difference_gpa": 0.001036301360047176,
+      "pressure_rms_difference_gpa": 0.0006411759829031806,
+      "status": "accepted"
+    },
+    "mg": {
+      "abacus_bm3": {
+        "b0_ev_per_angstrom3": 0.2315841351706281,
+        "b0_gpa": 37.103868711856734,
+        "b0_prime": 3.942460119724276,
+        "e0_ev_per_atom": -24.65355677284282,
+        "max_abs_residual_mev_per_atom": 0.002466981968041182,
+        "rmse_mev_per_atom": 0.001588449869972633,
+        "v0_angstrom3_per_atom": 21.359027050532983
+      },
+      "absolute_energy_offset_mev_per_atom": {
+        "centered_rms": 0.0004101858908274244,
+        "mean": 0.008462803375408612,
+        "range": 0.0011171345164484592,
+        "values": [
+          0.009047427063535451,
+          0.009049747898615124,
+          0.008498640621468212,
+          0.008417134260696457,
+          0.00820860017824998,
+          0.008085460223128393,
+          0.007932613382166664
+        ]
+      },
+      "anchored_relative_eos_rms_mev_per_atom": 0.00041272040544717404,
+      "dftpy_bm3": {
+        "b0_ev_per_angstrom3": 0.23157785770780184,
+        "b0_gpa": 37.102862951438915,
+        "b0_prime": 3.9420960783958425,
+        "e0_ev_per_atom": -24.653547751744995,
+        "max_abs_residual_mev_per_atom": 0.0025172867843537006,
+        "rmse_mev_per_atom": 0.001648138714476864,
+        "v0_angstrom3_per_atom": 21.359045733139425
+      },
+      "electron_number_max_abs_error": 5.773159728050814e-15,
+      "equilibrium_volume_difference_percent": 8.746937019132872e-05,
+      "gates": {
+        "all_points_accepted": true,
+        "anchored_relative_eos_rms": true,
+        "electron_number": true,
+        "equilibrium_volume": true,
+        "pressure": true
+      },
+      "max_abs_relative_energy_difference_mev_per_atom": 0.0006326136379186664,
+      "pressure_max_abs_difference_gpa": 0.00010506862870673928,
+      "pressure_rms_difference_gpa": 5.6776380449847624e-05,
+      "status": "accepted"
+    }
+  },
+  "protocol_revision": "S1-G1-CROSS-CODE-DFTPY-20260810-R2",
+  "thresholds": {
+    "anchored_relative_eos_rms_mev_per_atom_max": 2.0,
+    "electron_number_abs_error_max": 1e-10,
+    "equilibrium_volume_difference_percent_max": 0.2,
+    "failed_or_missing_runs_max": 0,
+    "pressure_max_abs_difference_gpa": 0.05
+  }
+}

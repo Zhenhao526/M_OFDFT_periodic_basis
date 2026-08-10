@@ -1,0 +1,14 @@
+{
+  "abacus_run_id": "S1-20260805-092",
+  "atom_count": "2",
+  "expected_electrons": "4.0",
+  "experiment_id": "DFTPY-S1-20260810-022",
+  "grid_nx": "24",
+  "grid_ny": "24",
+  "grid_nz": "40",
+  "material": "mg",
+  "pseudopotential": "assets/pseudo/mg.lda.lps",
+  "stru_path": "runs/S1-20260805-092/STRU",
+  "volume_ratio": "0.90",
+  "xc": "LDA"
+}

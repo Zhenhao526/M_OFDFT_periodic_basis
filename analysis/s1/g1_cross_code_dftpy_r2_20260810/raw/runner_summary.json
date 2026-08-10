@@ -1,0 +1,45 @@
+{
+  "completed_count": 14,
+  "config_path": "config/S1_g1_cross_code_dftpy.json",
+  "config_sha256": "b5459f8a622f41677cc6b626f3ea9fcce1109a51038ce56adc1e46339bdd20b7",
+  "environment": {
+    "artifacts": {
+      "dftpy_source": {
+        "path": "/home/shenwei01/.local/share/m_ofdft/dftpy-2.2.0/source/dftpy-2.2.0.tar.gz",
+        "sha256": "8a27cb8a96d8db92a3f06f609479b1b522fefa29864e1201138274d1646dc203"
+      },
+      "libxc_shared": {
+        "path": "/home/shenwei01/.local/venvs/m_ofdft-dftpy-2.2.0-py311/lib/python3.11/site-packages/libxc.so.15",
+        "sha256": "88f9e5f6e15ba975fe931fd457642ed9f04a0a2ff789613d351e66c76c25bcd9"
+      },
+      "libxc_source": {
+        "path": "/home/shenwei01/.local/share/m_ofdft/dftpy-2.2.0/libxc-7.0.0.tar.bz2",
+        "sha256": "e9ae69f8966d8de6b7585abd9fab588794ada1fab8f689337959a35abbf9527d"
+      }
+    },
+    "lock_path": "environment/dftpy_2.2.0_pylibxc_7.0.0.lock.json",
+    "lock_sha256": "82f7d7440672249e99b6ef15b6bec0bbf51ae846f1dc775c9c58cca89d5746f4"
+  },
+  "failure_count": 0,
+  "failures": [],
+  "manifest_path": "config/S1_g1_cross_code_dftpy_manifest.tsv",
+  "manifest_sha256": "0ca27fe0a33463c3752cb596fb096848b23068f6ca452ac73073a3ce2d8076bd",
+  "protocol_revision": "S1-G1-CROSS-CODE-DFTPY-20260810-R2",
+  "runner_commit": "4643b65214075318476975f4876e03151c898476",
+  "selected_ids": [
+    "DFTPY-S1-20260810-015",
+    "DFTPY-S1-20260810-016",
+    "DFTPY-S1-20260810-017",
+    "DFTPY-S1-20260810-018",
+    "DFTPY-S1-20260810-019",
+    "DFTPY-S1-20260810-020",
+    "DFTPY-S1-20260810-021",
+    "DFTPY-S1-20260810-022",
+    "DFTPY-S1-20260810-023",
+    "DFTPY-S1-20260810-024",
+    "DFTPY-S1-20260810-025",
+    "DFTPY-S1-20260810-026",
+    "DFTPY-S1-20260810-027",
+    "DFTPY-S1-20260810-028"
+  ]
+}
