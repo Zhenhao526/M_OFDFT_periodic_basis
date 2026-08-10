@@ -1,0 +1,79 @@
+{
+  "schema_version": 1,
+  "protocol_revision": "S1-G1-THREE-LAYER-AL-DOMAIN-FOLLOWUP-20260810-R3",
+  "operational_status": "failed_parser_schema_preserved_no_retry",
+  "runner_commit": "d5d302d677622e508c2d4d4e9170a005167555ab",
+  "external_state_root": "/home/shenwei01/.local/state/m_ofdft/s1_g1_three_layer_al_domain_followup_r3_20260810",
+  "session_sha256": "fe4aa051dae419bdd2dcfdd02c41ebeeee0f668483ef9ed4958d89cfd90aaec7",
+  "unique_attempt_ids": [
+    "S1-20260810-343"
+  ],
+  "unique_attempt_count": 1,
+  "solver_start_count": 1,
+  "solver_return_zero_count": 1,
+  "parser_failure_count": 1,
+  "accepted_count": 0,
+  "scientific_contribution_count": 0,
+  "unattempted_ids": [
+    "S1-20260810-344",
+    "S1-20260810-345",
+    "S1-20260810-346",
+    "S1-20260810-347",
+    "S1-20260810-348",
+    "S1-20260810-349",
+    "S1-20260810-350"
+  ],
+  "terminal_marker_present": false,
+  "retry_policy": "S1-20260810-343_must_not_be_retried_and_344_350_must_never_execute_under_R3",
+  "failure": {
+    "stage": "parser",
+    "exception": "KeyError: requirement",
+    "root_cause": "new_followup_metadata_schema_has_phase_and_role_but_inherited_R1_result_builder_unconditionally_reads_legacy_requirement",
+    "solver_return_code": 0,
+    "solver_duration_seconds": 356.81580491550267,
+    "attempt_marker_sha256": "91788b22938afb69e0a60df552d84af80f83b05b428942c31f1f08b478722814",
+    "runner_return_sha256": "8d0879dd31c4481d37b33d8e075bbb3ec43228bf25414cf364232cdf1db7b2cb",
+    "failure_marker_sha256": "e2ad12011ea093ef2315ed01afa4ee7f360304282e45d34243aef2c2cf95d019"
+  },
+  "executed_raw_identity": {
+    "experiment_id": "S1-20260810-343",
+    "metadata_sha256": "f0bc9cec819217c871fdef56045f6cfff17c31aa19c2be9a3c66b34d323a2198",
+    "input_metadata_sha256": "c09cb46803fdd1418ed64d30ed97c6e8608383d5d84f9aa3a359544acf603ac7",
+    "run_stdout_sha256": "89e637ea58cc843f493b666aebaa204ea84233e2dd070c3b075b74b0d6016d46",
+    "run_stderr_sha256": "18e31b274f03aefbb2cd3dca1d85d73e6c4c4161f9327662ec95b8fb824ae826",
+    "running_scf_log_sha256": "36613db69b8cdecd233694e2e5f614f6279e07597d41b3d99a6c729de16f05b2",
+    "density_cube_sha256": "eb6b326385ce0c3a38a7ca2fdde281a0477fb678c388c9cbfce6ae8198ce7b9d",
+    "eig_occ_sha256": "908c3e85dec38db995020f3d74cc511ea73ab5ecdc4e1eba706d84bf26a510e0",
+    "affinity_sha256_by_rank": {
+      "rank_000": "90dab9f6735077e23b0546f09c4d2cbb2ab3d603a57d5e77469fe6ba27477e75",
+      "rank_001": "2af64b5799b08afa308c80c68a7be9054c00c0b1042ce7eafa30e522cb7e7be0",
+      "rank_002": "63cef4e5a3c352afef5a12ad64258cce8c99d18d184ed533418e75d32f7906cf",
+      "rank_003": "8deabc3597c4c767048f5250bb6d6667dc3d3572e26a5b158340ec68e06d8985"
+    }
+  },
+  "diagnostic_replay": {
+    "status": "accepted_after_explicit_temporary_requirement_equals_role_mapping",
+    "original_state_modified": false,
+    "all_per_point_hard_gates_accepted": true,
+    "diagnostic_result_sha256": "5ebe5be271896b7139d5aecf1f428cba1acd2a0527abce0af48c78635db53df9",
+    "E_ec_ev_per_atom": -63.0630520406,
+    "pressure_gpa": -0.7758676,
+    "cube_electron_relative_error": 4.2228442964642454e-12,
+    "eig_occ_electron_relative_error": 2.367913272867857e-11,
+    "last_band_maximum_occupation": 0.0,
+    "scientific_use": "diagnostic_only_zero_R3_contribution"
+  },
+  "state_snapshot": {
+    "file_count": 25,
+    "regular_file_bytes": 12382620,
+    "relative_sha256sum_list_digest": "6ab8a172da04cc2537d91d95984395fb993c8a3bbfc9c6e3e5d34aa8157f46c9"
+  },
+  "replacement_policy": {
+    "revision": "R4",
+    "new_ids": "S1-20260810-351..358",
+    "new_state_required": true,
+    "all_eight_points_must_be_recomputed": true,
+    "R3_343_must_not_enter_R4_formal_denominator": true,
+    "config_specific_four_rank_smoke_required": true
+  }
+}
