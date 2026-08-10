@@ -11,6 +11,7 @@ import shutil
 import subprocess
 from pathlib import Path
 
+from parse_s1_g1_three_layer_al_followup_r2 import parse_run as reparse_new_run
 from run_s1_g1_three_layer_al_followup_r2 import verify_accepted_source
 from s1_g1_three_layer_al_followup_r2_common import (
     atomic_write,
@@ -48,6 +49,8 @@ def _read_object(path: Path) -> dict:
 
 def verify_new_result(run_dir: Path, experiment_id: str, config: dict) -> dict:
     result = _read_object(run_dir / "result.json")
+    reparsed = reparse_new_run(run_dir, config)
+    require(canonical_json_bytes(reparsed) == (run_dir / "result.json").read_bytes(), f"new raw parser replay differs: {experiment_id}")
     require(result.get("status") == "accepted" and result.get("experiment_id") == experiment_id, f"new result rejected: {experiment_id}")
     require(result.get("protocol_revision") == config["protocol_revision"], "new result protocol differs")
     require(result.get("hard_gates") and all(result["hard_gates"].values()), f"per-point hard gate failed: {experiment_id}")

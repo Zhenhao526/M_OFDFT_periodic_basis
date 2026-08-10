@@ -4,10 +4,12 @@
 from __future__ import annotations
 
 import argparse
+import copy
 import fcntl
 import json
 import os
 import shutil
+import signal
 import socket
 import subprocess
 import sys
@@ -31,6 +33,7 @@ from s1_g1_three_layer_al_followup_r2_common import (
     require,
     require_clean_tree,
     require_tracked_matches_head,
+    sha256_bytes,
     sha256_file,
     validate_pseudo,
 )
@@ -122,6 +125,30 @@ def verify_accepted_source(state_root: Path, experiment_id: str, session: dict) 
     }
 
 
+def replay_continuation_al_raw(run_dir: Path, stored: dict, config: dict, continuation_spec: dict) -> dict:
+    replay_config = copy.deepcopy(config)
+    replay_config["protocol_revision"] = continuation_spec["protocol_revision"]
+    replay_config["runtime"]["required_hostname"] = continuation_spec["required_hostname"]
+    replay_config["runtime"]["physical_core_ids"] = continuation_spec["runtime_physical_core_ids"]
+    replay_config["runtime"]["rank_count"] = continuation_spec["runtime_rank_count"]
+    reparsed = parse_run(run_dir, replay_config)
+    require(reparsed.get("status") == "accepted" and all(reparsed.get("hard_gates", {}).values()), "independent continuation raw replay rejected")
+    for key in (
+        "experiment_id", "atom_count", "expected_electrons", "runtime_nonlocal_projectors_total",
+        "pseudo_identity", "thermodynamic_labels_ev_per_cell", "thermodynamic_labels_ev_per_atom",
+        "pressure_kbar", "pressure_gpa",
+    ):
+        require(reparsed.get(key) == stored.get(key), f"continuation stored/independent replay differs: {key}")
+    return {
+        "parser": "parse_s1_g1_three_layer_al_followup_r2.parse_run",
+        "reparsed_sha256": sha256_bytes(canonical_json_bytes(reparsed)),
+        "cube_origin_exactly_zero": reparsed["cube_geometry"]["origin_exactly_zero"],
+        "stress_pressure_accepted": reparsed["mechanics"]["accepted"],
+        "all_hard_gates_accepted": all(reparsed["hard_gates"].values()),
+        "accepted": True,
+    }
+
+
 def _inventory_map(payload: object) -> dict[str, dict]:
     require(isinstance(payload, list), "recovery accepted inventory must be a list")
     output: dict[str, dict] = {}
@@ -131,6 +158,28 @@ def _inventory_map(payload: object) -> dict[str, dict]:
         require(experiment_id not in output, "duplicate recovery inventory ID")
         output[experiment_id] = row
     return output
+
+
+def git_file_at_commit(project_root: Path, commit: str, relative: str) -> tuple[bytes, str]:
+    completed = subprocess.run(
+        ["git", "show", f"{commit}:{relative}"], cwd=project_root, check=False,
+        stdout=subprocess.PIPE, stderr=subprocess.PIPE,
+    )
+    require(completed.returncode == 0, f"source Git file unavailable: {commit}:{relative}")
+    blob = subprocess.run(
+        ["git", "rev-parse", f"{commit}:{relative}"], cwd=project_root, check=True,
+        text=True, stdout=subprocess.PIPE, stderr=subprocess.PIPE,
+    ).stdout.strip()
+    return completed.stdout, blob
+
+
+def require_git_ancestor(project_root: Path, ancestor: str, descendant: str) -> None:
+    require(len(ancestor) == len(descendant) == 40, "source commit identity differs")
+    completed = subprocess.run(
+        ["git", "merge-base", "--is-ancestor", ancestor, descendant], cwd=project_root,
+        stdout=subprocess.PIPE, stderr=subprocess.PIPE,
+    )
+    require(completed.returncode == 0, f"source preregistration is not ancestor: {ancestor} -> {descendant}")
 
 
 def verify_parent_sources(config: dict, project_root: Path | None = None, rows: list[dict[str, str]] | None = None) -> dict:
@@ -149,30 +198,70 @@ def verify_parent_sources(config: dict, project_root: Path | None = None, rows: 
     continuation_session_path = continuation_root / "session.json"
     continuation_session = _object(continuation_session_path, "continuation session")
     require(continuation_session.get("protocol_revision") == continuation_spec["protocol_revision"], "continuation protocol differs")
-    require(continuation_session.get("runner_commit") == continuation_spec["preregistration_commit"], "continuation preregistration/runner binding differs")
+    continuation_runner = continuation_session.get("runner_commit")
+    require(isinstance(continuation_runner, str) and len(continuation_runner) == 40, "continuation runner commit differs")
+    if project_root is not None:
+        require_git_ancestor(project_root, continuation_spec["preregistration_commit"], continuation_runner)
+    require(continuation_session.get("recovery_prereg_commit") == continuation_spec["preregistration_commit"], "continuation recovery prereg binding differs")
+    require(continuation_session.get("recovery_source_runner_commit") == old_spec["runner_commit"], "continuation recovery source runner differs")
 
     barrier_path = continuation_root / continuation_spec["recovery_barrier_relative_path"]
     barrier = _object(barrier_path, "independent R1 P0 recovery barrier")
     require(barrier.get("status") == "accepted", "independent R1 P0 recovery rejected")
     require(barrier.get("protocol_revision") == continuation_spec["protocol_revision"], "recovery barrier protocol differs")
-    require(barrier.get("runner_commit") == continuation_session.get("runner_commit"), "recovery barrier runner/session binding differs")
-    require(barrier.get("source_r1_state_root") == str(old_root), "recovery source state differs")
-    require(barrier.get("source_r1_session_sha256") == old_session_sha, "recovery source session SHA differs")
-    require(barrier.get("source_r1_runner_commit") == old_spec["runner_commit"], "recovery source runner differs")
-    require(barrier.get("r1_operational_closure") == "incomplete_missing_phase_marker", "R1 operational closure semantics differ")
-    require(barrier.get("source_ids") == continuation_spec["required_recovery_ids"], "recovery source ID set/order differs")
-    require(barrier.get("source_ids_no_retry_no_reuse") is True, "recovery no-retry/no-reuse acknowledgement missing")
-    scientific = barrier.get("scientific_p0_statuses")
-    require(isinstance(scientific, dict) and scientific and all(value == "accepted" for value in scientific.values()), "independent scientific P0 recovery gate rejected")
-    barrier_inventory = _inventory_map(barrier.get("accepted_inventory"))
+    barrier_sha = sha256_file(barrier_path)
+    require(continuation_session.get("recovery_barrier_sha256") == barrier_sha, "continuation session/recovery barrier SHA differs")
+    require(barrier.get("continuation_prereg_commit") == continuation_spec["preregistration_commit"], "recovery barrier prereg binding differs")
+    require(barrier.get("source_state_root") == str(old_root), "recovery source state differs")
+    require(barrier.get("source_session_sha256") == old_session_sha, "recovery source session SHA differs")
+    require(barrier.get("source_runner_commit") == old_spec["runner_commit"], "recovery source runner differs")
+    require(barrier.get("source_operational_status") == old_spec["operational_status"], "R1 operational closure semantics differ")
+    require(barrier.get("source_operational_phase_accepted") is False, "R1 operational phase overclaim")
+    require(barrier.get("scientific_p0_recovery_status") == "accepted", "independent scientific P0 recovery gate rejected")
+    require(barrier.get("accepted_source_ids") == continuation_spec["required_recovery_ids"], "recovery source ID set/order differs")
+    require(barrier.get("accepted_source_count") == len(continuation_spec["required_recovery_ids"]), "recovery source count differs")
+    require(barrier.get("new_run_count") == 0, "recovery evidence was miscounted as new runs")
+    require(barrier.get("permanently_unexecuted_source_ids") == old_spec["permanently_unexecuted_ids"], "R1 unexecuted denominator differs")
+    require(barrier.get("source_snapshot") == old_spec["source_snapshot"], "R1 source snapshot differs")
+    require(isinstance(barrier.get("p0_metrics"), dict) and barrier["p0_metrics"].get("status") == "accepted", "recovered P0 metrics rejected")
+    require(barrier.get("scope", {}).get("r1_phase_marker_reconstructed") is False, "R1 phase marker reconstruction overclaim")
+    barrier_inventory = _inventory_map(barrier.get("per_run_recovery"))
+
+    if project_root is not None:
+        versioned_bytes, versioned_blob = git_file_at_commit(project_root, continuation_runner, continuation_spec["versioned_recovery_barrier_path"])
+        require(versioned_bytes == barrier_path.read_bytes(), "external/versioned recovery barrier differs")
+        for relative, key in ((continuation_spec["config_path"], "config_sha256"), (continuation_spec["manifest_path"], "manifest_sha256")):
+            committed, _ = git_file_at_commit(project_root, continuation_runner, relative)
+            digest = sha256_bytes(committed)
+            require(digest == barrier.get(key) == continuation_session.get(key), f"continuation {key} binding differs")
+        source_git_identities = barrier.get("source_git_identities")
+        require(isinstance(source_git_identities, list) and [item.get("path") for item in source_git_identities if isinstance(item, dict)] == old_spec["source_git_paths"], "recovery source Git identity denominator differs")
+        for identity in source_git_identities:
+            require(isinstance(identity, dict), "recovery source Git identity differs")
+            committed, blob = git_file_at_commit(project_root, identity.get("commit", ""), identity.get("path", ""))
+            require(blob == identity.get("git_blob_oid"), "recovery source Git blob differs")
+            require(sha256_bytes(committed) == identity.get("sha256") and len(committed) == identity.get("size_bytes"), "recovery source Git bytes differ")
+    else:
+        versioned_blob = "not_checked_without_project_root"
 
     recovered: dict[str, dict] = {}
     for experiment_id in old_spec["required_accepted_ids"]:
         identity = verify_accepted_source(old_root, experiment_id, old_session)
         inventory = barrier_inventory.get(experiment_id)
         require(inventory is not None, f"recovery inventory lacks {experiment_id}")
-        for key in ("accepted_marker_sha256", "result_sha256", "runner_return_sha256"):
-            require(inventory.get(key) == identity[key], f"recovery/source {key} differs: {experiment_id}")
+        require(inventory.get("status") == "accepted_source_evidence", f"recovery status differs: {experiment_id}")
+        require(inventory.get("accepted_sha256") == identity["accepted_marker_sha256"], f"recovery/source accepted marker differs: {experiment_id}")
+        require(inventory.get("accepted_result_sha256") == inventory.get("result_sha256") == identity["result_sha256"], f"recovery/source result differs: {experiment_id}")
+        require(inventory.get("runner_return_sha256") == identity["runner_return_sha256"] and inventory.get("runner_return_code") == 0, f"recovery/source runner return differs: {experiment_id}")
+        require(inventory.get("attempt_sha256") == sha256_file(old_root / "attempts" / f"{experiment_id}.json"), f"recovery/source attempt differs: {experiment_id}")
+        require(inventory.get("r1_parser_byte_exact_replay") is True, f"R1 parser replay differs: {experiment_id}")
+        enhanced = inventory.get("enhanced_raw_gates")
+        require(isinstance(enhanced, dict) and enhanced.get("accepted") is True, f"enhanced recovery gates rejected: {experiment_id}")
+        require(enhanced.get("affinity", {}).get("accepted") is True, f"recovery affinity rejected: {experiment_id}")
+        require(enhanced.get("cube_geometry", {}).get("accepted") is True, f"recovery cube geometry rejected: {experiment_id}")
+        require(enhanced.get("stress_trace_gate", {}).get("accepted") is True, f"recovery stress/pressure rejected: {experiment_id}")
+        require(enhanced.get("eig_occupations", {}).get("accepted") is True, f"recovery eig occupation rejected: {experiment_id}")
+        verify_result_evidence(old_root / "runs" / experiment_id, enhanced)
         if experiment_id in {"S1-20260810-301", "S1-20260810-302", "S1-20260810-303"}:
             result = _object(old_root / "runs" / experiment_id / "result.json", "R1 Al anchor result")
             require(result.get("runtime_nonlocal_projectors_total") == 18, "R1 Al anchor projector count differs")
@@ -185,13 +274,16 @@ def verify_parent_sources(config: dict, project_root: Path | None = None, rows: 
     require(phase.get("protocol_revision") == continuation_spec["protocol_revision"], "continuation phase protocol differs")
     require(phase.get("runner_commit") == continuation_session.get("runner_commit"), "continuation phase runner/session differs")
     require(phase.get("phase") == continuation_spec["endpoint_phase"], "continuation endpoint phase name differs")
-    require(phase.get("accepted_ids") == continuation_spec["required_accepted_ids"], "continuation endpoint phase ID set/order differs")
-    require(phase.get("accepted_count") == len(continuation_spec["required_accepted_ids"]), "continuation endpoint phase count differs")
+    require(phase.get("accepted_ids") == continuation_spec["endpoint_phase_accepted_ids"], "continuation endpoint phase ID set/order differs")
+    require(phase.get("accepted_count") == len(continuation_spec["endpoint_phase_accepted_ids"]), "continuation endpoint phase count differs")
     endpoints = {experiment_id: verify_accepted_source(continuation_root, experiment_id, continuation_session) for experiment_id in continuation_spec["required_accepted_ids"]}
     for experiment_id in continuation_spec["required_accepted_ids"]:
         result = _object(continuation_root / "runs" / experiment_id / "result.json", "continuation Al endpoint result")
         require(result.get("runtime_nonlocal_projectors_total") == 18, "continuation Al endpoint projector count differs")
         require(result.get("pseudo_identity", {}).get("sha256") == config["pseudodojo"]["materials"]["al"]["sha256"], "continuation Al endpoint pseudo differs")
+        endpoints[experiment_id]["independent_raw_replay"] = replay_continuation_al_raw(
+            continuation_root / "runs" / experiment_id, result, config, continuation_spec
+        )
     if project_root is not None or rows is not None:
         require(project_root is not None and rows is not None, "project root and manifest rows must be supplied together")
         checked: set[str] = set()
@@ -209,7 +301,9 @@ def verify_parent_sources(config: dict, project_root: Path | None = None, rows: 
     return {
         "ready": True,
         "r1_session_sha256": old_session_sha,
-        "r1_recovery_barrier_sha256": sha256_file(barrier_path),
+        "r1_recovery_barrier_sha256": barrier_sha,
+        "r1_recovery_versioned_git_blob": versioned_blob,
+        "continuation_runner_commit": continuation_runner,
         "continuation_session_sha256": sha256_file(continuation_session_path),
         "continuation_endpoint_phase_sha256": sha256_file(phase_path),
         "r1_recovered_sources": recovered,
@@ -270,6 +364,13 @@ def live_preflight(config: dict) -> dict:
     online = parse_cpu_list(Path("/sys/devices/system/cpu/online").read_text())
     require(targets <= online, "one or more frozen CPUs are offline")
     require(targets <= os.sched_getaffinity(0), "runner affinity excludes frozen CPUs")
+    sibling_map: dict[int, list[int]] = {}
+    reserved_logical: set[int] = set()
+    for cpu in sorted(targets):
+        siblings = parse_cpu_list(Path(f"/sys/devices/system/cpu/cpu{cpu}/topology/thread_siblings_list").read_text())
+        require(cpu in siblings and siblings <= online, f"invalid/offline sibling set for CPU {cpu}")
+        sibling_map[cpu] = sorted(siblings)
+        reserved_logical.update(siblings)
     collisions: list[dict] = []
     for proc in Path("/proc").iterdir():
         if not proc.name.isdigit():
@@ -284,15 +385,34 @@ def live_preflight(config: dict) -> dict:
             allowed = parse_cpu_list(allowed_row.split(":", 1)[1])
         except (FileNotFoundError, PermissionError, StopIteration, ValueError):
             continue
-        overlap = sorted(targets & allowed)
+        overlap = sorted(reserved_logical & allowed)
         if overlap:
             collisions.append({"pid": int(proc.name), "comm": comm, "allowed": sorted(allowed), "overlap": overlap})
     require(not collisions, f"live ABACUS affinity collision on cores 40-43: {collisions}")
     require(sha256_file(Path(runtime["binary"])) == runtime["binary_sha256"], "binary SHA differs")
-    return {"hostname": hostname, "online_cpus": sorted(online), "target_physical_cores": sorted(targets), "abacus_collisions": collisions, "accepted": True}
+    return {
+        "hostname": hostname, "online_cpus": sorted(online), "target_physical_cores": sorted(targets),
+        "thread_siblings_by_target": sibling_map, "reserved_logical_cpus": sorted(reserved_logical),
+        "collision_scan_scope": "all live processes whose comm or cmdline contains abacus; physical cores plus SMT siblings",
+        "abacus_collisions": collisions, "accepted": True,
+    }
 
 
-def initialize_state(state_root: Path, project_root: Path, config: dict, head: str, parents: dict, ack: dict, locks: list[dict], preflight: dict) -> dict:
+def detached_runtime_proof() -> dict:
+    pid = os.getpid()
+    sid = os.getsid(0)
+    require(signal.getsignal(signal.SIGHUP) == signal.SIG_IGN, "formal runner must ignore SIGHUP")
+    require(sid == pid, "formal runner must be launched as a detached session leader (setsid)")
+    tty = {str(fd): os.isatty(fd) for fd in (0, 1, 2)}
+    require(not any(tty.values()), "formal runner stdio must be detached from a terminal")
+    return {
+        "pid": pid, "parent_pid": os.getppid(), "session_id": sid, "process_group_id": os.getpgrp(),
+        "sighup_disposition": "ignored", "stdio_isatty": tty,
+        "session_leader": True, "accepted": True,
+    }
+
+
+def initialize_state(state_root: Path, project_root: Path, config: dict, head: str, parents: dict, ack: dict, locks: list[dict], preflight: dict, detached: dict) -> dict:
     require(not state_root.exists(), f"fresh external state already exists: {state_root}")
     state_root.mkdir(parents=True, mode=0o700)
     payload = {
@@ -302,6 +422,7 @@ def initialize_state(state_root: Path, project_root: Path, config: dict, head: s
         "project_root": str(project_root), "config_sha256": sha256_file(project_root / CONFIG_PATH),
         "manifest_sha256": sha256_file(project_root / MANIFEST_PATH), "parent_source_identity": parents,
         "core_reservation_ack": ack, "core_locks": locks, "live_preflight": preflight,
+        "detached_runtime_proof": detached,
         "retry_policy": "same_id_forbidden_new_revision_and_new_ids_only",
     }
     atomic_write(state_root / "session.json", canonical_json_bytes(payload), exclusive=True)
@@ -320,7 +441,7 @@ def write_failure(run_dir: Path, experiment_id: str, stage: str, message: str, r
     }), exclusive=True)
 
 
-def run_one(project_root: Path, state_root: Path, cache: Path, row: dict[str, str], config: dict, head: str) -> dict:
+def run_one(project_root: Path, state_root: Path, cache: Path, row: dict[str, str], config: dict, head: str, case_preflight: dict) -> dict:
     experiment_id = row["experiment_id"]
     attempt_path = state_root / "attempts" / f"{experiment_id}.json"
     run_dir = state_root / "runs" / experiment_id
@@ -329,6 +450,7 @@ def run_one(project_root: Path, state_root: Path, cache: Path, row: dict[str, st
         "schema_version": 1, "protocol_revision": config["protocol_revision"], "status": "formal_attempt_started",
         "experiment_id": experiment_id, "created_utc": utc_now(), "runner_commit": head,
         "config_sha256": sha256_file(project_root / CONFIG_PATH), "manifest_sha256": sha256_file(project_root / MANIFEST_PATH),
+        "case_live_preflight": case_preflight,
         "retry_policy": "same_id_forbidden_new_revision_and_new_ids_only",
     }), exclusive=True)
     run_dir.mkdir(parents=True)
@@ -342,6 +464,7 @@ def run_one(project_root: Path, state_root: Path, cache: Path, row: dict[str, st
     input_metadata = _object(input_dir / "metadata.json", "input metadata")
     metadata = {
         **input_metadata, "runner_commit": head, "hostname": socket.gethostname(), "started_utc": utc_now(),
+        "case_live_preflight": case_preflight,
         "runtime": {key: config["runtime"][key] for key in ("binary", "binary_sha256", "mpi", "rank_count", "physical_core_ids", "map_by")},
         "pseudo_runtime_identity": pseudo_identity,
     }
@@ -403,16 +526,18 @@ def main() -> int:
     require(args.core_reservation_ack is not None, "formal run requires --core-reservation-ack")
     parents = verify_parent_sources(config, project_root, rows)
     ack = validate_core_reservation_ack(args.core_reservation_ack, config)
+    detached = detached_runtime_proof()
     handles, locks = acquire_core_locks(config)
     try:
         preflight = live_preflight(config)
-        initialize_state(state_root, project_root, config, head, parents, ack, locks, preflight)
+        initialize_state(state_root, project_root, config, head, parents, ack, locks, preflight, detached)
         cache = Path(config["external_pseudo_cache"])
         validate_pseudo(cache / config["pseudodojo"]["materials"]["al"]["basename"], "al", config)
         accepted: list[dict] = []
         for row in rows:
+            case_preflight = live_preflight(config)
             print(f"START {row['experiment_id']}", flush=True)
-            marker = run_one(project_root, state_root, cache, row, config, head)
+            marker = run_one(project_root, state_root, cache, row, config, head, case_preflight)
             accepted.append(marker)
             print(f"ACCEPTED {row['experiment_id']} duration_seconds={marker['duration_seconds']:.3f}", flush=True)
         terminal = {"schema_version": 1, "protocol_revision": config["protocol_revision"], "status": "accepted", "runner_commit": head, "accepted_ids": [row["experiment_id"] for row in accepted], "accepted_count": len(accepted), "failed_count": 0, "retried_count": 0, "runner_return_code": 0, "created_utc": utc_now()}
@@ -426,6 +551,7 @@ def main() -> int:
 
 if __name__ == "__main__":
     try:
+        signal.signal(signal.SIGHUP, signal.SIG_IGN)
         raise SystemExit(main())
     except Exception as error:
         print(f"FATAL: {type(error).__name__}: {error}", file=sys.stderr, flush=True)

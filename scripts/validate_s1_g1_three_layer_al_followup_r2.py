@@ -54,11 +54,15 @@ def validate_preregistered(project_root: Path, config: dict, rows: list[dict[str
     continuation = config["source_states"]["continuation_r2"]
     require(continuation["required_accepted_ids"] == ["S1-20260810-327", "S1-20260810-328"], "continuation endpoint IDs differ")
     require(continuation["required_recovery_ids"] == [f"S1-20260810-{number:03d}" for number in range(301, 307)], "continuation recovery ID set differs")
+    require(continuation["endpoint_phase_marker_relative_path"] == "phases/al_eos.json" and continuation["endpoint_phase"] == "al_eos", "continuation phase closure path differs")
+    require(continuation["endpoint_phase_accepted_ids"] == [f"S1-20260810-{number:03d}" for number in range(327, 333)], "continuation Al EOS phase denominator differs")
+    require(continuation["versioned_recovery_barrier_path"] == "orchestration/s1/g1_three_layer_continuation_r2_20260810/r1_p0_recovery.json", "versioned recovery path differs")
     implementation = protocol_implementation_commit(project_root)
     require(implementation == config["implementation_commit"], "protocol/config implementation commit differs")
     require_ancestor(project_root, implementation, head)
     require_ancestor(project_root, config["r1_followup_closure_commit"], head)
     require_ancestor(project_root, config["inherited_three_layer_preregistration_commit"], head)
+    require_ancestor(project_root, continuation["implementation_commit"], continuation["preregistration_commit"])
     # The continuation is an independent branch/state source; its exact commit
     # must exist locally but need not be merged into the follow-up branch.
     require_commit_object(project_root, continuation["preregistration_commit"])
@@ -105,6 +109,9 @@ def validate_final(project_root: Path, config: dict, rows: list[dict[str, str]],
         require(isinstance(attempt, dict) and attempt.get("status") == "formal_attempt_started", "attempt marker differs")
         require(isinstance(accepted, dict) and accepted.get("status") == "accepted", "accepted marker differs")
         require(attempt.get("experiment_id") == accepted.get("experiment_id") == experiment_id, "marker ID differs")
+        case_preflight = attempt.get("case_live_preflight")
+        require(isinstance(case_preflight, dict) and case_preflight.get("accepted") is True and not case_preflight.get("abacus_collisions"), "per-case sibling-aware collision gate differs")
+        require(case_preflight.get("reserved_logical_cpus"), "per-case SMT sibling proof missing")
     session = read_json(new / "session.json")
     terminal = read_json(new / "terminal.json")
     require(isinstance(session, dict) and isinstance(terminal, dict), "orchestration evidence differs")
@@ -114,6 +121,8 @@ def validate_final(project_root: Path, config: dict, rows: list[dict[str, str]],
     require(session["core_reservation_ack"]["accepted"] is True, "core reservation ACK absent")
     require(all(row["acquired"] for row in session["core_locks"]), "core-lock proof differs")
     require(session["live_preflight"]["accepted"] is True, "live preflight differs")
+    require(session["live_preflight"].get("reserved_logical_cpus") and not session["live_preflight"].get("abacus_collisions"), "session sibling-aware collision proof differs")
+    require(session["detached_runtime_proof"]["accepted"] is True and session["detached_runtime_proof"]["session_leader"] is True, "detached runtime proof differs")
     require_ancestor(project_root, runner_commit, "HEAD")
     require_tracked_matches_head(project_root, [Path(value) for value in REGISTERED_CODE])
     with tempfile.TemporaryDirectory(prefix="g1_al_followup_r2_replay_") as temporary:

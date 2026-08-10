@@ -6,6 +6,7 @@ import sys
 import tempfile
 import unittest
 from pathlib import Path
+from unittest.mock import patch
 
 
 PROJECT_ROOT = Path(__file__).resolve().parents[1]
@@ -177,6 +178,8 @@ class AlDomainFollowupR2Tests(unittest.TestCase):
             }
             (root / "accepted").mkdir(exist_ok=True)
             (root / "accepted" / f"{experiment_id}.json").write_bytes(canonical_json_bytes(marker))
+            (root / "attempts").mkdir(exist_ok=True)
+            (root / "attempts" / f"{experiment_id}.json").write_bytes(canonical_json_bytes({"schema_version": 1, "experiment_id": experiment_id, "status": "formal_attempt_started"}))
             return verify_accepted_source(root, experiment_id, {"protocol_revision": protocol, "runner_commit": runner})
 
         with tempfile.TemporaryDirectory() as temporary:
@@ -186,33 +189,59 @@ class AlDomainFollowupR2Tests(unittest.TestCase):
             old.mkdir()
             continuation.mkdir()
             old_session = {"schema_version": 1, "protocol_revision": old_protocol, "runner_commit": old_runner, "status": "active"}
-            continuation_session = {"schema_version": 1, "protocol_revision": continuation_protocol, "runner_commit": continuation_runner, "status": "active"}
             (old / "session.json").write_bytes(canonical_json_bytes(old_session))
-            (continuation / "session.json").write_bytes(canonical_json_bytes(continuation_session))
             recovery_ids = [f"S1-20260810-{number:03d}" for number in range(301, 307)]
             inventory = []
             for experiment_id in recovery_ids:
                 identity = write_source(old, experiment_id, old_protocol, old_runner, al=experiment_id in recovery_ids[:3])
-                inventory.append({key: identity[key] for key in ("experiment_id", "accepted_marker_sha256", "result_sha256", "runner_return_sha256")})
+                result = json.loads((old / "runs" / experiment_id / "result.json").read_text())
+                inventory.append({
+                    "experiment_id": experiment_id,
+                    "attempt_sha256": sha256_file(old / "attempts" / f"{experiment_id}.json"),
+                    "accepted_sha256": identity["accepted_marker_sha256"],
+                    "accepted_result_sha256": identity["result_sha256"],
+                    "result_sha256": identity["result_sha256"],
+                    "runner_return_sha256": identity["runner_return_sha256"],
+                    "runner_return_code": 0,
+                    "r1_parser_byte_exact_replay": True,
+                    "enhanced_raw_gates": {
+                        "accepted": True, "affinity": {"accepted": True}, "cube_geometry": {"accepted": True},
+                        "stress_trace_gate": {"accepted": True}, "eig_occupations": {"accepted": True},
+                        "evidence_files": result["evidence_files"],
+                    },
+                    "status": "accepted_source_evidence",
+                })
             for experiment_id in ("S1-20260810-327", "S1-20260810-328"):
                 write_source(continuation, experiment_id, continuation_protocol, continuation_runner, al=True)
             barrier = {
-                "schema_version": 1, "protocol_revision": continuation_protocol, "runner_commit": continuation_runner,
-                "status": "accepted", "source_r1_state_root": str(old),
-                "source_r1_session_sha256": sha256_file(old / "session.json"), "source_r1_runner_commit": old_runner,
-                "r1_operational_closure": "incomplete_missing_phase_marker", "source_ids": recovery_ids,
-                "source_ids_no_retry_no_reuse": True, "scientific_p0_statuses": {"al": "accepted", "mg": "accepted"},
-                "accepted_inventory": inventory,
+                "schema_version": 2, "protocol_revision": continuation_protocol, "status": "accepted",
+                "source_operational_status": "incomplete_missing_phase_marker_indeterminate_late_orchestration_disconnect",
+                "source_operational_phase_accepted": False, "scientific_p0_recovery_status": "accepted",
+                "source_state_root": str(old), "source_session_sha256": sha256_file(old / "session.json"),
+                "source_runner_commit": old_runner, "source_snapshot": {"file_count": 1}, "source_git_identities": [],
+                "accepted_source_ids": recovery_ids, "accepted_source_count": 6, "new_run_count": 0,
+                "permanently_unexecuted_source_ids": [f"S1-20260810-{number:03d}" for number in range(307, 319)],
+                "p0_metrics": {"status": "accepted"}, "per_run_recovery": inventory,
+                "scope": {"r1_phase_marker_reconstructed": False}, "continuation_prereg_commit": continuation_runner,
+                "config_sha256": "e" * 64, "manifest_sha256": "f" * 64,
             }
             (continuation / "barriers").mkdir()
             (continuation / "barriers" / "r1_p0_recovery.json").write_bytes(canonical_json_bytes(barrier))
+            continuation_session = {
+                "schema_version": 1, "protocol_revision": continuation_protocol, "runner_commit": continuation_runner,
+                "status": "active", "recovery_prereg_commit": continuation_runner,
+                "recovery_source_runner_commit": old_runner,
+                "recovery_barrier_sha256": sha256_file(continuation / "barriers" / "r1_p0_recovery.json"),
+                "config_sha256": "e" * 64, "manifest_sha256": "f" * 64,
+            }
+            (continuation / "session.json").write_bytes(canonical_json_bytes(continuation_session))
             phase = {
                 "schema_version": 1, "protocol_revision": continuation_protocol, "runner_commit": continuation_runner,
-                "status": "accepted", "phase": "al_endpoints",
-                "accepted_ids": ["S1-20260810-327", "S1-20260810-328"], "accepted_count": 2,
+                "status": "accepted", "phase": "al_eos",
+                "accepted_ids": [f"S1-20260810-{number:03d}" for number in range(327, 333)], "accepted_count": 6,
             }
             (continuation / "phases").mkdir()
-            phase_path = continuation / "phases" / "al_endpoints.json"
+            phase_path = continuation / "phases" / "al_eos.json"
             phase_path.write_bytes(canonical_json_bytes(phase))
             rows = []
             for common_id, relative in (("S1-20260810-327", "registered/v090/STRU"), ("S1-20260810-328", "registered/v110/STRU")):
@@ -223,15 +252,16 @@ class AlDomainFollowupR2Tests(unittest.TestCase):
             config = {
                 "pseudodojo": {"materials": {"al": {"sha256": pseudo_sha}}},
                 "source_states": {
-                    "r1_p0": {"external_state_root": str(old), "protocol_revision": old_protocol, "runner_commit": old_runner, "session_sha256": sha256_file(old / "session.json"), "required_accepted_ids": recovery_ids},
-                    "continuation_r2": {"external_state_root": str(continuation), "protocol_revision": continuation_protocol, "preregistration_commit": continuation_runner, "recovery_barrier_relative_path": "barriers/r1_p0_recovery.json", "endpoint_phase_marker_relative_path": "phases/al_endpoints.json", "endpoint_phase": "al_endpoints", "required_recovery_ids": recovery_ids, "required_accepted_ids": ["S1-20260810-327", "S1-20260810-328"]},
+                    "r1_p0": {"external_state_root": str(old), "protocol_revision": old_protocol, "runner_commit": old_runner, "session_sha256": sha256_file(old / "session.json"), "operational_status": "incomplete_missing_phase_marker_indeterminate_late_orchestration_disconnect", "source_snapshot": {"file_count": 1}, "source_git_paths": [], "required_accepted_ids": recovery_ids, "permanently_unexecuted_ids": [f"S1-20260810-{number:03d}" for number in range(307, 319)]},
+                    "continuation_r2": {"external_state_root": str(continuation), "protocol_revision": continuation_protocol, "preregistration_commit": continuation_runner, "recovery_barrier_relative_path": "barriers/r1_p0_recovery.json", "versioned_recovery_barrier_path": "unused-in-no-project-test", "config_path": "unused", "manifest_path": "unused", "endpoint_phase_marker_relative_path": "phases/al_eos.json", "endpoint_phase": "al_eos", "endpoint_phase_accepted_ids": [f"S1-20260810-{number:03d}" for number in range(327, 333)], "required_recovery_ids": recovery_ids, "required_accepted_ids": ["S1-20260810-327", "S1-20260810-328"]},
                 },
             }
-            self.assertTrue(verify_parent_sources(config, project, rows)["ready"])
-            phase["accepted_count"] = 1
-            phase_path.write_bytes(canonical_json_bytes(phase))
-            with self.assertRaises(ValueError):
-                verify_parent_sources(config, project, rows)
+            with patch("run_s1_g1_three_layer_al_followup_r2.replay_continuation_al_raw", return_value={"accepted": True}):
+                self.assertTrue(verify_parent_sources(config)["ready"])
+                phase["accepted_count"] = 1
+                phase_path.write_bytes(canonical_json_bytes(phase))
+                with self.assertRaises(ValueError):
+                    verify_parent_sources(config)
 
     def test_core_ack_and_lock_are_fail_closed(self) -> None:
         with tempfile.TemporaryDirectory() as temporary:
