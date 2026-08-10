@@ -19,6 +19,7 @@ from pathlib import Path
 from typing import IO
 
 from parse_s1_g1_three_layer_al_followup_r2 import parse_run
+from replay_s1_g1_three_layer_r1_p0_followup_r2 import replay_r1_p0
 from run_s1_g1_three_layer_r1 import runtime_environment
 from s1_g1_three_layer_al_followup_r2_common import (
     CONFIG_PATH,
@@ -50,6 +51,7 @@ REGISTERED_CODE = (
     "scripts/s1_g1_three_layer_al_followup_r2_common.py",
     "scripts/generate_s1_g1_three_layer_al_followup_r2.py",
     "scripts/parse_s1_g1_three_layer_al_followup_r2.py",
+    "scripts/replay_s1_g1_three_layer_r1_p0_followup_r2.py",
     "scripts/run_s1_g1_three_layer_al_followup_r2.py",
     "scripts/analyze_s1_g1_three_layer_al_followup_r2.py",
     "scripts/validate_s1_g1_three_layer_al_followup_r2.py",
@@ -321,6 +323,64 @@ def require_git_ancestor(project_root: Path, ancestor: str, descendant: str) -> 
     require(completed.returncode == 0, f"source preregistration is not ancestor: {ancestor} -> {descendant}")
 
 
+def committed_json(project_root: Path, commit: str, relative: str) -> tuple[dict, str, bytes]:
+    data, blob = git_file_at_commit(project_root, commit, relative)
+    payload = json.loads(data)
+    require(isinstance(payload, dict), f"committed JSON root differs: {relative}")
+    return payload, blob, data
+
+
+def verify_continuation_source_orchestration(
+    state_root: Path,
+    experiment_id: str,
+    session: dict,
+    project_root: Path,
+    continuation_spec: dict,
+    continuation_config: dict,
+) -> dict:
+    runner_commit = session["runner_commit"]
+    attempt_path = state_root / "attempts" / f"{experiment_id}.json"
+    run_dir = state_root / "runs" / experiment_id
+    attempt = _object(attempt_path, "continuation attempt marker")
+    metadata = _object(run_dir / "metadata.json", "continuation metadata")
+    input_metadata = _object(run_dir / "input_metadata.json", "continuation input metadata")
+    require(attempt.get("status") == "formal_attempt_started" and attempt.get("experiment_id") == experiment_id, "continuation attempt identity differs")
+    require(attempt.get("protocol_revision") == session["protocol_revision"], "continuation attempt protocol differs")
+    require(attempt.get("runner_commit") == runner_commit, "continuation attempt runner differs")
+    require(attempt.get("config_sha256") == session["config_sha256"], "continuation attempt config differs")
+    require(attempt.get("manifest_sha256") == session["manifest_sha256"], "continuation attempt manifest differs")
+    require(metadata.get("experiment_id") == experiment_id and metadata.get("protocol_revision") == session["protocol_revision"], "continuation metadata identity differs")
+    require(metadata.get("runner_commit") == runner_commit, "continuation metadata runner differs")
+    registered_identity = input_metadata.get("input_identity")
+    require(isinstance(registered_identity, dict), "continuation input registered identity missing")
+    require(registered_identity.get("config_sha256") == session["config_sha256"], "continuation input/config SHA binding differs")
+    require(registered_identity.get("manifest_sha256") == session["manifest_sha256"], "continuation input/manifest SHA binding differs")
+    for key, value in input_metadata.items():
+        require(metadata.get(key) == value, f"continuation metadata/input metadata differs: {experiment_id}/{key}")
+    preflight_path = state_root / "preflight" / f"{experiment_id}.json"
+    require(attempt.get("core_collision_preflight_sha256") == sha256_file(preflight_path), "continuation attempt/core preflight binding differs")
+    input_identities: list[dict] = []
+    input_root = continuation_config["input_root"]
+    for name in ("INPUT", "STRU", "KPT", "metadata.json"):
+        relative = f"{input_root}/{experiment_id}/{name}"
+        committed, blob = git_file_at_commit(project_root, runner_commit, relative)
+        actual = run_dir / ("input_metadata.json" if name == "metadata.json" else name)
+        require(actual.read_bytes() == committed, f"continuation executed/committed input differs: {experiment_id}/{name}")
+        if name != "metadata.json":
+            require(registered_identity.get(f"{name}_sha256") == sha256_bytes(committed), f"continuation registered input SHA differs: {experiment_id}/{name}")
+        input_identities.append({"path": relative, "git_blob": blob, "sha256": sha256_bytes(committed), "size_bytes": len(committed)})
+    return {
+        "attempt_marker_sha256": sha256_file(attempt_path),
+        "metadata_sha256": sha256_file(run_dir / "metadata.json"),
+        "input_metadata_sha256": sha256_file(run_dir / "input_metadata.json"),
+        "config_sha256": session["config_sha256"],
+        "manifest_sha256": session["manifest_sha256"],
+        "committed_input_identities": input_identities,
+        "core_collision_preflight_sha256": sha256_file(preflight_path),
+        "accepted": True,
+    }
+
+
 def verify_parent_sources(config: dict, project_root: Path | None = None, rows: list[dict[str, str]] | None = None) -> dict:
     sources = config["source_states"]
     old_spec = sources["r1_p0"]
@@ -339,10 +399,16 @@ def verify_parent_sources(config: dict, project_root: Path | None = None, rows: 
     require(continuation_session.get("protocol_revision") == continuation_spec["protocol_revision"], "continuation protocol differs")
     continuation_runner = continuation_session.get("runner_commit")
     require(isinstance(continuation_runner, str) and len(continuation_runner) == 40, "continuation runner commit differs")
+    continuation_config: dict | None = None
+    r1_config: dict | None = None
     if project_root is not None:
         require_git_ancestor(project_root, continuation_spec["preregistration_commit"], continuation_runner)
         require_git_ancestor(project_root, continuation_spec["preregistration_commit"], continuation_spec["recovery_formalization_commit"])
         require_git_ancestor(project_root, continuation_spec["recovery_formalization_commit"], continuation_runner)
+        continuation_config, _, continuation_config_bytes = committed_json(
+            project_root, continuation_runner, continuation_spec["config_path"]
+        )
+        require(sha256_bytes(continuation_config_bytes) == continuation_session.get("config_sha256"), "continuation committed config/session SHA differs")
     require(continuation_session.get("recovery_prereg_commit") == continuation_spec["preregistration_commit"], "continuation recovery prereg binding differs")
     require(continuation_session.get("recovery_source_runner_commit") == old_spec["runner_commit"], "continuation recovery source runner differs")
 
@@ -390,6 +456,10 @@ def verify_parent_sources(config: dict, project_root: Path | None = None, rows: 
             committed, blob = git_file_at_commit(project_root, identity.get("commit", ""), identity.get("path", ""))
             require(blob == identity.get("git_blob_oid"), "recovery source Git blob differs")
             require(sha256_bytes(committed) == identity.get("sha256") and len(committed) == identity.get("size_bytes"), "recovery source Git bytes differ")
+        r1_config_path = old_spec["source_git_paths"][0]
+        r1_config, _, r1_config_bytes = committed_json(project_root, old_spec["runner_commit"], r1_config_path)
+        r1_config_identity = next(identity for identity in source_git_identities if identity["path"] == r1_config_path)
+        require(sha256_bytes(r1_config_bytes) == r1_config_identity["sha256"], "R1 committed config/recovery identity differs")
     else:
         versioned_blob = "not_checked_without_project_root"
         formalized_blob = "not_checked_without_project_root"
@@ -417,6 +487,16 @@ def verify_parent_sources(config: dict, project_root: Path | None = None, rows: 
         identity["pseudo_identity_closure"] = verify_pseudo_identity_closure(
             old_root / "runs" / experiment_id, result, config, require_run_body=True
         )
+        if project_root is not None:
+            require(r1_config is not None and continuation_config is not None, "committed R1 replay configs unavailable")
+            base_reparsed, enhanced_reparsed, replay_identity = replay_r1_p0(
+                old_root / "runs" / experiment_id, r1_config, continuation_config
+            )
+            require(canonical_json_bytes(base_reparsed) == (old_root / "runs" / experiment_id / "result.json").read_bytes(), f"R1 base committed replay differs: {experiment_id}")
+            require(canonical_json_bytes(enhanced_reparsed) == canonical_json_bytes(enhanced), f"R1 enhanced committed replay differs: {experiment_id}")
+            identity["committed_raw_replay"] = replay_identity
+        else:
+            identity["committed_raw_replay"] = {"accepted": True, "not_checked_without_project_root": True}
         if experiment_id in {"S1-20260810-301", "S1-20260810-302", "S1-20260810-303"}:
             require(result.get("runtime_nonlocal_projectors_total") == 18, "R1 Al anchor projector count differs")
             require(result.get("pseudo_identity", {}).get("sha256") == config["pseudodojo"]["materials"]["al"]["sha256"], "R1 Al anchor pseudo differs")
@@ -454,6 +534,18 @@ def verify_parent_sources(config: dict, project_root: Path | None = None, rows: 
         phase_sources[experiment_id]["pseudo_identity_closure"] = verify_pseudo_identity_closure(
             continuation_root / "runs" / experiment_id, result, config, require_run_body=True
         )
+        if project_root is not None:
+            require(continuation_config is not None, "committed continuation config unavailable")
+            phase_sources[experiment_id]["orchestration_identity"] = verify_continuation_source_orchestration(
+                continuation_root,
+                experiment_id,
+                continuation_session,
+                project_root,
+                continuation_spec,
+                continuation_config,
+            )
+        else:
+            phase_sources[experiment_id]["orchestration_identity"] = {"accepted": True, "not_checked_without_project_root": True}
     if project_root is not None or rows is not None:
         require(project_root is not None and rows is not None, "project root and manifest rows must be supplied together")
         checked: set[str] = set()
@@ -738,13 +830,36 @@ def main() -> int:
             marker = run_one(project_root, state_root, cache, row, config, head, case_preflight)
             accepted.append(marker)
             print(f"ACCEPTED {row['experiment_id']} duration_seconds={marker['duration_seconds']:.3f}", flush=True)
+        accepted_ids = [marker["experiment_id"] for marker in accepted]
+        require(accepted_ids == config["formal_ids"], "terminal accepted denominator differs")
         terminal = {
             "schema_version": 1, "protocol_revision": config["protocol_revision"], "status": "accepted",
             "runner_commit": head, "session_sha256": sha256_file(state_root / "session.json"),
             "config_sha256": sha256_file(project_root / CONFIG_PATH),
             "manifest_sha256": sha256_file(project_root / MANIFEST_PATH),
-            "accepted_ids": [marker["experiment_id"] for marker in accepted],
+            "attempted_ids": accepted_ids, "attempted_count": len(accepted_ids),
+            "accepted_ids": accepted_ids,
             "accepted_result_sha256": {marker["experiment_id"]: marker["result_sha256"] for marker in accepted},
+            "attempt_marker_sha256": {
+                experiment_id: sha256_file(state_root / "attempts" / f"{experiment_id}.json")
+                for experiment_id in accepted_ids
+            },
+            "accepted_marker_sha256": {
+                experiment_id: sha256_file(state_root / "accepted" / f"{experiment_id}.json")
+                for experiment_id in accepted_ids
+            },
+            "runner_return_sha256": {
+                experiment_id: sha256_file(state_root / "runs" / experiment_id / "runner_return.json")
+                for experiment_id in accepted_ids
+            },
+            "result_sha256": {
+                experiment_id: sha256_file(state_root / "runs" / experiment_id / "result.json")
+                for experiment_id in accepted_ids
+            },
+            "metadata_sha256": {
+                experiment_id: sha256_file(state_root / "runs" / experiment_id / "metadata.json")
+                for experiment_id in accepted_ids
+            },
             "accepted_count": len(accepted), "failed_count": 0, "retried_count": 0,
             "runner_return_code": 0, "created_utc": utc_now(),
         }

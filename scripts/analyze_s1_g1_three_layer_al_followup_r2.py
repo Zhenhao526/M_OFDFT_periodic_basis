@@ -14,10 +14,13 @@ import tempfile
 from pathlib import Path
 
 from parse_s1_g1_three_layer_al_followup_r2 import parse_run as reparse_new_run
+from replay_s1_g1_three_layer_r1_p0_followup_r2 import replay_r1_p0
 from run_s1_g1_three_layer_al_followup_r2 import (
+    committed_json,
     git_file_at_commit,
     verify_accepted_source,
     verify_continuation_phase_preflight,
+    verify_continuation_source_orchestration,
     verify_pseudo_identity_closure,
 )
 from s1_g1_three_layer_al_followup_r2_common import (
@@ -324,6 +327,14 @@ def verify_snapshot_source_identity(project_root: Path, config: dict, new_state:
     barrier_payload = _read_object(barrier_path)
     phase_payload = _read_object(phase_path)
     continuation_runner = continuation_session["runner_commit"]
+    continuation_config, _, continuation_config_bytes = committed_json(
+        project_root, continuation_runner, continuation_spec["config_path"]
+    )
+    require(sha256_bytes(continuation_config_bytes) == continuation_session.get("config_sha256"), "snapshot continuation committed config differs")
+    old_spec = config["source_states"]["r1_p0"]
+    r1_config, _, r1_config_bytes = committed_json(
+        project_root, old_spec["runner_commit"], old_spec["source_git_paths"][0]
+    )
     require(sha256_file(barrier_path) == continuation_spec["recovery_barrier_sha256"], "snapshot barrier differs from frozen SHA")
     formalized_bytes, formalized_blob = git_file_at_commit(
         project_root,
@@ -343,6 +354,11 @@ def verify_snapshot_source_identity(project_root: Path, config: dict, new_state:
         if isinstance(row, dict) and isinstance(row.get("experiment_id"), str)
     }
     require(list(barrier_inventory) == list(RECOVERY_IDS), "snapshot recovery inventory denominator differs")
+    source_config_identity = next(
+        identity for identity in barrier_payload["source_git_identities"]
+        if identity["path"] == old_spec["source_git_paths"][0]
+    )
+    require(sha256_bytes(r1_config_bytes) == source_config_identity["sha256"], "snapshot R1 committed config differs")
     recovered: dict[str, dict] = {}
     for experiment_id in RECOVERY_IDS:
         identity = verify_accepted_source(r1_state, experiment_id, r1_session)
@@ -363,6 +379,12 @@ def verify_snapshot_source_identity(project_root: Path, config: dict, new_state:
             r1_state / "runs" / experiment_id, enhanced.get("evidence_files"), pseudo_closure
         )
         identity["pseudo_identity_closure"] = pseudo_closure
+        base_reparsed, enhanced_reparsed, replay_identity = replay_r1_p0(
+            r1_state / "runs" / experiment_id, r1_config, continuation_config
+        )
+        require(canonical_json_bytes(base_reparsed) == (r1_state / "runs" / experiment_id / "result.json").read_bytes(), f"snapshot R1 base replay differs: {experiment_id}")
+        require(canonical_json_bytes(enhanced_reparsed) == canonical_json_bytes(enhanced), f"snapshot R1 enhanced replay differs: {experiment_id}")
+        identity["committed_raw_replay"] = replay_identity
         recovered[experiment_id] = identity
 
     phase_sources: dict[str, dict] = {}
@@ -374,6 +396,14 @@ def verify_snapshot_source_identity(project_root: Path, config: dict, new_state:
         )
         identity["independent_raw_replay"] = replay
         identity["pseudo_identity_closure"] = pseudo_closure
+        identity["orchestration_identity"] = verify_continuation_source_orchestration(
+            continuation_state,
+            experiment_id,
+            continuation_session,
+            project_root,
+            continuation_spec,
+            continuation_config,
+        )
         phase_sources[experiment_id] = identity
     expected_phase_results = {experiment_id: phase_sources[experiment_id]["result_sha256"] for experiment_id in CONTINUATION_PHASE_IDS}
     require(phase_payload.get("accepted_result_sha256") == expected_phase_results, "snapshot phase result-SHA map differs")
@@ -423,12 +453,22 @@ def build_analysis(project_root: Path, config: dict, new_state: Path, r1_state: 
         new[experiment_id] = result
         new_identities[experiment_id] = identity
     expected_result_map = {experiment_id: new_identities[experiment_id]["result_sha256"] for experiment_id in config["formal_ids"]}
+    expected_terminal_maps = {
+        "attempt_marker_sha256": {experiment_id: new_identities[experiment_id]["attempt_marker_sha256"] for experiment_id in config["formal_ids"]},
+        "accepted_marker_sha256": {experiment_id: new_identities[experiment_id]["accepted_marker_sha256"] for experiment_id in config["formal_ids"]},
+        "runner_return_sha256": {experiment_id: new_identities[experiment_id]["runner_return_sha256"] for experiment_id in config["formal_ids"]},
+        "result_sha256": expected_result_map,
+        "metadata_sha256": {experiment_id: new_identities[experiment_id]["metadata_sha256"] for experiment_id in config["formal_ids"]},
+    }
     require(terminal.get("status") == "accepted" and terminal.get("protocol_revision") == config["protocol_revision"], "follow-up terminal rejected")
     require(terminal.get("runner_commit") == runner_commit, "follow-up terminal/runner differs")
     require(terminal.get("session_sha256") == sha256_file(new_state / "session.json"), "follow-up terminal/session SHA differs")
     require(terminal.get("config_sha256") == config_sha and terminal.get("manifest_sha256") == manifest_sha, "follow-up terminal registered-file identity differs")
-    require(terminal.get("accepted_ids") == config["formal_ids"] and terminal.get("accepted_count") == 8, "follow-up terminal denominator differs")
+    require(terminal.get("attempted_ids") == terminal.get("accepted_ids") == config["formal_ids"], "follow-up terminal ID denominator differs")
+    require(terminal.get("attempted_count") == terminal.get("accepted_count") == 8, "follow-up terminal count denominator differs")
     require(terminal.get("accepted_result_sha256") == expected_result_map, "follow-up terminal result-SHA map differs")
+    for key, expected in expected_terminal_maps.items():
+        require(terminal.get(key) == expected, f"follow-up terminal {key} differs")
     require(terminal.get("failed_count") == terminal.get("retried_count") == 0 and terminal.get("runner_return_code") == 0, "follow-up terminal failure/retry differs")
     parent = {experiment_id: verify_parent_result(r1_runs / experiment_id, experiment_id, config) for experiment_id in ANCHOR_IDS}
     parent.update({experiment_id: verify_parent_result(continuation_runs / experiment_id, experiment_id, config) for experiment_id in CONTINUATION_IDS})
