@@ -1,0 +1,77 @@
+{
+  "atom_count": 1,
+  "ecutrho_ry": 160,
+  "ecutwfc_ry": 40,
+  "expected_electrons": 3.0,
+  "experiment_id": "S1-20260810-343",
+  "geometry_binding": {
+    "accepted_common_id": null,
+    "construction_base_id": "S1-20260807-043",
+    "construction_base_path": "runs/S1-20260807-043/STRU",
+    "construction_base_stru_sha256": "31279eb4f9a5a6ad20376271c79c03a8ead1676cb697b5065515041f6799d437",
+    "construction_hard_gate": {
+      "accepted": true,
+      "convention": "lattice row matrix A; A_prime=A@F.T; Direct coordinates unchanged",
+      "deformation_gradient": [
+        [
+          1.005,
+          0.0,
+          0.0
+        ],
+        [
+          0.0,
+          0.9975093361076329,
+          0.0
+        ],
+        [
+          0.0,
+          0.0,
+          0.9975093361076329
+        ]
+      ],
+      "determinant_f": 0.9999999999999999,
+      "direct_coordinate_bytes_unchanged": true,
+      "maximum_lattice_matrix_error": 0.0,
+      "registered_geometry_payload_byte_identical": true
+    },
+    "geometry_payload_definition": "STRU bytes from LATTICE_CONSTANT marker through EOF",
+    "geometry_payload_sha256": "2851b2f1a70941ae6e5da9aec2f9931dfb3c21473dd698802b8cd800f72db5f0",
+    "registered_geometry_id": "S1-20260810-204",
+    "registered_geometry_path": "inputs/s1/g1_displacement_strain_reference_r1/S1-20260810-204/STRU",
+    "registered_geometry_stru_sha256": "3b70898321e808fd51b9d2324aa2f9a3c8c10dfa33b2cca69460a1ee75a349e1"
+  },
+  "input_identity": {
+    "INPUT_sha256": "1686582ed11a215f24534f04db7498fdf13b820922bdb8a301daf71806868b38",
+    "KPT_sha256": "0903e64e14f6e451103ae0d60e2b3afe07dbbee7aaabff907df214bfd1eb0bc8",
+    "STRU_sha256": "a8b2418dd6f4d702d3054dc11d38fdcd2476a4596cd8abac433f04f1ed01eb70",
+    "config_sha256": "d92022f9231e93bb005a004eb9a4f476923251caa52bc110824ca6b3c0e3cf95",
+    "manifest_sha256": "c4a1ff9f1edaac225cb61284bb3bab42f3595e4617a33a7f8c48ca94a7419fe2"
+  },
+  "kmesh": [
+    28,
+    28,
+    28
+  ],
+  "material": "al",
+  "phase": "strain",
+  "protocol_revision": "S1-G1-THREE-LAYER-AL-DOMAIN-FOLLOWUP-20260810-R3",
+  "pseudo": {
+    "basename": "Al_std.upf",
+    "expanded_nonlocal_projectors_per_atom": 18,
+    "format": "upf201",
+    "sha256": "b02eaa07c5d98f5eeae1bec4155854a7a94ea3635ca6b42e914f3f7ebd6912fb",
+    "z_valence": 3.0
+  },
+  "role": "al_tetragonal_plus",
+  "schema_version": 1,
+  "suffix": "g1tlfu3_al_tetragonal_plus",
+  "thermodynamic_semantics": {
+    "E_ec": "F-m/2 finite-smearing estimator",
+    "F": "E_KohnSham=!FINAL_ETOT_IS",
+    "U": "F-m",
+    "local_only_kinetic_decomposition_claim": false,
+    "m": "E_entropy(-TS)<=0",
+    "zero_temperature_exact_claim": false
+  },
+  "volume_ratio": "1.00"
+}
