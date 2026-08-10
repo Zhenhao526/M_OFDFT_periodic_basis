@@ -1,0 +1,13 @@
+{
+  "elapsed_seconds": 231.3916620174423,
+  "experiment_id": "S1-20260810-211",
+  "finished_utc": "2026-08-10T04:49:06.605970Z",
+  "hostname": "node01",
+  "log_path": "OUT.g1dsr1_mg_211/running_scf.log",
+  "log_sha256": "01b3670d5dc4dba3e1cebf7c5d0bfd4b54474e16ea8be31138fdd8d0198f07a1",
+  "protocol_revision": "S1-G1-DISPLACEMENT-STRAIN-REFERENCE-R1",
+  "rank_affinity_verified": true,
+  "runner_return_code": 0,
+  "status": "accepted",
+  "timed_out": false
+}

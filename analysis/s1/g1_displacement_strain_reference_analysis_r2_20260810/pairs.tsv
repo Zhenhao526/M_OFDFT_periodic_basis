@@ -1,0 +1,8 @@
+pair_id	plus_id	minus_id	amplitude	amplitude_units	central_E_ec_derivative_ev_per_cell_per_unit	central_force_derivative_max_abs_per_unit	central_stress_derivative_max_abs_kbar_per_unit	status
+al_displacement_x	S1-20260810-202	S1-20260810-203	0.01	angstrom	4.000000330961484e-08	2.2243848699999997	0.0032706900000012418	diagnostic_only_not_G4_gate
+al_shear_xy	S1-20260810-206	S1-20260810-207	0.005	dimensionless	1.000017846308765e-08	0.0	290.26287264	diagnostic_only_not_G4_gate
+al_tetragonal	S1-20260810-204	S1-20260810-205	0.005	dimensionless	0.0013716400005137075	0.0	74.07143604999997	diagnostic_only_not_G4_gate
+mg_axial	S1-20260810-212	S1-20260810-213	0.005	dimensionless	-0.017278739999682102	4.919e-05	448.06852483999967	diagnostic_only_not_G4_gate
+mg_displacement_basal_x	S1-20260810-208	S1-20260810-209	0.01	angstrom	1.4999912423263595e-08	0.57096177	16.750638315	diagnostic_only_not_G4_gate
+mg_displacement_c_z	S1-20260810-210	S1-20260810-211	0.01	angstrom	5.000089231543825e-09	2.22703742	0.0008977649999408754	diagnostic_only_not_G4_gate
+mg_shear_xz	S1-20260810-214	S1-20260810-215	0.005	dimensionless	2.999982484652719e-08	0.00011119999999999999	192.64057966000001	diagnostic_only_not_G4_gate

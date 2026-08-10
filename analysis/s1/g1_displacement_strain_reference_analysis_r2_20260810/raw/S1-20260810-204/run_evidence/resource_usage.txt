@@ -1,0 +1,24 @@
+Info: Local MPI proc number: 4,OpenMP thread number: 1,Total thread number: 4,Local thread limit: 152
+	Command being timed: "/home/shenwei01/wt_melting_runtime_20260724/conda_prefix/bin/mpirun --bind-to none -np 4 /home/shenwei01/wt_g1_displacement_r1_20260810/scripts/s1_g1_displacement_rank_wrapper.sh 40 /home/shenwei01/wt_melting_runtime_20260724/build-abacus-wt-cpu/source/abacus_pw_para"
+	User time (seconds): 1083.17
+	System time (seconds): 4.77
+	Percent of CPU this job got: 396%
+	Elapsed (wall clock) time (h:mm:ss or m:ss): 4:34.09
+	Average shared text size (kbytes): 0
+	Average unshared data size (kbytes): 0
+	Average stack size (kbytes): 0
+	Average total size (kbytes): 0
+	Maximum resident set size (kbytes): 486640
+	Average resident set size (kbytes): 0
+	Major (requiring I/O) page faults: 3290
+	Minor (reclaiming a frame) page faults: 2567180
+	Voluntary context switches: 17421
+	Involuntary context switches: 2476
+	Swaps: 0
+	File system inputs: 0
+	File system outputs: 26784
+	Socket messages sent: 0
+	Socket messages received: 0
+	Signals delivered: 0
+	Page size (bytes): 4096
+	Exit status: 0

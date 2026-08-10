@@ -1,0 +1,64 @@
+{
+  "accepted_pair_count": 7,
+  "accepted_run_count": 15,
+  "central_difference_responses": "diagnostic only; no G4 acceptance claim",
+  "deterministic_analysis": {
+    "analysis_config_sha256": "ef893021c6eb3f53cc94594c9af73a1e977e107407a48fb936a98a624e0c260e",
+    "analysis_preregistration_git_head": "49da3143eac4fdbbad2e1f9de1da011b21bf1de4",
+    "analyzer_sha256": "4fd1267c3961b7676e1d8d7f517174dfacb15d5cf81eb0ef6b98c191e13c445e",
+    "source_execution_config_sha256": "d54d44190f6feb6bc6ac0e71db31a56869427b48a39b7e52df5e417738df4266",
+    "source_manifest_sha256": "8fe474dcf600285b7772b1c034159d1a0f1986f2ba8cf7138de115ab972c7243",
+    "state_manifest": "state_sha256.tsv",
+    "validator_sha256": "f476c8ac0134463b524d1c8b38d5a7ffcc5931265d186fe728edf06005ad96c3",
+    "wall_clock_time_in_scientific_summary": false
+  },
+  "diagnostic_pair_count": 7,
+  "elapsed_seconds_total": 4650.794529879466,
+  "failed_ids": [],
+  "formal_git_head": "bfb9bfc932317208f1aed8a69002ad252f10c6f5",
+  "formal_state_root": "/home/shenwei01/.local/state/m_ofdft/g1_displacement_strain_reference_r1_20260810",
+  "g4_acceptance_claim": false,
+  "hostname_set": [
+    "node01"
+  ],
+  "independent_physical_geometry": {
+    "accepted_point_count": 15,
+    "displacement_tolerance_angstrom": 1e-09,
+    "maximum_base_lattice_error_angstrom": 0.0,
+    "maximum_displacement_error_angstrom": 4.403375233885676e-12,
+    "maximum_strain_matrix_error": 2.220446049250313e-16,
+    "method": "independent STRU LATTICE_CONSTANT*bohr_to_angstrom reconstruction; metadata is not used",
+    "strain_matrix_tolerance": 1e-12
+  },
+  "maximum_cube_geometry_error_bohr": 1.9819008327814913e-05,
+  "maximum_electron_relative_error": 8.378631122241131e-12,
+  "maximum_identity_residual_ev_per_atom": 1.526119e-10,
+  "maximum_stress_pressure_trace_error_kbar": 4.867666667518478e-07,
+  "maximum_stress_symmetry_error_kbar": 0.0,
+  "minimum_cube_mantissa_digits": 18,
+  "pbc_minimum_image_correction": "analysis-only R2 fixes R1 false-negative for legal periodic cube atom wrapping; lattice axes remain absolute",
+  "pbc_wrapped_cube_atom_rows": 2,
+  "protocol_revision": "S1-G1-DISPLACEMENT-STRAIN-REFERENCE-ANALYSIS-R2",
+  "rank_logical_cpus_exact": [
+    40,
+    41,
+    42,
+    43
+  ],
+  "registered_run_count": 15,
+  "runtime_identity": {
+    "audit_abacus_sha256": "2d68a57c7b25608b3550854dabc2e63601eeca956bf185ad7d0967052bdbb4ba",
+    "byte_identical_to_r4_runtime": false,
+    "equivalence_evidence_commit": "a01ac707e8e4d2604ea01a947d9c32738aa264df",
+    "equivalence_evidence_path": "analysis/s1/runtime_relocation_equivalence_20260805/summary.json",
+    "equivalence_evidence_points": 6,
+    "equivalence_tier_exact": "storage_exact",
+    "interpretation": "old-prefix binary used here; prior six-point closure supports scientific equivalence but is not a claim of runtime byte identity",
+    "r4_parent_relocated_abacus_sha256": "438c74b9ada4c8df15ffbb66da6755907dfd2a3812ecf868fafd4d7dc4db62e1"
+  },
+  "source_execution_protocol": "S1-G1-DISPLACEMENT-STRAIN-REFERENCE-R1",
+  "source_execution_reused_without_new_solver_ids": true,
+  "state_sha256_record_count": 300,
+  "status": "accepted",
+  "thermodynamic_semantics": "finite-temperature Mermin labels; E_ec is an entropy-corrected estimator"
+}

@@ -1,0 +1,18 @@
+{
+  "config_sha256": "d54d44190f6feb6bc6ac0e71db31a56869427b48a39b7e52df5e417738df4266",
+  "created_utc": "2026-08-10T05:00:37.336772Z",
+  "experiment_id": "S1-20260810-215",
+  "git_head_before_attempt": "bfb9bfc932317208f1aed8a69002ad252f10c6f5",
+  "hostname": "node01",
+  "manifest_sha256": "8fe474dcf600285b7772b1c034159d1a0f1986f2ba8cf7138de115ab972c7243",
+  "protocol_revision": "S1-G1-DISPLACEMENT-STRAIN-REFERENCE-R1",
+  "rank_logical_cpus": [
+    40,
+    41,
+    42,
+    43
+  ],
+  "retry_policy": "none",
+  "schema_version": 1,
+  "status": "started"
+}
