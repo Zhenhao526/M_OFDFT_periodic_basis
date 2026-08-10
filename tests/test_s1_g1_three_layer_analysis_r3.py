@@ -119,6 +119,10 @@ class ThreeLayerAnalysisR3Tests(unittest.TestCase):
                 "HOME": "/home/x", "PATH": "/usr/bin:/bin", "PYTHONDONTWRITEBYTECODE": "1", "PYTHONNOUSERSITE": "1",
                 "PYTHONPATH": "/r2/scripts", "TMPDIR": temporary, "PYTHONPYCACHEPREFIX": temporary + "/pycache",
             },
+            "started_utc": "2026-08-10T00:00:00.000000Z",
+            "finished_utc": "2026-08-10T00:00:01.000000Z",
+            "duration_seconds": 1.0,
+            "interpretation": "exit 2 is the preregistered scientific gate rejection, not an execution failure",
         }
         invocation_path = source / CAPTURE_ARTIFACTS[2]
         write(invocation_path, (json.dumps(invocation, sort_keys=True, separators=(",", ":")) + "\n").encode())
@@ -177,6 +181,28 @@ class ThreeLayerAnalysisR3Tests(unittest.TestCase):
             path = source / CAPTURE_ARTIFACTS[2]
             payload = json.loads(path.read_text())
             payload["analyzer_output_inventory_before_capture_artifacts"]["file_count"] += 1
+            write(path, (json.dumps(payload, sort_keys=True, separators=(",", ":")) + "\n").encode())
+            config["source_r2"]["analysis_invocation_sha256"] = hashlib.sha256(path.read_bytes()).hexdigest()
+            with self.assertRaises(ValueError):
+                validate_capture_invocation(source, config, source_inventory(source), dependencies, r2_config)
+
+    def test_capture_unregistered_key_fails(self) -> None:
+        with tempfile.TemporaryDirectory() as name:
+            config, dependencies, r2_config, source = self._capture_fixture(Path(name))
+            path = source / CAPTURE_ARTIFACTS[2]
+            payload = json.loads(path.read_text())
+            payload["unregistered"] = True
+            write(path, (json.dumps(payload, sort_keys=True, separators=(",", ":")) + "\n").encode())
+            config["source_r2"]["analysis_invocation_sha256"] = hashlib.sha256(path.read_bytes()).hexdigest()
+            with self.assertRaises(ValueError):
+                validate_capture_invocation(source, config, source_inventory(source), dependencies, r2_config)
+
+    def test_capture_duration_timestamp_mismatch_fails(self) -> None:
+        with tempfile.TemporaryDirectory() as name:
+            config, dependencies, r2_config, source = self._capture_fixture(Path(name))
+            path = source / CAPTURE_ARTIFACTS[2]
+            payload = json.loads(path.read_text())
+            payload["duration_seconds"] = 2.0
             write(path, (json.dumps(payload, sort_keys=True, separators=(",", ":")) + "\n").encode())
             config["source_r2"]["analysis_invocation_sha256"] = hashlib.sha256(path.read_bytes()).hexdigest()
             with self.assertRaises(ValueError):

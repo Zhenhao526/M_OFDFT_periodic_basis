@@ -12,6 +12,7 @@ import os
 import subprocess
 import sys
 import tempfile
+from datetime import datetime, timezone
 from pathlib import Path
 
 from analyze_s1_eos import fit_bm3
@@ -47,6 +48,17 @@ CAPTURE_ARTIFACTS = (
     "orchestration/analysis_invocation.json",
 )
 FINAL_OUTPUT_FILES = ("README.md", "gate_metrics.tsv", "summary.json")
+INVOCATION_KEYS = {
+    "schema_version", "protocol_revision", "status", "argv", "capture_cwd", "cwd",
+    "r2_runner_commit", "capture_preregistered_commit", "capture_implementation_commit",
+    "capture_script", "registration_changed_paths", "capture_config_path",
+    "capture_config_sha256", "r2_dependencies", "analyzer", "r2_config", "terminal",
+    "exit_code", "expected_summary_status", "summary_sha256", "stdout_sha256",
+    "stdout_size_bytes", "stderr_sha256", "stderr_size_bytes",
+    "analyzer_output_inventory_before_capture_artifacts", "capture_added_artifacts",
+    "subprocess_environment", "started_utc", "finished_utc", "duration_seconds",
+    "interpretation",
+}
 
 
 def load_config(project_root: Path) -> dict:
@@ -105,6 +117,15 @@ def git_blob_identity(project_root: Path, commit: str, relative: str) -> dict:
     return {"path": relative, "git_blob_oid": oid, "sha256": hashlib.sha256(completed.stdout).hexdigest(), "size_bytes": len(completed.stdout)}
 
 
+def committed_blob_identity(project_root: Path, commit: str, relative: str) -> tuple[dict, bytes]:
+    oid = git(project_root, "rev-parse", f"{commit}:{relative}")
+    completed = subprocess.run(
+        ["git", "cat-file", "blob", oid], cwd=project_root, check=True,
+        stdin=subprocess.DEVNULL, stdout=subprocess.PIPE, stderr=subprocess.PIPE,
+    )
+    return ({"path": relative, "git_blob_oid": oid, "sha256": hashlib.sha256(completed.stdout).hexdigest(), "size_bytes": len(completed.stdout)}, completed.stdout)
+
+
 def verify_r2_dependencies(project_root: Path, config: dict) -> list[dict]:
     runner = config["source_r2"]["runner_commit"]
     expected = config["capture"]["r2_dependencies"]
@@ -116,6 +137,41 @@ def verify_r2_dependencies(project_root: Path, config: dict) -> list[dict]:
         require(identity["sha256"] == row["sha256"], f"R2 replay dependency SHA differs: {row['path']}")
         actual.append(identity)
     return actual
+
+
+def verify_capture_registration_commits(project_root: Path, config: dict, invocation: dict) -> dict:
+    source_spec = config["source_r2"]
+    implementation = source_spec["capture_implementation_commit"]
+    prereg = source_spec["capture_preregistered_commit"]
+    require(invocation["capture_implementation_commit"] == implementation, "capture implementation source differs")
+    require(invocation["capture_preregistered_commit"] == prereg, "capture prereg source differs")
+    require(git(project_root, "rev-list", "--parents", "-n", "1", prereg).split() == [prereg, implementation], "capture prereg Git parent differs")
+    changed = git(project_root, "diff", "--name-only", f"{implementation}..{prereg}").splitlines()
+    require(changed == [CONFIG_PATH.as_posix()], "capture prereg Git diff differs")
+    analysis_implementation = config["registration"]["analysis_implementation_commit"]
+    ancestor = subprocess.run(
+        ["git", "merge-base", "--is-ancestor", prereg, analysis_implementation], cwd=project_root,
+        stdin=subprocess.DEVNULL, stdout=subprocess.PIPE, stderr=subprocess.PIPE,
+    )
+    require(ancestor.returncode == 0, "capture prereg is not an ancestor of R3 analysis implementation")
+    script_path = config["capture"]["capture_script_path"]
+    script_impl, _ = committed_blob_identity(project_root, implementation, script_path)
+    script_prereg, _ = committed_blob_identity(project_root, prereg, script_path)
+    require(script_impl == script_prereg == invocation["capture_script"], "capture script Git blob identity differs")
+    capture_config_identity, capture_config_bytes = committed_blob_identity(project_root, prereg, CONFIG_PATH.as_posix())
+    require(capture_config_identity["sha256"] == invocation["capture_config_sha256"], "capture prereg config Git SHA differs")
+    captured_config = json.loads(capture_config_bytes.decode("utf-8"))
+    require(captured_config["capture"] == config["capture"], "capture registration block changed after capture")
+    require(captured_config["capture"]["implementation_commit"] == implementation, "capture prereg config implementation differs")
+    require(captured_config["capture"]["capture_script_sha256"] == script_prereg["sha256"], "capture prereg config/script SHA differs")
+    return {
+        "capture_implementation_commit": implementation,
+        "capture_preregistered_commit": prereg,
+        "capture_preregistered_parent": implementation,
+        "capture_preregistered_changed_paths": changed,
+        "capture_script": script_prereg,
+        "capture_config": capture_config_identity,
+    }
 
 
 def validate_preregistered_topology(project_root: Path, config: dict, head: str | None = None) -> dict:
@@ -145,8 +201,15 @@ def verify_source_commit(project_root: Path, config: dict, source: Path, invento
     parents = git(project_root, "rev-list", "--parents", "-n", "1", commit).split()
     require(parents == [commit, runner], "R2 evidence commit parent differs")
     prefix = config["source_r2"]["analysis_root"] + "/"
+    absent_at_runner = subprocess.run(
+        ["git", "cat-file", "-e", f"{runner}:{config['source_r2']['analysis_root']}"], cwd=project_root,
+        stdin=subprocess.DEVNULL, stdout=subprocess.PIPE, stderr=subprocess.PIPE,
+    )
+    require(absent_at_runner.returncode != 0, "R2 analysis root existed at runner commit")
     changed = git(project_root, "diff", "--name-only", f"{runner}..{commit}").splitlines()
     require(changed and all(path.startswith(prefix) for path in changed), "R2 evidence commit changed paths outside analysis")
+    changed_status = git(project_root, "diff", "--name-status", f"{runner}..{commit}").splitlines()
+    require(changed_status == [f"A\t{path}" for path in changed], "R2 evidence commit must only add analysis files")
     tree_oid = git(project_root, "rev-parse", f"{commit}:{config['source_r2']['analysis_root']}")
     require(tree_oid == config["source_r2"]["analysis_tree_oid"], "R2 analysis tree OID differs")
     listing = git(project_root, "ls-tree", "-r", "--full-tree", commit, "--", config["source_r2"]["analysis_root"]).splitlines()
@@ -161,7 +224,7 @@ def verify_source_commit(project_root: Path, config: dict, source: Path, invento
         require((source / relative).read_bytes() == completed.stdout, f"working/source commit bytes differ: {relative}")
     require(set(committed) == {path.relative_to(source).as_posix() for path in source.rglob("*") if path.is_file()}, "R2 committed analysis denominator differs")
     require(len(committed) == inventory["file_count"], "R2 committed analysis count differs")
-    return {"commit": commit, "parent_runner_commit": runner, "analysis_tree_oid": tree_oid, "changed_path_count": len(changed), "files": committed}
+    return {"commit": commit, "parent_runner_commit": runner, "analysis_tree_oid": tree_oid, "changed_path_count": len(changed), "changed_status": changed_status, "files": committed}
 
 
 def independent_point_metrics(path: Path) -> dict:
@@ -222,6 +285,7 @@ def validate_capture_invocation(
     invocation_path = source / "orchestration/analysis_invocation.json"
     invocation = read_json(invocation_path)
     require(isinstance(invocation, dict), "R2 analysis invocation must be an object")
+    require(set(invocation) == INVOCATION_KEYS, "R2 analysis invocation key denominator differs")
     require(invocation.get("schema_version") == 2, "R2 analysis invocation schema differs")
     require(invocation.get("protocol_revision") == config["protocol_revision"], "R2 analysis invocation protocol differs")
     require(invocation.get("status") == "captured_expected_scientific_rejection", "R2 analysis invocation status differs")
@@ -286,6 +350,19 @@ def validate_capture_invocation(
     before = inventory_from_entries(before_rows)
     require(invocation.get("analyzer_output_inventory_before_capture_artifacts") == before, "capture pre-artifact inventory differs")
     require(inventory["file_count"] == before["file_count"] + 3, "capture did not add exactly three artifacts")
+    started_text = invocation.get("started_utc")
+    finished_text = invocation.get("finished_utc")
+    require(isinstance(started_text, str) and started_text.endswith("Z"), "capture start UTC schema differs")
+    require(isinstance(finished_text, str) and finished_text.endswith("Z"), "capture finish UTC schema differs")
+    try:
+        started = datetime.fromisoformat(started_text.replace("Z", "+00:00"))
+        finished = datetime.fromisoformat(finished_text.replace("Z", "+00:00"))
+    except ValueError as exc:
+        raise ValueError("capture UTC parse failed") from exc
+    require(started.tzinfo == timezone.utc and finished.tzinfo == timezone.utc and finished > started, "capture UTC ordering differs")
+    duration = float(invocation.get("duration_seconds", -1.0))
+    require(duration > 0.0 and abs((finished - started).total_seconds() - duration) < 0.05, "capture duration/UTC binding differs")
+    require(invocation.get("interpretation") == "exit 2 is the preregistered scientific gate rejection, not an execution failure", "capture interpretation differs")
     require(sha256_file(invocation_path) == source_spec["analysis_invocation_sha256"], "capture invocation SHA differs")
     return invocation
 
@@ -310,7 +387,8 @@ def replay(project_root: Path, config: dict, analysis_preregistered_commit: str 
     require(terminal.get("attempted_count") == terminal.get("accepted_count") == 8, "R2 terminal denominator differs")
     require(terminal.get("failed_count") == terminal.get("retried_count") == terminal.get("runner_return_code") == 0, "R2 terminal failure/retry/RC differs")
     r2_config = load_r2_config(project_root)
-    validate_capture_invocation(source, config, inventory, dependencies, r2_config)
+    invocation = validate_capture_invocation(source, config, inventory, dependencies, r2_config)
+    capture_git_identity = verify_capture_registration_commits(project_root, config, invocation)
     for key, expected in config["expected_rejection"]["r2_acceptance_thresholds"].items():
         require(r2_config["acceptance"].get(key) == expected, f"R2/R3 threshold identity differs: {key}")
     require(float(config["expected_rejection"]["equilibrium_volume_difference_percent_max"]) == float(r2_config["acceptance"]["al_ksl_vs_ksnl_equilibrium_volume_difference_percent_max"]), "R3 delta V0 threshold differs from R2")
@@ -353,6 +431,7 @@ def replay(project_root: Path, config: dict, analysis_preregistered_commit: str 
         "source_r2_terminal_sha256": config["source_r2"]["terminal_sha256"],
         "source_r2_analysis_inventory": inventory,
         "source_r2_git_identity": {key: value for key, value in commit_identity.items() if key != "files"},
+        "capture_git_identity": capture_git_identity,
         "r2_replay_dependency_count": len(dependencies),
         "hard_failure_signatures": signatures,
         "al_ks_l_vs_ks_nl": {
