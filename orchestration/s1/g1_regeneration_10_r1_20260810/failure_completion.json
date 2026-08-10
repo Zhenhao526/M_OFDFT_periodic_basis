@@ -1,0 +1,21 @@
+{
+  "analysis_summary_path": "analysis/s1/g1_regeneration_10_r1_20260810/summary.json",
+  "analysis_summary_sha256": "b867ad9104d8e027f39a7401c1177f762e98b8af0aa007115f35a82798df7711",
+  "denominator": {
+    "accepted": 3,
+    "attempted": 4,
+    "completed": 3,
+    "credited_to_gate": 0,
+    "failed": 1,
+    "missing": 6,
+    "registered": 10,
+    "retried": 0,
+    "skipped": 6
+  },
+  "external_terminal_sha256": "70ec2625ff79bea167d2fd3194376ae4ba97cd0f602bffcbf13ede3db48e972b",
+  "protocol_revision": "S1-G1-REGENERATION-10-R1",
+  "retry_policy_obeyed": true,
+  "runner_commit": "ca90c29c78556b5a23f9b806eba37044c7cb1f61",
+  "schema_version": 1,
+  "status": "rejected_frozen_no_retry"
+}

@@ -1,0 +1,9 @@
+{
+  "case_id": "S1-G1-REGEN10-20260810-004",
+  "error": "case scientific gates rejected",
+  "error_type": "RuntimeError",
+  "finished_utc": "2026-08-10T04:04:21.159883Z",
+  "protocol_revision": "S1-G1-REGENERATION-10-R1",
+  "schema_version": 1,
+  "status": "failed_no_retry"
+}
