@@ -276,12 +276,12 @@ def verify_parent_sources(config: dict, project_root: Path | None = None, rows: 
     require(phase.get("phase") == continuation_spec["endpoint_phase"], "continuation endpoint phase name differs")
     require(phase.get("accepted_ids") == continuation_spec["endpoint_phase_accepted_ids"], "continuation endpoint phase ID set/order differs")
     require(phase.get("accepted_count") == len(continuation_spec["endpoint_phase_accepted_ids"]), "continuation endpoint phase count differs")
-    endpoints = {experiment_id: verify_accepted_source(continuation_root, experiment_id, continuation_session) for experiment_id in continuation_spec["required_accepted_ids"]}
-    for experiment_id in continuation_spec["required_accepted_ids"]:
-        result = _object(continuation_root / "runs" / experiment_id / "result.json", "continuation Al endpoint result")
-        require(result.get("runtime_nonlocal_projectors_total") == 18, "continuation Al endpoint projector count differs")
-        require(result.get("pseudo_identity", {}).get("sha256") == config["pseudodojo"]["materials"]["al"]["sha256"], "continuation Al endpoint pseudo differs")
-        endpoints[experiment_id]["independent_raw_replay"] = replay_continuation_al_raw(
+    phase_sources = {experiment_id: verify_accepted_source(continuation_root, experiment_id, continuation_session) for experiment_id in continuation_spec["endpoint_phase_accepted_ids"]}
+    for experiment_id in continuation_spec["endpoint_phase_accepted_ids"]:
+        result = _object(continuation_root / "runs" / experiment_id / "result.json", "continuation Al EOS result")
+        require(result.get("runtime_nonlocal_projectors_total") == 18, "continuation Al EOS projector count differs")
+        require(result.get("pseudo_identity", {}).get("sha256") == config["pseudodojo"]["materials"]["al"]["sha256"], "continuation Al EOS pseudo differs")
+        phase_sources[experiment_id]["independent_raw_replay"] = replay_continuation_al_raw(
             continuation_root / "runs" / experiment_id, result, config, continuation_spec
         )
     if project_root is not None or rows is not None:
@@ -296,8 +296,6 @@ def verify_parent_sources(config: dict, project_root: Path | None = None, rows: 
             actual = continuation_root / "runs" / common_id / "STRU"
             require(sha256_file(registered) == row["registered_geometry_stru_sha256"], "registered endpoint geometry SHA differs")
             require(actual.read_bytes() == registered.read_bytes(), f"accepted continuation geometry differs: {common_id}")
-    if "accepted_result_sha256" in phase:
-        require(phase["accepted_result_sha256"] == {key: value["result_sha256"] for key, value in endpoints.items()}, "continuation phase result identity differs")
     return {
         "ready": True,
         "r1_session_sha256": old_session_sha,
@@ -307,7 +305,7 @@ def verify_parent_sources(config: dict, project_root: Path | None = None, rows: 
         "continuation_session_sha256": sha256_file(continuation_session_path),
         "continuation_endpoint_phase_sha256": sha256_file(phase_path),
         "r1_recovered_sources": recovered,
-        "endpoint_common_sources": endpoints,
+        "continuation_al_eos_sources": phase_sources,
     }
 
 

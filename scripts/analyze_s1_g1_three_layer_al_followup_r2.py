@@ -12,7 +12,7 @@ import subprocess
 from pathlib import Path
 
 from parse_s1_g1_three_layer_al_followup_r2 import parse_run as reparse_new_run
-from run_s1_g1_three_layer_al_followup_r2 import verify_accepted_source
+from run_s1_g1_three_layer_al_followup_r2 import git_file_at_commit, verify_accepted_source
 from s1_g1_three_layer_al_followup_r2_common import (
     atomic_write,
     canonical_json_bytes,
@@ -37,6 +37,7 @@ STRAIN_MAP = {
 ANCHOR_IDS = ("S1-20260810-301", "S1-20260810-302", "S1-20260810-303")
 RECOVERY_IDS = tuple(f"S1-20260810-{number:03d}" for number in range(301, 307))
 CONTINUATION_IDS = ("S1-20260810-327", "S1-20260810-328")
+CONTINUATION_PHASE_IDS = tuple(f"S1-20260810-{number:03d}" for number in range(327, 333))
 GATE_FIELDS = ("gate", "point", "metric", "value", "limit", "inequality", "accepted")
 
 
@@ -197,18 +198,27 @@ def verify_snapshot_source_identity(config: dict, new_state: Path, r1_state: Pat
     r1_session = _read_object(r1_state / "session.json")
     continuation_session = _read_object(continuation_state / "session.json")
     recovered = {experiment_id: verify_accepted_source(r1_state, experiment_id, r1_session) for experiment_id in RECOVERY_IDS}
-    endpoints = {experiment_id: verify_accepted_source(continuation_state, experiment_id, continuation_session) for experiment_id in CONTINUATION_IDS}
+    phase_sources = {experiment_id: verify_accepted_source(continuation_state, experiment_id, continuation_session) for experiment_id in CONTINUATION_PHASE_IDS}
     continuation_spec = config["source_states"]["continuation_r2"]
     barrier = continuation_state / continuation_spec["recovery_barrier_relative_path"]
     phase = continuation_state / continuation_spec["endpoint_phase_marker_relative_path"]
+    continuation_runner = continuation_session["runner_commit"]
+    versioned_bytes, versioned_blob = git_file_at_commit(project_root, continuation_runner, continuation_spec["versioned_recovery_barrier_path"])
+    require(versioned_bytes == barrier.read_bytes(), "snapshot barrier differs from continuation runner Git blob")
+    for experiment_id in CONTINUATION_PHASE_IDS:
+        replay = frozen.get("continuation_al_eos_sources", {}).get(experiment_id, {}).get("independent_raw_replay")
+        require(isinstance(replay, dict) and replay.get("accepted") is True, f"runner-time raw replay proof missing: {experiment_id}")
+        phase_sources[experiment_id]["independent_raw_replay"] = replay
     observed = {
         "ready": True,
         "r1_session_sha256": sha256_file(r1_state / "session.json"),
         "r1_recovery_barrier_sha256": sha256_file(barrier),
+        "r1_recovery_versioned_git_blob": versioned_blob,
+        "continuation_runner_commit": continuation_runner,
         "continuation_session_sha256": sha256_file(continuation_state / "session.json"),
         "continuation_endpoint_phase_sha256": sha256_file(phase),
         "r1_recovered_sources": recovered,
-        "endpoint_common_sources": endpoints,
+        "continuation_al_eos_sources": phase_sources,
     }
     require(observed == frozen, "parent source snapshot differs from runner-frozen identity")
     return observed
@@ -315,7 +325,7 @@ def collect(project_root: Path, config: dict) -> tuple[Path, Path, Path, Path]:
         copy_run_snapshot(source_new, new, experiment_id, include_attempt=True)
     for experiment_id in RECOVERY_IDS:
         copy_run_snapshot(source_r1, r1, experiment_id, include_attempt=False)
-    for experiment_id in CONTINUATION_IDS:
+    for experiment_id in CONTINUATION_PHASE_IDS:
         copy_run_snapshot(source_cont, cont, experiment_id, include_attempt=False)
     copy_exact(source_new / "session.json", new / "session.json")
     copy_exact(source_new / "terminal.json", new / "terminal.json")

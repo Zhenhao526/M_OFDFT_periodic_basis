@@ -211,7 +211,7 @@ class AlDomainFollowupR2Tests(unittest.TestCase):
                     },
                     "status": "accepted_source_evidence",
                 })
-            for experiment_id in ("S1-20260810-327", "S1-20260810-328"):
+            for experiment_id in (f"S1-20260810-{number:03d}" for number in range(327, 333)):
                 write_source(continuation, experiment_id, continuation_protocol, continuation_runner, al=True)
             barrier = {
                 "schema_version": 2, "protocol_revision": continuation_protocol, "status": "accepted",
