@@ -45,10 +45,8 @@ def read_topology(logical_cpu: int) -> dict[str, object]:
     return {
         "os_logical_cpu_id": logical_cpu,
         "physical_package_id": package,
-        "core_id": core,
+        "sysfs_core_id": core,
         "thread_siblings": parse_cpu_list((root / "thread_siblings_list").read_text(encoding="ascii")),
-        "logical_cpu": logical_cpu,
-        "socket_id": package,
     }
 
 
@@ -61,13 +59,13 @@ def validate_current_rank(config: dict, rank: int, local_rank: int, mode: str) -
     expected_affinity = runtime["thread_siblings_by_rank"][rank]
     expected_primary = runtime["primary_os_logical_cpu_ids_by_rank"][rank]
     expected_package = runtime["required_physical_package_id"]
-    expected_core = runtime["core_id_by_rank"][rank]
+    expected_core = runtime["sysfs_core_id_by_rank"][rank]
     logical_affinity = sorted(os.sched_getaffinity(0))
     require(logical_affinity == expected_affinity, f"rank {rank} OS logical affinity {logical_affinity} != {expected_affinity}")
     topology = [read_topology(cpu) for cpu in logical_affinity]
     require(expected_primary in logical_affinity, f"rank {rank} primary OS CPU missing")
     require(all(row["physical_package_id"] == expected_package for row in topology), f"rank {rank} package differs")
-    require(all(row["core_id"] == expected_core for row in topology), f"rank {rank} core_id differs")
+    require(all(row["sysfs_core_id"] == expected_core for row in topology), f"rank {rank} sysfs core_id differs")
     require(all(row["thread_siblings"] == expected_affinity for row in topology), f"rank {rank} sibling topology differs")
     return {
         "schema_version": 1,
@@ -81,9 +79,7 @@ def validate_current_rank(config: dict, rank: int, local_rank: int, mode: str) -
         "logical_cpu_affinity": logical_affinity,
         "primary_os_logical_cpu_id": expected_primary,
         "physical_package_id": expected_package,
-        "core_id": expected_core,
-        "physical_core_ids": [expected_core],
-        "expected_physical_core_id": expected_core,
+        "sysfs_core_id": expected_core,
         "thread_siblings": expected_affinity,
         "topology": topology,
         "accepted": True,
@@ -104,6 +100,8 @@ def main() -> int:
     rank = int(os.environ["OMPI_COMM_WORLD_RANK"])
     local_rank = int(os.environ["OMPI_COMM_WORLD_LOCAL_RANK"])
     payload = validate_current_rank(config, rank, local_rank, args.mode)
+    payload["config_sha256"] = args.config_sha256
+    payload["rank_wrapper_sha256"] = sha256_file(Path(__file__).resolve())
     args.evidence_dir.mkdir(parents=True, exist_ok=True)
     path = args.evidence_dir / f"rank_{rank:03d}.json"
     descriptor = os.open(path, os.O_WRONLY | os.O_CREAT | os.O_EXCL, 0o600)

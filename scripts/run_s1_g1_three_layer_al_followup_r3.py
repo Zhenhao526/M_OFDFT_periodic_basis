@@ -61,6 +61,12 @@ REGISTERED_CODE = (
     "tests/test_s1_g1_three_layer_al_followup_r3.py",
 )
 
+SMOKE_EXECUTION_CODE = (
+    "scripts/run_s1_g1_three_layer_al_followup_r3_binding_smoke.py",
+    "scripts/run_s1_g1_three_layer_al_followup_r3.py",
+    "scripts/s1_g1_three_layer_al_followup_r3_rank_wrapper.py",
+)
+
 
 def utc_now() -> str:
     return datetime.now(timezone.utc).isoformat().replace("+00:00", "Z")
@@ -72,6 +78,83 @@ def registered_paths(config: dict, rows: list[dict[str, str]]) -> list[Path]:
     for row in rows:
         paths.extend(input_root / row["experiment_id"] / name for name in ("INPUT", "STRU", "KPT", "metadata.json"))
     return paths
+
+
+def expected_preregistration_diff_paths(config: dict) -> list[str]:
+    return sorted([
+        "config/S1_g1_three_layer_al_domain_followup_r3.json",
+        "docs/S1_G1_THREE_LAYER_AL_DOMAIN_FOLLOWUP_R3_PROTOCOL.md",
+        *(f"{config['input_root']}/{experiment_id}/metadata.json" for experiment_id in config["formal_ids"]),
+    ])
+
+
+def preregistration_identity(project_root: Path, config: dict, head: str) -> dict:
+    implementation = config["implementation_commit"]
+    require(isinstance(implementation, str) and len(implementation) == 40, "implementation commit identity differs")
+    parent_row = subprocess.run(
+        ["git", "rev-list", "--parents", "-n", "1", head], cwd=project_root, check=True,
+        text=True, stdout=subprocess.PIPE,
+    ).stdout.split()
+    require(parent_row == [head, implementation], "preregistration must have implementation as its unique direct parent")
+    parent = parent_row[1]
+    changed = sorted(subprocess.run(
+        ["git", "diff-tree", "--no-commit-id", "--name-only", "-r", head],
+        cwd=project_root, check=True, text=True, stdout=subprocess.PIPE,
+    ).stdout.splitlines())
+    require(changed == expected_preregistration_diff_paths(config), "preregistration changed paths outside the exact frozen diff")
+    execution_code: list[dict] = []
+    for relative in SMOKE_EXECUTION_CODE:
+        path = project_root / relative
+        require(path.is_file() and not path.is_symlink(), f"smoke execution code missing: {relative}")
+        prereg_blob = subprocess.run(
+            ["git", "rev-parse", f"{head}:{relative}"], cwd=project_root, check=True,
+            text=True, stdout=subprocess.PIPE,
+        ).stdout.strip()
+        implementation_blob = subprocess.run(
+            ["git", "rev-parse", f"{implementation}:{relative}"], cwd=project_root, check=True,
+            text=True, stdout=subprocess.PIPE,
+        ).stdout.strip()
+        require(prereg_blob == implementation_blob, f"smoke execution code changed after implementation: {relative}")
+        execution_code.append({
+            "path": relative,
+            "sha256": sha256_file(path),
+            "size_bytes": path.stat().st_size,
+            "preregistration_git_blob": prereg_blob,
+            "implementation_git_blob": implementation_blob,
+        })
+    return {
+        "accepted": True,
+        "preregistration_commit": head,
+        "implementation_commit": implementation,
+        "direct_parent_commit": parent,
+        "exact_changed_paths": changed,
+        "execution_code_identities": execution_code,
+    }
+
+
+def evidence_only_formalization_identity(project_root: Path, head: str, preregistration_commit: str, evidence_path: str) -> dict:
+    parent_row = subprocess.run(
+        ["git", "rev-list", "--parents", "-n", "1", head], cwd=project_root,
+        check=True, text=True, stdout=subprocess.PIPE,
+    ).stdout.split()
+    require(parent_row == [head, preregistration_commit], "smoke formalization must have preregistration as its unique parent")
+    changed = sorted(subprocess.run(
+        ["git", "diff-tree", "--no-commit-id", "--name-only", "-r", head],
+        cwd=project_root, check=True, text=True, stdout=subprocess.PIPE,
+    ).stdout.splitlines())
+    require(changed == [evidence_path], "smoke formalization changed paths outside the exact aggregate evidence")
+    git_blob = subprocess.run(
+        ["git", "rev-parse", f"{head}:{evidence_path}"], cwd=project_root,
+        check=True, text=True, stdout=subprocess.PIPE,
+    ).stdout.strip()
+    return {
+        "accepted": True,
+        "formalization_commit": head,
+        "preregistration_commit": preregistration_commit,
+        "unique_parent_commit": parent_row[1],
+        "exact_changed_paths": changed,
+        "evidence_git_blob": git_blob,
+    }
 
 
 def _object(path: Path, label: str) -> dict:
@@ -585,7 +668,7 @@ def validate_core_reservation_ack(path: Path, config: dict) -> dict:
     require(ack.get("hostname") == runtime["required_hostname"], "core reservation ACK host differs")
     require(ack.get("physical_package_id") == runtime["required_physical_package_id"], "core reservation ACK package differs")
     require(ack.get("primary_os_logical_cpu_ids_by_rank") == runtime["primary_os_logical_cpu_ids_by_rank"], "core reservation ACK primary OS CPUs differ")
-    require(ack.get("core_id_by_rank") == runtime["core_id_by_rank"], "core reservation ACK core_id map differs")
+    require(ack.get("sysfs_core_id_by_rank") == runtime["sysfs_core_id_by_rank"], "core reservation ACK sysfs core_id map differs")
     require(ack.get("thread_siblings_by_rank") == runtime["thread_siblings_by_rank"], "core reservation ACK sibling map differs")
     require(ack.get("reserved_os_logical_cpu_ids") == runtime["reserved_os_logical_cpu_ids"], "core reservation ACK OS logical/SMT domain differs")
     require(ack.get("conflicting_workflows_checked") is True, "core collision coordination not acknowledged")
@@ -629,7 +712,7 @@ def _live_topology(logical_cpu: int) -> dict:
     return {
         "os_logical_cpu_id": logical_cpu,
         "physical_package_id": int((root / "physical_package_id").read_text().strip()),
-        "core_id": int((root / "core_id").read_text().strip()),
+        "sysfs_core_id": int((root / "core_id").read_text().strip()),
         "thread_siblings": sorted(parse_cpu_list((root / "thread_siblings_list").read_text())),
     }
 
@@ -639,7 +722,7 @@ def live_preflight(config: dict) -> dict:
     hostname = socket.gethostname()
     require(hostname == runtime["required_hostname"], "formal run must execute on node01")
     primary = runtime["primary_os_logical_cpu_ids_by_rank"]
-    core_ids = runtime["core_id_by_rank"]
+    core_ids = runtime["sysfs_core_id_by_rank"]
     sibling_rows = runtime["thread_siblings_by_rank"]
     require(primary == [30, 31, 32, 33], "frozen primary OS CPU list differs")
     require(core_ids == [30, 31, 32, 33], "frozen /sys core_id list differs")
@@ -654,7 +737,7 @@ def live_preflight(config: dict) -> dict:
     for rank, siblings in enumerate(sibling_rows):
         topology = [_live_topology(cpu) for cpu in siblings]
         require(all(row["physical_package_id"] == runtime["required_physical_package_id"] for row in topology), f"rank {rank} live package differs")
-        require(all(row["core_id"] == core_ids[rank] for row in topology), f"rank {rank} live core_id differs")
+        require(all(row["sysfs_core_id"] == core_ids[rank] for row in topology), f"rank {rank} live sysfs core_id differs")
         require(all(row["thread_siblings"] == siblings for row in topology), f"rank {rank} live siblings differ")
         topology_by_rank.append(topology)
     collisions: list[dict] = []
@@ -684,7 +767,7 @@ def live_preflight(config: dict) -> dict:
         "hostname": hostname, "online_os_logical_cpus": sorted(online),
         "required_physical_package_id": runtime["required_physical_package_id"],
         "primary_os_logical_cpu_ids_by_rank": primary,
-        "core_id_by_rank": core_ids,
+        "sysfs_core_id_by_rank": core_ids,
         "thread_siblings_by_rank": sibling_rows,
         "reserved_os_logical_cpus": sorted(reserved_logical),
         "topology_by_rank": topology_by_rank,
@@ -723,10 +806,8 @@ def verify_binding_smoke(config: dict, project_root: Path, head: str) -> dict:
     require(aggregate.get("runner_return_code") == 0 and aggregate.get("rank_count") == 4 and aggregate.get("failed_rank_count") == 0 and aggregate.get("abacus_exec_count") == 0, "binding-smoke denominator differs")
     prereg = aggregate.get("preregistration_commit")
     require(isinstance(prereg, str) and len(prereg) == 40, "binding-smoke preregistration commit missing")
-    parent = subprocess.run(["git", "rev-parse", f"{head}^"], cwd=project_root, check=True, text=True, stdout=subprocess.PIPE).stdout.strip()
-    require(parent == prereg and head != prereg, "formal runner must be the one evidence-only child of smoke preregistration")
-    changed = subprocess.run(["git", "diff-tree", "--no-commit-id", "--name-only", "-r", head], cwd=project_root, check=True, text=True, stdout=subprocess.PIPE).stdout.splitlines()
-    require(changed == [spec["versioned_aggregate_path"]], "smoke formalization commit changed non-evidence paths")
+    formalization = evidence_only_formalization_identity(project_root, head, prereg, spec["versioned_aggregate_path"])
+    require(aggregate.get("preregistration_identity") == preregistration_identity(project_root, config, prereg), "binding-smoke preregistration/code identity differs")
     committed = subprocess.run(["git", "show", f"{head}:{spec['versioned_aggregate_path']}"], cwd=project_root, check=True, stdout=subprocess.PIPE).stdout
     require(committed == external.read_bytes(), "committed binding-smoke bytes differ")
     require(aggregate.get("command") == binding_command(project_root, config, external_root / "ranks", mode="smoke"), "binding-smoke command differs from formal mapper/wrapper")
@@ -740,13 +821,16 @@ def verify_binding_smoke(config: dict, project_root: Path, head: str) -> dict:
         payload = identity["payload"]
         require(payload.get("os_logical_cpu_affinity") == config["runtime"]["thread_siblings_by_rank"][rank], f"binding-smoke rank {rank} OS affinity differs")
         require(payload.get("physical_package_id") == config["runtime"]["required_physical_package_id"], f"binding-smoke rank {rank} package differs")
-        require(payload.get("core_id") == config["runtime"]["core_id_by_rank"][rank], f"binding-smoke rank {rank} core_id differs")
+        require(payload.get("sysfs_core_id") == config["runtime"]["sysfs_core_id_by_rank"][rank], f"binding-smoke rank {rank} sysfs core_id differs")
+        require("physical_core_ids" not in payload and "expected_physical_core_id" not in payload, f"binding-smoke rank {rank} contains an ambiguous physical-core label")
+        require(payload.get("config_sha256") == sha256_file(project_root / CONFIG_PATH), f"binding-smoke rank {rank} config SHA differs")
+        require(payload.get("rank_wrapper_sha256") == sha256_file(project_root / "scripts/s1_g1_three_layer_al_followup_r3_rank_wrapper.py"), f"binding-smoke rank {rank} wrapper SHA differs")
     for name in ("stdout", "stderr"):
         path = external_root / f"run.{name}"
         require(sha256_file(path) == aggregate[f"{name}_sha256"], f"binding-smoke {name} SHA differs")
     detached = aggregate.get("detached_runtime_proof", {})
     require(detached.get("accepted") is True and detached.get("session_leader") is True and detached.get("sighup_disposition") == "ignored" and not any(detached.get("stdio_isatty", {}).values()), "binding-smoke detached proof differs")
-    return {"accepted": True, "aggregate_sha256": sha256_file(external), "preregistration_commit": prereg, "formalization_commit": head, "rank_count": 4, "abacus_exec_count": 0}
+    return {"accepted": True, "aggregate_sha256": sha256_file(external), "preregistration_commit": prereg, "formalization_commit": head, "formalization_identity": formalization, "rank_count": 4, "abacus_exec_count": 0}
 
 
 def verify_r2_operational_failure_closure(config: dict, project_root: Path, head: str) -> dict:
@@ -849,7 +933,7 @@ def run_one(project_root: Path, state_root: Path, cache: Path, row: dict[str, st
         },
         "hostname": socket.gethostname(), "started_utc": utc_now(),
         "case_live_preflight": case_preflight,
-        "runtime": {key: config["runtime"][key] for key in ("binary", "binary_sha256", "mpi", "rank_count", "required_physical_package_id", "primary_os_logical_cpu_ids_by_rank", "core_id_by_rank", "thread_siblings_by_rank", "reserved_os_logical_cpu_ids", "map_by")},
+        "runtime": {key: config["runtime"][key] for key in ("binary", "binary_sha256", "mpi", "rank_count", "required_physical_package_id", "primary_os_logical_cpu_ids_by_rank", "sysfs_core_id_by_rank", "thread_siblings_by_rank", "reserved_os_logical_cpu_ids", "map_by")},
         "pseudo_runtime_identity": pseudo_identity,
     }
     atomic_write(run_dir / "metadata.json", canonical_json_bytes(metadata), exclusive=True)

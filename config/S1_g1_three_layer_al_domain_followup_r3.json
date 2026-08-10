@@ -13,6 +13,10 @@
   "r2_operational_failure_closure_commit": "118b8300c9e2757df91cf2fb4a810663b42aeac4",
   "r2_operational_failure_closure_path": "analysis/s1/g1_three_layer_al_domain_followup_r2_20260810/operational_failure_closure.json",
   "r2_operational_failure_closure_sha256": "bafc2cf63316bcbe4eb9d840f092d9d2cb288701843297cc34e05671cc2945bb",
+  "superseded_r3_preregistration_commit": "2ad2811afdd7293fade9a0a5bbd9359dbb724d18",
+  "superseded_r3_preregistration_closure_commit": "0c0f4a621a0dacb338d507d00a86983139f18754",
+  "superseded_r3_preregistration_closure_path": "analysis/s1/g1_three_layer_al_domain_followup_r3_prereg_2ad2811_20260810/superseded_before_execution.json",
+  "superseded_r3_preregistration_closure_sha256": "15600482aaed4130cf60e974fded92b543ad6a61962d66f1289e8434d22ec33f",
   "manifest": "config/S1_g1_three_layer_al_domain_followup_r3_manifest.tsv",
   "input_root": "inputs/s1/g1_three_layer_al_domain_followup_r3",
   "analysis_root": "analysis/s1/g1_three_layer_al_domain_followup_r3_20260810",
@@ -39,7 +43,7 @@
     "rank_count": 4,
     "required_physical_package_id": 0,
     "primary_os_logical_cpu_ids_by_rank": [30, 31, 32, 33],
-    "core_id_by_rank": [30, 31, 32, 33],
+    "sysfs_core_id_by_rank": [30, 31, 32, 33],
     "thread_siblings_by_rank": [[30, 106], [31, 107], [32, 108], [33, 109]],
     "reserved_os_logical_cpu_ids": [30, 31, 32, 33, 106, 107, 108, 109],
     "map_by": "pe-list=30,31,32,33:ordered",
@@ -52,7 +56,7 @@
     "smt_sibling_aware_collision_scan_before_session_and_each_case": true,
     "detached_setsid_no_tty_sighup_ignored_proof_required": true,
     "per_rank_affinity_evidence_required": true,
-    "ambiguous_physical_core_id_label_forbidden": true,
+    "ambiguous_physical_core_label_in_raw_evidence_forbidden": true,
     "detached_four_rank_binding_smoke_before_state_required": true
   },
   "binding_smoke": {

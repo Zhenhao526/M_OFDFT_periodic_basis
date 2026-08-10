@@ -2,6 +2,7 @@
 from __future__ import annotations
 
 import json
+import subprocess
 import sys
 import tempfile
 import unittest
@@ -20,6 +21,8 @@ from parse_s1_g1_three_layer_al_followup_r3 import (  # noqa: E402
 )
 from run_s1_g1_three_layer_al_followup_r3 import (  # noqa: E402
     acquire_core_locks,
+    evidence_only_formalization_identity,
+    preregistration_identity,
     validate_core_reservation_ack,
     verify_accepted_source,
     verify_parent_sources,
@@ -411,7 +414,7 @@ class AlDomainFollowupR3Tests(unittest.TestCase):
                 "required_hostname": "node01",
                 "required_physical_package_id": 0,
                 "primary_os_logical_cpu_ids_by_rank": [30, 31, 32, 33],
-                "core_id_by_rank": [30, 31, 32, 33],
+                "sysfs_core_id_by_rank": [30, 31, 32, 33],
                 "thread_siblings_by_rank": [[30, 106], [31, 107], [32, 108], [33, 109]],
                 "reserved_os_logical_cpu_ids": logical,
                 "core_lock_root": str(root / "locks"),
@@ -424,7 +427,7 @@ class AlDomainFollowupR3Tests(unittest.TestCase):
                 "hostname": "node01",
                 "physical_package_id": 0,
                 "primary_os_logical_cpu_ids_by_rank": [30, 31, 32, 33],
-                "core_id_by_rank": [30, 31, 32, 33],
+                "sysfs_core_id_by_rank": [30, 31, 32, 33],
                 "thread_siblings_by_rank": [[30, 106], [31, 107], [32, 108], [33, 109]],
                 "reserved_os_logical_cpu_ids": logical,
                 "conflicting_workflows_checked": True,
@@ -455,13 +458,13 @@ class AlDomainFollowupR3Tests(unittest.TestCase):
                 "required_hostname": "node01",
                 "required_physical_package_id": 0,
                 "primary_os_logical_cpu_ids_by_rank": [30, 31, 32, 33],
-                "core_id_by_rank": [30, 31, 32, 33],
+                "sysfs_core_id_by_rank": [30, 31, 32, 33],
                 "thread_siblings_by_rank": [[30, 106], [31, 107], [32, 108], [33, 109]],
             },
         }
         topology = {
-            30: {"os_logical_cpu_id": 30, "physical_package_id": 0, "core_id": 30, "thread_siblings": [30, 106]},
-            106: {"os_logical_cpu_id": 106, "physical_package_id": 0, "core_id": 30, "thread_siblings": [30, 106]},
+            30: {"os_logical_cpu_id": 30, "physical_package_id": 0, "sysfs_core_id": 30, "thread_siblings": [30, 106]},
+            106: {"os_logical_cpu_id": 106, "physical_package_id": 0, "sysfs_core_id": 30, "thread_siblings": [30, 106]},
         }
         with (
             patch("s1_g1_three_layer_al_followup_r3_rank_wrapper.socket.gethostname", return_value="node01"),
@@ -471,7 +474,7 @@ class AlDomainFollowupR3Tests(unittest.TestCase):
             payload = validate_current_rank(config, 0, 0, "smoke")
         self.assertEqual(payload["primary_os_logical_cpu_id"], 30)
         self.assertEqual(payload["physical_package_id"], 0)
-        self.assertEqual(payload["core_id"], 30)
+        self.assertEqual(payload["sysfs_core_id"], 30)
         self.assertEqual(payload["thread_siblings"], [30, 106])
 
         wrong_package = {cpu: {**row, "physical_package_id": 1} for cpu, row in topology.items()}
@@ -483,7 +486,7 @@ class AlDomainFollowupR3Tests(unittest.TestCase):
         ):
             validate_current_rank(config, 0, 0, "smoke")
 
-        wrong_core = {cpu: {**row, "core_id": 2} for cpu, row in topology.items()}
+        wrong_core = {cpu: {**row, "sysfs_core_id": 2} for cpu, row in topology.items()}
         with (
             patch("s1_g1_three_layer_al_followup_r3_rank_wrapper.socket.gethostname", return_value="node01"),
             patch("s1_g1_three_layer_al_followup_r3_rank_wrapper.os.sched_getaffinity", return_value={30, 106}),
@@ -499,7 +502,7 @@ class AlDomainFollowupR3Tests(unittest.TestCase):
                 "required_hostname": "node01",
                 "required_physical_package_id": 0,
                 "primary_os_logical_cpu_ids_by_rank": [30, 31, 32, 33],
-                "core_id_by_rank": [30, 31, 32, 33],
+                "sysfs_core_id_by_rank": [30, 31, 32, 33],
                 "thread_siblings_by_rank": [[30, 106], [31, 107], [32, 108], [33, 109]],
             },
         }
@@ -516,16 +519,96 @@ class AlDomainFollowupR3Tests(unittest.TestCase):
                     "os_logical_cpu_affinity": config["runtime"]["thread_siblings_by_rank"][rank],
                     "primary_os_logical_cpu_id": config["runtime"]["primary_os_logical_cpu_ids_by_rank"][rank],
                     "physical_package_id": 0,
-                    "core_id": config["runtime"]["core_id_by_rank"][rank],
+                    "sysfs_core_id": config["runtime"]["sysfs_core_id_by_rank"][rank],
                     "thread_siblings": config["runtime"]["thread_siblings_by_rank"][rank],
+                    "config_sha256": sha256_file(PROJECT_ROOT / "config/S1_g1_three_layer_al_domain_followup_r3.json"),
+                    "rank_wrapper_sha256": sha256_file(PROJECT_ROOT / "scripts/s1_g1_three_layer_al_followup_r3_rank_wrapper.py"),
                 }
                 (root / "ranks" / f"rank_{rank:03d}.json").write_bytes(canonical_json_bytes(payload))
             self.assertEqual(len(validate_rank_payloads(root, config)), 4)
             bad = json.loads((root / "ranks" / "rank_002.json").read_text())
-            bad["core_id"] = 2
+            bad["sysfs_core_id"] = 2
             (root / "ranks" / "rank_002.json").write_bytes(canonical_json_bytes(bad))
             with self.assertRaises(ValueError):
                 validate_rank_payloads(root, config)
+
+    def test_preregistration_rejects_malicious_descendant_and_merge_parent(self) -> None:
+        def run(repo: Path, *arguments: str) -> str:
+            return subprocess.run(
+                ["git", *arguments], cwd=repo, check=True, text=True,
+                stdout=subprocess.PIPE, stderr=subprocess.PIPE,
+            ).stdout.strip()
+
+        with tempfile.TemporaryDirectory() as temporary:
+            repo = Path(temporary)
+            run(repo, "init", "-q")
+            run(repo, "config", "user.name", "R3 Test")
+            run(repo, "config", "user.email", "r3-test@example.invalid")
+            code_paths = [
+                "scripts/run_s1_g1_three_layer_al_followup_r3_binding_smoke.py",
+                "scripts/run_s1_g1_three_layer_al_followup_r3.py",
+                "scripts/s1_g1_three_layer_al_followup_r3_rank_wrapper.py",
+            ]
+            formal_ids = [f"S1-TEST-{index}" for index in range(8)]
+            prereg_paths = [
+                "config/S1_g1_three_layer_al_domain_followup_r3.json",
+                "docs/S1_G1_THREE_LAYER_AL_DOMAIN_FOLLOWUP_R3_PROTOCOL.md",
+                *(f"inputs/r3/{experiment_id}/metadata.json" for experiment_id in formal_ids),
+            ]
+            for relative in [*code_paths, *prereg_paths]:
+                path = repo / relative
+                path.parent.mkdir(parents=True, exist_ok=True)
+                path.write_text(f"implementation:{relative}\n")
+            run(repo, "add", ".")
+            run(repo, "commit", "-q", "-m", "implementation")
+            implementation = run(repo, "rev-parse", "HEAD")
+            for relative in prereg_paths:
+                (repo / relative).write_text(f"preregistration:{relative}\n")
+            run(repo, "add", ".")
+            run(repo, "commit", "-q", "-m", "preregister")
+            prereg = run(repo, "rev-parse", "HEAD")
+            config = {
+                "implementation_commit": implementation,
+                "input_root": "inputs/r3",
+                "formal_ids": formal_ids,
+            }
+            self.assertTrue(preregistration_identity(repo, config, prereg)["accepted"])
+
+            evidence_path = "orchestration/s1/r3/binding_smoke.json"
+            run(repo, "checkout", "-q", "-b", "formal-ok", prereg)
+            evidence = repo / evidence_path
+            evidence.parent.mkdir(parents=True, exist_ok=True)
+            evidence.write_text("accepted smoke\n")
+            run(repo, "add", evidence_path)
+            run(repo, "commit", "-q", "-m", "formalize smoke")
+            formal = run(repo, "rev-parse", "HEAD")
+            self.assertTrue(evidence_only_formalization_identity(repo, formal, prereg, evidence_path)["accepted"])
+
+            run(repo, "checkout", "-q", "-b", "malicious", prereg)
+            wrapper = repo / code_paths[-1]
+            wrapper.write_text("malicious clean descendant\n")
+            run(repo, "add", code_paths[-1])
+            run(repo, "commit", "-q", "-m", "malicious descendant")
+            with self.assertRaises(ValueError):
+                preregistration_identity(repo, config, run(repo, "rev-parse", "HEAD"))
+
+            run(repo, "checkout", "-q", "-b", "formal-side", prereg)
+            (repo / "formal-side.txt").write_text("second formal parent\n")
+            run(repo, "add", "formal-side.txt")
+            run(repo, "commit", "-q", "-m", "formal side")
+            run(repo, "checkout", "-q", "-b", "formal-merge", prereg)
+            run(repo, "merge", "-q", "--no-ff", "formal-side", "-m", "formal merge parent")
+            with self.assertRaises(ValueError):
+                evidence_only_formalization_identity(repo, run(repo, "rev-parse", "HEAD"), prereg, evidence_path)
+
+            run(repo, "checkout", "-q", "-b", "side", implementation)
+            (repo / "side.txt").write_text("second parent\n")
+            run(repo, "add", "side.txt")
+            run(repo, "commit", "-q", "-m", "side")
+            run(repo, "checkout", "-q", "-b", "mergecase", implementation)
+            run(repo, "merge", "-q", "--no-ff", "side", "-m", "merge parent")
+            with self.assertRaises(ValueError):
+                preregistration_identity(repo, config, run(repo, "rev-parse", "HEAD"))
 
     def test_galileo_uses_327_328_and_strict_endpoint_limits(self) -> None:
         def result(value: float, pressure: float = 0.0) -> dict:

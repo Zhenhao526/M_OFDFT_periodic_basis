@@ -18,6 +18,7 @@ from run_s1_g1_three_layer_al_followup_r3 import (
     binding_command,
     detached_runtime_proof,
     live_preflight,
+    preregistration_identity,
     registered_paths,
 )
 from s1_g1_three_layer_al_followup_r3_common import (
@@ -52,8 +53,11 @@ def validate_rank_payloads(root: Path, config: dict) -> list[dict]:
         require(payload.get("os_logical_cpu_affinity") == runtime["thread_siblings_by_rank"][rank], f"rank {rank} OS affinity differs")
         require(payload.get("primary_os_logical_cpu_id") == runtime["primary_os_logical_cpu_ids_by_rank"][rank], f"rank {rank} primary CPU differs")
         require(payload.get("physical_package_id") == runtime["required_physical_package_id"], f"rank {rank} package differs")
-        require(payload.get("core_id") == runtime["core_id_by_rank"][rank], f"rank {rank} core_id differs")
+        require(payload.get("sysfs_core_id") == runtime["sysfs_core_id_by_rank"][rank], f"rank {rank} sysfs core_id differs")
         require(payload.get("thread_siblings") == runtime["thread_siblings_by_rank"][rank], f"rank {rank} siblings differ")
+        require("physical_core_ids" not in payload and "expected_physical_core_id" not in payload, f"rank {rank} contains an ambiguous physical-core label")
+        require(payload.get("config_sha256") == sha256_file(Path(__file__).resolve().parents[1] / CONFIG_PATH), f"rank {rank} config SHA differs")
+        require(payload.get("rank_wrapper_sha256") == sha256_file(Path(__file__).resolve().parent / "s1_g1_three_layer_al_followup_r3_rank_wrapper.py"), f"rank {rank} wrapper SHA differs")
         rows.append({"path": str(path.relative_to(root)), "sha256": sha256_file(path), "size_bytes": path.stat().st_size, "payload": payload})
     require(len(list((root / "ranks").glob("rank_*.json"))) == runtime["rank_count"], "smoke rank denominator differs")
     return rows
@@ -67,7 +71,7 @@ def main() -> int:
     config = load_config(project_root)
     rows = load_manifest(project_root)
     head = require_clean_tree(project_root)
-    require(head != config["implementation_commit"], "binding smoke must run from a preregistration child of implementation")
+    prereg_identity = preregistration_identity(project_root, config, head)
     require_tracked_matches_head(project_root, registered_paths(config, rows))
     state_root = Path(config["external_state_root"])
     require(not state_root.exists(), "formal state exists before binding smoke")
@@ -93,6 +97,7 @@ def main() -> int:
             "status": "accepted",
             "preregistration_commit": head,
             "implementation_commit": config["implementation_commit"],
+            "preregistration_identity": prereg_identity,
             "config_sha256": sha256_file(project_root / CONFIG_PATH),
             "manifest_sha256": sha256_file(project_root / MANIFEST_PATH),
             "formal_state_absent": not state_root.exists(),

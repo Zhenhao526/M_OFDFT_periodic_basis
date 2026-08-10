@@ -4,13 +4,12 @@
 from __future__ import annotations
 
 import argparse
-import copy
 import json
 import math
 import re
 from pathlib import Path
 
-from parse_s1_g1_three_layer_r1 import parse_run as parse_base_run
+import parse_s1_g1_three_layer_r1 as base_parser
 from s1_electron_number_common import parse_stru
 from s1_g1_thermodynamic_label_common import parse_abacus_cube
 from s1_g1_three_layer_al_followup_r3_common import (
@@ -18,8 +17,10 @@ from s1_g1_three_layer_al_followup_r3_common import (
     file_identity,
     find_project_root,
     load_config,
+    read_json,
     read_text,
     require,
+    sha256_file,
 )
 
 
@@ -122,6 +123,30 @@ def require_zero_cube_origin(origin_bohr: tuple[float, float, float] | list[floa
     return maximum
 
 
+def parse_explicit_r3_affinity(run_dir: Path, config: dict) -> list[dict]:
+    runtime = config["runtime"]
+    rows: list[dict] = []
+    for rank in range(int(runtime["rank_count"])):
+        path = run_dir / "affinity" / f"rank_{rank:03d}.json"
+        payload = read_json(path)
+        require(isinstance(payload, dict), "R3 affinity payload must be object")
+        require("physical_core_ids" not in payload and "expected_physical_core_id" not in payload, "ambiguous physical-core label is forbidden in R3 raw evidence")
+        require(payload.get("rank") == rank and payload.get("local_rank") == rank, "R3 rank identity differs")
+        require(payload.get("hostname") == runtime["required_hostname"], "R3 rank hostname differs")
+        require(payload.get("os_logical_cpu_affinity") == runtime["thread_siblings_by_rank"][rank], "R3 OS logical affinity differs")
+        require(payload.get("primary_os_logical_cpu_id") == runtime["primary_os_logical_cpu_ids_by_rank"][rank], "R3 primary OS CPU differs")
+        require(payload.get("physical_package_id") == runtime["required_physical_package_id"], "R3 package differs")
+        require(payload.get("sysfs_core_id") == runtime["sysfs_core_id_by_rank"][rank], "R3 /sys core_id differs")
+        require(payload.get("thread_siblings") == runtime["thread_siblings_by_rank"][rank], "R3 thread siblings differ")
+        require(payload.get("accepted") is True, "R3 rank affinity rejected")
+        # The inherited parser constructs its old result shape from this in-memory
+        # compatibility key. It is never written to raw evidence and is renamed
+        # immediately after the inherited parse returns.
+        rows.append({**payload, "physical_core_ids": [payload["sysfs_core_id"]], "evidence_sha256": sha256_file(path)})
+    require([row["sysfs_core_id"] for row in rows] == runtime["sysfs_core_id_by_rank"], "R3 sysfs core_id denominator differs")
+    return rows
+
+
 def validate_cube_geometry(run_dir: Path, cube_path: Path, config: dict) -> dict:
     cube = parse_abacus_cube(cube_path, quantity="electron_density", units="electron_per_bohr3", structure_path=run_dir / "STRU")
     structure = parse_stru(run_dir / "STRU")
@@ -152,9 +177,15 @@ def validate_cube_geometry(run_dir: Path, cube_path: Path, config: dict) -> dict
 
 
 def parse_run(run_dir: Path, config: dict, *, require_followup_orchestration: bool = True) -> dict:
-    base_config = copy.deepcopy(config)
-    base_config["runtime"]["physical_core_ids"] = config["runtime"]["core_id_by_rank"]
-    result = parse_base_run(run_dir, base_config)
+    original_affinity_parser = base_parser.parse_affinity
+    base_parser.parse_affinity = parse_explicit_r3_affinity
+    try:
+        result = base_parser.parse_run(run_dir, config)
+    finally:
+        base_parser.parse_affinity = original_affinity_parser
+    result["affinity"]["sysfs_core_ids"] = result["affinity"].pop("physical_core_ids")
+    for row in result["affinity"]["ranks"]:
+        row.pop("physical_core_ids", None)
     require(result["material"] == "al" and result["atom_count"] == 1, "follow-up is Al/one-atom only")
     pseudo = result["pseudo_identity"]
     require(pseudo["z_valence"] == 3.0, "UPF zval differs")
@@ -174,6 +205,9 @@ def parse_run(run_dir: Path, config: dict, *, require_followup_orchestration: bo
         require(isinstance(orchestration.get("runner_commit"), str) and len(orchestration["runner_commit"]) == 40, "metadata runner commit invalid")
         require(isinstance(orchestration.get("config_sha256"), str) and len(orchestration["config_sha256"]) == 64, "metadata config identity invalid")
         require(isinstance(orchestration.get("manifest_sha256"), str) and len(orchestration["manifest_sha256"]) == 64, "metadata manifest identity invalid")
+        require(all(row.get("config_sha256") == orchestration["config_sha256"] for row in result["affinity"]["ranks"]), "rank-wrapper/config identity differs")
+        wrapper_sha = sha256_file(Path(__file__).resolve().parent / "s1_g1_three_layer_al_followup_r3_rank_wrapper.py")
+        require(all(row.get("rank_wrapper_sha256") == wrapper_sha for row in result["affinity"]["ranks"]), "rank-wrapper code identity differs")
     output_dir = run_dir / f"OUT.{metadata['suffix']}"
     log_path = output_dir / "running_scf.log"
     eig_path = output_dir / "eig_occ.txt"

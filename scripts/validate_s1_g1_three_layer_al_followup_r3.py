@@ -13,6 +13,7 @@ from analyze_s1_g1_three_layer_al_followup_r3 import build_analysis, write_analy
 from generate_s1_g1_three_layer_al_followup_r3 import generate
 from run_s1_g1_three_layer_al_followup_r3 import (
     REGISTERED_CODE,
+    preregistration_identity,
     registered_paths,
     verify_binding_smoke,
     verify_r2_operational_failure_closure,
@@ -49,11 +50,11 @@ def validate_preregistered(project_root: Path, config: dict, rows: list[dict[str
     runtime = config["runtime"]
     require(runtime["required_physical_package_id"] == 0, "frozen physical package differs")
     require(runtime["primary_os_logical_cpu_ids_by_rank"] == [30, 31, 32, 33], "frozen primary OS CPU IDs differ")
-    require(runtime["core_id_by_rank"] == [30, 31, 32, 33], "frozen /sys core_id map differs")
+    require(runtime["sysfs_core_id_by_rank"] == [30, 31, 32, 33], "frozen /sys core_id map differs")
     require(runtime["thread_siblings_by_rank"] == [[30, 106], [31, 107], [32, 108], [33, 109]], "frozen thread-sibling map differs")
     require(runtime["reserved_os_logical_cpu_ids"] == [30, 31, 32, 33, 106, 107, 108, 109], "frozen OS logical/SMT reservation domain differs")
     require(runtime["map_by"] == "pe-list=30,31,32,33:ordered", "ordered binding differs")
-    require(runtime["ambiguous_physical_core_id_label_forbidden"] is True and runtime["detached_four_rank_binding_smoke_before_state_required"] is True, "R3 topology/smoke hard gate differs")
+    require(runtime["ambiguous_physical_core_label_in_raw_evidence_forbidden"] is True and runtime["detached_four_rank_binding_smoke_before_state_required"] is True, "R3 topology/smoke hard gate differs")
     require(config["runtime"]["core_lock_root"] == "/home/shenwei01/.local/state/m_ofdft/core_locks", "core lock root differs")
     require(config["pseudodojo"].get("license_note") and "outside this repository" in config["pseudodojo"]["license_note"], "external UPF policy missing")
     require(set(config["pseudodojo"]["materials"]) == {"al", "mg"}, "Al/Mg recovery pseudo identity denominator differs")
@@ -83,6 +84,8 @@ def validate_preregistered(project_root: Path, config: dict, rows: list[dict[str
     require_ancestor(project_root, config["superseded_preregistration_commit"], config["superseded_preregistration_closure_commit"])
     require_ancestor(project_root, config["superseded_preregistration_closure_commit"], implementation)
     require_ancestor(project_root, config["r2_operational_failure_closure_commit"], implementation)
+    require_ancestor(project_root, config["superseded_r3_preregistration_commit"], config["superseded_r3_preregistration_closure_commit"])
+    require_ancestor(project_root, config["superseded_r3_preregistration_closure_commit"], implementation)
     require_ancestor(project_root, continuation["implementation_commit"], continuation["preregistration_commit"])
     require_ancestor(project_root, continuation["preregistration_commit"], continuation["recovery_formalization_commit"])
     # The continuation is an independent branch/state source; its exact commit
@@ -91,6 +94,7 @@ def validate_preregistered(project_root: Path, config: dict, rows: list[dict[str
     require_commit_object(project_root, continuation["recovery_formalization_commit"])
     require(isinstance(continuation["recovery_barrier_sha256"], str) and len(continuation["recovery_barrier_sha256"]) == 64, "frozen recovery barrier SHA differs")
     require(head != implementation, "formal preregistration must follow implementation commit")
+    prereg_identity = preregistration_identity(project_root, config, head)
     closure = read_json(project_root / "analysis/s1/g1_three_layer_al_domain_followup_r1_20260810/superseded_before_execution.json")
     require(isinstance(closure, dict) and closure.get("status") == "superseded_before_execution", "R1 follow-up closure missing")
     require(closure["execution_counts"]["solver_starts"] == 0, "R1 follow-up solver count differs")
@@ -102,6 +106,14 @@ def validate_preregistered(project_root: Path, config: dict, rows: list[dict[str
     require(rejected_closure.get("external_state_was_absent_at_closure") is True and rejected_closure.get("old_preregistration_must_not_be_executed") is True, "rejected R2 prereg closure semantics differ")
     require_tracked_matches_head(project_root, [Path(config["superseded_preregistration_closure_path"])])
     require_tracked_matches_head(project_root, [Path(config["r2_operational_failure_closure_path"])])
+    rejected_r3_path = project_root / config["superseded_r3_preregistration_closure_path"]
+    rejected_r3 = read_json(rejected_r3_path)
+    require(isinstance(rejected_r3, dict) and rejected_r3.get("status") == "superseded_before_execution", "rejected R3 prereg closure missing")
+    require(rejected_r3.get("superseded_preregistration_commit") == config["superseded_r3_preregistration_commit"], "rejected R3 prereg identity differs")
+    require(rejected_r3.get("external_state_was_absent_at_closure") is True and rejected_r3.get("external_binding_smoke_root_was_absent_at_closure") is True, "rejected R3 prereg external roots differ")
+    require(all(value == 0 for value in rejected_r3["execution_counts"].values()), "rejected R3 prereg execution count differs")
+    require(sha256_file(rejected_r3_path) == config["superseded_r3_preregistration_closure_sha256"], "rejected R3 prereg closure SHA differs")
+    require_tracked_matches_head(project_root, [Path(config["superseded_r3_preregistration_closure_path"])])
     require_tracked_matches_head(project_root, registered_paths(config, rows))
     r2_closure = verify_r2_operational_failure_closure(config, project_root, head)
     generate(project_root, mode="check")
@@ -114,7 +126,7 @@ def validate_preregistered(project_root: Path, config: dict, rows: list[dict[str
             require(gate.get("determinant_f") is not None and abs(gate["determinant_f"] - 1.0) < 1e-12, "strain det(F) differs")
             require(gate.get("direct_coordinate_bytes_unchanged") is True, "strain Direct coordinates differ")
         require(metadata["pseudo"]["expanded_nonlocal_projectors_per_atom"] == 18, "input projector contract differs")
-    return {"status": "accepted", "mode": "preregistered", "head": head, "implementation_commit": implementation, "registered_run_count": 8, "registered_file_count": len(registered_paths(config, rows)), "r2_operational_failure_closure": r2_closure}
+    return {"status": "accepted", "mode": "preregistered", "head": head, "implementation_commit": implementation, "registered_run_count": 8, "registered_file_count": len(registered_paths(config, rows)), "r2_operational_failure_closure": r2_closure, "preregistration_identity": prereg_identity}
 
 
 def validate_final(project_root: Path, config: dict, rows: list[dict[str, str]], require_committed: bool) -> dict:
@@ -144,6 +156,9 @@ def validate_final(project_root: Path, config: dict, rows: list[dict[str, str]],
     continuation = snapshot / "continuation_r2"
     for experiment_id in config["formal_ids"]:
         require((new / "runs" / experiment_id / "result.json").is_file(), f"missing new raw result: {experiment_id}")
+        result = read_json(new / "runs" / experiment_id / "result.json")
+        require(isinstance(result, dict) and result.get("affinity", {}).get("sysfs_core_ids") == config["runtime"]["sysfs_core_id_by_rank"], "explicit R3 result sysfs core_id map differs")
+        require("physical_core_ids" not in result["affinity"] and all("physical_core_ids" not in row for row in result["affinity"]["ranks"]), "ambiguous physical-core label entered R3 result")
         attempt = read_json(new / "attempts" / f"{experiment_id}.json")
         accepted = read_json(new / "accepted" / f"{experiment_id}.json")
         require(isinstance(attempt, dict) and attempt.get("status") == "formal_attempt_started", "attempt marker differs")

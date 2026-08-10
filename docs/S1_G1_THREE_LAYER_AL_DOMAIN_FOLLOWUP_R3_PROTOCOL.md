@@ -12,6 +12,8 @@ R2 的首个 prereg `3a3685b2acd3cccbe5e7d1a9f2130d299084e307` 经独立证据�
 
 R3 使用经只读查重确认未占用的新 ID 343--350、新 state 和新 smoke root；这不是 R2 retry。R3 runner 必须先逐字节/逐 SHA 重验上述 R2 closure 与冻结 state snapshot。
 
+R3 的首个 implementation/prereg `b282ef3c43a44ddc408055afb3de2ad9e5644679`/`2ad2811afdd7293fade9a0a5bbd9359dbb724d18` 在 smoke 前的独立审计中因缺少 exact prereg 唯一父与执行代码 blob 链被拒绝；`0c0f4a621a0dacb338d507d00a86983139f18754` 已将其关闭为 `superseded_before_execution`。该版 state/smoke root/attempt/rank/solver 均为 0，禁止执行。replacement 必须确保 prereg 的唯一直接父是 implementation，diff 仅为 config/protocol/8 个 metadata；smoke aggregate 冻结 smoke driver、formal runner 和 rank-wrapper 在 implementation/prereg 的 commit/blob/SHA/size，formalization 的唯一父是 exact prereg 且只改 aggregate。
+
 R3 runner 必须先 fail-closed 读取两个只读科学源：
 
 1. 原 R1 的 301--306。accepted marker 必须以 `result_sha256` 绑定 result，result 的每个 evidence SHA/size、runner return、session SHA/runner commit 均须重验；continuation R2 的独立 P0 recovery barrier 必须声明原 R1 operational closure 为 `incomplete_missing_phase_marker`、301--306 no-retry/no-reuse，并给出逐 ID inventory 与独立 scientific P0 状态。
@@ -42,7 +44,7 @@ R3 runner 必须先 fail-closed 读取两个只读科学源：
 
 每点必须同时通过：solver return 0/唯一收敛；PP SHA/header PBE/3e、6 个 beta、展开 projector=18；`zval*nat=3=log Ne=cube=eig_occ`（相对误差严格 `<1e-10`）；`NBANDS=12`、last occupation `<1e-8`；cube 原点三个分量显式精确为 0，三个完整有符号轴均逐分量满足 `n_i*step_i=A_i`、误差 `<5e-5 bohr`，Al1 顺序/坐标正确；force 恰一行且有序，stress 最终 3×3 对称、trace/3 与 pressure 差 `<1e-6 kbar`；有限温标签自洽；4 rank ordered binding 必须逐层满足下述 topology contract。analyzer 必须从 raw 重新运行 parser 并与 stored result 字节一致。
 
-核隔离不能把 `pe-list` label、OS logical CPU 与 `/sys core_id` 混写。冻结 host=`node01`、package=`0`；rank 0--3 的 primary OS logical CPU 为 `30,31,32,33`，对应 `/sys core_id=30,31,32,33`，完整 affinity/thread-sibling 行分别为 `[30,106] [31,107] [32,108] [33,109]`，完整 lock/collision domain 为 `30,31,32,33,106,107,108,109`。runner/ACK/rank evidence 必须分别保存并交叉验证 hostname、OS affinity、physical_package_id、core_id 与 siblings。
+核隔离不能把 `pe-list` label、OS logical CPU 与 `/sys core_id` 混写。冻结 host=`node01`、package=`0`；rank 0--3 的 primary OS logical CPU 为 `30,31,32,33`，对应 `/sys core_id=30,31,32,33`，完整 affinity/thread-sibling 行分别为 `[30,106] [31,107] [32,108] [33,109]`，完整 lock/collision domain 为 `30,31,32,33,106,107,108,109`。runner/ACK/rank evidence 必须分别保存并交叉验证 `hostname`、`os_logical_cpu_affinity`、`physical_package_id`、`sysfs_core_id` 与 `thread_siblings`；raw/result 禁止 `physical_core_ids` 或 `expected_physical_core_id` 这类歧义别名。
 
 implementation 后先单独 prereg；随后必须在正式 state/attempt 仍不存在时，以同一 MPI、`pe-list=30,31,32,33:ordered` 和同一 R3 rank-wrapper 做一次真实 detached 4-rank smoke，但 `abacus_exec_count=0`。smoke driver 必须是 setsid session leader、无 TTY、忽略 SIGHUP，并持有同一 8-CPU nonblocking lock；四 rank 的 `sched_getaffinity`、package、core_id、siblings 全部精确通过后才生成外部 O_EXCL aggregate。aggregate 作为 prereg 的唯一 evidence-only child commit 进入版本库；formal runner 必须验证 external/versioned/committed bytes、rank raw SHA、command、detached/lock/preflight、4/4/failed0/RC0/ABACUS0 后，才允许创建 state/session。缺 smoke、smoke 失败、额外 commit path 或任一 identity 不一致均禁止正式 attempt。
 
