@@ -1,0 +1,54 @@
+{
+  "schema_version": 1,
+  "protocol_revision": "S1-G1-THREE-LAYER-ANALYSIS-20260810-R3",
+  "capture": {
+    "r2_runner_commit": "3205d4972366c8a53a01fee2c5de22a4028b01eb",
+    "python": "/usr/bin/python3",
+    "analyzer_path": "scripts/analyze_s1_g1_three_layer_continuation_r2.py",
+    "analyzer_sha256": "cd814e9b598cb908a4b19cb2a04c48581e17356c0d60f4a43b978fb2ed6d4833",
+    "r2_config_path": "config/S1_g1_three_layer_continuation_r2.json",
+    "r2_config_sha256": "9c1447bc134362691357e80309a3df5ff49bfd2ce5eb5e8d4d8d47b935f79c76",
+    "expected_exit_code": 2,
+    "expected_summary_status": "rejected"
+  },
+  "source_r2": {
+    "analysis_root": "analysis/s1/g1_three_layer_continuation_r2_20260810",
+    "evidence_commit": "__FREEZE_AFTER_R2_EVIDENCE_COMMIT__",
+    "analysis_tree_oid": "__FREEZE_AFTER_R2_EVIDENCE_COMMIT__",
+    "analysis_tree_file_count": 0,
+    "analysis_tree_regular_file_bytes": 0,
+    "analysis_tree_sha256sum_list_digest": "__FREEZE_AFTER_R2_EVIDENCE_COMMIT__",
+    "summary_sha256": "__FREEZE_AFTER_R2_EVIDENCE_COMMIT__",
+    "points_sha256": "__FREEZE_AFTER_R2_EVIDENCE_COMMIT__",
+    "readme_sha256": "__FREEZE_AFTER_R2_EVIDENCE_COMMIT__",
+    "terminal_sha256": "__FREEZE_AFTER_R2_EVIDENCE_COMMIT__",
+    "analysis_invocation_sha256": "__FREEZE_AFTER_R2_EVIDENCE_COMMIT__",
+    "analysis_stdout_sha256": "__FREEZE_AFTER_R2_EVIDENCE_COMMIT__",
+    "analysis_stderr_sha256": "__FREEZE_AFTER_R2_EVIDENCE_COMMIT__",
+    "analysis_expected_exit_code": 2,
+    "runner_commit": "3205d4972366c8a53a01fee2c5de22a4028b01eb",
+    "recovery_barrier_sha256": "60765edd6b72fbdbe2ac190581b3c7aad1e91e6ef7d7616be1b6d24e29abf353"
+  },
+  "expected_rejection": {
+    "r2_summary_status": "rejected",
+    "r3_disposition_status": "evidence_valid_scientific_gate_rejected",
+    "hard_failure_signatures": [
+      "al_ks_l_vs_ks_nl_equilibrium_volume_difference_percent"
+    ],
+    "equilibrium_volume_difference_percent_max": 0.5,
+    "bulk_modulus_difference_percent_max": 10.0,
+    "require_all_bm3_fits_accepted": true,
+    "require_al_p0_accepted": true,
+    "require_mg_affects_overall_false": true
+  },
+  "output_root": "analysis/s1/g1_three_layer_analysis_r3_20260810",
+  "scope_limits": {
+    "scientific_gate_accepted": false,
+    "second_independent_ks_closed": false,
+    "qe_d026_scope_closed": false,
+    "endpoint_recheck_closed": false,
+    "strain_phase_gate_closed": false,
+    "g1_six_of_six_closed": false
+  },
+  "g1_disposition": {"accepted_subitems": 5, "required_subitems": 6, "status": "in_progress"}
+}
