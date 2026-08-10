@@ -1,0 +1,3 @@
+gate	value	threshold	status
+al_ks_l_vs_ks_nl_delta_v0_percent	0.7660177031576967	0.5	rejected
+al_ks_l_vs_ks_nl_delta_b0_percent	2.46585262559075	10.0	accepted
