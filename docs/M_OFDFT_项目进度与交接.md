@@ -2,23 +2,23 @@
 
 > 本文件是项目状态的唯一人工入口。任何人接手前先读本文件，再读项目书和当前阶段 README。  
 > 状态词仅使用：`not_started`、`in_progress`、`blocked`、`accepted`、`rejected`、`paused`。  
-> 更新时间：2026-08-10 10:25 CST
-> 文档版本：V3.8
+> 更新时间：2026-08-10 11:35 CST
+> 文档版本：V3.9
 
 ## 0. 十分钟上手摘要
 
 | 项目 | 当前值 |
 |---|---|
-| 当前总状态 | `in_progress`（R4 已以 40/40 新运行、6/6 k-anchor pairs 和空 failure ledger 完整验收；G1 为 `pending`，2/6） |
+| 当前总状态 | `in_progress`（R4 标签审计与独立 DFTpy 跨代码审计均已完整验收；G1 为 `pending`，3/6） |
 | 当前阶段 | S1：平面波 OFDFT/KSDFT 基准闭环 |
-| 当前闸门 | G1；电子数与第三 smearing/稠密 k 标签两个子项已关闭，继续独立 OFDFT、三层对照、位移/应变和 0/10 再生四项 |
+| 当前闸门 | G1；电子数、第三 smearing/稠密 k 标签和独立 OFDFT 跨代码三个子项已关闭，继续三层对照、位移/应变和 0/10 再生三项 |
 | 当前负责人 | 远端账户 `shenwei01`；本轮执行与记录：Codex |
 | 当前工作分支 | `codex/r4-execution`；所有实现和计算均在远端服务器完成 |
-| 最近可用提交 | `c4e98320`：R4 completion 已提交且最终 committed replay validator 通过；GitHub `codex/r4-execution` 与远端一致 |
+| 最近可用提交 | `f10008d`：DFTpy R2 的 14/14 正式证据已提交，committed validator 通过；本轮进度提交后再同步 GitHub |
 | 最近通过的数值 smoke | `S1-RUNTIME-SMOKE-20260805-074`：`storage_exact`，五类状态门全部 `accepted`；幂等重验返回 `accepted_committed` |
-| 最近通过的正式分析 | `analysis/s1/g1_thermodynamic_label_audit_r4_20260807/`：40/40 runs、42/42 scalar points、14/14 half-quarter pairs、6/6 k pairs accepted |
-| 当前阻塞 | 第二 OF 实现及 KS-NL 赝势/代码尚未冻结；S2/ML 继续由 G1 阻塞。R1/R2/R3/R4 外部 state 均只读 |
-| 下一项唯一动作 | 冻结并执行 DFTpy 跨实现 Al/Mg EOS/压力复核，同时生成位移/应变结构集和 10 例非破坏性再生入口 |
+| 最近通过的正式分析 | `analysis/s1/g1_cross_code_dftpy_r2_20260810/`：14/14 accepted；Al/Mg EOS RMS `1.13e-5/4.13e-4 meV/atom`，最大压力差 `0.00104/0.000105 GPa` |
+| 当前阻塞 | KS-NL 三层比较的 Mg PBE/10e 与旧 LDA-PZ/2e 不可直接作硬比较；位移/应变和 10 例再生尚未执行。R1–R4 与 DFTpy R1/R2 state 均只读 |
+| 下一项唯一动作 | 并行执行三层对照、小位移/应变参考集和 10 例非破坏性单命令再生 |
 
 ### 必读文件
 
@@ -38,6 +38,8 @@
 14. [初次可行性复核](M_OFDFT_任务书可行性复核.md)
 15. [原参考文献精读报告](references/M_OFDFT/M_OFDFT_参考文献逐篇精读报告.md)
 16. [原参考文献包索引](references/M_OFDFT/README.md)
+17. [G1 DFTpy 跨代码协议](S1_G1_CROSS_CODE_DFTPY_PROTOCOL.md)、`config/S1_g1_cross_code_dftpy.json`
+18. DFTpy R2 正式分析：`analysis/s1/g1_cross_code_dftpy_r2_20260810/README.md`、`summary.json`
 
 ### 最近可运行命令
 
@@ -49,6 +51,7 @@ cd /home/shenwei01/M_OFDFT_periodic_basis
 python3 scripts/validate_s1_electron_number_audit_r2.py --require-committed --require-all-runs
 python3 scripts/validate_s1_g1_thermodynamic_label_audit_r1.py config/S1_g1_thermodynamic_label_audit_r1_manifest.tsv --config config/S1_g1_thermodynamic_label_audit_r1.json --require-committed --check-failure-archives S1-20260806-034
 python3 -s scripts/generate_s1_g1_thermodynamic_label_audit_r4.py --project-root "$PWD"
+taskset -c 10 /home/shenwei01/.local/venvs/m_ofdft-dftpy-2.2.0-py311/bin/python scripts/validate_s1_g1_cross_code_dftpy.py analysis/s1/g1_cross_code_dftpy_r2_20260810 --require-committed
 python3 -m unittest -q tests.unit.test_s1_g1_thermodynamic_label_audit_r4_generator tests.unit.test_s1_g1_thermodynamic_label_audit_r4_parser tests.unit.test_s1_g1_thermodynamic_label_audit_r4_validator tests.unit.test_s1_g1_thermodynamic_label_audit_r4_analysis tests.unit.test_s1_g1_thermodynamic_label_audit_r4_runner tests.unit.test_s1_g1_thermodynamic_label_audit_r4_launcher
 ./scripts/run_smoke.sh S0-YYYYMMDD-NNN
 ```
@@ -132,6 +135,10 @@ python3 -m unittest -q tests.unit.test_s1_g1_thermodynamic_label_audit_r4_genera
 - [x] R4 远端 Linux 完整套件 90/90，通过真实 `/proc` SIGSTOP 集成；dry-run 为 40 行 manifest、160 个输入 blob，P1=041–052，P2=053–080；
 - [x] R4 正式完成：40/40 全新运行、42/42 EOS 标量点、6/6 EOS、14/14 half-quarter 场对、6/6 k-anchor 对、160/160 rank lifecycles 与 480/480 syscalls 全部 `accepted`；failure ledger 全空；
 - [x] R4 terminal 为 `accepted`、runner return code 为 0，completion `c4e98320` 已提交并完成最终 committed replay；G1 从 1/6 更新为 2/6；
+- [x] 在仓库外冻结 DFTpy 2.2.0 + pylibxc/LibXC 7.0.0 + Python 3.11 环境和依赖哈希；Al/Mg V100 诊断 pilot 均先通过能量、压力和电子数复核；
+- [x] DFTpy R1 的 14 个 ID 完成计算，但因逐点 stdout 未被 DFTpy 全局输出对象接管、独立积分使用了不一致的 Bohr 常数而判为证据 `rejected`；R1 state 原样冻结、ID 不重试，科学数值不提升为验收证据；
+- [x] 以 `4643b65` 冻结 DFTpy R2 的日志捕获和网格体积修正，以全新 `DFTPY-S1-20260810-015`–`028` 执行 14 个七点 EOS；14/14 accepted、14/14 日志含收敛标记，结果提交 `f10008d`；
+- [x] DFTpy R2 正式跨代码门通过：Al/Mg 锚定相对 EOS RMS 为 `1.1279e-05/4.1272e-04 meV/atom`，V0 差为 `3.64e-07/8.75e-05%`，最大压力差为 `0.001036/0.000105 GPa`，最大独立电子数误差为 `3.55e-15/5.77e-15`；G1 从 2/6 更新为 3/6；
 - [x] 扩大调研至原包 8 篇核心文献、扩展包 13 篇全文/241 页、1 篇网页全文及 20 余篇方法/软件补充证据；
 - [x] 识别 AMD-OFDFT 2014 直接先例，收窄“原子中心密度 + 变分 + Pulay 力”的创新主张；
 - [x] 完成闸门式项目再评估：整体 66/100、S0–S4A 核心 73/100、全范围 S0–S7 约 43/100；
@@ -141,20 +148,19 @@ python3 -m unittest -q tests.unit.test_s1_g1_thermodynamic_label_audit_r4_genera
 
 ### 下次开始位置
 
-从提交 `c4e98320` 开始；R1/R2/R3/R4 及其 external state 全部只读，不删除、不重启、不重试历史 ID：
+从提交 `f10008d` 开始；R1/R2/R3/R4 与 DFTpy R1/R2 external state 全部只读，不删除、不重启、不重试历史 ID：
 
-1. 独立 OFDFT：在远端锁定 DFTpy 版本、依赖和哈希，对 Al/Mg 的 `0.90, 1.00, 1.10 V0` 先做可运行性 pilot，再按冻结分母补足 EOS/压力门；
-2. 三层对照：冻结 KS-NL 赝势来源与哈希，分别形成 KS-NL→KS-L 和 KS-L→OF-L 两张误差表，不混用跨代码实现误差；
-3. 位移/应变：从冻结 Al/Mg 参考胞生成机器可读结构清单，输出有限温 Mermin 密度、能量分量和独立电子数复核；
-4. 单命令再生：固定 10 个案例和独立输出根，逐例只读比较既有证据，不覆盖原运行目录，要求 10/10 成功；
-5. 每关闭一项即提交 protocol/config/results/analysis/validator 与本进度文档；四项未全部验收前，G1 保持 `pending`，不得进入 S2 或 ML。
+1. 三层对照：Al 使用同 PBE/3e 的 PseudoDojo KS-NL 进入硬门；Mg PBE/10e 与旧 LDA-PZ/2e 不相容，只作兼容性诊断，不能伪装成硬比较；
+2. 位移/应变：按固定 15 点清单生成并计算有限温 Mermin 密度、能量分量、力、应力和独立电子数；中心差分只作 G1 数据完整性诊断，不提前关闭 G4；
+3. 单命令再生：固定 10 个案例和独立输出根，逐例只读比较既有证据，不覆盖原运行目录，要求 10/10 成功；
+4. 每关闭一项即提交 protocol/config/results/analysis/validator 与本进度文档；三项未全部形成规定结论前，G1 保持 `pending`，不得进入 S2 或 ML。
 
 ## 2. 阶段总览
 
 | 阶段 | 名称 | 状态 | 开始日期 | 结束日期 | 闸门 | 证据链接 | 下一动作 |
 |---|---|---|---|---|---|---|---|
 | S0 | 初始化与复现协议 | `accepted` | 2026-08-05 | 2026-08-05 | G0 | `docs/G0_ACCEPTANCE.md`; `analysis/s1/runtime_relocation_equivalence_20260805/` | 数值/归档恢复结论保留；登记的 namespace runtime-isolation 路径已验收，原归档本身不称 hermetic |
-| S1 | 平面波基准闭环 | `in_progress` | 2026-08-05 | — | G1 | 电子数 `c94796d`；R4 analysis `691b759`；completion `c4e98320` | G1 2/6；执行独立 OFDFT、三层对照、位移/应变和 0/10 再生 |
+| S1 | 平面波基准闭环 | `in_progress` | 2026-08-05 | — | G1 | 电子数 `c94796d`；R4 `c4e98320`；DFTpy R2 `f10008d` | G1 3/6；执行三层对照、位移/应变和 0/10 再生 |
 | S2 | 混合密度基表示 | `not_started` | — | — | G2 | — | 等待 G1 |
 | S3 | 固定 KEDF 自洽求解 | `not_started` | — | — | G3 | — | 等待 G2 |
 | S4A | 固定晶胞解析力 | `not_started` | — | — | G4A | — | 等待 G3 |
@@ -207,7 +213,7 @@ python3 -m unittest -q tests.unit.test_s1_g1_thermodynamic_label_audit_r4_genera
 
 ## 3A. 当前阶段：S1
 
-- 状态：`in_progress`；标签审计 R1/R2/R3 均已严格停止并保持只读，R4 已完整验收；G1 为 2/6，尚未总体验收。
+- 状态：`in_progress`；标签审计 R1/R2/R3 均已严格停止并保持只读，R4 与 DFTpy R2 已完整验收；G1 为 3/6，尚未总体验收。
 - 核心材料：fcc Al、hcp Mg；每种至少七个体积点 `0.90, 0.94, 0.97, 1.00, 1.03, 1.06, 1.10 V0`。
 - 当前工作仅限基准协议、输入生成、收敛扫描、EOS 与交叉核验；不得提前进入 S2 或 ML。
 - 当前结果：Al WT 在 V0 的 20→30 Ry 变化为 0.011269 meV/atom、0.0000990 GPa；20 Ry 为最小通过候选。
@@ -228,9 +234,11 @@ python3 -m unittest -q tests.unit.test_s1_g1_thermodynamic_label_audit_r4_genera
 - 当前结果：R4 使用全新 041–080；40/40 runs、42/42 scalar points、6/6 EOS、14/14 half-quarter pairs、6/6 k pairs 全部 `accepted`，R1/R2/R3 贡献为 0。
 - 当前验证：160/160 rank lifecycles 与 480/480 runtime syscalls 通过；terminal `accepted`、runner=0、completion `c4e98320`；最终 committed replay validator 通过，failure ledger 全空。
 - 科学结论：Al/Mg 相邻 smearing 的最大锚定能量差分别不超过 `0.206652/0.060495 meV/atom`，平衡体积差均小于 `0.013%`；稠密 k 门 6/6 通过。标签为有限温 Mermin 量，`zero_temperature_exact_claim=false`。
-- G1 仍为 `pending`（2/6）：独立电子数积分和第三 smearing/稠密 k 标签审计已经 `accepted`；剩余四项是独立 OFDFT 跨代码 EOS/压力、KS-NL→KS-L→OF-L 三层验证、小位移/应变参考密度与能量分量、10 例单命令重生失败率。
+- 当前结果：独立 DFTpy 2.2.0 R2 使用全新 015–028 共 14 个七点 Al/Mg EOS；14/14 收敛并 accepted，日志、压力、密度积分和环境身份完整。Al/Mg 锚定 EOS RMS 为 `1.1279e-05/4.1272e-04 meV/atom`，V0 差 `3.64e-07/8.75e-05%`，最大压力差 `0.001036/0.000105 GPa`，均显著通过预注册门。
+- 证据处置：DFTpy R1 的 001–014 因空逐点 stdout 与 Bohr 常数证据实现错误而整体 rejected；错误不影响其观测到的科学趋势，但 R1 不计分、不重试。R2 独立积分最大误差为 Al `3.55e-15`、Mg `5.77e-15`，修正后 committed validator 通过。
+- G1 仍为 `pending`（3/6）：独立电子数积分、第三 smearing/稠密 k 标签审计和独立 OFDFT 跨代码 EOS/压力已经 `accepted`；剩余三项是 KS-NL→KS-L→OF-L 三层验证、小位移/应变参考密度与能量分量、10 例单命令重生失败率。
 - runtime-isolation 复核：原 `ldd` 外推仍撤回；登记的重定位 ABACUS + 私有 namespace + 严格审计路径已通过 074 和六点正式复演，因此该限定子项 `accepted`。锁定归档本身仍不得称为天然 hermetic。
-- 当前唯一动作：在远端建立并冻结 DFTpy 独立环境及跨代码 pilot，同时准备其余三项的可执行输入和验证器。
+- 当前唯一动作：并行执行三层对照、15 点位移/应变参考集和固定 10 例单命令再生，三者分别使用全新 state/ID。
 
 ## 4. 闸门决策记录
 
@@ -250,6 +258,8 @@ python3 -m unittest -q tests.unit.test_s1_g1_thermodynamic_label_audit_r4_genera
 | 2026-08-07 | G1/thermodynamic-label R3 | `rejected` | Codex | 001 accepted；002 因 SIGSTOP 状态检查竞争在 SCF 前 runtime exit 98；失败/归档/barrier 为 `56f2dcb`/`20be191`/`0d984d0`，003–040 未运行 | R3 run001、002 archive、orchestration barrier | R3 停止，不重试、不 finalize、不改 state；全部 R4 分母贡献 0 |
 | 2026-08-07 | G1/thermodynamic-label R4 | `in_progress` | Codex | 全新 041–080；R4 stop-confirmed shim 与严格 pre-counterpart 状态机；远端 Linux 90/90；dry-run 40 行/160 blobs | R4 protocol/scripts/tests；分支 `codex/r4-execution` | 实现提交后单独预注册并脱离启动，先执行 P1 041–052；G1 保持 1/6 |
 | 2026-08-08 | G1/thermodynamic-label R4 | `accepted` | Codex | 40/40 runs、42/42 scalar、6/6 EOS、14/14 smearing pairs、6/6 k pairs；160/160 rank lifecycles、480/480 syscalls；failure ledger 为空 | `analysis/s1/g1_thermodynamic_label_audit_r4_20260807/`；completion `c4e98320` | 关闭第二个 G1 子项；G1 更新为 2/6；继续剩余四项 |
+| 2026-08-10 | G1/cross-code DFTpy R1 | `rejected` | Codex | 14 点科学计算完成，但逐点 stdout 为空且独立积分常数与 DFTpy 网格不一致，证据契约失败 | external R1 state；`analysis_r1` | 冻结 001–014，不重试、不计分；修正实现后启用 R2 新 ID |
+| 2026-08-10 | G1/cross-code DFTpy R2 | `accepted` | Codex | 14/14 accepted；Al/Mg 七点相对 EOS RMS `1.13e-5/4.13e-4 meV/atom`，ΔV0、压力、电子数全部通过 | `analysis/s1/g1_cross_code_dftpy_r2_20260810/`；`f10008d` | 关闭第三个 G1 子项；G1 更新为 3/6；继续三层、位移/应变和再生 |
 
 ## 5. 实验台账
 
@@ -283,6 +293,10 @@ python3 -m unittest -q tests.unit.test_s1_g1_thermodynamic_label_audit_r4_genera
 | S1-20260805-119–148 | 2026-08-05/06 | S1 | 对 90 个已验收基准点独立积分电子数；为 30 个 OF 点输出高精度密度并复核科学/runtime 等价 | R1 accepted 119–129；R2 预注册 `b18106b`；结果终点 `c722c81`；分析 `c94796d` | `config/S1_electron_number_audit.json`; `config/S1_electron_number_audit_r2.json` | `runs/S1-20260805-119/`–`runs/S1-20260805-148/`; `analysis/s1/electron_number_audit_r2_20260805/` | 90/90 accepted；60 KS + 11 R1 reused OF + 19 R2 executed OF；最大认证相对误差 `1.0127696865884852e-11`；30/30 OF 科学等价；KMP 120/120、360/360；R2 新失败 0 | G1 电子数子项 `accepted`；G1 总体 1/6 | R1 复用 11 点 + R2 新执行 19 点 |
 | S1-20260806-001–040（R1） | 2026-08-06 | S1 | 第三 smearing/稠密 k 点 thermodynamic-label 审计 | 实现 `64ce08e`；预注册 `f71dd6b`；accepted 终点 `9096ca3`；失败 `df57f9b`；归档 `b0b7db5` | `config/S1_g1_thermodynamic_label_audit_r1.json`; `config/S1_g1_thermodynamic_label_audit_r1_manifest.tsv` | 10 个 active accepted run；`failed_runs/runtime_relocation/S1-20260806-034/attempt-df57f9b610d8/` | P0 4/4、P1 6/8 accepted；034 capability failure/indeterminate；040 与 28 个 P2 点未执行；最终 40/42/6-fit 总门不可判定 | R1 `indeterminate_paused`；G1 仍 1/6 | 10 个 accepted 可在新协议显式复用；R1 ID 全部禁止重跑 |
 | S1-20260806-041–070（R2） | 2026-08-06 | S1 | 复用 R1 10 个 accepted 点，以 30 个新 ID 继续第三 smearing/稠密 k 点标签审计 | 实现 `d73e2ba`；预注册 `329a200`；detachment `99deacd`；marker `314ac53`；raw `ff26667`；archive `f91a300` | `config/S1_g1_thermodynamic_label_audit_r2.json`; `config/S1_g1_thermodynamic_label_audit_r2_manifest.tsv` | `failed_runs/runtime_relocation/S1-20260806-041/attempt-ff26667f881e/`；external state 保留于登记目录 | 041 SCF 9 迭代收敛，22:24.42，报告/期望电子数 4.0/4.0，runtime accepted；R2 parser registration rejected；042–070 未执行 | R2 `rejected/stopped`；无 analysis/completion；G1 仍 1/6 | 041 对 accepted 分母贡献 0；041–070 均禁止在 R2 内重跑 |
+| S1-20260807-001–040（标签 R3） | 2026-08-07 | S1 | 用全新 40 点消除历史环境复用歧义 | 实现 `e31f456`；001 `2bf6450`；失败 `56f2dcb`；归档 `20be191`；terminal `0d984d0` | `config/S1_g1_thermodynamic_label_audit_r3.json` | R3 external state 与失败归档只读 | 001 accepted；002 在 solver 前因 stop-state 检查竞争停止；003–040 未运行 | R3 `rejected/stopped`；贡献 0 | 001/002 均禁止重跑 |
+| S1-20260807-041–080（标签 R4） | 2026-08-07 | S1 | 修复 stop-confirmed shim 后完整重做第三展宽/稠密 k 标签审计 | completion `c4e98320` | `config/S1_g1_thermodynamic_label_audit_r4.json` | `analysis/s1/g1_thermodynamic_label_audit_r4_20260807/` | 40/40 runs、42/42 scalar、14/14 smearing pairs、6/6 k pairs；runtime 160/160、480/480 | 子项 `accepted`；G1 2/6 | 单次、零失败、committed replay 通过 |
+| DFTPY-S1-20260810-001–014 | 2026-08-10 | S1 | 独立 DFTpy 七点 Al/Mg 跨代码 EOS 首轮 | 预注册 `38aaa91` | `config/S1_g1_cross_code_dftpy.json` | external R1 state 与 `analysis_r1` 只读 | 14 点科学计算完成；逐点 stdout 为空且独立积分常数不一致 | 证据 `rejected`；贡献 0 | ID 全部消费且不重试 |
+| DFTPY-S1-20260810-015–028 | 2026-08-10 | S1 | 修正日志接管和 DFTpy 网格体积后重做独立跨代码 EOS | 修正 `4643b65`；证据 `f10008d` | 同上及 `environment/dftpy_2.2.0_pylibxc_7.0.0.lock.json` | `analysis/s1/g1_cross_code_dftpy_r2_20260810/`；external R2 state 只读 | 14/14 accepted；Al/Mg EOS RMS `1.13e-5/4.13e-4 meV/atom`；压力和电子数门全通过 | 子项 `accepted`；G1 3/6 | node01 CPU 10，14 个全新 ID |
 
 ## 6. 当前指标看板
 
@@ -327,7 +341,10 @@ python3 -m unittest -q tests.unit.test_s1_g1_thermodynamic_label_audit_r4_genera
 | G1 标签 R2 041 parser | registration 阶段 `ValueError: configuration execution order differs`；thermodynamic parser 1，core 97，terminal stopped/97 | 真实 30 行 manifest/order 必须通过 solver 前 parser 端到端正路 | `thermodynamic_label_parser.stderr.txt`；terminal SHA `d3b9752f...e0269` | 实现契约 rejection；非热力学恒等式数值失败 |
 | G1 标签 R4 覆盖 | 40/40 runs；42/42 scalar；14/14 half-quarter pairs；6/6 k pairs | 分母精确一致且 failure ledger 为空 | `analysis/s1/g1_thermodynamic_label_audit_r4_20260807/summary.json`；`c4e98320` | 子项 `accepted` |
 | G1 标签 R4 runtime | 160/160 rank lifecycles；480/480 syscalls；terminal accepted；runner=0 | 全部精确通过 | 同上及 supervisor completion | 通过 |
-| G1 待闭合项 | 2/6 闭合 | 6/6 | 电子数 `c94796d`；标签 R4 `c4e98320` | `pending` |
+| G1 DFTpy R2 跨代码覆盖 | 14/14 accepted；Al/Mg 各七点；日志收敛标记 14/14 | 14/14、失败/缺失/重试均 0 | `analysis/s1/g1_cross_code_dftpy_r2_20260810/`；`f10008d` | 子项 `accepted` |
+| G1 DFTpy Al：EOS RMS / ΔV0 / 最大 ΔP / 最大 abs(ΔN) | `1.1279e-05 meV/atom` / `3.64e-07%` / `0.001036 GPa` / `3.55e-15` | ≤2 / ≤0.2% / ≤0.05 / <1e-10 | 同上 | 通过 |
+| G1 DFTpy Mg：EOS RMS / ΔV0 / 最大 ΔP / 最大 abs(ΔN) | `4.1272e-04 meV/atom` / `8.75e-05%` / `0.000105 GPa` / `5.77e-15` | ≤2 / ≤0.2% / ≤0.05 / <1e-10 | 同上 | 通过 |
+| G1 待闭合项 | 3/6 闭合 | 6/6 | 电子数 `c94796d`；标签 R4 `c4e98320`；DFTpy R2 `f10008d` | `pending` |
 | runtime-relocation 六点科学/R8 等价 | 6/6 `storage_exact`；R8 替换结论 6/6 不变 | `|dE|<0.1 meV/atom`、`|dP|<0.02 GPa`；6/6 不翻转 | S1-20260805-113–118；`a01ac70` | `accepted` |
 | whole-runtime 旧前缀隔离 | 074 + 六点均为成功旧访问/执行/映射 0、未知探针 0；每点恰有 22 个登记 ENOENT | 同左；登记探针计数必须精确 | `analysis/s1/runtime_relocation_smoke_20260805/`; `analysis/s1/runtime_relocation_equivalence_20260805/` | 限定 namespace 部署路径 `accepted` |
 | 密度投影 L2 | — | 平衡 <1% | — | 未测 |
@@ -349,7 +366,7 @@ python3 -m unittest -q tests.unit.test_s1_g1_thermodynamic_label_audit_r4_genera
 | B-003 | 2026-08-05 | 项目许可证尚未选择 | S0/S7 | 项目负责人 | 选择许可证或维持内部研究限制 | 是 | `blocked` |
 | B-004 | 2026-08-05 | 已在全新空目录恢复锁定二进制前缀并完成单测/smoke | S0 | Codex | 结果固定于 `S0-20260805-003` | 否 | `accepted` |
 | B-005 | 2026-08-05 | node01 直连 GitHub HTTPS 超时，不能在计算节点直接推送 | S0–S7 | Codex | 暂用完整 Git bundle 经跳板机传回本机后原子推送；后续可配置可审计的出口代理 | 否 | `paused` |
-| B-006 | 2026-08-05 | node01 未发现第二套独立 OFDFT/KSDFT 程序 | S1 | 待填写 | 评估 DFTpy/Quantum ESPRESSO 的可审计安装或在其他主机交叉核验 | 否 | `in_progress` |
+| B-006 | 2026-08-05 | 第二套独立 OFDFT 原本缺失；现已冻结 DFTpy 2.2.0 并通过 14/14 跨代码门，但独立第二 KS/QE 仍未具备 | S1 | Codex | DFTpy 子阻塞已关闭；三层首批改用 ABACUS engine-controlled KS-NL pilot，不能宣称第二 KS 已关闭 | 否 | `in_progress` |
 | B-007 | 2026-08-05 | 原 runtime-isolation 证据只覆盖 ABACUS `ldd`；恢复 `mpirun` 可转调旧前缀 `prterun`，运行中也有旧路径成功访问 | G0/S1 | Codex | 已以登记的重定位+私有 namespace 协议完成 074 和六点复演；冻结身份改变时重新打开 | 否 | `accepted` |
 | B-008 | 2026-08-06 | R1 034 的 SSH/PTY 宿主编排在 namespace 子会话完成前中断，使宿主后置 `host_status`、counterpart 与 result 闭包缺失 | S1/G1 | Codex | 在 R2 预注册中冻结脱离 SSH 生命周期的受管启动、唯一 PID/日志/退出状态和同等失败闭包；R1 不重跑 | 否 | `paused` |
 | B-009 | 2026-08-06 | R2 adapter 将 30 个 R2 ID 注入冻结 R1 parser，但 R1 registration validator 仍写死 `len(execution_order)==40`；真实预注册未被执行前正路 parser 回归覆盖 | S1/G1 | Codex | R3 已使用自身 production registration contract；真实生成 40 行正路及 39/41、重复、换序、错误 index、sealed 字节负路均通过；待远端 Linux 和正式 committed registration 复验 | 否 | `in_progress` |
@@ -415,18 +432,21 @@ python3 -m unittest -q tests.unit.test_s1_g1_thermodynamic_label_audit_r4_genera
 | 2026-08-06 | D-039 | G1 标签 R2 的 runner/config/manifest 改为 Linux sealed-memfd 执行边界，且首个 marker parent 必须是 GO/detachment introduction | 复核发现“先验哈希、后按路径打开”仍存在 runner/config/manifest TOCTOU，而额外 clean commit 可将首个 marker 与 GO 拆开 | 仅重复路径哈希，或只在 completion 阶段发现 Git parent 不符 | 固定 FD `200/201/202`、seal mask `15`、GO 13 键并绑定 sealed record SHA；GO 前从 `/proc/<pid>/fd` 复核，首个 solver 前即验 marker parent |
 | 2026-08-06 | D-040 | R2 所有科学重放必须贯通 sealed config/manifest；finalize 在消费单次 completion 路径前必须严格验 terminal/journal/launch 并冻结稳定原始字节与首次 HEAD | 第五/六轮反例发现 canonical 路径重开、barrier argv 不一致、JSON `false==0`、terminal schema 和 HEAD 二次捕获可造成不可重试失败 | 仅在最终 validator 拒绝，但允许 O_EXCL completion 路径先被消费 | analyzer/replay/parser 全链传递 202/201；completion 用私有只读快照；strict int/exact key/sequence 及写前 raw+HEAD unchanged 复验；六轮复核无 P0/P1 |
 | 2026-08-06 | D-041 | 将 G1 标签 R2 判为 `rejected/stopped`，保留 041 数值/runtime 产物但不计入 accepted 分母，不 finalize 也不在 R2 内继续 | 041 SCF 和 runtime 通过；R2 parser 在注册阶段因 R1 硬编码 40 项而拒绝合法 30 项 order；`ff26667`→`f91a300` 相邻归档，terminal stopped/97 | 将机器类别 `thermodynamic_identity` 误读为数值恒等式失败，同 ID 重跑，删除 external state，或事后把 041 升格 accepted | G1 保持 1/6；唯一下一动作是新 R3 revision + 全新 IDs + 真实预注册 parser 正/负回归；041 是否复用必须在 R3 事先冻结 |
+| 2026-08-10 | D-042 | DFTpy R1 只保留为 rejected evidence，不因科学数值良好而事后修补或复用 001–014 | DFTpy 的全局 `STDOUT` 未进入逐点 `run.stdout`，且独立积分使用的 Bohr 常数与 DFTpy 网格不一致；因此收敛和电子数证据链不完整 | 手工补日志、覆盖 R1 state、同 ID 重跑，或仅凭能量接近升格 | 冻结 R1 state；在修正实现预注册后使用全新 R2 ID 015–028 |
+| 2026-08-10 | D-043 | 接受 DFTpy R2 独立跨代码子项，G1 从 2/6 更新为 3/6 | 14/14 accepted；两材料七点 EOS、V0、压力和独立电子数均通过；环境/源码/依赖哈希已冻结 | 只跑三点 pilot、用绝对总能常数差作门，或把 DFTpy 与 ABACUS 同实现复演混为一谈 | 固化 `f10008d`；R1/R2 state 只读；继续三层、位移/应变和 10 例再生 |
+| 2026-08-10 | D-044 | 三层首批采用 Al 硬门、Mg 兼容性诊断的分层口径 | PseudoDojo Al PBE/3e 可与现有 Al PBE/3e local 曲线作受控比较；Mg PBE/10e 同时改变 XC 与价电子数，不能与旧 Mg LDA-PZ/2e 作硬门 | 把 Mg 跨 XC/zval 差异写成 KS-NL projector 效应，或等待不确定的 QE 环境而停算 | 直接执行 ABACUS engine-controlled P0/P1；Mg 结果明确标为 diagnostic，第二 KS 仍未关闭 |
 
 ## 9. 最近可用状态
 
 此节必须始终指向一个可运行、可复现的状态；若暂无则明确写“无”。
 
-- 最近可用状态：提交 `c4e98320`；R4 completion 已提交，远端与 GitHub `codex/r4-execution` 一致，工作树在本轮文档更新前为 clean。
-- 对应环境：`environment/`，ABACUS v3.11.0-beta.5 CPU + OpenMPI 5.0.10 + LibXC 7.0.0。
-- 已通过测试：R4 执行前 Linux 90/90；正式 40/40；P1 k gate、最终 analysis、completion 后 committed replay 全部通过。此前 S1-R8、runtime relocation 和电子数 90/90 结论不变。
-- 已知失败/暂停：R1/R2/R3 的历史停止链保持不可变，但对 R4 分母贡献均为 0；当前没有 R4 数值或运行时失败。G1 尚缺四项，因此为 2/6。
-- 恢复方法：登录后检查 HEAD `c4e98320`、分支 `codex/r4-execution` 和工作树；R1–R4 external state 只读。继续读取本文件“下次开始位置”，不得进入 S2/ML。
+- 最近可用状态：提交 `f10008d`；R4 completion 与 DFTpy R2 证据均已提交，工作树在本轮文档更新前为 clean；GitHub 待随本轮进度提交增量同步。
+- 对应环境：`environment/` 的 ABACUS v3.11.0-beta.5 CPU + OpenMPI 5.0.10 + LibXC 7.0.0；独立 OF 环境为 `/home/shenwei01/.local/venvs/m_ofdft-dftpy-2.2.0-py311`，身份见锁文件。
+- 已通过测试：R4 正式 40/40 与 committed replay；DFTpy R2 14/14、两材料 EOS/V0/压力/电子数 committed validator；此前 S1-R8、runtime relocation 和电子数 90/90 结论不变。
+- 已知失败/暂停：标签 R1/R2/R3 与 DFTpy R1 停止/拒绝链保持不可变且不计当前分母；R4 与 DFTpy R2 无正式失败。G1 尚缺三项，因此为 3/6。
+- 恢复方法：登录后检查 HEAD `f10008d`（或其仅含进度更新的后继）、分支 `codex/r4-execution` 和工作树；R1–R4 与 DFTpy R1/R2 external state 只读。继续读取本文件“下次开始位置”，不得进入 S2/ML。
 - 同步方法：node01 执行 `git bundle create ... --all` 并 `git bundle verify`，经跳板机传至本机；三端 SHA-256 一致后，从临时 clone 使用 `git push --atomic origin main --tags`，最后以 `git ls-remote` 核验。
-- 当前交接点：R4 terminal/completion/analysis 均已 accepted，G1 为 2/6；下一工作根为独立 OFDFT 环境与跨代码复核，随后依次关闭三层对照、位移/应变和 0/10 再生。
+- 当前交接点：R4 和 DFTpy R2 均已 accepted，G1 为 3/6；三个独立远端 worktree 正并行执行三层对照、位移/应变和 0/10 再生。
 
 ## 10. 交接说明
 
@@ -592,6 +612,7 @@ python3 -m unittest -q tests.unit.test_s1_g1_thermodynamic_label_audit_r4_genera
 | 2026-08-07 12:39 CST | G1 标签 R3 停止闭环 | Codex | S1 | implementation `e31f456`；accepted `2bf6450`；failure `56f2dcb`；archive `20be191`；barrier `0d984d0` | 001 accepted；002 runtime 早停；terminal stopped/97；003–040 未运行 | 根因为 `State:` 字段名误触发 T/t 检查，maps 在未确认 SIGSTOP 时抓取；早停归档又被旧 validator 误报缺 counterpart；R3 不重试、不 finalize |
 | 2026-08-07 | G1 标签 R4 修复与执行准备 | Codex | S1 | `codex/r4-execution` 实现提交 | R4 定向及完整套件 90/90；Linux `/proc` SIGSTOP 集成通过；干跑 40 行/160 输入 | 新 shim 要求 map capture 前后均为 T/t；合法 pre-counterpart 早停按四层状态严格识别；新 ID 041–080，P1 041–052；下一动作是单独预注册并启动 supervisor |
 | 2026-08-10 10:25 CST | G1 标签 R4 验收补写 | Codex | S1 | `c4e98320` | 40/40 runs、42/42 scalar、14/14 smearing pairs、6/6 k pairs；completion/replay accepted | R4 子项关闭，G1 更新为 2/6；开始剩余四项 |
+| 2026-08-10 11:35 CST | G1 独立 DFTpy 跨代码闭环 | Codex | S1 | 预注册 `38aaa91`；R2 修正 `4643b65`；证据 `f10008d` | R1 证据 rejected 并冻结；R2 14/14 accepted；Al/Mg 七点 EOS、V0、压力、电子数门全部通过 | 独立 OFDFT 子项关闭，G1 更新为 3/6；三个剩余子项在独立远端 worktree 并行执行 |
 
 ## 11. 文档变更记录
 
@@ -626,3 +647,4 @@ python3 -m unittest -q tests.unit.test_s1_g1_thermodynamic_label_audit_r4_genera
 | 2026-08-07 | V3.6 | Codex | 记录 R3-001 accepted、R3-002 runtime race、相邻归档与 terminal barrier；冻结 R3 001/002，不重启、不重试、不 finalize |
 | 2026-08-07 | V3.7 | Codex | 增加 R4 stop-confirmed shim、pre-counterpart 失败归档状态机、R3 停止链桥、全新 041–080 映射及 90/90 执行前测试；唯一下一动作是正式预注册并脱离启动 |
 | 2026-08-10 | V3.8 | Codex | 补写 R4 40/40 与 completion/replay 验收，G1 从 1/6 更新为 2/6；交接起点转为独立 OFDFT、三层对照、位移/应变及 0/10 再生四项 |
+| 2026-08-10 | V3.9 | Codex | 记录 DFTpy R1 证据拒绝与 R2 14/14 正式验收，冻结独立环境/哈希和 EOS/V0/压力/电子数指标；G1 从 2/6 更新为 3/6，并登记三层 Al/Mg 科学边界与剩余三项并行执行入口 |
