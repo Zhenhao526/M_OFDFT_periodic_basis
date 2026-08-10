@@ -1,7 +1,7 @@
 # S1/G1 Al-domain 三层补充验证协议（R4）
 
 协议版本：`S1-G1-THREE-LAYER-AL-DOMAIN-FOLLOWUP-20260810-R4`
-实现提交：`R4_IMPLEMENTATION_COMMIT_TO_FREEZE_AT_PREREGISTRATION`
+实现提交：`aee241337dc63054dc9b0b8cac1d4792911a5e0e`
 正式新 ID：`S1-20260810-351..358`。每个 ID 只允许一次正式尝试；失败即停止本 revision，禁止删除、覆盖或重试。
 
 ## 1. R3 失败闭包与 parser 回归
