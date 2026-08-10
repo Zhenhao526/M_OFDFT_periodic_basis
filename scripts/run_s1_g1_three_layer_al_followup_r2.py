@@ -97,7 +97,15 @@ def verify_result_evidence(run_dir: Path, result: dict) -> list[dict]:
     return verified
 
 
-def verify_accepted_source(state_root: Path, experiment_id: str, session: dict) -> dict:
+def verify_accepted_source(
+    state_root: Path,
+    experiment_id: str,
+    session: dict,
+    *,
+    require_complete_orchestration: bool = False,
+    expected_config_sha256: str | None = None,
+    expected_manifest_sha256: str | None = None,
+) -> dict:
     marker_path = state_root / "accepted" / f"{experiment_id}.json"
     run_dir = state_root / "runs" / experiment_id
     result_path = run_dir / "result.json"
@@ -114,13 +122,135 @@ def verify_accepted_source(state_root: Path, experiment_id: str, session: dict) 
     result_sha = sha256_file(result_path)
     require(marker.get("result_sha256") == result_sha, f"source marker/result SHA binding differs: {experiment_id}")
     evidence = verify_result_evidence(run_dir, result)
-    return {
+    identity = {
         "experiment_id": experiment_id,
         "accepted_marker_sha256": sha256_file(marker_path),
         "result_sha256": result_sha,
         "runner_return_sha256": sha256_file(return_path),
         "evidence": evidence,
         "evidence_count": len(evidence),
+        "accepted": True,
+    }
+    if require_complete_orchestration:
+        require(isinstance(expected_config_sha256, str) and len(expected_config_sha256) == 64, "expected config SHA missing")
+        require(isinstance(expected_manifest_sha256, str) and len(expected_manifest_sha256) == 64, "expected manifest SHA missing")
+        runner_commit = session.get("runner_commit")
+        protocol = session.get("protocol_revision")
+        require(session.get("config_sha256") == expected_config_sha256, "session/config SHA binding differs")
+        require(session.get("manifest_sha256") == expected_manifest_sha256, "session/manifest SHA binding differs")
+        attempt_path = state_root / "attempts" / f"{experiment_id}.json"
+        attempt = _object(attempt_path, "attempt marker")
+        metadata = _object(run_dir / "metadata.json", "source metadata")
+        orchestration = result.get("orchestration_identity")
+        require(isinstance(orchestration, dict), "result orchestration identity missing")
+        for payload, label in ((attempt, "attempt"), (marker, "accepted marker"), (runner_return, "runner return"), (metadata, "metadata"), (orchestration, "result")):
+            require(payload.get("experiment_id") == experiment_id, f"{label}/ID binding differs")
+            require(payload.get("protocol_revision") == protocol, f"{label}/protocol binding differs")
+            require(payload.get("runner_commit") == runner_commit, f"{label}/runner binding differs")
+            require(payload.get("config_sha256") == expected_config_sha256, f"{label}/config binding differs")
+            require(payload.get("manifest_sha256") == expected_manifest_sha256, f"{label}/manifest binding differs")
+        require(attempt.get("status") == "formal_attempt_started", "attempt status differs")
+        identity["attempt_marker_sha256"] = sha256_file(attempt_path)
+        identity["metadata_sha256"] = sha256_file(run_dir / "metadata.json")
+        identity["orchestration_identity"] = orchestration
+    return identity
+
+
+def verify_pseudo_identity_closure(run_dir: Path, result: dict, config: dict, *, require_run_body: bool) -> dict:
+    """Cross-bind upstream identity, recorded headers, runtime count, and external cache.
+
+    UPF bodies are deliberately excluded from committed evidence.  A committed
+    replay is accepted only on the server where the immutable external cache
+    still passes the full header/projector validator.
+    """
+    material = result.get("material")
+    require(material in config["pseudodojo"]["materials"], "pseudo material contract missing")
+    expected = config["pseudodojo"]["materials"][material]
+    basename = expected["basename"]
+    element_dir = {"al": "Al", "mg": "Mg"}[material]
+    canonical_url = (
+        f"https://raw.githubusercontent.com/{config['pseudodojo']['repository']}/"
+        f"{config['pseudodojo']['commit']}/{element_dir}/{basename}"
+    )
+    require(expected["url"] == canonical_url, "pseudo upstream URL/repository/commit binding differs")
+    require(isinstance(expected.get("git_blob_sha1"), str) and len(expected["git_blob_sha1"]) == 40, "pseudo Git blob identity missing")
+    metadata = _object(run_dir / "metadata.json", "pseudo metadata")
+    input_identity = metadata.get("pseudo")
+    require(isinstance(input_identity, dict), "input pseudo identity missing")
+    require(input_identity.get("basename") == basename, "input pseudo basename differs")
+    require(input_identity.get("sha256") == expected["sha256"], "input pseudo SHA differs")
+    require(input_identity.get("upstream_commit") == config["pseudodojo"]["commit"], "input pseudo upstream commit differs")
+    require(input_identity.get("upstream_url") == expected["url"], "input pseudo upstream URL differs")
+    recorded_path = run_dir / "pseudo_identity.json"
+    recorded = _object(recorded_path, "recorded pseudo identity")
+    runtime_recorded = metadata.get("pseudo_runtime_identity")
+    require(isinstance(runtime_recorded, dict), "metadata runtime pseudo identity missing")
+    require(recorded == runtime_recorded == result.get("pseudo_identity"), "recorded/result/runtime pseudo identity differs")
+    cache_path = Path(config["external_pseudo_cache"]) / basename
+    cache_identity = validate_pseudo(cache_path, material, config)
+    require(recorded == cache_identity, "recorded pseudo identity differs from validated external cache")
+    raw_path = run_dir / basename
+    if require_run_body:
+        require(raw_path.is_file() and not raw_path.is_symlink(), "raw run pseudo body missing")
+    if raw_path.exists():
+        require(not raw_path.is_symlink(), "raw run pseudo body must not be a symlink")
+        require(validate_pseudo(raw_path, material, config) == cache_identity, "raw run pseudo differs from external cache")
+    atom_count = int(result["atom_count"])
+    expected_total = int(recorded["expanded_nonlocal_projectors_per_atom"]) * atom_count
+    require(result.get("runtime_nonlocal_projectors_total") == expected_total, "log runtime projector count differs from pseudo identity")
+    return {
+        "material": material,
+        "repository": config["pseudodojo"]["repository"],
+        "upstream_commit": config["pseudodojo"]["commit"],
+        "upstream_url": expected["url"],
+        "git_blob_sha1": expected["git_blob_sha1"],
+        "basename": basename,
+        "sha256": expected["sha256"],
+        "header_identity": cache_identity,
+        "runtime_nonlocal_projectors_total": expected_total,
+        "pseudo_identity_json_sha256": sha256_file(recorded_path),
+        "external_cache_path": str(cache_path),
+        "external_cache_verified_sha256": sha256_file(cache_path),
+        "committed_body_policy": "deliberately_external_identity_only_due_to_repository_redistribution_policy",
+        "accepted": True,
+    }
+
+
+def verify_continuation_phase_preflight(
+    continuation_root: Path,
+    continuation_session: dict,
+    phase: dict,
+    accepted_ids: list[str],
+) -> dict:
+    detached_path = continuation_root / "preflight/al_eos_detached_launch.json"
+    phase_core_path = continuation_root / "preflight/al_eos_core_collision.json"
+    detached_sha = sha256_file(detached_path)
+    phase_core_sha = sha256_file(phase_core_path)
+    require(phase.get("detached_launcher_proof_sha256") == detached_sha, "continuation detached-launch proof SHA differs")
+    require(phase.get("phase_core_collision_preflight_sha256") == phase_core_sha, "continuation phase core-preflight SHA differs")
+    require(continuation_session.get("initial_detached_launcher_proof_sha256") == detached_sha, "continuation session/detached proof differs")
+    require(continuation_session.get("initial_core_collision_preflight_sha256") == phase_core_sha, "continuation session/core preflight differs")
+    detached = _object(detached_path, "continuation detached-launch proof")
+    require(detached.get("accepted") is True and detached.get("session_leader") is True, "continuation detached launch rejected")
+    require(detached.get("sighup_ignored") is True, "continuation SIGHUP proof rejected")
+    isatty = detached.get("isatty")
+    require(isinstance(isatty, dict) and all(isatty.get(str(fd)) is False for fd in (0, 1, 2)), "continuation TTY detachment proof rejected")
+    phase_core = _object(phase_core_path, "continuation phase core-collision preflight")
+    require(phase_core.get("accepted") is True and not phase_core.get("collisions"), "continuation phase core collision preflight rejected")
+    result_map = phase.get("per_run_core_collision_preflight_sha256")
+    require(isinstance(result_map, dict) and list(result_map) == accepted_ids, "continuation per-run core-preflight denominator differs")
+    per_run: dict[str, dict] = {}
+    for experiment_id in accepted_ids:
+        path = continuation_root / "preflight" / f"{experiment_id}.json"
+        digest = sha256_file(path)
+        require(result_map.get(experiment_id) == digest, f"continuation per-run core-preflight SHA differs: {experiment_id}")
+        payload = _object(path, "continuation per-run core-collision preflight")
+        require(payload.get("accepted") is True and not payload.get("collisions"), f"continuation per-run core collision rejected: {experiment_id}")
+        per_run[experiment_id] = {"path": f"preflight/{experiment_id}.json", "sha256": digest}
+    return {
+        "detached": {"path": "preflight/al_eos_detached_launch.json", "sha256": detached_sha},
+        "phase_core_collision": {"path": "preflight/al_eos_core_collision.json", "sha256": phase_core_sha},
+        "per_run_core_collision": per_run,
         "accepted": True,
     }
 
@@ -131,7 +261,7 @@ def replay_continuation_al_raw(run_dir: Path, stored: dict, config: dict, contin
     replay_config["runtime"]["required_hostname"] = continuation_spec["required_hostname"]
     replay_config["runtime"]["physical_core_ids"] = continuation_spec["runtime_physical_core_ids"]
     replay_config["runtime"]["rank_count"] = continuation_spec["runtime_rank_count"]
-    reparsed = parse_run(run_dir, replay_config)
+    reparsed = parse_run(run_dir, replay_config, require_followup_orchestration=False)
     require(reparsed.get("status") == "accepted" and all(reparsed.get("hard_gates", {}).values()), "independent continuation raw replay rejected")
     for key in (
         "experiment_id", "atom_count", "expected_electrons", "runtime_nonlocal_projectors_total",
@@ -261,9 +391,13 @@ def verify_parent_sources(config: dict, project_root: Path | None = None, rows: 
         require(enhanced.get("cube_geometry", {}).get("accepted") is True, f"recovery cube geometry rejected: {experiment_id}")
         require(enhanced.get("stress_trace_gate", {}).get("accepted") is True, f"recovery stress/pressure rejected: {experiment_id}")
         require(enhanced.get("eig_occupations", {}).get("accepted") is True, f"recovery eig occupation rejected: {experiment_id}")
-        verify_result_evidence(old_root / "runs" / experiment_id, enhanced)
+        enhanced_evidence = verify_result_evidence(old_root / "runs" / experiment_id, enhanced)
+        result = _object(old_root / "runs" / experiment_id / "result.json", "R1 recovered result")
+        identity["enhanced_raw_evidence"] = enhanced_evidence
+        identity["pseudo_identity_closure"] = verify_pseudo_identity_closure(
+            old_root / "runs" / experiment_id, result, config, require_run_body=True
+        )
         if experiment_id in {"S1-20260810-301", "S1-20260810-302", "S1-20260810-303"}:
-            result = _object(old_root / "runs" / experiment_id / "result.json", "R1 Al anchor result")
             require(result.get("runtime_nonlocal_projectors_total") == 18, "R1 Al anchor projector count differs")
             require(result.get("pseudo_identity", {}).get("sha256") == config["pseudodojo"]["materials"]["al"]["sha256"], "R1 Al anchor pseudo differs")
         recovered[experiment_id] = identity
@@ -276,13 +410,28 @@ def verify_parent_sources(config: dict, project_root: Path | None = None, rows: 
     require(phase.get("phase") == continuation_spec["endpoint_phase"], "continuation endpoint phase name differs")
     require(phase.get("accepted_ids") == continuation_spec["endpoint_phase_accepted_ids"], "continuation endpoint phase ID set/order differs")
     require(phase.get("accepted_count") == len(continuation_spec["endpoint_phase_accepted_ids"]), "continuation endpoint phase count differs")
+    require(phase.get("session_sha256") == sha256_file(continuation_session_path), "continuation phase/session SHA binding differs")
+    require(phase.get("config_sha256") == continuation_session.get("config_sha256") == barrier.get("config_sha256"), "continuation phase/config SHA binding differs")
+    require(phase.get("manifest_sha256") == continuation_session.get("manifest_sha256") == barrier.get("manifest_sha256"), "continuation phase/manifest SHA binding differs")
+    require(phase.get("recovery_barrier_sha256") == continuation_session.get("recovery_barrier_sha256") == barrier_sha, "continuation phase/recovery barrier binding differs")
     phase_sources = {experiment_id: verify_accepted_source(continuation_root, experiment_id, continuation_session) for experiment_id in continuation_spec["endpoint_phase_accepted_ids"]}
+    expected_phase_results = {experiment_id: phase_sources[experiment_id]["result_sha256"] for experiment_id in continuation_spec["endpoint_phase_accepted_ids"]}
+    require(phase.get("accepted_result_sha256") == expected_phase_results, "continuation phase accepted-result SHA map differs")
+    phase_preflight = verify_continuation_phase_preflight(
+        continuation_root,
+        continuation_session,
+        phase,
+        continuation_spec["endpoint_phase_accepted_ids"],
+    )
     for experiment_id in continuation_spec["endpoint_phase_accepted_ids"]:
         result = _object(continuation_root / "runs" / experiment_id / "result.json", "continuation Al EOS result")
         require(result.get("runtime_nonlocal_projectors_total") == 18, "continuation Al EOS projector count differs")
         require(result.get("pseudo_identity", {}).get("sha256") == config["pseudodojo"]["materials"]["al"]["sha256"], "continuation Al EOS pseudo differs")
         phase_sources[experiment_id]["independent_raw_replay"] = replay_continuation_al_raw(
             continuation_root / "runs" / experiment_id, result, config, continuation_spec
+        )
+        phase_sources[experiment_id]["pseudo_identity_closure"] = verify_pseudo_identity_closure(
+            continuation_root / "runs" / experiment_id, result, config, require_run_body=True
         )
     if project_root is not None or rows is not None:
         require(project_root is not None and rows is not None, "project root and manifest rows must be supplied together")
@@ -304,6 +453,8 @@ def verify_parent_sources(config: dict, project_root: Path | None = None, rows: 
         "continuation_runner_commit": continuation_runner,
         "continuation_session_sha256": sha256_file(continuation_session_path),
         "continuation_endpoint_phase_sha256": sha256_file(phase_path),
+        "continuation_endpoint_phase_accepted_result_sha256": expected_phase_results,
+        "continuation_phase_preflight_identity": phase_preflight,
         "r1_recovered_sources": recovered,
         "continuation_al_eos_sources": phase_sources,
     }
@@ -317,6 +468,7 @@ def validate_core_reservation_ack(path: Path, config: dict) -> dict:
     require(ack.get("protocol_revision") == config["protocol_revision"], "core reservation ACK protocol differs")
     require(ack.get("hostname") == runtime["required_hostname"], "core reservation ACK host differs")
     require(ack.get("physical_core_ids") == runtime["physical_core_ids"], "core reservation ACK cores differ")
+    require(ack.get("reserved_logical_cpu_ids") == runtime["reserved_logical_cpu_ids"], "core reservation ACK logical/SMT domain differs")
     require(ack.get("conflicting_workflows_checked") is True, "core collision coordination not acknowledged")
     require(ack.get("single_runner_exclusive_use") is True, "exclusive core use not acknowledged")
     require(isinstance(ack.get("acknowledged_by"), str) and ack["acknowledged_by"].strip(), "core reservation acknowledger missing")
@@ -330,8 +482,8 @@ def acquire_core_locks(config: dict) -> tuple[list[IO[bytes]], list[dict]]:
     handles: list[IO[bytes]] = []
     identities: list[dict] = []
     try:
-        for core in runtime["physical_core_ids"]:
-            path = lock_root / f"{runtime['required_hostname']}_physical_core_{core}.lock"
+        for cpu in runtime["reserved_logical_cpu_ids"]:
+            path = lock_root / f"{runtime['required_hostname']}_logical_cpu_{cpu}.lock"
             flags = os.O_RDWR | os.O_CREAT | getattr(os, "O_NOFOLLOW", 0)
             descriptor = os.open(path, flags, 0o600)
             handle = os.fdopen(descriptor, "a+b")
@@ -343,7 +495,7 @@ def acquire_core_locks(config: dict) -> tuple[list[IO[bytes]], list[dict]]:
             handles.append(handle)
             stat = os.fstat(handle.fileno())
             identities.append({
-                "path": str(path), "physical_core_id": core, "advisory_lock": "exclusive_nonblocking",
+                "path": str(path), "logical_cpu_id": cpu, "advisory_lock": "exclusive_nonblocking",
                 "device": stat.st_dev, "inode": stat.st_ino, "owner_pid": os.getpid(), "acquired": True,
             })
     except Exception:
@@ -369,6 +521,7 @@ def live_preflight(config: dict) -> dict:
         require(cpu in siblings and siblings <= online, f"invalid/offline sibling set for CPU {cpu}")
         sibling_map[cpu] = sorted(siblings)
         reserved_logical.update(siblings)
+    require(sorted(reserved_logical) == runtime["reserved_logical_cpu_ids"], "frozen logical/SMT reservation domain differs from live topology")
     collisions: list[dict] = []
     for proc in Path("/proc").iterdir():
         if not proc.name.isdigit():
@@ -376,7 +529,11 @@ def live_preflight(config: dict) -> dict:
         try:
             comm = (proc / "comm").read_text().strip()
             cmdline = (proc / "cmdline").read_bytes().replace(b"\0", b" ").decode("utf-8", "replace")
-            if "abacus" not in (comm + " " + cmdline).lower():
+            lowered_comm = comm.lower()
+            lowered_cmdline = cmdline.lower()
+            is_solver = "abacus" in lowered_comm
+            is_bound_rank_wrapper = "three_layer" in lowered_cmdline and "rank_wrapper.py" in lowered_cmdline and "--expected-cores" in lowered_cmdline
+            if not (is_solver or is_bound_rank_wrapper):
                 continue
             status = (proc / "status").read_text()
             allowed_row = next(line for line in status.splitlines() if line.startswith("Cpus_allowed_list:"))
@@ -385,13 +542,13 @@ def live_preflight(config: dict) -> dict:
             continue
         overlap = sorted(reserved_logical & allowed)
         if overlap:
-            collisions.append({"pid": int(proc.name), "comm": comm, "allowed": sorted(allowed), "overlap": overlap})
+            collisions.append({"pid": int(proc.name), "comm": comm, "kind": "solver" if is_solver else "bound_rank_wrapper", "allowed": sorted(allowed), "overlap": overlap})
     require(not collisions, f"live ABACUS affinity collision on cores 40-43: {collisions}")
     require(sha256_file(Path(runtime["binary"])) == runtime["binary_sha256"], "binary SHA differs")
     return {
         "hostname": hostname, "online_cpus": sorted(online), "target_physical_cores": sorted(targets),
         "thread_siblings_by_target": sibling_map, "reserved_logical_cpus": sorted(reserved_logical),
-        "collision_scan_scope": "all live processes whose comm or cmdline contains abacus; physical cores plus SMT siblings",
+        "collision_scan_scope": "live ABACUS solver comm plus bound three-layer rank wrappers; physical cores plus SMT siblings; unbound MPI launchers excluded",
         "abacus_collisions": collisions, "accepted": True,
     }
 
@@ -441,13 +598,15 @@ def write_failure(run_dir: Path, experiment_id: str, stage: str, message: str, r
 
 def run_one(project_root: Path, state_root: Path, cache: Path, row: dict[str, str], config: dict, head: str, case_preflight: dict) -> dict:
     experiment_id = row["experiment_id"]
+    config_sha = sha256_file(project_root / CONFIG_PATH)
+    manifest_sha = sha256_file(project_root / MANIFEST_PATH)
     attempt_path = state_root / "attempts" / f"{experiment_id}.json"
     run_dir = state_root / "runs" / experiment_id
     require(not attempt_path.exists() and not run_dir.exists(), f"retry forbidden: {experiment_id}")
     atomic_write(attempt_path, canonical_json_bytes({
         "schema_version": 1, "protocol_revision": config["protocol_revision"], "status": "formal_attempt_started",
         "experiment_id": experiment_id, "created_utc": utc_now(), "runner_commit": head,
-        "config_sha256": sha256_file(project_root / CONFIG_PATH), "manifest_sha256": sha256_file(project_root / MANIFEST_PATH),
+        "config_sha256": config_sha, "manifest_sha256": manifest_sha,
         "case_live_preflight": case_preflight,
         "retry_policy": "same_id_forbidden_new_revision_and_new_ids_only",
     }), exclusive=True)
@@ -461,7 +620,13 @@ def run_one(project_root: Path, state_root: Path, cache: Path, row: dict[str, st
     shutil.copyfile(pseudo_source, run_dir / row["pseudo_basename"])
     input_metadata = _object(input_dir / "metadata.json", "input metadata")
     metadata = {
-        **input_metadata, "runner_commit": head, "hostname": socket.gethostname(), "started_utc": utc_now(),
+        **input_metadata, "protocol_revision": config["protocol_revision"], "runner_commit": head,
+        "config_sha256": config_sha, "manifest_sha256": manifest_sha,
+        "orchestration_identity": {
+            "protocol_revision": config["protocol_revision"], "experiment_id": experiment_id,
+            "runner_commit": head, "config_sha256": config_sha, "manifest_sha256": manifest_sha,
+        },
+        "hostname": socket.gethostname(), "started_utc": utc_now(),
         "case_live_preflight": case_preflight,
         "runtime": {key: config["runtime"][key] for key in ("binary", "binary_sha256", "mpi", "rank_count", "physical_core_ids", "map_by")},
         "pseudo_runtime_identity": pseudo_identity,
@@ -484,12 +649,24 @@ def run_one(project_root: Path, state_root: Path, cache: Path, row: dict[str, st
             completed = subprocess.run(command, cwd=run_dir, env=runtime_environment(config), stdin=subprocess.DEVNULL, stdout=stdout, stderr=stderr, timeout=int(config["runtime"]["per_run_timeout_seconds"]), check=False)
         return_code = completed.returncode
         duration = time.monotonic() - start
-        atomic_write(run_dir / "runner_return.json", canonical_json_bytes({"schema_version": 1, "experiment_id": experiment_id, "command": command, "return_code": return_code, "duration_seconds": duration, "finished_utc": utc_now()}), exclusive=True)
+        atomic_write(run_dir / "runner_return.json", canonical_json_bytes({
+            "schema_version": 1, "protocol_revision": config["protocol_revision"],
+            "experiment_id": experiment_id, "runner_commit": head,
+            "config_sha256": config_sha, "manifest_sha256": manifest_sha,
+            "command": command, "return_code": return_code,
+            "duration_seconds": duration, "finished_utc": utc_now(),
+        }), exclusive=True)
         require(return_code == 0, f"solver returned {return_code}")
         stage = "parser"
         result = parse_run(run_dir, config)
         atomic_write(run_dir / "result.json", canonical_json_bytes(result), exclusive=True)
-        accepted = {"schema_version": 1, "protocol_revision": config["protocol_revision"], "status": "accepted", "experiment_id": experiment_id, "runner_commit": head, "duration_seconds": duration, "result_sha256": sha256_file(run_dir / "result.json"), "created_utc": utc_now()}
+        accepted = {
+            "schema_version": 1, "protocol_revision": config["protocol_revision"], "status": "accepted",
+            "experiment_id": experiment_id, "runner_commit": head,
+            "config_sha256": config_sha, "manifest_sha256": manifest_sha,
+            "duration_seconds": duration, "result_sha256": sha256_file(run_dir / "result.json"),
+            "created_utc": utc_now(),
+        }
         atomic_write(state_root / "accepted" / f"{experiment_id}.json", canonical_json_bytes(accepted), exclusive=True)
         return accepted
     except subprocess.TimeoutExpired as error:
@@ -538,7 +715,16 @@ def main() -> int:
             marker = run_one(project_root, state_root, cache, row, config, head, case_preflight)
             accepted.append(marker)
             print(f"ACCEPTED {row['experiment_id']} duration_seconds={marker['duration_seconds']:.3f}", flush=True)
-        terminal = {"schema_version": 1, "protocol_revision": config["protocol_revision"], "status": "accepted", "runner_commit": head, "accepted_ids": [row["experiment_id"] for row in accepted], "accepted_count": len(accepted), "failed_count": 0, "retried_count": 0, "runner_return_code": 0, "created_utc": utc_now()}
+        terminal = {
+            "schema_version": 1, "protocol_revision": config["protocol_revision"], "status": "accepted",
+            "runner_commit": head, "session_sha256": sha256_file(state_root / "session.json"),
+            "config_sha256": sha256_file(project_root / CONFIG_PATH),
+            "manifest_sha256": sha256_file(project_root / MANIFEST_PATH),
+            "accepted_ids": [marker["experiment_id"] for marker in accepted],
+            "accepted_result_sha256": {marker["experiment_id"]: marker["result_sha256"] for marker in accepted},
+            "accepted_count": len(accepted), "failed_count": 0, "retried_count": 0,
+            "runner_return_code": 0, "created_utc": utc_now(),
+        }
         atomic_write(state_root / "terminal.json", canonical_json_bytes(terminal), exclusive=True)
         print(json.dumps(terminal, sort_keys=True))
     finally:

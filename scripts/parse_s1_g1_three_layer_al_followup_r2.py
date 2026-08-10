@@ -150,7 +150,7 @@ def validate_cube_geometry(run_dir: Path, cube_path: Path, config: dict) -> dict
     }
 
 
-def parse_run(run_dir: Path, config: dict) -> dict:
+def parse_run(run_dir: Path, config: dict, *, require_followup_orchestration: bool = True) -> dict:
     result = parse_base_run(run_dir, config)
     require(result["material"] == "al" and result["atom_count"] == 1, "follow-up is Al/one-atom only")
     pseudo = result["pseudo_identity"]
@@ -160,6 +160,17 @@ def parse_run(run_dir: Path, config: dict) -> dict:
     expected_electrons = float(result["expected_electrons"])
     require(abs(pseudo["z_valence"] * result["atom_count"] - expected_electrons) < 1e-12, "zval*nat differs from expected Ne")
     metadata = __import__("json").loads((run_dir / "metadata.json").read_text())
+    require(isinstance(metadata, dict), "metadata must be an object")
+    if require_followup_orchestration:
+        require(metadata.get("protocol_revision") == config["protocol_revision"], "metadata protocol differs")
+        orchestration = metadata.get("orchestration_identity")
+        require(isinstance(orchestration, dict), "metadata orchestration identity missing")
+        require(orchestration.get("protocol_revision") == config["protocol_revision"], "metadata orchestration protocol differs")
+        require(orchestration.get("experiment_id") == metadata.get("experiment_id"), "metadata orchestration ID differs")
+        require(orchestration.get("runner_commit") == metadata.get("runner_commit"), "metadata runner identity differs")
+        require(isinstance(orchestration.get("runner_commit"), str) and len(orchestration["runner_commit"]) == 40, "metadata runner commit invalid")
+        require(isinstance(orchestration.get("config_sha256"), str) and len(orchestration["config_sha256"]) == 64, "metadata config identity invalid")
+        require(isinstance(orchestration.get("manifest_sha256"), str) and len(orchestration["manifest_sha256"]) == 64, "metadata manifest identity invalid")
     output_dir = run_dir / f"OUT.{metadata['suffix']}"
     log_path = output_dir / "running_scf.log"
     eig_path = output_dir / "eig_occ.txt"
@@ -184,6 +195,8 @@ def parse_run(run_dir: Path, config: dict) -> dict:
     result["band_occupation"] = eig
     result["cube_geometry"] = cube_geometry
     result["mechanics"] = mechanics
+    if require_followup_orchestration:
+        result["orchestration_identity"] = orchestration
     result["hard_gates"] = {
         "pseudo_header_sha_zval_projector18": True,
         "zval_nat_log_cube_eig_occ_electron_identity": True,

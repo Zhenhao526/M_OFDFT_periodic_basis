@@ -12,7 +12,7 @@ from unittest.mock import patch
 PROJECT_ROOT = Path(__file__).resolve().parents[1]
 sys.path.insert(0, str(PROJECT_ROOT / "scripts"))
 
-from analyze_s1_g1_three_layer_al_followup_r2 import evaluate_gates  # noqa: E402
+from analyze_s1_g1_three_layer_al_followup_r2 import copy_run_snapshot, evaluate_gates  # noqa: E402
 from parse_s1_g1_three_layer_al_followup_r2 import (  # noqa: E402
     parse_eig_occ,
     parse_force_stress,
@@ -23,6 +23,7 @@ from run_s1_g1_three_layer_al_followup_r2 import (  # noqa: E402
     validate_core_reservation_ack,
     verify_accepted_source,
     verify_parent_sources,
+    verify_pseudo_identity_closure,
 )
 from s1_g1_three_layer_al_followup_r2_common import (  # noqa: E402
     canonical_json_bytes,
@@ -85,6 +86,12 @@ class AlDomainFollowupR2Tests(unittest.TestCase):
             verify_strain_geometry(self.base_stru(), changed_direct, output, f)
         with self.assertRaises(ValueError):
             render_strain_from_base(self.base_stru(), [[1.01, 0.0, 0.0], [0.0, 1.0, 0.0], [0.0, 0.0, 1.0]])
+        wrong_axis = [[1.0, 0.0, 0.0], [0.005, 1.0, 0.0], [0.0, 0.0, 1.0]]
+        with self.assertRaises(ValueError):
+            verify_strain_geometry(self.base_stru(), output, output, wrong_axis)
+        opposite_sign = [[1.0, -0.005, 0.0], [0.0, 1.0, 0.0], [0.0, 0.0, 1.0]]
+        with self.assertRaises(ValueError):
+            verify_strain_geometry(self.base_stru(), output, output, opposite_sign)
 
     def test_cube_origin_is_explicit_exact_zero_gate(self) -> None:
         self.assertEqual(require_zero_cube_origin([0.0, -0.0, 0.0]), 0.0)
@@ -120,6 +127,8 @@ class AlDomainFollowupR2Tests(unittest.TestCase):
  #TOTAL-PRESSURE# (EXCLUDE KINETIC PART OF IONS): 2.0 kbar
 """
         self.assertTrue(parse_force_stress(text, 1, 2.0, self.config())["accepted"])
+        with self.assertRaises(ValueError):
+            parse_force_stress(text.replace("0.0 2.0 0.0", "0.1 2.0 0.0"), 1, 2.0, self.config())
 
     def test_accepted_source_binds_marker_result_and_evidence(self) -> None:
         protocol = "SOURCE-R1"
@@ -144,6 +153,118 @@ class AlDomainFollowupR2Tests(unittest.TestCase):
             marker_path.write_bytes(canonical_json_bytes(marker))
             with self.assertRaises(ValueError):
                 verify_accepted_source(root, experiment_id, session)
+
+    def test_new_source_chain_binds_attempt_session_runner_and_registered_files(self) -> None:
+        protocol = "FOLLOWUP-R2"
+        runner = "a" * 40
+        config_sha = "b" * 64
+        manifest_sha = "c" * 64
+        experiment_id = "S1-20260810-335"
+        common = {
+            "protocol_revision": protocol,
+            "experiment_id": experiment_id,
+            "runner_commit": runner,
+            "config_sha256": config_sha,
+            "manifest_sha256": manifest_sha,
+        }
+        with tempfile.TemporaryDirectory() as temporary:
+            root = Path(temporary)
+            run = root / "runs" / experiment_id
+            run.mkdir(parents=True)
+            (run / "INPUT").write_bytes(b"input\n")
+            result = {
+                "schema_version": 1, "protocol_revision": protocol, "status": "accepted",
+                "experiment_id": experiment_id,
+                "orchestration_identity": dict(common),
+                "evidence_files": [{"path": "INPUT", "sha256": sha256_file(run / "INPUT"), "size_bytes": 6}],
+            }
+            (run / "result.json").write_bytes(canonical_json_bytes(result))
+            (run / "runner_return.json").write_bytes(canonical_json_bytes({"schema_version": 1, "return_code": 0, **common}))
+            (run / "metadata.json").write_bytes(canonical_json_bytes({"schema_version": 1, **common}))
+            (root / "attempts").mkdir()
+            attempt_path = root / "attempts" / f"{experiment_id}.json"
+            attempt_path.write_bytes(canonical_json_bytes({"schema_version": 1, "status": "formal_attempt_started", **common}))
+            (root / "accepted").mkdir()
+            marker = {"schema_version": 1, "status": "accepted", "result_sha256": sha256_file(run / "result.json"), **common}
+            (root / "accepted" / f"{experiment_id}.json").write_bytes(canonical_json_bytes(marker))
+            session = {"schema_version": 1, "protocol_revision": protocol, "runner_commit": runner, "config_sha256": config_sha, "manifest_sha256": manifest_sha}
+            identity = verify_accepted_source(
+                root, experiment_id, session, require_complete_orchestration=True,
+                expected_config_sha256=config_sha, expected_manifest_sha256=manifest_sha,
+            )
+            self.assertTrue(identity["attempt_marker_sha256"])
+            attempt = json.loads(attempt_path.read_text())
+            attempt["config_sha256"] = "0" * 64
+            attempt_path.write_bytes(canonical_json_bytes(attempt))
+            with self.assertRaises(ValueError):
+                verify_accepted_source(
+                    root, experiment_id, session, require_complete_orchestration=True,
+                    expected_config_sha256=config_sha, expected_manifest_sha256=manifest_sha,
+                )
+
+    def test_external_pseudo_identity_replay_fails_without_cache(self) -> None:
+        with tempfile.TemporaryDirectory() as temporary:
+            root = Path(temporary)
+            run = root / "run"
+            run.mkdir()
+            sha = "d" * 64
+            identity = {
+                "basename": "Al_std.upf", "sha256": sha, "upf_version": "2.0.1",
+                "pseudo_type": "NC", "functional": "PBE", "z_valence": 3.0,
+                "number_of_proj": 6, "core_correction": True,
+                "pp_beta_element_count": 6, "beta_angular_momenta": [0, 0, 1, 1, 2, 2],
+                "expanded_nonlocal_projectors_per_atom": 18, "pp_dij_present": True,
+            }
+            contract = {
+                "basename": "Al_std.upf",
+                "url": "https://raw.githubusercontent.com/PseudoDojo/ONCVPSP-PBE-SR/" + "e" * 40 + "/Al/Al_std.upf",
+                "sha256": sha, "git_blob_sha1": "f" * 40, "upf_version": "2.0.1",
+                "pseudo_type": "NC", "functional": "PBE", "z_valence": 3.0,
+                "number_of_proj_per_atom": 6, "expanded_nonlocal_projectors_per_atom": 18,
+                "core_correction": True,
+            }
+            metadata = {
+                "pseudo": {"basename": "Al_std.upf", "sha256": sha, "upstream_commit": "e" * 40, "upstream_url": contract["url"]},
+                "pseudo_runtime_identity": identity,
+            }
+            (run / "metadata.json").write_bytes(canonical_json_bytes(metadata))
+            (run / "pseudo_identity.json").write_bytes(canonical_json_bytes(identity))
+            config = {
+                "external_pseudo_cache": str(root / "missing-cache"),
+                "pseudodojo": {"repository": "PseudoDojo/ONCVPSP-PBE-SR", "commit": "e" * 40, "materials": {"al": contract}},
+            }
+            result = {"material": "al", "atom_count": 1, "runtime_nonlocal_projectors_total": 18, "pseudo_identity": identity}
+            with self.assertRaises(ValueError):
+                verify_pseudo_identity_closure(run, result, config, require_run_body=False)
+
+    def test_snapshot_copies_enhanced_union_but_excludes_upf_body(self) -> None:
+        experiment_id = "S1-20260810-301"
+        with tempfile.TemporaryDirectory() as temporary:
+            source = Path(temporary) / "source"
+            destination = Path(temporary) / "destination"
+            run = source / "runs" / experiment_id
+            run.mkdir(parents=True)
+            files = {"INPUT": b"input\n", "OUT.test/eig_occ.txt": b"eig\n", "Al_std.upf": b"pseudo\n"}
+            for relative, content in files.items():
+                path = run / relative
+                path.parent.mkdir(parents=True, exist_ok=True)
+                path.write_bytes(content)
+            result = {
+                "evidence_files": [{"path": "INPUT", "sha256": sha256_file(run / "INPUT"), "size_bytes": 6}],
+            }
+            (run / "result.json").write_bytes(canonical_json_bytes(result))
+            (run / "runner_return.json").write_bytes(canonical_json_bytes({"return_code": 0}))
+            (source / "accepted").mkdir()
+            (source / "accepted" / f"{experiment_id}.json").write_bytes(canonical_json_bytes({"status": "accepted"}))
+            (source / "attempts").mkdir()
+            (source / "attempts" / f"{experiment_id}.json").write_bytes(canonical_json_bytes({"status": "formal_attempt_started"}))
+            enhanced = [
+                {"path": relative, "sha256": sha256_file(run / relative), "size_bytes": (run / relative).stat().st_size}
+                for relative in ("OUT.test/eig_occ.txt", "Al_std.upf")
+            ]
+            copy_run_snapshot(source, destination, experiment_id, include_attempt=True, additional_evidence=enhanced)
+            self.assertTrue((destination / "runs" / experiment_id / "OUT.test/eig_occ.txt").is_file())
+            self.assertFalse((destination / "runs" / experiment_id / "Al_std.upf").exists())
 
     def test_parent_gate_requires_recovery_and_endpoint_phase_closure(self) -> None:
         old_protocol = "OLD-R1"
@@ -239,6 +360,13 @@ class AlDomainFollowupR2Tests(unittest.TestCase):
                 "schema_version": 1, "protocol_revision": continuation_protocol, "runner_commit": continuation_runner,
                 "status": "accepted", "phase": "al_eos",
                 "accepted_ids": [f"S1-20260810-{number:03d}" for number in range(327, 333)], "accepted_count": 6,
+                "session_sha256": sha256_file(continuation / "session.json"),
+                "config_sha256": "e" * 64, "manifest_sha256": "f" * 64,
+                "recovery_barrier_sha256": sha256_file(continuation / "barriers" / "r1_p0_recovery.json"),
+                "accepted_result_sha256": {
+                    f"S1-20260810-{number:03d}": sha256_file(continuation / "runs" / f"S1-20260810-{number:03d}" / "result.json")
+                    for number in range(327, 333)
+                },
             }
             (continuation / "phases").mkdir()
             phase_path = continuation / "phases" / "al_eos.json"
@@ -256,8 +384,18 @@ class AlDomainFollowupR2Tests(unittest.TestCase):
                     "continuation_r2": {"external_state_root": str(continuation), "protocol_revision": continuation_protocol, "preregistration_commit": continuation_runner, "recovery_barrier_relative_path": "barriers/r1_p0_recovery.json", "versioned_recovery_barrier_path": "unused-in-no-project-test", "config_path": "unused", "manifest_path": "unused", "endpoint_phase_marker_relative_path": "phases/al_eos.json", "endpoint_phase": "al_eos", "endpoint_phase_accepted_ids": [f"S1-20260810-{number:03d}" for number in range(327, 333)], "required_recovery_ids": recovery_ids, "required_accepted_ids": ["S1-20260810-327", "S1-20260810-328"]},
                 },
             }
-            with patch("run_s1_g1_three_layer_al_followup_r2.replay_continuation_al_raw", return_value={"accepted": True}):
+            with (
+                patch("run_s1_g1_three_layer_al_followup_r2.replay_continuation_al_raw", return_value={"accepted": True}),
+                patch("run_s1_g1_three_layer_al_followup_r2.verify_pseudo_identity_closure", return_value={"accepted": True}),
+                patch("run_s1_g1_three_layer_al_followup_r2.verify_continuation_phase_preflight", return_value={"accepted": True}),
+            ):
                 self.assertTrue(verify_parent_sources(config)["ready"])
+                original_result_sha = phase["accepted_result_sha256"]["S1-20260810-327"]
+                phase["accepted_result_sha256"]["S1-20260810-327"] = "0" * 64
+                phase_path.write_bytes(canonical_json_bytes(phase))
+                with self.assertRaises(ValueError):
+                    verify_parent_sources(config)
+                phase["accepted_result_sha256"]["S1-20260810-327"] = original_result_sha
                 phase["accepted_count"] = 1
                 phase_path.write_bytes(canonical_json_bytes(phase))
                 with self.assertRaises(ValueError):
@@ -266,14 +404,15 @@ class AlDomainFollowupR2Tests(unittest.TestCase):
     def test_core_ack_and_lock_are_fail_closed(self) -> None:
         with tempfile.TemporaryDirectory() as temporary:
             root = Path(temporary)
-            config = {"protocol_revision": "P", "runtime": {"required_hostname": "node01", "physical_core_ids": [40, 41, 42, 43], "core_lock_root": str(root / "locks")}}
-            ack = {"schema_version": 1, "status": "exclusive_core_reservation_acknowledged", "protocol_revision": "P", "hostname": "node01", "physical_core_ids": [40, 41, 42, 43], "conflicting_workflows_checked": True, "single_runner_exclusive_use": True, "acknowledged_by": "test"}
+            logical = [40, 41, 42, 43, 116, 117, 118, 119]
+            config = {"protocol_revision": "P", "runtime": {"required_hostname": "node01", "physical_core_ids": [40, 41, 42, 43], "reserved_logical_cpu_ids": logical, "core_lock_root": str(root / "locks")}}
+            ack = {"schema_version": 1, "status": "exclusive_core_reservation_acknowledged", "protocol_revision": "P", "hostname": "node01", "physical_core_ids": [40, 41, 42, 43], "reserved_logical_cpu_ids": logical, "conflicting_workflows_checked": True, "single_runner_exclusive_use": True, "acknowledged_by": "test"}
             path = root / "ack.json"
             path.write_bytes(canonical_json_bytes(ack))
             self.assertTrue(validate_core_reservation_ack(path, config)["accepted"])
             handles, proof = acquire_core_locks(config)
             try:
-                self.assertEqual(len(proof), 4)
+                self.assertEqual(len(proof), 8)
                 with self.assertRaises(ValueError):
                     acquire_core_locks(config)
             finally:
