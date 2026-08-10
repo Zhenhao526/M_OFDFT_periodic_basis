@@ -166,6 +166,11 @@ def inspect_core_collisions(
             if int(uid_row.split()[1]) != os.getuid():
                 continue
             cmdline = (process / "cmdline").read_bytes().replace(b"\0", b" ").decode("utf-8", errors="replace").strip()
+            try:
+                comm = (process / "comm").read_text(encoding="utf-8", errors="replace").strip()
+            except OSError:
+                comm = ""
+            abacus_process = "abacus" in f"{comm} {cmdline}".lower()
             tasks = sorted((process / "task").iterdir(), key=lambda path: int(path.name))
         except (OSError, StopIteration, ValueError):
             continue
@@ -176,12 +181,12 @@ def inspect_core_collisions(
                 allowed = parse_cpu_list(allowed_row.split(":", 1)[1])
             except (OSError, StopIteration, ValueError):
                 continue
-            if len(allowed) >= len(online):
+            if len(allowed) >= len(online) and not abacus_process:
                 continue
             scanned_narrow_tasks += 1
             overlap = sorted(allowed & target_cpus)
             if overlap:
-                collisions.append({"pid": pid, "tid": int(task.name), "allowed_logical_cpus": sorted(allowed), "overlap_logical_cpus": overlap, "cmdline": cmdline})
+                collisions.append({"pid": pid, "tid": int(task.name), "allowed_logical_cpus": sorted(allowed), "overlap_logical_cpus": overlap, "comm": comm, "cmdline": cmdline, "abacus_process": abacus_process})
     return {
         "schema_version": 1,
         "hostname": socket.gethostname(),
@@ -250,6 +255,7 @@ def validate_recovery_barrier(project_root: Path, state_root: Path, config: dict
 
 
 def validate_phase_barrier(state_root: Path, phase: str, config: dict, head: str, recovery_sha256: str) -> None:
+    require(not (state_root / "terminal.json").exists(), "continuation terminal already exists")
     if phase == "al_eos":
         require(not (state_root / "session.json").exists(), "continuation solver session already exists")
         for name in ("attempts", "runs", "accepted", "phases", "preflight"):
@@ -471,6 +477,82 @@ def run_one(
         raise
 
 
+def write_terminal(
+    state_root: Path,
+    project_root: Path,
+    config: dict,
+    session: dict,
+    recovery_sha256: str,
+) -> dict:
+    expected_ids = [f"S1-20260810-{value:03d}" for value in range(327, 335)]
+    require(not (state_root / "terminal.json").exists(), "continuation terminal already exists")
+    require({path.stem for path in (state_root / "attempts").glob("*.json")} == set(expected_ids), "terminal attempt denominator differs")
+    require({path.stem for path in (state_root / "accepted").glob("*.json")} == set(expected_ids), "terminal accepted denominator differs")
+    require({path.name for path in (state_root / "runs").iterdir() if path.is_dir()} == set(expected_ids), "terminal run denominator differs")
+    require(not list((state_root / "runs").rglob("failure.json")), "terminal contains preserved failure")
+    phase_ids = {
+        "al_eos": expected_ids[:6],
+        "mg_required": expected_ids[6:],
+    }
+    phase_sha256 = {}
+    accepted_result_sha256 = {}
+    attempt_sha256 = {}
+    accepted_marker_sha256 = {}
+    runner_return_sha256 = {}
+    result_sha256 = {}
+    for phase, ids in phase_ids.items():
+        path = state_root / "phases" / f"{phase}.json"
+        marker = read_json(path)
+        require(isinstance(marker, dict) and marker.get("status") == "accepted", f"terminal phase rejected: {phase}")
+        require(marker.get("accepted_ids") == ids and marker.get("accepted_count") == len(ids), f"terminal phase denominator differs: {phase}")
+        require(marker.get("runner_commit") == session["runner_commit"] and marker.get("recovery_barrier_sha256") == recovery_sha256, f"terminal phase provenance differs: {phase}")
+        phase_sha256[phase] = sha256_file(path)
+        accepted_result_sha256.update(marker["accepted_result_sha256"])
+    require(list(accepted_result_sha256) == expected_ids, "terminal result denominator differs")
+    for experiment_id in expected_ids:
+        attempt_path = state_root / "attempts" / f"{experiment_id}.json"
+        accepted_path = state_root / "accepted" / f"{experiment_id}.json"
+        return_path = state_root / "runs" / experiment_id / "runner_return.json"
+        result_path = state_root / "runs" / experiment_id / "result.json"
+        attempt = read_json(attempt_path)
+        accepted = read_json(accepted_path)
+        returned = read_json(return_path)
+        require(isinstance(attempt, dict) and attempt.get("status") == "formal_attempt_started" and attempt.get("experiment_id") == experiment_id, "terminal attempt identity differs")
+        require(isinstance(accepted, dict) and accepted.get("status") == "accepted" and accepted.get("experiment_id") == experiment_id, "terminal accepted identity differs")
+        require(isinstance(returned, dict) and returned.get("return_code") == 0 and returned.get("experiment_id") == experiment_id, "terminal runner return differs")
+        require(accepted.get("result_sha256") == accepted_result_sha256[experiment_id] == sha256_file(result_path), "terminal accepted/result binding differs")
+        attempt_sha256[experiment_id] = sha256_file(attempt_path)
+        accepted_marker_sha256[experiment_id] = sha256_file(accepted_path)
+        runner_return_sha256[experiment_id] = sha256_file(return_path)
+        result_sha256[experiment_id] = sha256_file(result_path)
+    payload = {
+        "schema_version": 1,
+        "protocol_revision": config["protocol_revision"],
+        "status": "accepted",
+        "runner_commit": session["runner_commit"],
+        "session_sha256": sha256_file(state_root / "session.json"),
+        "config_sha256": sha256_file(project_root / CONFIG_PATH),
+        "manifest_sha256": sha256_file(project_root / MANIFEST_PATH),
+        "recovery_barrier_sha256": recovery_sha256,
+        "phase_marker_sha256": phase_sha256,
+        "phase_ids": phase_ids,
+        "accepted_ids": expected_ids,
+        "attempted_count": len(expected_ids),
+        "accepted_count": len(expected_ids),
+        "failed_count": 0,
+        "retried_count": 0,
+        "runner_return_code": 0,
+        "attempt_sha256": attempt_sha256,
+        "accepted_marker_sha256": accepted_marker_sha256,
+        "runner_return_sha256": runner_return_sha256,
+        "accepted_result_sha256": accepted_result_sha256,
+        "result_sha256": result_sha256,
+        "created_utc": utc_now(),
+    }
+    atomic_write(state_root / "terminal.json", canonical_json_bytes(payload), exclusive=True)
+    return payload
+
+
 def main() -> int:
     parser = argparse.ArgumentParser()
     parser.add_argument("--phase", required=True, choices=("al_eos", "mg_required"))
@@ -556,6 +638,9 @@ def main() -> int:
         "created_utc": utc_now(),
     }
     atomic_write(state_root / "phases" / f"{args.phase}.json", canonical_json_bytes(phase_payload), exclusive=True)
+    if args.phase == "mg_required":
+        terminal = write_terminal(state_root, project_root, config, session, recovery_sha256)
+        safe_print(json.dumps(terminal, sort_keys=True))
     safe_print(json.dumps(phase_payload, sort_keys=True))
     return 0
 

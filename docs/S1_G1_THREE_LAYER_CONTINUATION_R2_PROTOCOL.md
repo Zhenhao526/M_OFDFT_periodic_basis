@@ -18,11 +18,11 @@ recovery 通过只生成独立的 `r1_p0_recovery.json`，不回填 R1 marker。
 - 333–334 是 Mg PBE/10e 0.90/1.10 点，84/336 Ry、24×24×16；与 source 304 合成三点 compatibility/convergence diagnostic。
 - 301–306 贡献 recovery source evidence，贡献 0 个 R2 新 run；不得复制成新 ID 或复用 attempt state。
 
-运行固定 node01 socket 0 的物理 core 30–33、4 MPI ranks、每 rank 1 thread；`pe-list=30,31,32,33:ordered`、bind-to-core。正式 launcher 必须为独立 `setsid` session，stdin 非 TTY 且 stdout/stderr 落盘；每阶段冻结 PID/PPID/SID/TTY proof。runner 在写 session/attempt 前以及每个 case 前按 `(socket, physical_core)` 展开全部 SMT sibling（本机为 30/106、31/107、32/108、33/109），扫描同 UID live narrow-affinity task；任何 sibling collision 立即 fail-closed，并冻结逐阶段/逐点 preflight SHA。每点 fresh start。外部 R2 state：`/home/shenwei01/.local/state/m_ofdft/s1_g1_three_layer_continuation_r2_20260810`。
+运行固定 node01 socket 0 的物理 core 30–33、4 MPI ranks、每 rank 1 thread；`pe-list=30,31,32,33:ordered`、bind-to-core。正式 launcher 必须为独立 `setsid` session，SIGHUP disposition 为 ignore，stdin 非 TTY且 stdout/stderr 落盘；每阶段冻结 PID/PPID/SID/TTY/signal proof。runner 在写 session/attempt 前以及每个 case 前按 `(socket, physical_core)` 展开全部 SMT sibling（本机为 30/106、31/107、32/108、33/109），扫描同 UID live narrow-affinity task以及任何 cmdline/comm 命中 ABACUS 的 broad-affinity task；任何 sibling collision 立即 fail-closed，并冻结逐阶段/逐点 preflight SHA。每点 fresh start。外部 R2 state：`/home/shenwei01/.local/state/m_ofdft/s1_g1_three_layer_continuation_r2_20260810`。
 
 每点硬验证包括：solver RC=0、唯一 SCF converged、有限 F/m/U/E_ec/压力、`m<=0`、`F<=E_ec<=U`、`E_ec=F-m/2`；UPF SHA/header/zval/projectors；`zval*nat=expected Ne=log Ne=cube integral=eig_occ weighted sum`；cube 原点为零，九个 `n_i*axis_step_i[j]` 分量与 STRU lattice 的绝对差都 `<5e-5 bohr`，原子与 STRU 一致；NBANDS 与登记值一致且最后 band 最大加权占据 `<1e-8`；应力迹与总压差 `<1e-5 kbar` 且张量最大非对称分量差 `<1e-8 kbar`；4-rank affinity 精确为 core 30–33；warning 无 fatal/nonconvergence/nonfinite 标记。
 
-阶段锁：accepted recovery barrier 后才能启动 `al_eos`；`al_eos` 6/6 phase marker 后才能启动 `mg_required`。runner 忽略 SIGHUP，stdout/stderr 失败不得阻断 phase marker；每个 attempt marker 用 `O_EXCL` 在 solver 前写入。任一 ID failure/timeout 即保全并停止，不重试。
+阶段锁：accepted recovery barrier 后才能启动 `al_eos`；`al_eos` 6/6 phase marker 后才能启动 `mg_required`。runner 忽略 SIGHUP，stdout/stderr 失败不得阻断 phase marker；每个 attempt marker 用 `O_EXCL` 在 solver 前写入。`mg_required` marker fsync 后必须再以 `O_EXCL` 写 aggregate `terminal.json`，逐字绑定 327–334 的 attempt/accepted/runner-return/result、两份 phase marker、session/config/manifest/recovery 与 runner commit，并固定 attempted=accepted=8、failed=retried=0、aggregate runner RC=0；没有 accepted terminal 时严禁 collect/final。任一 ID failure/timeout 即保全并停止，不重试。
 
 ## 3. 科学验收和范围
 

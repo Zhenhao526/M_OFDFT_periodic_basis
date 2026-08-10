@@ -159,9 +159,17 @@ Al
             (process / "status").write_text(f"Uid:\t{os.getuid()}\t{os.getuid()}\t{os.getuid()}\t{os.getuid()}\n", encoding="utf-8")
             (process / "cmdline").write_bytes(b"foreign-solver\0")
             (task / "status").write_text("Cpus_allowed_list:\t106\n", encoding="utf-8")
+            broad_process = proc / "101"
+            broad_task = broad_process / "task" / "101"
+            broad_task.mkdir(parents=True)
+            (broad_process / "status").write_text(f"Uid:\t{os.getuid()}\t{os.getuid()}\t{os.getuid()}\t{os.getuid()}\n", encoding="utf-8")
+            (broad_process / "comm").write_text("abacus_pw_para\n", encoding="utf-8")
+            (broad_process / "cmdline").write_bytes(b"/opt/abacus_pw_para\0")
+            (broad_task / "status").write_text("Cpus_allowed_list:\t30,106\n", encoding="utf-8")
             observed = inspect_core_collisions(config, sys_cpu_root=sys_cpu, proc_root=proc, excluded_pids={1, os.getpid()})
         self.assertFalse(observed["accepted"])
         self.assertEqual(observed["collisions"][0]["overlap_logical_cpus"], [106])
+        self.assertTrue(any(row["abacus_process"] and row["allowed_logical_cpus"] == [30, 106] for row in observed["collisions"]))
 
     def test_source_snapshot_uses_absolute_sha256sum_rows(self) -> None:
         with tempfile.TemporaryDirectory() as temporary:

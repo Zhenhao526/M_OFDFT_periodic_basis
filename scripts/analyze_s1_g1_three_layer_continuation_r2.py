@@ -349,6 +349,48 @@ def verify_phase_chain(
     return payload
 
 
+def verify_terminal_chain(
+    project_root: Path,
+    orchestration: Path,
+    continuation_root: Path,
+    session: dict,
+    barrier_sha256: str,
+    config: dict,
+) -> dict:
+    terminal = read_json(orchestration / "terminal.json")
+    expected_ids = list(CONTINUATION_IDS)
+    phase_ids = {"al_eos": expected_ids[:6], "mg_required": expected_ids[6:]}
+    require(isinstance(terminal, dict) and terminal.get("status") == "accepted", "continuation terminal rejected")
+    require(terminal.get("protocol_revision") == config["protocol_revision"], "terminal protocol differs")
+    require(terminal.get("runner_commit") == session["runner_commit"], "terminal runner commit differs")
+    require(terminal.get("session_sha256") == sha256_file(orchestration / "session.json"), "terminal session SHA differs")
+    require(terminal.get("config_sha256") == sha256_file(project_root / CONFIG_PATH), "terminal config SHA differs")
+    require(terminal.get("manifest_sha256") == sha256_file(project_root / MANIFEST_PATH), "terminal manifest SHA differs")
+    require(terminal.get("recovery_barrier_sha256") == barrier_sha256, "terminal recovery SHA differs")
+    require(terminal.get("phase_ids") == phase_ids, "terminal phase denominator differs")
+    require(terminal.get("accepted_ids") == expected_ids, "terminal accepted IDs differ")
+    require(terminal.get("attempted_count") == 8 and terminal.get("accepted_count") == 8, "terminal run denominator differs")
+    require(terminal.get("failed_count") == 0 and terminal.get("retried_count") == 0 and terminal.get("runner_return_code") == 0, "terminal failure/retry/RC differs")
+    phase_sha256 = terminal.get("phase_marker_sha256")
+    require(isinstance(phase_sha256, dict) and list(phase_sha256) == ["al_eos", "mg_required"], "terminal phase SHA denominator differs")
+    for phase in ("al_eos", "mg_required"):
+        require(phase_sha256[phase] == sha256_file(orchestration / "phases" / f"{phase}.json"), f"terminal phase SHA differs: {phase}")
+    file_maps = {
+        "attempt_sha256": "attempt.json",
+        "accepted_marker_sha256": "accepted.json",
+        "runner_return_sha256": "runner_return.json",
+        "result_sha256": "result.json",
+        "accepted_result_sha256": "result.json",
+    }
+    for field, name in file_maps.items():
+        mapping = terminal.get(field)
+        require(isinstance(mapping, dict) and list(mapping) == expected_ids, f"terminal map denominator differs: {field}")
+        for experiment_id in expected_ids:
+            require(mapping[experiment_id] == sha256_file(continuation_root / experiment_id / name), f"terminal file SHA differs: {field}/{experiment_id}")
+    require(terminal["accepted_result_sha256"] == terminal["result_sha256"], "terminal accepted/result maps differ")
+    return terminal
+
+
 def build_final_analysis(project_root: Path, config: dict, rows: list[dict[str, str]], raw_root: Path) -> tuple[dict, list[dict], list[dict]]:
     source_root, continuation_root, orchestration = raw_roots(raw_root)
     barrier = read_json(orchestration / "r1_p0_recovery.json")
@@ -368,6 +410,7 @@ def build_final_analysis(project_root: Path, config: dict, rows: list[dict[str, 
     require(session.get("recovery_barrier_sha256") == barrier_sha256, "continuation session recovery binding differs")
     require(session.get("recovery_prereg_commit") == barrier["continuation_prereg_commit"], "continuation prereg binding differs")
     require(session.get("recovery_source_runner_commit") == barrier["source_runner_commit"], "continuation source runner binding differs")
+    terminal = verify_terminal_chain(project_root, orchestration, continuation_root, session, barrier_sha256, config)
     al_phase = verify_phase_chain(project_root, orchestration, continuation_root, "al_eos", list(CONTINUATION_IDS[:6]), session, barrier_sha256, config)
     verify_phase_chain(project_root, orchestration, continuation_root, "mg_required", list(CONTINUATION_IDS[6:]), session, barrier_sha256, config)
     require(session.get("initial_detached_launcher_proof_sha256") == al_phase["detached_launcher_proof_sha256"], "session initial detached proof differs")
@@ -445,6 +488,7 @@ def build_final_analysis(project_root: Path, config: dict, rows: list[dict[str, 
         "schema_version": 2, "protocol_revision": config["protocol_revision"], "status": overall,
         "scope_status": "accepted_al_seven_point_EOS_with_mg_three_curve_diagnostic" if overall == "accepted" else "rejected_al_EOS_scope",
         "runner_commit": session["runner_commit"], "recovery_barrier_sha256": barrier_sha256,
+        "terminal_sha256": sha256_file(orchestration / "terminal.json"), "terminal_status": terminal["status"],
         "source_r1_run_count": 6, "source_r1_new_run_count": 0, "formal_continuation_run_count": 8,
         "formal_al_hard_continuation_count": 6, "formal_mg_diagnostic_continuation_count": 2,
         "source_r1_operational_disposition": {"status": barrier["source_operational_status"], "phase_accepted": False, "scientific_p0_recovery": "accepted", "joint_operational_barrier_depended_on_al_and_mg": True},
@@ -486,12 +530,16 @@ def collect_evidence(project_root: Path, config: dict) -> Path:
     require(not analysis.exists(), "analysis root already exists")
     source_state = Path(config["source_r1"]["state_root"])
     continuation_state = Path(config["external_state_root"])
+    terminal = read_json(continuation_state / "terminal.json")
+    require(isinstance(terminal, dict) and terminal.get("status") == "accepted", "collection requires accepted continuation terminal")
+    require(terminal.get("accepted_ids") == list(CONTINUATION_IDS) and terminal.get("accepted_count") == len(CONTINUATION_IDS), "collection terminal denominator differs")
     for experiment_id in SOURCE_IDS:
         collect_run(source_state, experiment_id, analysis / "raw" / "source_r1" / experiment_id, config)
     for experiment_id in CONTINUATION_IDS:
         collect_run(continuation_state, experiment_id, analysis / "raw" / "continuation" / experiment_id, config)
     copy_exact(continuation_state / "barriers" / "r1_p0_recovery.json", analysis / "orchestration" / "r1_p0_recovery.json")
     copy_exact(continuation_state / "session.json", analysis / "orchestration" / "session.json")
+    copy_exact(continuation_state / "terminal.json", analysis / "orchestration" / "terminal.json")
     for phase in ("al_eos", "mg_required"):
         copy_exact(continuation_state / "phases" / f"{phase}.json", analysis / "orchestration" / "phases" / f"{phase}.json")
         for suffix in ("detached_launch", "core_collision"):

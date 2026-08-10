@@ -71,9 +71,8 @@ def validate_preregistered(project_root: Path, config: dict, rows: list[dict[str
     implementation = lock.get("implementation_commit")
     require(isinstance(implementation, str) and len(implementation) == 40, "preregistration implementation commit missing")
     require_git_success(project_root, "merge-base", "--is-ancestor", implementation, head)
-    expected_post_implementation = {PREREGISTRATION_PATH.as_posix()} | {
-        f"{config['input_root']}/{experiment_id}/metadata.json" for experiment_id in ids
-    }
+    expected_post_implementation = set(lock.get("post_implementation_paths", []))
+    require(expected_post_implementation == {PREREGISTRATION_PATH.as_posix()}, "preregistration delta registration differs")
     actual_post_implementation = set(git(project_root, "diff", "--name-only", f"{implementation}..{head}").splitlines())
     require(actual_post_implementation == expected_post_implementation, "post-implementation preregistration delta differs")
     base = config["implementation_base_commit"]
@@ -101,6 +100,8 @@ def validate_analysis(project_root: Path, config: dict, rows: list[dict[str, str
     summary = read_json(analysis / "summary.json")
     require(isinstance(summary, dict) and summary.get("status") == "accepted", "analysis not accepted")
     require(summary["source_r1_run_count"] == 6 and summary["source_r1_new_run_count"] == 0, "source denominator differs")
+    require(summary.get("terminal_status") == "accepted", "summary terminal status differs")
+    require(summary.get("terminal_sha256") == sha256_file(analysis / "orchestration" / "terminal.json"), "summary terminal SHA differs")
     require(summary["formal_continuation_run_count"] == 8 and summary["formal_al_hard_continuation_count"] == 6 and summary["formal_mg_diagnostic_continuation_count"] == 2, "continuation denominator differs")
     require(summary["source_r1_operational_disposition"]["phase_accepted"] is False, "R1 operational overclaim")
     require(summary["p0_recovery"]["overall_hard_domain_uses_al_only"] is True, "Al hard-domain scope differs")
@@ -119,12 +120,22 @@ def validate_analysis(project_root: Path, config: dict, rows: list[dict[str, str
     session = read_json(analysis / "orchestration" / "session.json")
     require(isinstance(session, dict) and session.get("runner_commit") == summary["runner_commit"], "runner commit binding differs")
     require(session.get("recovery_barrier_sha256") == summary["recovery_barrier_sha256"], "recovery barrier/session binding differs")
+    terminal = read_json(analysis / "orchestration" / "terminal.json")
+    expected_all_ids = [f"S1-20260810-{value:03d}" for value in range(327, 335)]
+    require(isinstance(terminal, dict) and terminal.get("status") == "accepted", "continuation terminal rejected")
+    require(terminal.get("accepted_ids") == expected_all_ids and terminal.get("attempted_count") == terminal.get("accepted_count") == 8, "terminal denominator differs")
+    require(terminal.get("failed_count") == terminal.get("retried_count") == terminal.get("runner_return_code") == 0, "terminal failure/retry/RC differs")
+    require(terminal.get("runner_commit") == session["runner_commit"] and terminal.get("session_sha256") == sha256_file(analysis / "orchestration" / "session.json"), "terminal session provenance differs")
+    require(terminal.get("config_sha256") == sha256_file(project_root / "config/S1_g1_three_layer_continuation_r2.json"), "terminal config SHA differs")
+    require(terminal.get("manifest_sha256") == sha256_file(project_root / "config/S1_g1_three_layer_continuation_r2_manifest.tsv"), "terminal manifest SHA differs")
+    require(terminal.get("recovery_barrier_sha256") == summary["recovery_barrier_sha256"], "terminal recovery binding differs")
     phase_ids = {
         "al_eos": [f"S1-20260810-{value:03d}" for value in range(327, 333)],
         "mg_required": [f"S1-20260810-{value:03d}" for value in range(333, 335)],
     }
     for phase, expected_ids in phase_ids.items():
-        marker = read_json(analysis / "orchestration" / "phases" / f"{phase}.json")
+        phase_path = analysis / "orchestration" / "phases" / f"{phase}.json"
+        marker = read_json(phase_path)
         require(isinstance(marker, dict) and marker.get("status") == "accepted", f"{phase} marker rejected")
         require(marker.get("phase") == phase and marker.get("protocol_revision") == config["protocol_revision"], f"{phase} marker identity differs")
         require(marker.get("accepted_ids") == expected_ids and marker.get("accepted_count") == len(expected_ids), f"{phase} marker denominator differs")
@@ -137,6 +148,12 @@ def validate_analysis(project_root: Path, config: dict, rows: list[dict[str, str
         for experiment_id in expected_ids:
             require(result_map[experiment_id] == sha256_file(analysis / "raw" / "continuation" / experiment_id / "result.json"), f"{phase} result SHA differs")
         require(set(marker.get("per_run_core_collision_preflight_sha256", {})) == set(expected_ids), f"{phase} preflight denominator differs")
+        require(terminal["phase_marker_sha256"][phase] == sha256_file(phase_path), f"terminal/phase SHA differs: {phase}")
+    for field, filename in (("attempt_sha256", "attempt.json"), ("accepted_marker_sha256", "accepted.json"), ("runner_return_sha256", "runner_return.json"), ("result_sha256", "result.json"), ("accepted_result_sha256", "result.json")):
+        mapping = terminal.get(field)
+        require(isinstance(mapping, dict) and list(mapping) == expected_all_ids, f"terminal map denominator differs: {field}")
+        for experiment_id in expected_all_ids:
+            require(mapping[experiment_id] == sha256_file(analysis / "raw" / "continuation" / experiment_id / filename), f"terminal map SHA differs: {field}/{experiment_id}")
     require_git_success(project_root, "merge-base", "--is-ancestor", session["runner_commit"], "HEAD")
     require_tracked_matches_head(project_root, [Path(value) for value in REGISTERED_CODE] + [Path(config["versioned_recovery_barrier"])])
     with tempfile.TemporaryDirectory(prefix="g1_three_layer_continuation_r2_replay_") as temporary:
