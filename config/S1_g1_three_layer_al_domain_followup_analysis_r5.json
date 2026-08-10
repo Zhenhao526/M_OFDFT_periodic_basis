@@ -1,0 +1,224 @@
+{
+  "schema_version": 1,
+  "analysis_protocol_revision": "S1-G1-THREE-LAYER-AL-DOMAIN-FOLLOWUP-ANALYSIS-20260810-R5",
+  "status": "preregistered_analysis_only",
+  "implementation_commit": "223b568e2d05d790217bbcb31dbf0d8840c072e1",
+  "superseded_before_execution_commits": [
+    "98752ed7965e499e2c95727cf611b2c27156c163",
+    "7adc43019307bf863b778fe0594ff529913e574b",
+    "68b0c895cb4cf8de170381fd802b85185897b325",
+    "bacb2564244c5a2860bdd6698766827e406aa4ec"
+  ],
+  "analysis_root": "analysis/s1/g1_three_layer_al_domain_followup_analysis_r5_20260810",
+  "new_solver_run_count": 0,
+  "new_solver_ids": [],
+  "source_r4": {
+    "protocol_revision": "S1-G1-THREE-LAYER-AL-DOMAIN-FOLLOWUP-20260810-R4",
+    "runner_commit": "0c60b0613c5c180f05256ad160d287fe4a5bae8a",
+    "external_state_root": "/home/shenwei01/.local/state/m_ofdft/s1_g1_three_layer_al_domain_followup_r4_20260810",
+    "session_sha256": "e12704a707b21d9a3d93bc2a0107e6eb168f6e93c2701c99fb6e25accfab23f6",
+    "terminal_sha256": "18fd603ea1e6082b59a133237fe9f957875d467cc9e69fcbdb7b29b8f27eae43",
+    "state_file_count": 202,
+    "state_total_bytes": 121174460,
+    "state_inventory_sha256": "227b582c2a778c9417883678a73e30482af2e96e9c7bb31b1e57360063e6e539",
+    "formal_ids": [
+      "S1-20260810-351",
+      "S1-20260810-352",
+      "S1-20260810-353",
+      "S1-20260810-354",
+      "S1-20260810-355",
+      "S1-20260810-356",
+      "S1-20260810-357",
+      "S1-20260810-358"
+    ],
+    "attempted_count": 8,
+    "accepted_count": 8,
+    "failed_count": 0,
+    "retried_count": 0,
+    "runner_return_code": 0,
+    "registered_input_identities": {
+      "config": {
+        "path": "config/S1_g1_three_layer_al_domain_followup_r4.json",
+        "sha256": "a9b3f01ed54bd57659af20c91bc14baeb63aa653b62e83650e7337a2eae630c6",
+        "git_blob": "e677a94777474a1a44a2355cba10453981f8ae66"
+      },
+      "manifest": {
+        "path": "config/S1_g1_three_layer_al_domain_followup_r4_manifest.tsv",
+        "sha256": "b9cb926d804edc43b548d93ec44125bf980f4e3915dac8b73980ba85bd6bff6b",
+        "git_blob": "50d149f8fed696b89dad3b6e75781d108adfb4e5"
+      },
+      "runner": {
+        "path": "scripts/run_s1_g1_three_layer_al_followup_r4.py",
+        "sha256": "de7c3caa8ac29cb637058f8bdce9e38b0495a4ce415d42d3eee2556973f1ce99",
+        "git_blob": "7f6dd2fe9e0acb4506df5eeabe31abf09bb2a94e"
+      }
+    }
+  },
+  "r4_analyzer_false_negative_closure": {
+    "path": "orchestration/s1/g1_three_layer_al_domain_followup_r4_20260810/analyzer_false_negative_closure.json",
+    "commit": "2ee09e79c8690a108c1ee6eb7cc1338be010650b",
+    "git_blob": "79e8c976d48bb8d8d9fe576399c40739fa19be23",
+    "sha256": "2f13c21680152755b5b7e50e2528e2cb467ae03591c779f2284df5d401576234",
+    "size_bytes": 5697,
+    "historical_r4_analyzer_path": "scripts/analyze_s1_g1_three_layer_al_followup_r4.py",
+    "historical_r4_analyzer_git_blob": "b28e5ce1665adb40f3d0320b5817dea0ee669446",
+    "historical_r4_analyzer_sha256": "4ad34ec8e207bc66b7e4f652b3fbb3570567efcb23d599f9a312afd3d846a83e",
+    "scientific_diagnostic": {
+      "build_analysis_row_count": 10,
+      "endpoint_v090": {
+        "anchored_cutoff_difference_mev_per_atom": 0.11227989999440524,
+        "anchored_k_difference_mev_per_atom": 0.008772699999326505,
+        "cutoff_pressure_difference_gpa": 0.004055200000001591
+      },
+      "endpoint_v110": {
+        "anchored_cutoff_difference_mev_per_atom": 0.03827180000826047,
+        "anchored_k_difference_mev_per_atom": 0.0917003000040495,
+        "cutoff_pressure_difference_gpa": 0.002397900000000952
+      },
+      "gate_status": "accepted",
+      "maximum_strain_absolute_difference_mev_per_atom": 0.23832079999408506
+    }
+  },
+  "registered_implementation_files": [
+    {
+      "path": "docs/S1_G1_THREE_LAYER_AL_DOMAIN_FOLLOWUP_ANALYSIS_R5_PROTOCOL.md",
+      "size_bytes": 5840,
+      "sha256": "21cd24ef530d63cfb7c71a28ed8d3b6888b522d67d1fbc4ca8d98c308000ba81",
+      "git_blob": "2cb164ec8547c79acdaa52888d097636fefee4e1"
+    },
+    {
+      "path": "orchestration/s1/g1_three_layer_al_domain_followup_r4_20260810/analysis_r5_superseded_implementations.json",
+      "size_bytes": 3050,
+      "sha256": "768aba05bf517079e9160df72abd3a6fffcf0588b204baf491fe664db14dc5ad",
+      "git_blob": "da34423837855e19e08cb804c612c0cd382b82aa"
+    },
+    {
+      "path": "scripts/analyze_s1_g1_three_layer_al_followup_analysis_r5.py",
+      "size_bytes": 71626,
+      "sha256": "3fc5e47fdf8d49488831e7e59cbcc327d79a6b6364eabe5abd33dba7e097e416",
+      "git_blob": "39c43584d8196ff192e98497497712e7e0174b67"
+    },
+    {
+      "path": "scripts/validate_s1_g1_three_layer_al_followup_analysis_r5.py",
+      "size_bytes": 7886,
+      "sha256": "43070d6a0374421fe1104603c3348eb4c3f265a0c4fcb7e6e9d2a52ab4ead30f",
+      "git_blob": "3ee3d460e8e71c6cc4a7114c01aa17527faf3de0"
+    },
+    {
+      "path": "tests/test_s1_g1_three_layer_al_followup_analysis_r5.py",
+      "size_bytes": 10995,
+      "sha256": "e63e382b9bce1d391d8a7ec5d1fb31f346c27f20e6ba39bd00ba2dbe3ec9228f",
+      "git_blob": "6244398d369a55c8be58e394f12934645eab0382"
+    }
+  ],
+  "reconstruction_contract": {
+    "exact_extension_keys": [
+      "r2_operational_failure_closure",
+      "r3_operational_failure_closure",
+      "r3_parser_regression"
+    ],
+    "whole_dictionary_equality_required": true,
+    "key_deletion_forbidden": true,
+    "subset_comparison_forbidden": true,
+    "pseudo_input_schema_exact_keys": [
+      "basename",
+      "expanded_nonlocal_projectors_per_atom",
+      "format",
+      "sha256",
+      "z_valence"
+    ],
+    "pseudo_input_schema_applies_only_to_ids": [
+      "S1-20260810-351",
+      "S1-20260810-352",
+      "S1-20260810-353",
+      "S1-20260810-354",
+      "S1-20260810-355",
+      "S1-20260810-356",
+      "S1-20260810-357",
+      "S1-20260810-358"
+    ],
+    "continuation_ids_use_full_upstream_identity_closure": [
+      "S1-20260810-327",
+      "S1-20260810-328",
+      "S1-20260810-329",
+      "S1-20260810-330",
+      "S1-20260810-331",
+      "S1-20260810-332"
+    ],
+    "pseudo_upstream_mapping": "committed_config_repository_commit_canonical_url_git_blob_sha",
+    "external_cache_full_header_projector_validation_required": true,
+    "upf_body_committed": false
+  },
+  "expected_scientific_metrics": {
+    "strain_absolute_difference_mev_per_atom": {
+      "S1-20260810-351": 0.23832079999408506,
+      "S1-20260810-352": 0.23433039999787297,
+      "S1-20260810-353": 0.004608300010033872,
+      "S1-20260810-354": 0.004608400004713076
+    },
+    "endpoints": {
+      "v090": {
+        "anchored_k_difference_mev_per_atom": 0.008772699999326505,
+        "anchored_cutoff_difference_mev_per_atom": 0.11227989999440524,
+        "cutoff_pressure_difference_gpa": 0.004055200000001591
+      },
+      "v110": {
+        "anchored_k_difference_mev_per_atom": 0.0917003000040495,
+        "anchored_cutoff_difference_mev_per_atom": 0.03827180000826047,
+        "cutoff_pressure_difference_gpa": 0.002397900000000952
+      }
+    },
+    "comparison": "exact_binary64_replay",
+    "gate_row_count": 10,
+    "overall_status": "accepted"
+  },
+  "git_topology_contract": {
+    "closure_to_final_implementation": "unique_parent",
+    "closure_to_final_implementation_diff_exact_name_status": [
+      [
+        "A",
+        "docs/S1_G1_THREE_LAYER_AL_DOMAIN_FOLLOWUP_ANALYSIS_R5_PROTOCOL.md"
+      ],
+      [
+        "A",
+        "orchestration/s1/g1_three_layer_al_domain_followup_r4_20260810/analysis_r5_superseded_implementations.json"
+      ],
+      [
+        "A",
+        "scripts/analyze_s1_g1_three_layer_al_followup_analysis_r5.py"
+      ],
+      [
+        "A",
+        "scripts/validate_s1_g1_three_layer_al_followup_analysis_r5.py"
+      ],
+      [
+        "A",
+        "tests/test_s1_g1_three_layer_al_followup_analysis_r5.py"
+      ]
+    ],
+    "registered_implementation_files_equal_exact_diff_paths": true,
+    "final_implementation_to_preregistration": "unique_parent",
+    "superseded_commits_not_ancestors_of_final_preregistration": true,
+    "preregistration_diff_exact_paths": [
+      "config/S1_g1_three_layer_al_followup_analysis_r5.json"
+    ],
+    "execution_head": "exact_preregistration_commit",
+    "evidence_commit": "unique_child_of_preregistration_additions_only_under_analysis_root"
+  },
+  "output_contract": {
+    "required_top_level_files": [
+      "README.md",
+      "analysis_revision.json",
+      "gates.tsv",
+      "summary.json"
+    ],
+    "required_snapshot_roots": [
+      "followup_r4",
+      "r1_p0",
+      "continuation_r2"
+    ],
+    "forbid_symlinks": true,
+    "forbid_upf_bodies": true,
+    "require_committed_byte_exact_replay": true
+  }
+}
