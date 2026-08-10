@@ -1,0 +1,1005 @@
+{
+  "accepted": true,
+  "case_id": "S1-G1-REGEN10-20260810-020",
+  "density_field": {
+    "accepted": true,
+    "comparison_sha256": "bb76a6f7701dbfef8b5537f0af74e6262c9eb710dfc2edd418da917b20f3c708",
+    "d1": 0.0,
+    "d1_limit": 0.005,
+    "d2": 0.0,
+    "d2_limit": 0.005,
+    "linf_electron_per_bohr3": 0.0,
+    "low_density_mask": null,
+    "reference_electrons": 4.000000000001952,
+    "reference_sha256": "bb76a6f7701dbfef8b5537f0af74e6262c9eb710dfc2edd418da917b20f3c708"
+  },
+  "electron_number": {
+    "absolute_error_electrons": 1.9524447018032133e-12,
+    "acceptance_limit": 1e-10,
+    "accepted": true,
+    "atom_count": 2,
+    "cell_volume_bohr3": 345.0420453567167,
+    "certified_relative_error": 4.881149500727627e-13,
+    "cube_header_volume_bohr3": 345.0411040505839,
+    "cube_header_volume_relative_delta": 2.7280910993364845e-06,
+    "density_format": "abacus_cube_text_bohr_minus_3",
+    "density_path": "/home/shenwei01/.local/state/m_ofdft/g1_regeneration_10_r2_20260810/cases/S1-G1-REGEN10-20260810-020/OUT.g1tlr4_mg_v110_quarter/chg.cube",
+    "density_sha256": "bb76a6f7701dbfef8b5537f0af74e6262c9eb710dfc2edd418da917b20f3c708",
+    "expected_electrons": 4.0,
+    "file_size_bytes": 680328,
+    "floating_absolute_error_bound": 0.0,
+    "grid_count": 28125,
+    "grid_dimension_authority": "raw_running_scf_log",
+    "grid_dimensions": [
+      25,
+      25,
+      45
+    ],
+    "integrated_electrons": 4.000000000001952,
+    "math_fsum_crosscheck_absolute_delta": 0.0,
+    "math_fsum_value_sum": 326.0472209517203,
+    "numerical_certification": "exact_fraction_for_printed_tokens_STRU_volume_and_rounding_bound",
+    "relative_error": 4.881111754508033e-13,
+    "spin_count": 1,
+    "summation_algorithm": "exact_scaled_integer_decimal_sum_with_math_fsum_crosscheck",
+    "text_rounding_absolute_error_bound": 1.5098487837537354e-17,
+    "volume_authority": "STRU_not_six_decimal_cube_axes"
+  },
+  "failure_reasons": [],
+  "material": "mg",
+  "potential_derivative_field": {
+    "absolute_rms_ev": 0.0,
+    "absolute_rms_ev_limit": 0.005,
+    "accepted": true,
+    "comparison_cell_average_potential_ev": -3.2697151633743937,
+    "comparison_sha256": "b8cb442dee6738f8ecc2c4aa9db940afcf88540ce8fc9b950c1ef335b2d7c2b4",
+    "dg": 0.0,
+    "dg_limit": 0.01,
+    "gauge": "g=-(potential_eV-unweighted_cell_average_potential_eV)",
+    "linf_ev": 0.0,
+    "low_density_mask": null,
+    "reference_cell_average_potential_ev": -3.2697151633743937,
+    "reference_sha256": "b8cb442dee6738f8ecc2c4aa9db940afcf88540ce8fc9b950c1ef335b2d7c2b4"
+  },
+  "profile": "ks_r4_field",
+  "rank_barrier_accepted": true,
+  "raw_field_sha256_equal_diagnostic": {
+    "density": true,
+    "potential": true
+  },
+  "runtime": {
+    "case_id": "S1-G1-REGEN10-20260810-020",
+    "command_argv": [
+      "/usr/bin/taskset",
+      "--cpu-list",
+      "20,21,22,23",
+      "/usr/bin/time",
+      "-v",
+      "-o",
+      "/home/shenwei01/.local/state/m_ofdft/g1_regeneration_10_r2_20260810/cases/S1-G1-REGEN10-20260810-020/resource_usage.txt",
+      "/home/shenwei01/M_OFDFT_recovery_S0_20260805_001/conda_prefix/bin/mpirun",
+      "--bind-to",
+      "none",
+      "-np",
+      "4",
+      "/usr/bin/python3",
+      "-s",
+      "/home/shenwei01/M_OFDFT_g1_regen10_r1_20260810/scripts/s1_g1_regeneration_rank_wrapper_r2.py",
+      "--case-id",
+      "S1-G1-REGEN10-20260810-020",
+      "--proof-dir",
+      "/home/shenwei01/.local/state/m_ofdft/g1_regeneration_10_r2_20260810/cases/S1-G1-REGEN10-20260810-020/rank_proofs",
+      "--cpu-list",
+      "20,21,22,23",
+      "--abacus",
+      "/home/shenwei01/M_OFDFT_recovery_S0_20260805_001/source/abacus_pw_para_relocated_20260805",
+      "--runner-commit",
+      "ea90c3e9407b26e27996a64a3d69b53ca0ec2a21"
+    ],
+    "environment": {
+      "CMAKE_PREFIX_PATH": "/home/shenwei01/M_OFDFT_recovery_S0_20260805_001/conda_prefix",
+      "CUDA_CACHE_DISABLE": "1",
+      "HOME": "/home/shenwei01/.local/state/m_ofdft/g1_regeneration_10_r2_20260810/cases/S1-G1-REGEN10-20260810-020/runtime_home",
+      "LC_ALL": "C",
+      "LD_LIBRARY_PATH": "/home/shenwei01/M_OFDFT_recovery_S0_20260805_001/conda_prefix/lib",
+      "LOGNAME": "shenwei01",
+      "MKLROOT": "/home/shenwei01/M_OFDFT_recovery_S0_20260805_001/conda_prefix",
+      "MKL_NUM_THREADS": "1",
+      "OMP_NUM_THREADS": "1",
+      "OPAL_PREFIX": "/home/shenwei01/M_OFDFT_recovery_S0_20260805_001/conda_prefix",
+      "OPENBLAS_NUM_THREADS": "1",
+      "PATH": "/home/shenwei01/M_OFDFT_recovery_S0_20260805_001/conda_prefix/bin:/usr/bin:/bin",
+      "PMIX_PREFIX": "/home/shenwei01/M_OFDFT_recovery_S0_20260805_001/conda_prefix",
+      "PRTE_PREFIX": "/home/shenwei01/M_OFDFT_recovery_S0_20260805_001/conda_prefix",
+      "TMPDIR": "/tmp",
+      "TZ": "UTC",
+      "UCX_MODULE_DIR": "/home/shenwei01/M_OFDFT_recovery_S0_20260805_001/conda_prefix",
+      "USER": "shenwei01"
+    },
+    "finished_utc": "2026-08-10T04:47:54.137780Z",
+    "hostname": "node01",
+    "observed_affinity_diagnostic_only": {
+      "all_descendants": [
+        {
+          "argv": [],
+          "comm": "time",
+          "cpus": [
+            20,
+            21,
+            22,
+            23
+          ],
+          "cpus_allowed_list": "20-23",
+          "pid": 1999447,
+          "ppid": 1999411,
+          "start_time_ticks": 655990081
+        },
+        {
+          "argv": [
+            "/home/shenwei01/M_OFDFT_recovery_S0_20260805_001/conda_prefix/bin/prterun",
+            "--bind-to",
+            "none",
+            "-np",
+            "4",
+            "/usr/bin/python3",
+            "-s",
+            "/home/shenwei01/M_OFDFT_g1_regen10_r1_20260810/scripts/s1_g1_regeneration_rank_wrapper_r2.py",
+            "--case-id",
+            "S1-G1-REGEN10-20260810-020",
+            "--proof-dir",
+            "/home/shenwei01/.local/state/m_ofdft/g1_regeneration_10_r2_20260810/cases/S1-G1-REGEN10-20260810-020/rank_proofs",
+            "--cpu-list",
+            "20,21,22,23",
+            "--abacus",
+            "/home/shenwei01/M_OFDFT_recovery_S0_20260805_001/source/abacus_pw_para_relocated_20260805",
+            "--runner-commit",
+            "ea90c3e9407b26e27996a64a3d69b53ca0ec2a21"
+          ],
+          "comm": "prterun",
+          "cpus": [
+            20,
+            21,
+            22,
+            23
+          ],
+          "cpus_allowed_list": "20-23",
+          "pid": 1999448,
+          "ppid": 1999447,
+          "start_time_ticks": 655990081
+        },
+        {
+          "argv": [
+            "/home/shenwei01/M_OFDFT_recovery_S0_20260805_001/source/abacus_pw_para_relocated_20260805"
+          ],
+          "comm": "abacus_pw_para_",
+          "cpus": [
+            20
+          ],
+          "cpus_allowed_list": "20",
+          "pid": 1999451,
+          "ppid": 1999448,
+          "start_time_ticks": 655990102
+        },
+        {
+          "argv": [
+            "/home/shenwei01/M_OFDFT_recovery_S0_20260805_001/source/abacus_pw_para_relocated_20260805"
+          ],
+          "comm": "abacus_pw_para_",
+          "cpus": [
+            21
+          ],
+          "cpus_allowed_list": "21",
+          "pid": 1999452,
+          "ppid": 1999448,
+          "start_time_ticks": 655990102
+        },
+        {
+          "argv": [
+            "/home/shenwei01/M_OFDFT_recovery_S0_20260805_001/source/abacus_pw_para_relocated_20260805"
+          ],
+          "comm": "abacus_pw_para_",
+          "cpus": [
+            22
+          ],
+          "cpus_allowed_list": "22",
+          "pid": 1999453,
+          "ppid": 1999448,
+          "start_time_ticks": 655990102
+        },
+        {
+          "argv": [
+            "/home/shenwei01/M_OFDFT_recovery_S0_20260805_001/source/abacus_pw_para_relocated_20260805"
+          ],
+          "comm": "abacus_pw_para_",
+          "cpus": [
+            23
+          ],
+          "cpus_allowed_list": "23",
+          "pid": 1999454,
+          "ppid": 1999448,
+          "start_time_ticks": 655990102
+        }
+      ],
+      "sampling_period_seconds": 0.25
+    },
+    "protocol_revision": "S1-G1-REGENERATION-10-R2",
+    "rank_barrier": {
+      "accepted": true,
+      "ack_sha256": {
+        "0": "765bb9df40cdb03e53d4de267708cea324b0173b09a5c8b29e9e32ccf0bbd934",
+        "1": "536a623366e587a320d005af1d09332fda169cca281debb2946f33d3a7c239fb",
+        "2": "cbaddc16ede4ce76cb1026f5fdfb3fa7477c174f7ec42588374d8cbf95235527",
+        "3": "527c1ecca1b53a39bd937f7e52517f62f8a9ff83e18dc58b4d0bc5e2eab592a9"
+      },
+      "acks": [
+        {
+          "path": "/home/shenwei01/.local/state/m_ofdft/g1_regeneration_10_r2_20260810/cases/S1-G1-REGEN10-20260810-020/rank_proofs/rank-000.ack.json",
+          "payload": {
+            "affinity": [
+              20
+            ],
+            "case_id": "S1-G1-REGEN10-20260810-020",
+            "created_utc": "2026-08-10T04:43:28.834980Z",
+            "go_sha256": "46d9e5785d5e6ca848786beaf9a3123ecc5f983f1256d32dd41d085c8986a74f",
+            "hostname": "node01",
+            "pid": 1999451,
+            "proof_sha256": "13b57113428a7c5261c678422782003f404ad308cd881ea8388e37b86276d31b",
+            "protocol_revision": "S1-G1-REGENERATION-10-R2",
+            "rank": 0,
+            "schema_version": 1,
+            "start_time_ticks": 655990102
+          },
+          "sha256": "765bb9df40cdb03e53d4de267708cea324b0173b09a5c8b29e9e32ccf0bbd934"
+        },
+        {
+          "path": "/home/shenwei01/.local/state/m_ofdft/g1_regeneration_10_r2_20260810/cases/S1-G1-REGEN10-20260810-020/rank_proofs/rank-001.ack.json",
+          "payload": {
+            "affinity": [
+              21
+            ],
+            "case_id": "S1-G1-REGEN10-20260810-020",
+            "created_utc": "2026-08-10T04:43:28.834106Z",
+            "go_sha256": "46d9e5785d5e6ca848786beaf9a3123ecc5f983f1256d32dd41d085c8986a74f",
+            "hostname": "node01",
+            "pid": 1999452,
+            "proof_sha256": "b0353a6ac16805bd08340241e5a0aa6bfed16c61fec7ddc522720527814c26c0",
+            "protocol_revision": "S1-G1-REGENERATION-10-R2",
+            "rank": 1,
+            "schema_version": 1,
+            "start_time_ticks": 655990102
+          },
+          "sha256": "536a623366e587a320d005af1d09332fda169cca281debb2946f33d3a7c239fb"
+        },
+        {
+          "path": "/home/shenwei01/.local/state/m_ofdft/g1_regeneration_10_r2_20260810/cases/S1-G1-REGEN10-20260810-020/rank_proofs/rank-002.ack.json",
+          "payload": {
+            "affinity": [
+              22
+            ],
+            "case_id": "S1-G1-REGEN10-20260810-020",
+            "created_utc": "2026-08-10T04:43:28.829013Z",
+            "go_sha256": "46d9e5785d5e6ca848786beaf9a3123ecc5f983f1256d32dd41d085c8986a74f",
+            "hostname": "node01",
+            "pid": 1999453,
+            "proof_sha256": "b09be57b8786b654dbe3ba6668ca7fbe42e413f9651e3f026df7ee7e050db1ab",
+            "protocol_revision": "S1-G1-REGENERATION-10-R2",
+            "rank": 2,
+            "schema_version": 1,
+            "start_time_ticks": 655990102
+          },
+          "sha256": "cbaddc16ede4ce76cb1026f5fdfb3fa7477c174f7ec42588374d8cbf95235527"
+        },
+        {
+          "path": "/home/shenwei01/.local/state/m_ofdft/g1_regeneration_10_r2_20260810/cases/S1-G1-REGEN10-20260810-020/rank_proofs/rank-003.ack.json",
+          "payload": {
+            "affinity": [
+              23
+            ],
+            "case_id": "S1-G1-REGEN10-20260810-020",
+            "created_utc": "2026-08-10T04:43:28.826887Z",
+            "go_sha256": "46d9e5785d5e6ca848786beaf9a3123ecc5f983f1256d32dd41d085c8986a74f",
+            "hostname": "node01",
+            "pid": 1999454,
+            "proof_sha256": "709a907cad65dcb54b2932a5c95093c0850338aa67dc8f9333267b6c7dbfa9ac",
+            "protocol_revision": "S1-G1-REGENERATION-10-R2",
+            "rank": 3,
+            "schema_version": 1,
+            "start_time_ticks": 655990102
+          },
+          "sha256": "527c1ecca1b53a39bd937f7e52517f62f8a9ff83e18dc58b4d0bc5e2eab592a9"
+        }
+      ],
+      "barrier_finished_seconds": 0.44291284773498774,
+      "exec_sha256": "8353ba25aa0c253dc6f5504732f1c15d4595ea244ab8fffd1610b5e42da2ee1c",
+      "failure": null,
+      "go_sha256": "46d9e5785d5e6ca848786beaf9a3123ecc5f983f1256d32dd41d085c8986a74f",
+      "mode": "per_rank_o_excl_proof_go_ack_exec_v1",
+      "proof_and_ack_files_immutable_after_run": true,
+      "proof_sha256": {
+        "0": "13b57113428a7c5261c678422782003f404ad308cd881ea8388e37b86276d31b",
+        "1": "b0353a6ac16805bd08340241e5a0aa6bfed16c61fec7ddc522720527814c26c0",
+        "2": "b09be57b8786b654dbe3ba6668ca7fbe42e413f9651e3f026df7ee7e050db1ab",
+        "3": "709a907cad65dcb54b2932a5c95093c0850338aa67dc8f9333267b6c7dbfa9ac"
+      },
+      "proofs": [
+        {
+          "path": "/home/shenwei01/.local/state/m_ofdft/g1_regeneration_10_r2_20260810/cases/S1-G1-REGEN10-20260810-020/rank_proofs/rank-000.proof.json",
+          "payload": {
+            "abacus_path": "/home/shenwei01/M_OFDFT_recovery_S0_20260805_001/source/abacus_pw_para_relocated_20260805",
+            "abacus_sha256": "438c74b9ada4c8df15ffbb66da6755907dfd2a3812ecf868fafd4d7dc4db62e1",
+            "affinity": [
+              20
+            ],
+            "case_id": "S1-G1-REGEN10-20260810-020",
+            "created_utc": "2026-08-10T04:43:28.651922Z",
+            "hostname": "node01",
+            "local_rank": 0,
+            "local_size": 4,
+            "pid": 1999451,
+            "ppid": 1999448,
+            "protocol_revision": "S1-G1-REGENERATION-10-R2",
+            "rank": 0,
+            "requested_cpu_list": [
+              20,
+              21,
+              22,
+              23
+            ],
+            "runner_commit": "ea90c3e9407b26e27996a64a3d69b53ca0ec2a21",
+            "schema_version": 1,
+            "start_time_ticks": 655990102,
+            "world_size": 4,
+            "wrapper_path": "/home/shenwei01/M_OFDFT_g1_regen10_r1_20260810/scripts/s1_g1_regeneration_rank_wrapper_r2.py",
+            "wrapper_sha256": "79f451c347a4d12e8405ed421372920672dbc8fa1c8a6fa7f427fddd2f46f22a"
+          },
+          "sha256": "13b57113428a7c5261c678422782003f404ad308cd881ea8388e37b86276d31b"
+        },
+        {
+          "path": "/home/shenwei01/.local/state/m_ofdft/g1_regeneration_10_r2_20260810/cases/S1-G1-REGEN10-20260810-020/rank_proofs/rank-001.proof.json",
+          "payload": {
+            "abacus_path": "/home/shenwei01/M_OFDFT_recovery_S0_20260805_001/source/abacus_pw_para_relocated_20260805",
+            "abacus_sha256": "438c74b9ada4c8df15ffbb66da6755907dfd2a3812ecf868fafd4d7dc4db62e1",
+            "affinity": [
+              21
+            ],
+            "case_id": "S1-G1-REGEN10-20260810-020",
+            "created_utc": "2026-08-10T04:43:28.662059Z",
+            "hostname": "node01",
+            "local_rank": 1,
+            "local_size": 4,
+            "pid": 1999452,
+            "ppid": 1999448,
+            "protocol_revision": "S1-G1-REGENERATION-10-R2",
+            "rank": 1,
+            "requested_cpu_list": [
+              20,
+              21,
+              22,
+              23
+            ],
+            "runner_commit": "ea90c3e9407b26e27996a64a3d69b53ca0ec2a21",
+            "schema_version": 1,
+            "start_time_ticks": 655990102,
+            "world_size": 4,
+            "wrapper_path": "/home/shenwei01/M_OFDFT_g1_regen10_r1_20260810/scripts/s1_g1_regeneration_rank_wrapper_r2.py",
+            "wrapper_sha256": "79f451c347a4d12e8405ed421372920672dbc8fa1c8a6fa7f427fddd2f46f22a"
+          },
+          "sha256": "b0353a6ac16805bd08340241e5a0aa6bfed16c61fec7ddc522720527814c26c0"
+        },
+        {
+          "path": "/home/shenwei01/.local/state/m_ofdft/g1_regeneration_10_r2_20260810/cases/S1-G1-REGEN10-20260810-020/rank_proofs/rank-002.proof.json",
+          "payload": {
+            "abacus_path": "/home/shenwei01/M_OFDFT_recovery_S0_20260805_001/source/abacus_pw_para_relocated_20260805",
+            "abacus_sha256": "438c74b9ada4c8df15ffbb66da6755907dfd2a3812ecf868fafd4d7dc4db62e1",
+            "affinity": [
+              22
+            ],
+            "case_id": "S1-G1-REGEN10-20260810-020",
+            "created_utc": "2026-08-10T04:43:28.652772Z",
+            "hostname": "node01",
+            "local_rank": 2,
+            "local_size": 4,
+            "pid": 1999453,
+            "ppid": 1999448,
+            "protocol_revision": "S1-G1-REGENERATION-10-R2",
+            "rank": 2,
+            "requested_cpu_list": [
+              20,
+              21,
+              22,
+              23
+            ],
+            "runner_commit": "ea90c3e9407b26e27996a64a3d69b53ca0ec2a21",
+            "schema_version": 1,
+            "start_time_ticks": 655990102,
+            "world_size": 4,
+            "wrapper_path": "/home/shenwei01/M_OFDFT_g1_regen10_r1_20260810/scripts/s1_g1_regeneration_rank_wrapper_r2.py",
+            "wrapper_sha256": "79f451c347a4d12e8405ed421372920672dbc8fa1c8a6fa7f427fddd2f46f22a"
+          },
+          "sha256": "b09be57b8786b654dbe3ba6668ca7fbe42e413f9651e3f026df7ee7e050db1ab"
+        },
+        {
+          "path": "/home/shenwei01/.local/state/m_ofdft/g1_regeneration_10_r2_20260810/cases/S1-G1-REGEN10-20260810-020/rank_proofs/rank-003.proof.json",
+          "payload": {
+            "abacus_path": "/home/shenwei01/M_OFDFT_recovery_S0_20260805_001/source/abacus_pw_para_relocated_20260805",
+            "abacus_sha256": "438c74b9ada4c8df15ffbb66da6755907dfd2a3812ecf868fafd4d7dc4db62e1",
+            "affinity": [
+              23
+            ],
+            "case_id": "S1-G1-REGEN10-20260810-020",
+            "created_utc": "2026-08-10T04:43:28.651940Z",
+            "hostname": "node01",
+            "local_rank": 3,
+            "local_size": 4,
+            "pid": 1999454,
+            "ppid": 1999448,
+            "protocol_revision": "S1-G1-REGENERATION-10-R2",
+            "rank": 3,
+            "requested_cpu_list": [
+              20,
+              21,
+              22,
+              23
+            ],
+            "runner_commit": "ea90c3e9407b26e27996a64a3d69b53ca0ec2a21",
+            "schema_version": 1,
+            "start_time_ticks": 655990102,
+            "world_size": 4,
+            "wrapper_path": "/home/shenwei01/M_OFDFT_g1_regen10_r1_20260810/scripts/s1_g1_regeneration_rank_wrapper_r2.py",
+            "wrapper_sha256": "79f451c347a4d12e8405ed421372920672dbc8fa1c8a6fa7f427fddd2f46f22a"
+          },
+          "sha256": "709a907cad65dcb54b2932a5c95093c0850338aa67dc8f9333267b6c7dbfa9ac"
+        }
+      ]
+    },
+    "rank_count": 4,
+    "requested_cpu_list": [
+      20,
+      21,
+      22,
+      23
+    ],
+    "resource_usage_sha256": "3f8ec91e83be35d4505844c6e129c76c1039cb6daa3cec11122ec366c7a649be",
+    "return_code": 0,
+    "runner_affinity_at_launch": [
+      0,
+      1,
+      2,
+      3,
+      4,
+      5,
+      6,
+      7,
+      8,
+      9,
+      10,
+      11,
+      12,
+      13,
+      14,
+      15,
+      16,
+      17,
+      18,
+      19,
+      20,
+      21,
+      22,
+      23,
+      24,
+      25,
+      26,
+      27,
+      28,
+      29,
+      30,
+      31,
+      32,
+      33,
+      34,
+      35,
+      36,
+      37,
+      38,
+      39,
+      40,
+      41,
+      42,
+      43,
+      44,
+      45,
+      46,
+      47,
+      48,
+      49,
+      50,
+      51,
+      52,
+      53,
+      54,
+      55,
+      56,
+      57,
+      58,
+      59,
+      60,
+      61,
+      62,
+      63,
+      64,
+      65,
+      66,
+      67,
+      68,
+      69,
+      70,
+      71,
+      72,
+      73,
+      74,
+      75,
+      76,
+      77,
+      78,
+      79,
+      80,
+      81,
+      82,
+      83,
+      84,
+      85,
+      86,
+      87,
+      88,
+      89,
+      90,
+      91,
+      92,
+      93,
+      94,
+      95,
+      96,
+      97,
+      98,
+      99,
+      100,
+      101,
+      102,
+      103,
+      104,
+      105,
+      106,
+      107,
+      108,
+      109,
+      110,
+      111,
+      112,
+      113,
+      114,
+      115,
+      116,
+      117,
+      118,
+      119,
+      120,
+      121,
+      122,
+      123,
+      124,
+      125,
+      126,
+      127,
+      128,
+      129,
+      130,
+      131,
+      132,
+      133,
+      134,
+      135,
+      136,
+      137,
+      138,
+      139,
+      140,
+      141,
+      142,
+      143,
+      144,
+      145,
+      146,
+      147,
+      148,
+      149,
+      150,
+      151
+    ],
+    "runner_commit": "ea90c3e9407b26e27996a64a3d69b53ca0ec2a21",
+    "schema_version": 1,
+    "started_utc": "2026-08-10T04:43:28.403719Z",
+    "stderr_sha256": "721dabdad12126206605b2410a2b921356b12f68e77d4c8c9614506f712aa031",
+    "stdout_sha256": "cc8a362d63a6586a6244ffbf6515b62724fd8028dcbccb4dd22b1eebc84cbe34",
+    "timed_out": false,
+    "timeout_seconds": 3600,
+    "wall_seconds": 265.73091359063983
+  },
+  "runtime_affinity_accepted": true,
+  "runtime_contract_accepted": true,
+  "scalar_equivalence": {
+    "accepted": true,
+    "delta_energy_mev_per_atom": 0.0,
+    "delta_pressure_gpa": 0.0,
+    "energy_limit_mev_per_atom": 0.1,
+    "pressure_limit_gpa": 0.02
+  },
+  "solver": "ksdft",
+  "source_integrity": {
+    "file_sha256": {
+      "INPUT": "8beacc618f02a1835eb4e275bc73d26e1b2731f0990d5f8d8cacf3553bee7f1c",
+      "KPT": "d59f4a8d01e74f7ec8fb53fe7de304457198bb3b6da2d7dcebba6c08c3330c4f",
+      "STRU": "2830ba604f066a34709da8abb3fa32449372e05b41c2715e999ffd0eeafb8512",
+      "chg.cube": "bb76a6f7701dbfef8b5537f0af74e6262c9eb710dfc2edd418da917b20f3c708",
+      "input_metadata.json": "251051d1331f338a793c4125d5101c8c0553d92792426b7372370f3a983067fc",
+      "mg.lda.lps": "4b964580cfbd798708299bb0e0baef2f437983d29e6d7040f63b7532038b4259",
+      "pot.cube": "b8cb442dee6738f8ecc2c4aa9db940afcf88540ce8fc9b950c1ef335b2d7c2b4",
+      "result.json": "ddb69d7f16a66f503297918e86b00d634e261c9d1b554287ff5614505c0aa894",
+      "running_scf.log": "1d8175863466895fe1fe0b6438d72a2be5b02d3cdb391238f1238a5b076ac4a8"
+    },
+    "source_run_id": "S1-20260807-041",
+    "tree_oid": "cb95d4c4b056c055dc745d5255925d3076323857"
+  },
+  "source_run_id": "S1-20260807-041",
+  "thermodynamic_labels": {
+    "all_labels_accepted": true,
+    "label_metrics": [
+      {
+        "absolute_delta": 0.0,
+        "accepted": true,
+        "delta_units": "meV/atom",
+        "label": "F",
+        "limit": 0.1,
+        "replay_ev_per_cell": -49.18646036662189,
+        "source_ev_per_cell": -49.18646036662189
+      },
+      {
+        "absolute_delta": 0.0,
+        "accepted": true,
+        "delta_units": "meV/atom",
+        "label": "m",
+        "limit": 0.1,
+        "replay_ev_per_cell": -0.0014838159,
+        "source_ev_per_cell": -0.0014838159
+      },
+      {
+        "absolute_delta": 0.0,
+        "accepted": true,
+        "delta_units": "meV/atom",
+        "label": "U",
+        "limit": 0.1,
+        "replay_ev_per_cell": -49.184976550721885,
+        "source_ev_per_cell": -49.184976550721885
+      },
+      {
+        "absolute_delta": 0.0,
+        "accepted": true,
+        "delta_units": "meV/atom",
+        "label": "E_ec",
+        "limit": 0.1,
+        "replay_ev_per_cell": -49.1857184587,
+        "source_ev_per_cell": -49.1857184587
+      },
+      {
+        "absolute_delta": 0.0,
+        "accepted": true,
+        "delta_units": "meV/atom",
+        "label": "E_one_elec",
+        "limit": 0.1,
+        "replay_ev_per_cell": 29.7614633213,
+        "source_ev_per_cell": 29.7614633213
+      },
+      {
+        "absolute_delta": 0.0,
+        "accepted": true,
+        "delta_units": "meV/atom",
+        "label": "E_localpp",
+        "limit": 0.1,
+        "replay_ev_per_cell": 12.388382338,
+        "source_ev_per_cell": 12.388382338
+      },
+      {
+        "absolute_delta": 0.0,
+        "accepted": true,
+        "delta_units": "meV/atom",
+        "label": "T_sU",
+        "limit": 0.1,
+        "replay_ev_per_cell": 17.3730809833,
+        "source_ev_per_cell": 17.3730809833
+      },
+      {
+        "absolute_delta": 0.0,
+        "accepted": true,
+        "delta_units": "meV/atom",
+        "label": "F_s",
+        "limit": 0.1,
+        "replay_ev_per_cell": 17.3715971674,
+        "source_ev_per_cell": 17.3715971674
+      },
+      {
+        "absolute_delta": 0.0,
+        "accepted": true,
+        "delta_units": "meV/atom",
+        "label": "E_Hartree",
+        "limit": 0.1,
+        "replay_ev_per_cell": 0.0865556829,
+        "source_ev_per_cell": 0.0865556829
+      },
+      {
+        "absolute_delta": 0.0,
+        "accepted": true,
+        "delta_units": "meV/atom",
+        "label": "E_xc",
+        "limit": 0.1,
+        "replay_ev_per_cell": -22.5632201107,
+        "source_ev_per_cell": -22.5632201107
+      },
+      {
+        "absolute_delta": 0.0,
+        "accepted": true,
+        "delta_units": "meV/atom",
+        "label": "E_Ewald",
+        "limit": 0.1,
+        "replay_ev_per_cell": -56.4697754442,
+        "source_ev_per_cell": -56.4697754442
+      },
+      {
+        "absolute_delta": 0.0,
+        "accepted": true,
+        "delta_units": "meV",
+        "label": "mu",
+        "limit": 0.1,
+        "replay_ev_per_cell": 2.7874912357,
+        "source_ev_per_cell": 2.7874912357
+      }
+    ],
+    "replay": {
+      "all_identity_residuals_strictly_below_limit": true,
+      "atom_count": 2,
+      "chemical_potential_ev": 2.7874912357,
+      "converged": true,
+      "e_kohnsham_table_ev_per_cell": -49.1864603666,
+      "electron_count_reported": 4.0,
+      "energy_labels_ev_per_atom": {
+        "E_Ewald": -28.2348877221,
+        "E_Hartree": 0.04327784145,
+        "E_ec": -24.59285922935,
+        "E_localpp": 6.194191169,
+        "E_one_elec": 14.88073166065,
+        "E_xc": -11.28161005535,
+        "F": -24.593230183310943,
+        "F_s": 8.6857985837,
+        "T_sU": 8.68654049165,
+        "U": -24.592488275360942,
+        "m": -0.00074190795,
+        "mu": 1.39374561785
+      },
+      "energy_labels_ev_per_cell": {
+        "E_Ewald": -56.4697754442,
+        "E_Hartree": 0.0865556829,
+        "E_ec": -49.1857184587,
+        "E_localpp": 12.388382338,
+        "E_one_elec": 29.7614633213,
+        "E_xc": -22.5632201107,
+        "F": -49.18646036662189,
+        "F_s": 17.3715971674,
+        "T_sU": 17.3730809833,
+        "U": -49.184976550721885,
+        "m": -0.0014838159,
+        "mu": 2.7874912357
+      },
+      "entropy_corrected_estimator_ev": -49.1857184587,
+      "entropy_corrected_estimator_semantics": "finite-smearing scalar estimator",
+      "entropy_minus_ts_ev": -0.0014838159,
+      "ewald_energy_ev": -56.4697754442,
+      "free_energy_ev": -49.18646036662189,
+      "hartree_energy_ev": 0.0865556829,
+      "identities": {
+        "entropy_corrected": {
+          "acceptance_inequality": "strict_less_than",
+          "acceptance_limit_ev_per_atom": "1E-8",
+          "accepted": true,
+          "lhs_ev_per_cell": "-49.1857184587",
+          "name": "E_ec=F-m/2",
+          "residual_ev_per_atom": "-1.405655E-11",
+          "residual_ev_per_cell": "-2.81131E-11",
+          "rhs_ev_per_cell": "-49.1857184586718869",
+          "text_rounding_bound_ev_per_cell": "1.0000005E-10"
+        },
+        "final_equals_kohn_sham": {
+          "acceptance_inequality": "strict_less_than",
+          "acceptance_limit_ev_per_atom": "1E-8",
+          "accepted": true,
+          "lhs_ev_per_cell": "-49.1864603666218869",
+          "name": "F=E_KohnSham=!FINAL_ETOT_IS",
+          "residual_ev_per_atom": "-1.094345E-11",
+          "residual_ev_per_cell": "-2.18869E-11",
+          "rhs_ev_per_cell": "-49.1864603666",
+          "text_rounding_bound_ev_per_cell": "5.000005E-11"
+        },
+        "internal_energy_definition": {
+          "acceptance_inequality": "strict_less_than",
+          "acceptance_limit_ev_per_atom": "1E-8",
+          "accepted": true,
+          "lhs_ev_per_cell": "-49.1849765507218869",
+          "name": "U=F-m",
+          "residual_ev_per_atom": "0E-16",
+          "residual_ev_per_cell": "0E-16",
+          "rhs_ev_per_cell": "-49.1849765507218869",
+          "text_rounding_bound_ev_per_cell": "5.000010E-11"
+        },
+        "kinetic_energy_definition": {
+          "acceptance_inequality": "strict_less_than",
+          "acceptance_limit_ev_per_atom": "1E-8",
+          "accepted": true,
+          "lhs_ev_per_cell": "17.3730809833",
+          "name": "T_sU=E_one_elec-E_localpp",
+          "residual_ev_per_atom": "0E-10",
+          "residual_ev_per_cell": "0E-10",
+          "rhs_ev_per_cell": "17.3730809833",
+          "text_rounding_bound_ev_per_cell": "1.5E-10"
+        },
+        "noninteracting_free_energy_definition": {
+          "acceptance_inequality": "strict_less_than",
+          "acceptance_limit_ev_per_atom": "1E-8",
+          "accepted": true,
+          "lhs_ev_per_cell": "17.3715971674",
+          "name": "F_s=T_sU+m",
+          "residual_ev_per_atom": "0E-10",
+          "residual_ev_per_cell": "0E-10",
+          "rhs_ev_per_cell": "17.3715971674",
+          "text_rounding_bound_ev_per_cell": "1.5E-10"
+        },
+        "total_decomposition": {
+          "acceptance_inequality": "strict_less_than",
+          "acceptance_limit_ev_per_atom": "1E-8",
+          "accepted": true,
+          "lhs_ev_per_cell": "-49.1864603666218869",
+          "name": "F=E_one+E_H+E_xc+E_Ewald+m",
+          "residual_ev_per_atom": "-1.094345E-11",
+          "residual_ev_per_cell": "-2.18869E-11",
+          "rhs_ev_per_cell": "-49.1864603666",
+          "text_rounding_bound_ev_per_cell": "2.5000005E-10"
+        }
+      },
+      "internal_energy_ev": -49.184976550721885,
+      "kinetic_energy_ts_ev": 17.3730809833,
+      "local_pseudopotential_energy_ev": 12.388382338,
+      "noninteracting_free_energy_fs_ev": 17.3715971674,
+      "one_electron_energy_ev": 29.7614633213,
+      "pressure_gpa": -5.0063949,
+      "pressure_kbar": -50.063949,
+      "xc_energy_ev": -22.5632201107,
+      "zero_temperature_exact_claim": false
+    },
+    "source": {
+      "all_identity_residuals_strictly_below_limit": true,
+      "atom_count": 2,
+      "chemical_potential_ev": 2.7874912357,
+      "converged": true,
+      "e_kohnsham_table_ev_per_cell": -49.1864603666,
+      "electron_count_reported": 4.0,
+      "energy_labels_ev_per_atom": {
+        "E_Ewald": -28.2348877221,
+        "E_Hartree": 0.04327784145,
+        "E_ec": -24.59285922935,
+        "E_localpp": 6.194191169,
+        "E_one_elec": 14.88073166065,
+        "E_xc": -11.28161005535,
+        "F": -24.593230183310943,
+        "F_s": 8.6857985837,
+        "T_sU": 8.68654049165,
+        "U": -24.592488275360942,
+        "m": -0.00074190795,
+        "mu": 1.39374561785
+      },
+      "energy_labels_ev_per_cell": {
+        "E_Ewald": -56.4697754442,
+        "E_Hartree": 0.0865556829,
+        "E_ec": -49.1857184587,
+        "E_localpp": 12.388382338,
+        "E_one_elec": 29.7614633213,
+        "E_xc": -22.5632201107,
+        "F": -49.18646036662189,
+        "F_s": 17.3715971674,
+        "T_sU": 17.3730809833,
+        "U": -49.184976550721885,
+        "m": -0.0014838159,
+        "mu": 2.7874912357
+      },
+      "entropy_corrected_estimator_ev": -49.1857184587,
+      "entropy_corrected_estimator_semantics": "finite-smearing scalar estimator",
+      "entropy_minus_ts_ev": -0.0014838159,
+      "ewald_energy_ev": -56.4697754442,
+      "free_energy_ev": -49.18646036662189,
+      "hartree_energy_ev": 0.0865556829,
+      "identities": {
+        "entropy_corrected": {
+          "acceptance_inequality": "strict_less_than",
+          "acceptance_limit_ev_per_atom": "1E-8",
+          "accepted": true,
+          "lhs_ev_per_cell": "-49.1857184587",
+          "name": "E_ec=F-m/2",
+          "residual_ev_per_atom": "-1.405655E-11",
+          "residual_ev_per_cell": "-2.81131E-11",
+          "rhs_ev_per_cell": "-49.1857184586718869",
+          "text_rounding_bound_ev_per_cell": "1.0000005E-10"
+        },
+        "final_equals_kohn_sham": {
+          "acceptance_inequality": "strict_less_than",
+          "acceptance_limit_ev_per_atom": "1E-8",
+          "accepted": true,
+          "lhs_ev_per_cell": "-49.1864603666218869",
+          "name": "F=E_KohnSham=!FINAL_ETOT_IS",
+          "residual_ev_per_atom": "-1.094345E-11",
+          "residual_ev_per_cell": "-2.18869E-11",
+          "rhs_ev_per_cell": "-49.1864603666",
+          "text_rounding_bound_ev_per_cell": "5.000005E-11"
+        },
+        "internal_energy_definition": {
+          "acceptance_inequality": "strict_less_than",
+          "acceptance_limit_ev_per_atom": "1E-8",
+          "accepted": true,
+          "lhs_ev_per_cell": "-49.1849765507218869",
+          "name": "U=F-m",
+          "residual_ev_per_atom": "0E-16",
+          "residual_ev_per_cell": "0E-16",
+          "rhs_ev_per_cell": "-49.1849765507218869",
+          "text_rounding_bound_ev_per_cell": "5.000010E-11"
+        },
+        "kinetic_energy_definition": {
+          "acceptance_inequality": "strict_less_than",
+          "acceptance_limit_ev_per_atom": "1E-8",
+          "accepted": true,
+          "lhs_ev_per_cell": "17.3730809833",
+          "name": "T_sU=E_one_elec-E_localpp",
+          "residual_ev_per_atom": "0E-10",
+          "residual_ev_per_cell": "0E-10",
+          "rhs_ev_per_cell": "17.3730809833",
+          "text_rounding_bound_ev_per_cell": "1.5E-10"
+        },
+        "noninteracting_free_energy_definition": {
+          "acceptance_inequality": "strict_less_than",
+          "acceptance_limit_ev_per_atom": "1E-8",
+          "accepted": true,
+          "lhs_ev_per_cell": "17.3715971674",
+          "name": "F_s=T_sU+m",
+          "residual_ev_per_atom": "0E-10",
+          "residual_ev_per_cell": "0E-10",
+          "rhs_ev_per_cell": "17.3715971674",
+          "text_rounding_bound_ev_per_cell": "1.5E-10"
+        },
+        "total_decomposition": {
+          "acceptance_inequality": "strict_less_than",
+          "acceptance_limit_ev_per_atom": "1E-8",
+          "accepted": true,
+          "lhs_ev_per_cell": "-49.1864603666218869",
+          "name": "F=E_one+E_H+E_xc+E_Ewald+m",
+          "residual_ev_per_atom": "-1.094345E-11",
+          "residual_ev_per_cell": "-2.18869E-11",
+          "rhs_ev_per_cell": "-49.1864603666",
+          "text_rounding_bound_ev_per_cell": "2.5000005E-10"
+        }
+      },
+      "internal_energy_ev": -49.184976550721885,
+      "kinetic_energy_ts_ev": 17.3730809833,
+      "local_pseudopotential_energy_ev": 12.388382338,
+      "noninteracting_free_energy_fs_ev": 17.3715971674,
+      "one_electron_energy_ev": 29.7614633213,
+      "pressure_gpa": -5.0063949,
+      "pressure_kbar": -50.063949,
+      "xc_energy_ev": -22.5632201107,
+      "zero_temperature_exact_claim": false
+    },
+    "zero_temperature_exact_claim": false
+  }
+}

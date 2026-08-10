@@ -1,0 +1,11 @@
+execution_index	case_id	source_run_id	material	solver	profile	status	hostname	wall_seconds	energy_delta_mev_per_atom	pressure_delta_gpa	max_label_delta	electron_certified_relative_error	density_d1	density_d2	potential_dg	potential_rms_ev	raw_density_sha_equal	raw_potential_sha_equal
+1	S1-G1-REGEN10-20260810-011	S1-20260805-071	al	ofdft	ofdft_scalar	accepted	node01	3.489024054259062	0.0	0.0								
+2	S1-G1-REGEN10-20260810-012	S1-20260805-077	al	ofdft	ofdft_scalar	accepted	node01	3.5339670525863767	0.0	0.0								
+3	S1-G1-REGEN10-20260810-013	S1-20260805-092	mg	ofdft	ofdft_scalar	accepted	node01	4.080059427767992	0.0	0.0								
+4	S1-G1-REGEN10-20260810-014	S1-20260805-098	mg	ofdft	ofdft_scalar	accepted	node01	4.017451706342399	0.0	0.0								
+5	S1-G1-REGEN10-20260810-015	S1-20260807-047	al	ksdft	ks_r4_field	accepted	node01	259.0433762650937	0.0	0.0	0.0	3.936968320912784e-12	0.0	0.0	0.0	0.0	True	True
+6	S1-G1-REGEN10-20260810-016	S1-20260807-043	al	ksdft	ks_r4_field	accepted	node01	267.82420294359326	0.0	0.0	0.0	4.689186448626378e-12	0.0	0.0	0.0	0.0	True	True
+7	S1-G1-REGEN10-20260810-017	S1-20260807-049	al	ksdft	ks_r4_field	accepted	node01	269.7595503376797	0.0	0.0	0.0	1.4235288815921568e-12	0.0	0.0	0.0	0.0	True	True
+8	S1-G1-REGEN10-20260810-018	S1-20260807-051	mg	ksdft	ks_r4_field	accepted	node01	204.0104220211506	0.0	0.0	0.0	3.038357421761907e-12	0.0	0.0	0.0	0.0	True	True
+9	S1-G1-REGEN10-20260810-019	S1-20260807-045	mg	ksdft	ks_r4_field	accepted	node01	208.81700637191534	0.0	0.0	0.0	5.454320060658038e-12	0.0	0.0	0.0	0.0	True	True
+10	S1-G1-REGEN10-20260810-020	S1-20260807-041	mg	ksdft	ks_r4_field	accepted	node01	265.73091359063983	0.0	0.0	0.0	4.881149500727627e-13	0.0	0.0	0.0	0.0	True	True
