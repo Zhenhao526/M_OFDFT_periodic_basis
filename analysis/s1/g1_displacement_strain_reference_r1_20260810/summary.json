@@ -1,0 +1,27 @@
+{
+  "accepted_scientific_run_count": 0,
+  "analysis_revision": "R1",
+  "failed_solver_ids": [],
+  "false_negative": {
+    "cube_atom_cartesian_bohr": [
+      7.634494,
+      7.653391,
+      7.653391
+    ],
+    "experiment_id": "S1-20260810-203",
+    "failure_mode": "raw Cartesian cube/STRU atom subtraction ignored legal periodic wrapping",
+    "minimum_image_required": true,
+    "stru_expected_cartesian_bohr": [
+      -0.018897261254578284,
+      3.826695404052102,
+      3.826695404052102
+    ]
+  },
+  "protocol_revision": "S1-G1-DISPLACEMENT-STRAIN-REFERENCE-R1",
+  "replacement_analysis_protocol": "S1-G1-DISPLACEMENT-STRAIN-REFERENCE-ANALYSIS-R2",
+  "solver_accepted_run_count": 15,
+  "solver_ids_may_be_retried": false,
+  "solver_state_modified": false,
+  "status": "rejected_analysis_false_negative",
+  "terminal_runner_return_code": 0
+}
