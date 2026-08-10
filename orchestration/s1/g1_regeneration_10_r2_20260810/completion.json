@@ -1,0 +1,33 @@
+{
+  "analysis_summary_path": "analysis/s1/g1_regeneration_10_r2_20260810",
+  "analysis_summary_sha256": "438fdfad4df101b696861021ac6d3b2c203e654dfa2f89fa18793adfac13882f",
+  "created_utc": "2026-08-10T04:48:43.458411Z",
+  "denominator": {
+    "accepted": 10,
+    "accepted_gate": true,
+    "attempted": 10,
+    "completed": 10,
+    "failed": 0,
+    "missing": 0,
+    "registered": 10,
+    "retried": 0,
+    "skipped": 0
+  },
+  "external_state_root": "/home/shenwei01/.local/state/m_ofdft/g1_regeneration_10_r2_20260810",
+  "hard_gates": {
+    "all_runtime_command_environment_gates": true,
+    "all_runtime_rank_proof_ack_gates": true,
+    "all_source_and_replay_scientific_gates": true,
+    "exact_case_command_order": true,
+    "fixed_denominator_and_no_retry": true,
+    "source_tree_and_hash_contract": true,
+    "stored_runtime_analysis_matches_independent_reparse": true,
+    "terminal_accepted_runner_return_code_zero": true,
+    "thermodynamic_label_rows_exact": true
+  },
+  "protocol_revision": "S1-G1-REGENERATION-10-R2",
+  "runner_commit": "ea90c3e9407b26e27996a64a3d69b53ca0ec2a21",
+  "schema_version": 1,
+  "status": "accepted",
+  "terminal_sha256": "6ef34a875993d2dafbd127faf8fe6b5dc5c34884abdddd69933cffcc164a6458"
+}

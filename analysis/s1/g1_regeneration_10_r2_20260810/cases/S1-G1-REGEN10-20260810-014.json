@@ -1,0 +1,613 @@
+{
+  "accepted": true,
+  "case_id": "S1-G1-REGEN10-20260810-014",
+  "density_field": null,
+  "electron_number": null,
+  "failure_reasons": [],
+  "material": "mg",
+  "potential_derivative_field": null,
+  "profile": "ofdft_scalar",
+  "rank_barrier_accepted": true,
+  "raw_field_sha256_equal_diagnostic": null,
+  "runtime": {
+    "case_id": "S1-G1-REGEN10-20260810-014",
+    "command_argv": [
+      "/usr/bin/taskset",
+      "--cpu-list",
+      "20,21,22,23",
+      "/usr/bin/time",
+      "-v",
+      "-o",
+      "/home/shenwei01/.local/state/m_ofdft/g1_regeneration_10_r2_20260810/cases/S1-G1-REGEN10-20260810-014/resource_usage.txt",
+      "/home/shenwei01/M_OFDFT_recovery_S0_20260805_001/conda_prefix/bin/mpirun",
+      "--bind-to",
+      "none",
+      "-np",
+      "4",
+      "/usr/bin/python3",
+      "-s",
+      "/home/shenwei01/M_OFDFT_g1_regen10_r1_20260810/scripts/s1_g1_regeneration_rank_wrapper_r2.py",
+      "--case-id",
+      "S1-G1-REGEN10-20260810-014",
+      "--proof-dir",
+      "/home/shenwei01/.local/state/m_ofdft/g1_regeneration_10_r2_20260810/cases/S1-G1-REGEN10-20260810-014/rank_proofs",
+      "--cpu-list",
+      "20,21,22,23",
+      "--abacus",
+      "/home/shenwei01/M_OFDFT_recovery_S0_20260805_001/source/abacus_pw_para_relocated_20260805",
+      "--runner-commit",
+      "ea90c3e9407b26e27996a64a3d69b53ca0ec2a21"
+    ],
+    "environment": {
+      "CMAKE_PREFIX_PATH": "/home/shenwei01/M_OFDFT_recovery_S0_20260805_001/conda_prefix",
+      "CUDA_CACHE_DISABLE": "1",
+      "HOME": "/home/shenwei01/.local/state/m_ofdft/g1_regeneration_10_r2_20260810/cases/S1-G1-REGEN10-20260810-014/runtime_home",
+      "LC_ALL": "C",
+      "LD_LIBRARY_PATH": "/home/shenwei01/M_OFDFT_recovery_S0_20260805_001/conda_prefix/lib",
+      "LOGNAME": "shenwei01",
+      "MKLROOT": "/home/shenwei01/M_OFDFT_recovery_S0_20260805_001/conda_prefix",
+      "MKL_NUM_THREADS": "1",
+      "OMP_NUM_THREADS": "1",
+      "OPAL_PREFIX": "/home/shenwei01/M_OFDFT_recovery_S0_20260805_001/conda_prefix",
+      "OPENBLAS_NUM_THREADS": "1",
+      "PATH": "/home/shenwei01/M_OFDFT_recovery_S0_20260805_001/conda_prefix/bin:/usr/bin:/bin",
+      "PMIX_PREFIX": "/home/shenwei01/M_OFDFT_recovery_S0_20260805_001/conda_prefix",
+      "PRTE_PREFIX": "/home/shenwei01/M_OFDFT_recovery_S0_20260805_001/conda_prefix",
+      "TMPDIR": "/tmp",
+      "TZ": "UTC",
+      "UCX_MODULE_DIR": "/home/shenwei01/M_OFDFT_recovery_S0_20260805_001/conda_prefix",
+      "USER": "shenwei01"
+    },
+    "finished_utc": "2026-08-10T04:23:17.131218Z",
+    "hostname": "node01",
+    "observed_affinity_diagnostic_only": {
+      "all_descendants": [
+        {
+          "argv": [
+            "/usr/bin/time",
+            "-v",
+            "-o",
+            "/home/shenwei01/.local/state/m_ofdft/g1_regeneration_10_r2_20260810/cases/S1-G1-REGEN10-20260810-014/resource_usage.txt",
+            "/home/shenwei01/M_OFDFT_recovery_S0_20260805_001/conda_prefix/bin/mpirun",
+            "--bind-to",
+            "none",
+            "-np",
+            "4",
+            "/usr/bin/python3",
+            "-s",
+            "/home/shenwei01/M_OFDFT_g1_regen10_r1_20260810/scripts/s1_g1_regeneration_rank_wrapper_r2.py",
+            "--case-id",
+            "S1-G1-REGEN10-20260810-014",
+            "--proof-dir",
+            "/home/shenwei01/.local/state/m_ofdft/g1_regeneration_10_r2_20260810/cases/S1-G1-REGEN10-20260810-014/rank_proofs",
+            "--cpu-list",
+            "20,21,22,23",
+            "--abacus",
+            "/home/shenwei01/M_OFDFT_recovery_S0_20260805_001/source/abacus_pw_para_relocated_20260805",
+            "--runner-commit",
+            "ea90c3e9407b26e27996a64a3d69b53ca0ec2a21"
+          ],
+          "comm": "time",
+          "cpus": [
+            20,
+            21,
+            22,
+            23
+          ],
+          "cpus_allowed_list": "20-23",
+          "pid": 1994500,
+          "ppid": 1994464,
+          "start_time_ticks": 655868552
+        },
+        {
+          "argv": [
+            "/home/shenwei01/M_OFDFT_recovery_S0_20260805_001/conda_prefix/bin/prterun",
+            "--bind-to",
+            "none",
+            "-np",
+            "4",
+            "/usr/bin/python3",
+            "-s",
+            "/home/shenwei01/M_OFDFT_g1_regen10_r1_20260810/scripts/s1_g1_regeneration_rank_wrapper_r2.py",
+            "--case-id",
+            "S1-G1-REGEN10-20260810-014",
+            "--proof-dir",
+            "/home/shenwei01/.local/state/m_ofdft/g1_regeneration_10_r2_20260810/cases/S1-G1-REGEN10-20260810-014/rank_proofs",
+            "--cpu-list",
+            "20,21,22,23",
+            "--abacus",
+            "/home/shenwei01/M_OFDFT_recovery_S0_20260805_001/source/abacus_pw_para_relocated_20260805",
+            "--runner-commit",
+            "ea90c3e9407b26e27996a64a3d69b53ca0ec2a21"
+          ],
+          "comm": "prterun",
+          "cpus": [
+            20,
+            21,
+            22,
+            23
+          ],
+          "cpus_allowed_list": "20-23",
+          "pid": 1994501,
+          "ppid": 1994500,
+          "start_time_ticks": 655868552
+        },
+        {
+          "argv": [],
+          "comm": "abacus_pw_para_",
+          "cpus": [
+            20
+          ],
+          "cpus_allowed_list": "20",
+          "pid": 1994504,
+          "ppid": 1994501,
+          "start_time_ticks": 655868574
+        },
+        {
+          "argv": [
+            "/home/shenwei01/M_OFDFT_recovery_S0_20260805_001/source/abacus_pw_para_relocated_20260805"
+          ],
+          "comm": "abacus_pw_para_",
+          "cpus": [
+            21
+          ],
+          "cpus_allowed_list": "21",
+          "pid": 1994505,
+          "ppid": 1994501,
+          "start_time_ticks": 655868574
+        },
+        {
+          "argv": [],
+          "comm": "abacus_pw_para_",
+          "cpus": [
+            22
+          ],
+          "cpus_allowed_list": "22",
+          "pid": 1994506,
+          "ppid": 1994501,
+          "start_time_ticks": 655868574
+        },
+        {
+          "argv": [
+            "/home/shenwei01/M_OFDFT_recovery_S0_20260805_001/source/abacus_pw_para_relocated_20260805"
+          ],
+          "comm": "abacus_pw_para_",
+          "cpus": [
+            23
+          ],
+          "cpus_allowed_list": "23",
+          "pid": 1994507,
+          "ppid": 1994501,
+          "start_time_ticks": 655868574
+        }
+      ],
+      "sampling_period_seconds": 0.25
+    },
+    "protocol_revision": "S1-G1-REGENERATION-10-R2",
+    "rank_barrier": {
+      "accepted": true,
+      "ack_sha256": {
+        "0": "ade7c63d51364679d01adcd13483fd77a2386cd439a7a44b05ce711d4ee4ad9e",
+        "1": "4d16c57509904f6dd6cccc1f1bc27ae2246d75482bceb8d91e77e5c54b9a4d8f",
+        "2": "8790e9afa0a3911d0c22d3e3b8ef3716b7cb549498a15d5c11f36f05762e6771",
+        "3": "d5b7c32f4be16feb6279fd7995dd1cfe44f77af7e1c055e35ce1e2e76ac647e9"
+      },
+      "acks": [
+        {
+          "path": "/home/shenwei01/.local/state/m_ofdft/g1_regeneration_10_r2_20260810/cases/S1-G1-REGEN10-20260810-014/rank_proofs/rank-000.ack.json",
+          "payload": {
+            "affinity": [
+              20
+            ],
+            "case_id": "S1-G1-REGEN10-20260810-014",
+            "created_utc": "2026-08-10T04:23:13.546625Z",
+            "go_sha256": "50d2487fc2b67b77b8e239f8d69f647c618631c71c2a8c2542e76c4a735c5a85",
+            "hostname": "node01",
+            "pid": 1994504,
+            "proof_sha256": "6a19a3b53da38fab6f6f5703bb8db5a4a621de72576bc0f834ebbf5cdc08c7ef",
+            "protocol_revision": "S1-G1-REGENERATION-10-R2",
+            "rank": 0,
+            "schema_version": 1,
+            "start_time_ticks": 655868574
+          },
+          "sha256": "ade7c63d51364679d01adcd13483fd77a2386cd439a7a44b05ce711d4ee4ad9e"
+        },
+        {
+          "path": "/home/shenwei01/.local/state/m_ofdft/g1_regeneration_10_r2_20260810/cases/S1-G1-REGEN10-20260810-014/rank_proofs/rank-001.ack.json",
+          "payload": {
+            "affinity": [
+              21
+            ],
+            "case_id": "S1-G1-REGEN10-20260810-014",
+            "created_utc": "2026-08-10T04:23:13.541603Z",
+            "go_sha256": "50d2487fc2b67b77b8e239f8d69f647c618631c71c2a8c2542e76c4a735c5a85",
+            "hostname": "node01",
+            "pid": 1994505,
+            "proof_sha256": "12db0bc1e726c1170ad81a661bcdcc86840ff5d7e4be783bd20ced1704444a0d",
+            "protocol_revision": "S1-G1-REGENERATION-10-R2",
+            "rank": 1,
+            "schema_version": 1,
+            "start_time_ticks": 655868574
+          },
+          "sha256": "4d16c57509904f6dd6cccc1f1bc27ae2246d75482bceb8d91e77e5c54b9a4d8f"
+        },
+        {
+          "path": "/home/shenwei01/.local/state/m_ofdft/g1_regeneration_10_r2_20260810/cases/S1-G1-REGEN10-20260810-014/rank_proofs/rank-002.ack.json",
+          "payload": {
+            "affinity": [
+              22
+            ],
+            "case_id": "S1-G1-REGEN10-20260810-014",
+            "created_utc": "2026-08-10T04:23:13.544569Z",
+            "go_sha256": "50d2487fc2b67b77b8e239f8d69f647c618631c71c2a8c2542e76c4a735c5a85",
+            "hostname": "node01",
+            "pid": 1994506,
+            "proof_sha256": "d1c5a3ad469fb1938dac5f2660ceb4322029b6de2243658c7d1a7b3ef42cf880",
+            "protocol_revision": "S1-G1-REGENERATION-10-R2",
+            "rank": 2,
+            "schema_version": 1,
+            "start_time_ticks": 655868574
+          },
+          "sha256": "8790e9afa0a3911d0c22d3e3b8ef3716b7cb549498a15d5c11f36f05762e6771"
+        },
+        {
+          "path": "/home/shenwei01/.local/state/m_ofdft/g1_regeneration_10_r2_20260810/cases/S1-G1-REGEN10-20260810-014/rank_proofs/rank-003.ack.json",
+          "payload": {
+            "affinity": [
+              23
+            ],
+            "case_id": "S1-G1-REGEN10-20260810-014",
+            "created_utc": "2026-08-10T04:23:13.544548Z",
+            "go_sha256": "50d2487fc2b67b77b8e239f8d69f647c618631c71c2a8c2542e76c4a735c5a85",
+            "hostname": "node01",
+            "pid": 1994507,
+            "proof_sha256": "a70facbdf0399041002f3647ed28b87a7944e930cbc98ae82c51b85901e0dbb6",
+            "protocol_revision": "S1-G1-REGENERATION-10-R2",
+            "rank": 3,
+            "schema_version": 1,
+            "start_time_ticks": 655868574
+          },
+          "sha256": "d5b7c32f4be16feb6279fd7995dd1cfe44f77af7e1c055e35ce1e2e76ac647e9"
+        }
+      ],
+      "barrier_finished_seconds": 0.44730310793966055,
+      "exec_sha256": "bffc93a7be667496206bac1ffeac09cf9cbae9c481e1e787697c72233d1213d5",
+      "failure": null,
+      "go_sha256": "50d2487fc2b67b77b8e239f8d69f647c618631c71c2a8c2542e76c4a735c5a85",
+      "mode": "per_rank_o_excl_proof_go_ack_exec_v1",
+      "proof_and_ack_files_immutable_after_run": true,
+      "proof_sha256": {
+        "0": "6a19a3b53da38fab6f6f5703bb8db5a4a621de72576bc0f834ebbf5cdc08c7ef",
+        "1": "12db0bc1e726c1170ad81a661bcdcc86840ff5d7e4be783bd20ced1704444a0d",
+        "2": "d1c5a3ad469fb1938dac5f2660ceb4322029b6de2243658c7d1a7b3ef42cf880",
+        "3": "a70facbdf0399041002f3647ed28b87a7944e930cbc98ae82c51b85901e0dbb6"
+      },
+      "proofs": [
+        {
+          "path": "/home/shenwei01/.local/state/m_ofdft/g1_regeneration_10_r2_20260810/cases/S1-G1-REGEN10-20260810-014/rank_proofs/rank-000.proof.json",
+          "payload": {
+            "abacus_path": "/home/shenwei01/M_OFDFT_recovery_S0_20260805_001/source/abacus_pw_para_relocated_20260805",
+            "abacus_sha256": "438c74b9ada4c8df15ffbb66da6755907dfd2a3812ecf868fafd4d7dc4db62e1",
+            "affinity": [
+              20
+            ],
+            "case_id": "S1-G1-REGEN10-20260810-014",
+            "created_utc": "2026-08-10T04:23:13.373652Z",
+            "hostname": "node01",
+            "local_rank": 0,
+            "local_size": 4,
+            "pid": 1994504,
+            "ppid": 1994501,
+            "protocol_revision": "S1-G1-REGENERATION-10-R2",
+            "rank": 0,
+            "requested_cpu_list": [
+              20,
+              21,
+              22,
+              23
+            ],
+            "runner_commit": "ea90c3e9407b26e27996a64a3d69b53ca0ec2a21",
+            "schema_version": 1,
+            "start_time_ticks": 655868574,
+            "world_size": 4,
+            "wrapper_path": "/home/shenwei01/M_OFDFT_g1_regen10_r1_20260810/scripts/s1_g1_regeneration_rank_wrapper_r2.py",
+            "wrapper_sha256": "79f451c347a4d12e8405ed421372920672dbc8fa1c8a6fa7f427fddd2f46f22a"
+          },
+          "sha256": "6a19a3b53da38fab6f6f5703bb8db5a4a621de72576bc0f834ebbf5cdc08c7ef"
+        },
+        {
+          "path": "/home/shenwei01/.local/state/m_ofdft/g1_regeneration_10_r2_20260810/cases/S1-G1-REGEN10-20260810-014/rank_proofs/rank-001.proof.json",
+          "payload": {
+            "abacus_path": "/home/shenwei01/M_OFDFT_recovery_S0_20260805_001/source/abacus_pw_para_relocated_20260805",
+            "abacus_sha256": "438c74b9ada4c8df15ffbb66da6755907dfd2a3812ecf868fafd4d7dc4db62e1",
+            "affinity": [
+              21
+            ],
+            "case_id": "S1-G1-REGEN10-20260810-014",
+            "created_utc": "2026-08-10T04:23:13.379651Z",
+            "hostname": "node01",
+            "local_rank": 1,
+            "local_size": 4,
+            "pid": 1994505,
+            "ppid": 1994501,
+            "protocol_revision": "S1-G1-REGENERATION-10-R2",
+            "rank": 1,
+            "requested_cpu_list": [
+              20,
+              21,
+              22,
+              23
+            ],
+            "runner_commit": "ea90c3e9407b26e27996a64a3d69b53ca0ec2a21",
+            "schema_version": 1,
+            "start_time_ticks": 655868574,
+            "world_size": 4,
+            "wrapper_path": "/home/shenwei01/M_OFDFT_g1_regen10_r1_20260810/scripts/s1_g1_regeneration_rank_wrapper_r2.py",
+            "wrapper_sha256": "79f451c347a4d12e8405ed421372920672dbc8fa1c8a6fa7f427fddd2f46f22a"
+          },
+          "sha256": "12db0bc1e726c1170ad81a661bcdcc86840ff5d7e4be783bd20ced1704444a0d"
+        },
+        {
+          "path": "/home/shenwei01/.local/state/m_ofdft/g1_regeneration_10_r2_20260810/cases/S1-G1-REGEN10-20260810-014/rank_proofs/rank-002.proof.json",
+          "payload": {
+            "abacus_path": "/home/shenwei01/M_OFDFT_recovery_S0_20260805_001/source/abacus_pw_para_relocated_20260805",
+            "abacus_sha256": "438c74b9ada4c8df15ffbb66da6755907dfd2a3812ecf868fafd4d7dc4db62e1",
+            "affinity": [
+              22
+            ],
+            "case_id": "S1-G1-REGEN10-20260810-014",
+            "created_utc": "2026-08-10T04:23:13.372163Z",
+            "hostname": "node01",
+            "local_rank": 2,
+            "local_size": 4,
+            "pid": 1994506,
+            "ppid": 1994501,
+            "protocol_revision": "S1-G1-REGENERATION-10-R2",
+            "rank": 2,
+            "requested_cpu_list": [
+              20,
+              21,
+              22,
+              23
+            ],
+            "runner_commit": "ea90c3e9407b26e27996a64a3d69b53ca0ec2a21",
+            "schema_version": 1,
+            "start_time_ticks": 655868574,
+            "world_size": 4,
+            "wrapper_path": "/home/shenwei01/M_OFDFT_g1_regen10_r1_20260810/scripts/s1_g1_regeneration_rank_wrapper_r2.py",
+            "wrapper_sha256": "79f451c347a4d12e8405ed421372920672dbc8fa1c8a6fa7f427fddd2f46f22a"
+          },
+          "sha256": "d1c5a3ad469fb1938dac5f2660ceb4322029b6de2243658c7d1a7b3ef42cf880"
+        },
+        {
+          "path": "/home/shenwei01/.local/state/m_ofdft/g1_regeneration_10_r2_20260810/cases/S1-G1-REGEN10-20260810-014/rank_proofs/rank-003.proof.json",
+          "payload": {
+            "abacus_path": "/home/shenwei01/M_OFDFT_recovery_S0_20260805_001/source/abacus_pw_para_relocated_20260805",
+            "abacus_sha256": "438c74b9ada4c8df15ffbb66da6755907dfd2a3812ecf868fafd4d7dc4db62e1",
+            "affinity": [
+              23
+            ],
+            "case_id": "S1-G1-REGEN10-20260810-014",
+            "created_utc": "2026-08-10T04:23:13.372161Z",
+            "hostname": "node01",
+            "local_rank": 3,
+            "local_size": 4,
+            "pid": 1994507,
+            "ppid": 1994501,
+            "protocol_revision": "S1-G1-REGENERATION-10-R2",
+            "rank": 3,
+            "requested_cpu_list": [
+              20,
+              21,
+              22,
+              23
+            ],
+            "runner_commit": "ea90c3e9407b26e27996a64a3d69b53ca0ec2a21",
+            "schema_version": 1,
+            "start_time_ticks": 655868574,
+            "world_size": 4,
+            "wrapper_path": "/home/shenwei01/M_OFDFT_g1_regen10_r1_20260810/scripts/s1_g1_regeneration_rank_wrapper_r2.py",
+            "wrapper_sha256": "79f451c347a4d12e8405ed421372920672dbc8fa1c8a6fa7f427fddd2f46f22a"
+          },
+          "sha256": "a70facbdf0399041002f3647ed28b87a7944e930cbc98ae82c51b85901e0dbb6"
+        }
+      ]
+    },
+    "rank_count": 4,
+    "requested_cpu_list": [
+      20,
+      21,
+      22,
+      23
+    ],
+    "resource_usage_sha256": "b4e33e4244779461b501d8b79d05fd017e8c02f941e22ea12b6aa33c58936cb5",
+    "return_code": 0,
+    "runner_affinity_at_launch": [
+      0,
+      1,
+      2,
+      3,
+      4,
+      5,
+      6,
+      7,
+      8,
+      9,
+      10,
+      11,
+      12,
+      13,
+      14,
+      15,
+      16,
+      17,
+      18,
+      19,
+      20,
+      21,
+      22,
+      23,
+      24,
+      25,
+      26,
+      27,
+      28,
+      29,
+      30,
+      31,
+      32,
+      33,
+      34,
+      35,
+      36,
+      37,
+      38,
+      39,
+      40,
+      41,
+      42,
+      43,
+      44,
+      45,
+      46,
+      47,
+      48,
+      49,
+      50,
+      51,
+      52,
+      53,
+      54,
+      55,
+      56,
+      57,
+      58,
+      59,
+      60,
+      61,
+      62,
+      63,
+      64,
+      65,
+      66,
+      67,
+      68,
+      69,
+      70,
+      71,
+      72,
+      73,
+      74,
+      75,
+      76,
+      77,
+      78,
+      79,
+      80,
+      81,
+      82,
+      83,
+      84,
+      85,
+      86,
+      87,
+      88,
+      89,
+      90,
+      91,
+      92,
+      93,
+      94,
+      95,
+      96,
+      97,
+      98,
+      99,
+      100,
+      101,
+      102,
+      103,
+      104,
+      105,
+      106,
+      107,
+      108,
+      109,
+      110,
+      111,
+      112,
+      113,
+      114,
+      115,
+      116,
+      117,
+      118,
+      119,
+      120,
+      121,
+      122,
+      123,
+      124,
+      125,
+      126,
+      127,
+      128,
+      129,
+      130,
+      131,
+      132,
+      133,
+      134,
+      135,
+      136,
+      137,
+      138,
+      139,
+      140,
+      141,
+      142,
+      143,
+      144,
+      145,
+      146,
+      147,
+      148,
+      149,
+      150,
+      151
+    ],
+    "runner_commit": "ea90c3e9407b26e27996a64a3d69b53ca0ec2a21",
+    "schema_version": 1,
+    "started_utc": "2026-08-10T04:23:13.112033Z",
+    "stderr_sha256": "721dabdad12126206605b2410a2b921356b12f68e77d4c8c9614506f712aa031",
+    "stdout_sha256": "71ea89c488efa6de7cde2633191720c7ec27d07a9b3bcc21f02126c95080379d",
+    "timed_out": false,
+    "timeout_seconds": 600,
+    "wall_seconds": 4.017451706342399
+  },
+  "runtime_affinity_accepted": true,
+  "runtime_contract_accepted": true,
+  "scalar_equivalence": {
+    "accepted": true,
+    "delta_energy_mev_per_atom": 0.0,
+    "delta_pressure_gpa": 0.0,
+    "energy_limit_mev_per_atom": 0.1,
+    "pressure_limit_gpa": 0.02
+  },
+  "solver": "ofdft",
+  "source_integrity": {
+    "file_sha256": {
+      "INPUT": "73304a0a635c14abcdadabf3ec5451f55c0f56c71e8c306436a9f598b17b576a",
+      "KPT": "91042b39ee493cb5c1bee648adc865a2e5935a29278eb405dc009f994db55ece",
+      "STRU": "2830ba604f066a34709da8abb3fa32449372e05b41c2715e999ffd0eeafb8512",
+      "input_metadata.json": "9442803c6b0b91bd570597008410f9b657b9024c10042d4a57038439534c353e",
+      "mg.lda.lps": "4b964580cfbd798708299bb0e0baef2f437983d29e6d7040f63b7532038b4259",
+      "result.json": "826b0e4b676ac76bea172b1816bd8a779a9d198f6816c5170d23600b91dd67f1",
+      "running_scf.log": "baaef2fd418f6944cedd77d48dbdcd6ef142de1a2f6a3691c8664d664028bdda"
+    },
+    "source_run_id": "S1-20260805-098",
+    "tree_oid": "1aaf580a2d70e14e5da78d92ee583908a8d51293"
+  },
+  "source_run_id": "S1-20260805-098",
+  "thermodynamic_labels": null
+}
