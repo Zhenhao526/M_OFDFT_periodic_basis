@@ -1,0 +1,57 @@
+{
+  "protocol_revision": "S1-G1-CROSS-CODE-DFTPY-20260810-R1",
+  "manifest": "config/S1_g1_cross_code_dftpy_manifest.tsv",
+  "formal_run_count": 14,
+  "materials": ["al", "mg"],
+  "volume_ratios": [0.9, 0.94, 0.97, 1.0, 1.03, 1.06, 1.1],
+  "anchor_volume_ratio": 1.0,
+  "reference_implementation": "ABACUS v3.11.0-beta.5 OFDFT",
+  "independent_implementation": "DFTpy 2.2.0 with pylibxc/LibXC 7.0.0",
+  "python": "/home/shenwei01/.local/venvs/m_ofdft-dftpy-2.2.0-py311/bin/python",
+  "external_state_root": "/home/shenwei01/.local/state/m_ofdft/s1_g1_cross_code_dftpy_20260810",
+  "environment_lock": "environment/dftpy_2.2.0_pylibxc_7.0.0.lock.json",
+  "functional_contract": {
+    "kedf": "WT",
+    "wt_alpha": 0.8333333333333334,
+    "wt_beta": 0.8333333333333334,
+    "wt_rho0": "cell_average_density_recomputed_at_each_volume",
+    "al_xc": "XC_GGA_X_PBE+XC_GGA_C_PBE",
+    "mg_xc": "XC_LDA_X+XC_LDA_C_PZ",
+    "pseudopotential_identity": "same_repository_asset_bytes_in_both_implementations",
+    "fft_grid_identity": "same_real_space_charge_grid_dimensions_as_each_ABACUS_reference_run",
+    "pressure_conversion": "P_GPa=-trace(DFTpy_stress_Ha_per_Bohr3)/3"
+  },
+  "optimization": {
+    "method": "TN",
+    "energy_convergence_hartree_per_atom": 1e-08,
+    "max_direction_steps": 50,
+    "max_density_iterations": 200,
+    "required_dftpy_converged_code": 0,
+    "omp_num_threads": 1,
+    "mkl_num_threads": 1,
+    "openblas_num_threads": 1
+  },
+  "acceptance_thresholds": {
+    "anchored_relative_eos_rms_mev_per_atom_max": 2.0,
+    "equilibrium_volume_difference_percent_max": 0.2,
+    "pressure_max_abs_difference_gpa": 0.05,
+    "electron_number_abs_error_max": 1e-10,
+    "failed_or_missing_runs_max": 0
+  },
+  "absolute_energy_audit": {
+    "subtract_constant_for_relative_eos_only": true,
+    "constant_definition": "per-material mean of DFTpy minus ABACUS absolute total energy over seven volumes",
+    "report_raw_offsets": true,
+    "report_centered_offset_rms": true,
+    "required_conventions": [
+      "local_pseudopotential_G_zero_value_and_source_bytes",
+      "ion_ion_Ewald_and_ion_self_energy_partition",
+      "Hartree_G_zero_convention"
+    ]
+  },
+  "pilot_policy": {
+    "description": "Al and Mg V/V0=1 compatibility smoke calculations performed before this freeze are diagnostic only",
+    "included_in_formal_denominator": false,
+    "formal_runs_must_use_fresh_experiment_ids": true
+  }
+}
