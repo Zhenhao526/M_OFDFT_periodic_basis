@@ -133,7 +133,7 @@ def _inventory_map(payload: object) -> dict[str, dict]:
     return output
 
 
-def verify_parent_sources(config: dict) -> dict:
+def verify_parent_sources(config: dict, project_root: Path | None = None, rows: list[dict[str, str]] | None = None) -> dict:
     sources = config["source_states"]
     old_spec = sources["r1_p0"]
     old_root = Path(old_spec["external_state_root"])
@@ -173,6 +173,10 @@ def verify_parent_sources(config: dict) -> dict:
         require(inventory is not None, f"recovery inventory lacks {experiment_id}")
         for key in ("accepted_marker_sha256", "result_sha256", "runner_return_sha256"):
             require(inventory.get(key) == identity[key], f"recovery/source {key} differs: {experiment_id}")
+        if experiment_id in {"S1-20260810-301", "S1-20260810-302", "S1-20260810-303"}:
+            result = _object(old_root / "runs" / experiment_id / "result.json", "R1 Al anchor result")
+            require(result.get("runtime_nonlocal_projectors_total") == 18, "R1 Al anchor projector count differs")
+            require(result.get("pseudo_identity", {}).get("sha256") == config["pseudodojo"]["materials"]["al"]["sha256"], "R1 Al anchor pseudo differs")
         recovered[experiment_id] = identity
 
     phase_path = continuation_root / continuation_spec["endpoint_phase_marker_relative_path"]
@@ -184,6 +188,22 @@ def verify_parent_sources(config: dict) -> dict:
     require(phase.get("accepted_ids") == continuation_spec["required_accepted_ids"], "continuation endpoint phase ID set/order differs")
     require(phase.get("accepted_count") == len(continuation_spec["required_accepted_ids"]), "continuation endpoint phase count differs")
     endpoints = {experiment_id: verify_accepted_source(continuation_root, experiment_id, continuation_session) for experiment_id in continuation_spec["required_accepted_ids"]}
+    for experiment_id in continuation_spec["required_accepted_ids"]:
+        result = _object(continuation_root / "runs" / experiment_id / "result.json", "continuation Al endpoint result")
+        require(result.get("runtime_nonlocal_projectors_total") == 18, "continuation Al endpoint projector count differs")
+        require(result.get("pseudo_identity", {}).get("sha256") == config["pseudodojo"]["materials"]["al"]["sha256"], "continuation Al endpoint pseudo differs")
+    if project_root is not None or rows is not None:
+        require(project_root is not None and rows is not None, "project root and manifest rows must be supplied together")
+        checked: set[str] = set()
+        for row in rows:
+            common_id = row["accepted_common_id"]
+            if not common_id or common_id in checked:
+                continue
+            checked.add(common_id)
+            registered = project_root / row["registered_geometry_path"]
+            actual = continuation_root / "runs" / common_id / "STRU"
+            require(sha256_file(registered) == row["registered_geometry_stru_sha256"], "registered endpoint geometry SHA differs")
+            require(actual.read_bytes() == registered.read_bytes(), f"accepted continuation geometry differs: {common_id}")
     if "accepted_result_sha256" in phase:
         require(phase["accepted_result_sha256"] == {key: value["result_sha256"] for key, value in endpoints.items()}, "continuation phase result identity differs")
     return {
@@ -220,14 +240,20 @@ def acquire_core_locks(config: dict) -> tuple[list[IO[bytes]], list[dict]]:
     try:
         for core in runtime["physical_core_ids"]:
             path = lock_root / f"{runtime['required_hostname']}_physical_core_{core}.lock"
-            handle = path.open("a+b")
+            flags = os.O_RDWR | os.O_CREAT | getattr(os, "O_NOFOLLOW", 0)
+            descriptor = os.open(path, flags, 0o600)
+            handle = os.fdopen(descriptor, "a+b")
             try:
                 fcntl.flock(handle.fileno(), fcntl.LOCK_EX | fcntl.LOCK_NB)
             except BlockingIOError as error:
                 handle.close()
                 raise ValueError(f"exclusive core lock unavailable: {path}") from error
             handles.append(handle)
-            identities.append({"path": str(path), "physical_core_id": core, "advisory_lock": "exclusive_nonblocking", "acquired": True})
+            stat = os.fstat(handle.fileno())
+            identities.append({
+                "path": str(path), "physical_core_id": core, "advisory_lock": "exclusive_nonblocking",
+                "device": stat.st_dev, "inode": stat.st_ino, "owner_pid": os.getpid(), "acquired": True,
+            })
     except Exception:
         for handle in handles:
             handle.close()
@@ -368,14 +394,14 @@ def main() -> int:
     if args.dry_run:
         parent_error: str | None = None
         try:
-            parent = verify_parent_sources(config)
+            parent = verify_parent_sources(config, project_root, rows)
         except Exception as error:
             parent = {"ready": False}
             parent_error = f"{type(error).__name__}: {error}"
         print(json.dumps({"status": "accepted_dry_run", "solver_started": False, "formal_id_count": len(rows), "state_exists": state_root.exists(), "parent_source": parent, "parent_not_ready_reason": parent_error, "reservation_ack_supplied": args.core_reservation_ack is not None, "target_cores": config["runtime"]["physical_core_ids"]}, sort_keys=True))
         return 0
     require(args.core_reservation_ack is not None, "formal run requires --core-reservation-ack")
-    parents = verify_parent_sources(config)
+    parents = verify_parent_sources(config, project_root, rows)
     ack = validate_core_reservation_ack(args.core_reservation_ack, config)
     handles, locks = acquire_core_locks(config)
     try:
