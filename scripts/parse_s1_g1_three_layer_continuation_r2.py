@@ -10,6 +10,7 @@ import re
 from decimal import Decimal
 from pathlib import Path
 
+from s1_electron_number_common import parse_stru
 from s1_g1_thermodynamic_label_common import parse_abacus_cube
 from s1_g1_three_layer_continuation_r2_common import (
     canonical_json_bytes,
@@ -55,6 +56,11 @@ def parse_affinity(run_dir: Path, config: dict) -> list[dict]:
         require(payload.get("rank") == rank and payload.get("local_rank") == rank, "rank identity differs")
         require(payload.get("hostname") == config["runtime"]["required_hostname"], "rank hostname differs")
         require(payload.get("physical_core_ids") == [expected_cores[rank]], "rank physical core differs")
+        require(
+            {row["socket_id"] for row in payload.get("topology", [])}
+            == {int(config["runtime"]["physical_socket_id"])},
+            "rank physical socket differs",
+        )
         require(payload.get("accepted") is True, "rank affinity rejected")
         rows.append({**payload, "evidence_sha256": sha256_file(path)})
     require(sorted(row["physical_core_ids"][0] for row in rows) == expected_cores, "core set differs")
@@ -77,13 +83,18 @@ def parse_stress(text: str, pressure_kbar: Decimal, config: dict) -> dict:
     trace_pressure = sum((rows[index][index] for index in range(3)), Decimal(0)) / Decimal(3)
     difference = abs(trace_pressure - pressure_kbar)
     limit = Decimal(str(config["acceptance"]["stress_trace_pressure_abs_difference_kbar_strictly_less_than"]))
+    symmetry = max(abs(rows[i][j] - rows[j][i]) for i in range(3) for j in range(3))
+    symmetry_limit = Decimal(str(config["acceptance"]["stress_symmetry_abs_difference_kbar_strictly_less_than"]))
     require(difference < limit, "stress trace/pressure gate failed")
+    require(symmetry < symmetry_limit, "stress tensor symmetry gate failed")
     return {
         "tensor_kbar": [[float(value) for value in row] for row in rows],
         "trace_pressure_kbar": float(trace_pressure),
         "reported_pressure_kbar": float(pressure_kbar),
         "abs_difference_kbar": float(difference),
         "strict_limit_kbar": float(limit),
+        "symmetry_abs_difference_kbar_max": float(symmetry),
+        "symmetry_strict_limit_kbar": float(symmetry_limit),
         "accepted": True,
     }
 
@@ -168,16 +179,34 @@ def validate_cube_atoms(cube: object, stru_path: Path, material: str, pseudo_ide
     atomic_number = int(config["materials"][material]["atomic_number"])
     zval = float(pseudo_identity["z_valence"])
     limit = float(config["acceptance"]["cube_atom_coordinate_abs_difference_bohr_strictly_less_than"])
+    lattice_limit = float(config["acceptance"]["cube_lattice_component_abs_difference_bohr_strictly_less_than"])
     maximum = 0.0
     for row, expected in zip(rows, expected_positions):
         require(int(row[0]) == atomic_number, "cube atomic number differs")
         require(abs(float(row[1]) - zval) < 1e-12, "cube zval differs")
         maximum = max(maximum, *(abs(float(row[index + 2]) - expected[index]) for index in range(3)))
     require(maximum < limit, "cube atom coordinates differ from STRU")
+    structure = parse_stru(stru_path)
+    observed_lattice = [
+        [float(cube.axis_steps_bohr[i][j]) * int(cube.dimensions[i]) for j in range(3)]
+        for i in range(3)
+    ]
+    expected_lattice = [
+        [structure.lattice_vectors[i][j] * structure.lattice_constant_bohr for j in range(3)]
+        for i in range(3)
+    ]
+    lattice_maximum = max(
+        abs(observed_lattice[i][j] - expected_lattice[i][j]) for i in range(3) for j in range(3)
+    )
+    require(lattice_maximum < lattice_limit, "cube lattice components differ from STRU")
     return {
         "origin_bohr": [float(value) for value in cube.origin_bohr],
         "dimensions": list(cube.dimensions),
         "axis_steps_bohr": [[float(value) for value in row] for row in cube.axis_steps_bohr],
+        "axis_times_dimensions_bohr": observed_lattice,
+        "stru_lattice_bohr": expected_lattice,
+        "max_lattice_component_abs_difference_bohr": lattice_maximum,
+        "lattice_component_strict_limit_bohr": lattice_limit,
         "atom_rows": [[float(value) for value in row] for row in rows],
         "max_atom_coordinate_abs_difference_bohr": maximum,
         "strict_limit_bohr": limit,

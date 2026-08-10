@@ -129,7 +129,7 @@ def enhanced_raw_checks(run_dir: Path, material: str, config: dict, reparsed: di
         run_dir / name
         for name in (
             "INPUT", "STRU", "KPT", "input_metadata.json", "metadata.json", "pseudo_identity.json",
-            metadata["pseudo"]["basename"], "run.stdout", "run.stderr", "runner_return.json", "result.json",
+            "run.stdout", "run.stderr", "runner_return.json", "result.json",
         )
     ]
     evidence.extend(run_dir / "affinity" / f"rank_{rank:03d}.json" for rank in range(int(config["runtime"]["rank_count"])))
@@ -146,6 +146,7 @@ def enhanced_raw_checks(run_dir: Path, material: str, config: dict, reparsed: di
         "nbands": nbands,
         "warning_log": {"sha256": sha256_file(warning_path), "forbidden_marker_present": False, "accepted": True},
         "pseudo_identity": pseudo,
+        "external_upf_identity": file_identity(run_dir / metadata["pseudo"]["basename"], relative_to=run_dir),
         "affinity": reparsed["affinity"],
         "evidence_files": [file_identity(path, relative_to=run_dir) for path in evidence],
         "accepted": True,

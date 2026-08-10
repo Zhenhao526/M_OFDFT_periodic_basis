@@ -35,6 +35,9 @@ from s1_g1_three_layer_continuation_r2_common import (
 )
 
 
+PREREGISTRATION_PATH = Path("config/S1_g1_three_layer_continuation_r2_preregistration.json")
+
+
 REGISTERED_CODE = (
     "docs/S1_G1_THREE_LAYER_CONTINUATION_R2_PROTOCOL.md",
     "config/S1_g1_three_layer_continuation_r2.json",
@@ -49,6 +52,15 @@ REGISTERED_CODE = (
     "scripts/analyze_s1_g1_three_layer_continuation_r2.py",
     "scripts/validate_s1_g1_three_layer_continuation_r2.py",
     "tests/test_s1_g1_three_layer_continuation_r2.py",
+    PREREGISTRATION_PATH.as_posix(),
+    "config/S1_g1_three_layer_r1.json",
+    "config/S1_g1_three_layer_r1_manifest.tsv",
+    "scripts/s1_g1_three_layer_common.py",
+    "scripts/parse_s1_g1_three_layer_r1.py",
+    "scripts/analyze_s1_g1_three_layer_r1.py",
+    "scripts/s1_g1_thermodynamic_label_common.py",
+    "scripts/s1_electron_number_common.py",
+    "scripts/analyze_s1_eos.py",
 )
 
 
@@ -87,6 +99,123 @@ def runtime_environment(config: dict) -> dict[str, str]:
     return env
 
 
+def parse_cpu_list(value: str) -> set[int]:
+    cpus: set[int] = set()
+    for token in value.strip().split(","):
+        if not token:
+            continue
+        if "-" in token:
+            first, last = (int(part) for part in token.split("-", 1))
+            require(first <= last, "invalid CPU range")
+            cpus.update(range(first, last + 1))
+        else:
+            cpus.add(int(token))
+    require(cpus, "empty CPU list")
+    return cpus
+
+
+def ancestor_pids(proc_root: Path, pid: int) -> set[int]:
+    ancestors: set[int] = set()
+    current = pid
+    while current > 1 and current not in ancestors:
+        ancestors.add(current)
+        try:
+            tail = (proc_root / str(current) / "stat").read_text(encoding="ascii").rsplit(")", 1)[1].split()
+            current = int(tail[1])
+        except (OSError, ValueError, IndexError):
+            break
+    ancestors.add(1)
+    return ancestors
+
+
+def inspect_core_collisions(
+    config: dict,
+    *,
+    sys_cpu_root: Path = Path("/sys/devices/system/cpu"),
+    proc_root: Path = Path("/proc"),
+    excluded_pids: set[int] | None = None,
+) -> dict:
+    online = parse_cpu_list((sys_cpu_root / "online").read_text(encoding="ascii"))
+    socket_id = int(config["runtime"]["physical_socket_id"])
+    core_ids = [int(value) for value in config["runtime"]["physical_core_ids"]]
+    topology = []
+    target_cpus: set[int] = set()
+    for cpu in sorted(online):
+        root = sys_cpu_root / f"cpu{cpu}" / "topology"
+        try:
+            package = int((root / "physical_package_id").read_text(encoding="ascii"))
+            core = int((root / "core_id").read_text(encoding="ascii"))
+        except OSError:
+            continue
+        if package == socket_id and core in core_ids:
+            siblings = parse_cpu_list((root / "thread_siblings_list").read_text(encoding="ascii"))
+            require(cpu in siblings, "CPU sibling topology differs")
+            target_cpus.update(siblings)
+            topology.append({"logical_cpu": cpu, "socket_id": package, "physical_core_id": core, "thread_siblings": sorted(siblings)})
+    require({row["physical_core_id"] for row in topology} == set(core_ids), "registered physical core topology incomplete")
+    excluded = set(excluded_pids or ()) | ancestor_pids(proc_root, os.getpid())
+    collisions = []
+    scanned_narrow_tasks = 0
+    for process in sorted((path for path in proc_root.iterdir() if path.name.isdigit()), key=lambda path: int(path.name)):
+        pid = int(process.name)
+        if pid in excluded:
+            continue
+        try:
+            process_status = (process / "status").read_text(encoding="utf-8")
+            uid_row = next(line for line in process_status.splitlines() if line.startswith("Uid:"))
+            if int(uid_row.split()[1]) != os.getuid():
+                continue
+            cmdline = (process / "cmdline").read_bytes().replace(b"\0", b" ").decode("utf-8", errors="replace").strip()
+            tasks = sorted((process / "task").iterdir(), key=lambda path: int(path.name))
+        except (OSError, StopIteration, ValueError):
+            continue
+        for task in tasks:
+            try:
+                status = (task / "status").read_text(encoding="utf-8")
+                allowed_row = next(line for line in status.splitlines() if line.startswith("Cpus_allowed_list:"))
+                allowed = parse_cpu_list(allowed_row.split(":", 1)[1])
+            except (OSError, StopIteration, ValueError):
+                continue
+            if len(allowed) >= len(online):
+                continue
+            scanned_narrow_tasks += 1
+            overlap = sorted(allowed & target_cpus)
+            if overlap:
+                collisions.append({"pid": pid, "tid": int(task.name), "allowed_logical_cpus": sorted(allowed), "overlap_logical_cpus": overlap, "cmdline": cmdline})
+    return {
+        "schema_version": 1,
+        "hostname": socket.gethostname(),
+        "physical_socket_id": socket_id,
+        "physical_core_ids": core_ids,
+        "target_sibling_logical_cpus": sorted(target_cpus),
+        "topology": topology,
+        "online_logical_cpu_count": len(online),
+        "excluded_process_ids": sorted(excluded),
+        "scanned_narrow_affinity_task_count": scanned_narrow_tasks,
+        "collisions": collisions,
+        "accepted": not collisions,
+        "created_utc": utc_now(),
+    }
+
+
+def detached_launcher_proof() -> dict:
+    pid = os.getpid()
+    sid = os.getsid(0)
+    tty = {str(fd): os.isatty(fd) for fd in (0, 1, 2)}
+    accepted = sid == pid and not any(tty.values())
+    return {
+        "schema_version": 1,
+        "pid": pid,
+        "ppid": os.getppid(),
+        "session_id": sid,
+        "session_leader": sid == pid,
+        "isatty": tty,
+        "accepted": accepted,
+        "required_launch_shape": "setsid with stdin /dev/null and stdout/stderr regular files",
+        "created_utc": utc_now(),
+    }
+
+
 def safe_print(value: str) -> None:
     try:
         print(value, flush=True)
@@ -118,15 +247,30 @@ def validate_recovery_barrier(project_root: Path, state_root: Path, config: dict
     return payload, sha256_file(external)
 
 
-def validate_phase_barrier(state_root: Path, phase: str) -> None:
+def validate_phase_barrier(state_root: Path, phase: str, config: dict, head: str, recovery_sha256: str) -> None:
     if phase == "al_eos":
         require(not (state_root / "session.json").exists(), "continuation solver session already exists")
-        for name in ("attempts", "runs", "accepted", "phases"):
+        for name in ("attempts", "runs", "accepted", "phases", "preflight"):
             require(not (state_root / name).exists(), f"fresh continuation denominator already exists: {name}")
         return
     phase_payload = read_json(state_root / "phases" / "al_eos.json")
     require(isinstance(phase_payload, dict) and phase_payload.get("status") == "accepted", "Al EOS phase incomplete")
-    require(phase_payload.get("accepted_ids") == [f"S1-20260810-{number:03d}" for number in range(327, 333)], "Al EOS phase denominator differs")
+    expected_ids = [f"S1-20260810-{number:03d}" for number in range(327, 333)]
+    require(phase_payload.get("protocol_revision") == config["protocol_revision"] and phase_payload.get("phase") == "al_eos", "Al EOS phase identity differs")
+    require(phase_payload.get("runner_commit") == head and phase_payload.get("recovery_barrier_sha256") == recovery_sha256, "Al EOS phase provenance differs")
+    require(phase_payload.get("accepted_ids") == expected_ids and phase_payload.get("accepted_count") == len(expected_ids), "Al EOS phase denominator differs")
+    session_payload = read_json(state_root / "session.json")
+    require(isinstance(session_payload, dict), "Al EOS session missing")
+    require(phase_payload.get("session_sha256") == sha256_file(state_root / "session.json"), "Al EOS session binding differs")
+    require(phase_payload.get("config_sha256") == session_payload.get("config_sha256"), "Al EOS config binding differs")
+    require(phase_payload.get("manifest_sha256") == session_payload.get("manifest_sha256"), "Al EOS manifest binding differs")
+    result_map = phase_payload.get("accepted_result_sha256")
+    require(isinstance(result_map, dict) and list(result_map) == expected_ids, "Al EOS result denominator differs")
+    for experiment_id in expected_ids:
+        marker = read_json(state_root / "accepted" / f"{experiment_id}.json")
+        require(isinstance(marker, dict) and marker.get("status") == "accepted", "Al EOS accepted marker differs")
+        require(marker.get("result_sha256") == result_map[experiment_id], "Al EOS accepted result SHA differs")
+    require(set(phase_payload.get("per_run_core_collision_preflight_sha256", {})) == set(expected_ids), "Al EOS phase preflight denominator differs")
 
 
 def initialize_or_validate_session(
@@ -137,6 +281,8 @@ def initialize_or_validate_session(
     phase: str,
     recovery: dict,
     recovery_sha256: str,
+    detached_proof_sha256: str,
+    phase_core_preflight_sha256: str,
 ) -> dict:
     session_path = state_root / "session.json"
     if phase == "al_eos":
@@ -156,6 +302,8 @@ def initialize_or_validate_session(
             "recovery_barrier_sha256": recovery_sha256,
             "recovery_prereg_commit": recovery["continuation_prereg_commit"],
             "recovery_source_runner_commit": recovery["source_runner_commit"],
+            "initial_detached_launcher_proof_sha256": detached_proof_sha256,
+            "initial_core_collision_preflight_sha256": phase_core_preflight_sha256,
             "retry_policy": "same_id_forbidden_new_revision_and_new_ids_only",
         }
         atomic_write(session_path, canonical_json_bytes(payload), exclusive=True)
@@ -194,6 +342,8 @@ def run_one(
     row: dict[str, str],
     config: dict,
     head: str,
+    core_preflight_path: Path,
+    core_preflight_sha256: str,
 ) -> dict:
     experiment_id = row["experiment_id"]
     attempt_path = state_root / "attempts" / f"{experiment_id}.json"
@@ -211,6 +361,9 @@ def run_one(
         "runner_commit": head,
         "config_sha256": sha256_file(project_root / CONFIG_PATH),
         "manifest_sha256": sha256_file(project_root / MANIFEST_PATH),
+        "core_collision_preflight_path": core_preflight_path.name,
+        "core_collision_preflight_sha256": core_preflight_sha256,
+        "core_collision_preflight_accepted": True,
         "retry_policy": "same_id_forbidden_new_revision_and_new_ids_only",
     }
     atomic_write(attempt_path, canonical_json_bytes(attempt), exclusive=True)
@@ -237,6 +390,9 @@ def run_one(
             "rank_count": config["runtime"]["rank_count"],
             "physical_core_ids": config["runtime"]["physical_core_ids"],
             "map_by": config["runtime"]["map_by"],
+            "physical_socket_id": config["runtime"]["physical_socket_id"],
+            "core_collision_preflight_path": core_preflight_path.name,
+            "core_collision_preflight_sha256": core_preflight_sha256,
         },
         "pseudo_runtime_identity": pseudo_identity,
     }
@@ -327,16 +483,51 @@ def main() -> int:
     require_tracked_matches_head(project_root, registered_paths(project_root, config, rows))
     state_root = Path(config["external_state_root"])
     recovery, recovery_sha256 = validate_recovery_barrier(project_root, state_root, config, head)
-    validate_phase_barrier(state_root, args.phase)
-    session = initialize_or_validate_session(state_root, project_root, config, head, args.phase, recovery, recovery_sha256)
+    validate_phase_barrier(state_root, args.phase, config, head, recovery_sha256)
+    detached = detached_launcher_proof()
+    require(detached["accepted"] is True, "runner is not an independently detached session")
+    phase_collision = inspect_core_collisions(config)
+    require(phase_collision["accepted"] is True, "registered physical cores have a live sibling collision")
+    detached_path = state_root / "preflight" / f"{args.phase}_detached_launch.json"
+    phase_collision_path = state_root / "preflight" / f"{args.phase}_core_collision.json"
+    atomic_write(detached_path, canonical_json_bytes(detached), exclusive=True)
+    atomic_write(phase_collision_path, canonical_json_bytes(phase_collision), exclusive=True)
+    detached_sha256 = sha256_file(detached_path)
+    phase_collision_sha256 = sha256_file(phase_collision_path)
+    session = initialize_or_validate_session(
+        state_root,
+        project_root,
+        config,
+        head,
+        args.phase,
+        recovery,
+        recovery_sha256,
+        detached_sha256,
+        phase_collision_sha256,
+    )
     cache = Path(config["external_pseudo_cache"])
     for material, pseudo in config["pseudodojo"]["materials"].items():
         validate_pseudo(cache / pseudo["basename"], material, config)
     selected = phase_rows(rows, args.phase)
     accepted: list[dict] = []
     for row in selected:
+        experiment_id = row["experiment_id"]
+        case_collision = inspect_core_collisions(config)
+        require(case_collision["accepted"] is True, f"registered physical cores have a live sibling collision before {experiment_id}")
+        case_collision_path = state_root / "preflight" / f"{experiment_id}.json"
+        atomic_write(case_collision_path, canonical_json_bytes(case_collision), exclusive=True)
+        case_collision_sha256 = sha256_file(case_collision_path)
         safe_print(f"START {row['experiment_id']} phase={args.phase}")
-        accepted_row = run_one(project_root, state_root, cache, row, config, head)
+        accepted_row = run_one(
+            project_root,
+            state_root,
+            cache,
+            row,
+            config,
+            head,
+            case_collision_path,
+            case_collision_sha256,
+        )
         accepted.append(accepted_row)
         safe_print(f"ACCEPTED {row['experiment_id']} duration_seconds={accepted_row['duration_seconds']:.3f}")
     phase_payload = {
@@ -345,8 +536,21 @@ def main() -> int:
         "status": "accepted",
         "phase": args.phase,
         "runner_commit": session["runner_commit"],
+        "session_sha256": sha256_file(state_root / "session.json"),
+        "config_sha256": sha256_file(project_root / CONFIG_PATH),
+        "manifest_sha256": sha256_file(project_root / MANIFEST_PATH),
         "accepted_ids": [row["experiment_id"] for row in accepted],
         "accepted_count": len(accepted),
+        "accepted_result_sha256": {
+            row["experiment_id"]: row["result_sha256"] for row in accepted
+        },
+        "detached_launcher_proof_sha256": detached_sha256,
+        "phase_core_collision_preflight_sha256": phase_collision_sha256,
+        "per_run_core_collision_preflight_sha256": {
+            row["experiment_id"]: read_json(state_root / "attempts" / f"{row['experiment_id']}.json")["core_collision_preflight_sha256"]
+            for row in selected
+        },
+        "recovery_barrier_sha256": recovery_sha256,
         "created_utc": utc_now(),
     }
     atomic_write(state_root / "phases" / f"{args.phase}.json", canonical_json_bytes(phase_payload), exclusive=True)

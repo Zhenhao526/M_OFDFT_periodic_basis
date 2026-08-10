@@ -4,6 +4,7 @@
 from __future__ import annotations
 
 import argparse
+import hashlib
 import json
 import subprocess
 import tempfile
@@ -11,7 +12,7 @@ from pathlib import Path
 
 from analyze_s1_g1_three_layer_continuation_r2 import build_final_analysis, write_analysis
 from recover_s1_g1_three_layer_continuation_r2 import build_recovery, verify_existing
-from run_s1_g1_three_layer_continuation_r2 import REGISTERED_CODE, registered_paths
+from run_s1_g1_three_layer_continuation_r2 import PREREGISTRATION_PATH, REGISTERED_CODE, registered_paths
 from s1_g1_three_layer_continuation_r2_common import (
     find_project_root,
     git,
@@ -30,6 +31,19 @@ def require_git_success(project_root: Path, *arguments: str) -> None:
     require(completed.returncode == 0, f"git command failed: {' '.join(arguments)}")
 
 
+def generated_input_inventory(project_root: Path, config: dict, rows: list[dict[str, str]]) -> dict:
+    paths = []
+    for row in rows:
+        root = project_root / config["input_root"] / row["experiment_id"]
+        paths.extend(root / name for name in ("INPUT", "STRU", "KPT", "metadata.json"))
+    identities = []
+    for path in sorted(paths):
+        relative = path.relative_to(project_root).as_posix()
+        identities.append({"path": relative, "sha256": sha256_file(path), "size_bytes": path.stat().st_size})
+    digest = hashlib.sha256("".join(f"{item['sha256']}  {item['path']}\n" for item in identities).encode("utf-8")).hexdigest()
+    return {"file_count": len(identities), "sha256sum_list_digest": digest, "files": identities}
+
+
 def validate_preregistered(project_root: Path, config: dict, rows: list[dict[str, str]]) -> dict:
     head = require_clean_tree(project_root)
     scope = config["scientific_scope"]
@@ -44,6 +58,24 @@ def validate_preregistered(project_root: Path, config: dict, rows: list[dict[str
         require(isinstance(metadata, dict) and metadata.get("experiment_id") == row["experiment_id"], "input metadata ID differs")
         require(metadata["pseudo"]["sha256"] == row["pseudo_sha256"], "input PP binding differs")
         require(metadata["thermodynamic_semantics"]["local_only_kinetic_decomposition_claim"] is False, "local-only claim present")
+        require(metadata["input_identity"]["config_sha256"] == sha256_file(project_root / "config/S1_g1_three_layer_continuation_r2.json"), "generated input/config binding differs")
+    lock = read_json(project_root / PREREGISTRATION_PATH)
+    require(isinstance(lock, dict) and lock.get("status") == "frozen_preregistration", "preregistration lock rejected")
+    require(lock.get("protocol_revision") == config["protocol_revision"], "preregistration protocol differs")
+    require(lock.get("formal_new_ids") == ids, "preregistration ID denominator differs")
+    require(lock.get("config_sha256") == sha256_file(project_root / "config/S1_g1_three_layer_continuation_r2.json"), "preregistration config SHA differs")
+    require(lock.get("manifest_sha256") == sha256_file(project_root / "config/S1_g1_three_layer_continuation_r2_manifest.tsv"), "preregistration manifest SHA differs")
+    inventory = generated_input_inventory(project_root, config, rows)
+    require(lock.get("input_file_count") == inventory["file_count"], "preregistration input count differs")
+    require(lock.get("input_inventory_sha256") == inventory["sha256sum_list_digest"], "preregistration input inventory differs")
+    implementation = lock.get("implementation_commit")
+    require(isinstance(implementation, str) and len(implementation) == 40, "preregistration implementation commit missing")
+    require_git_success(project_root, "merge-base", "--is-ancestor", implementation, head)
+    expected_post_implementation = {PREREGISTRATION_PATH.as_posix()} | {
+        f"{config['input_root']}/{experiment_id}/metadata.json" for experiment_id in ids
+    }
+    actual_post_implementation = set(git(project_root, "diff", "--name-only", f"{implementation}..{head}").splitlines())
+    require(actual_post_implementation == expected_post_implementation, "post-implementation preregistration delta differs")
     base = config["implementation_base_commit"]
     require_git_success(project_root, "merge-base", "--is-ancestor", base, head)
     require(head != base, "formal solver requires a post-base preregistration")
@@ -87,6 +119,24 @@ def validate_analysis(project_root: Path, config: dict, rows: list[dict[str, str
     session = read_json(analysis / "orchestration" / "session.json")
     require(isinstance(session, dict) and session.get("runner_commit") == summary["runner_commit"], "runner commit binding differs")
     require(session.get("recovery_barrier_sha256") == summary["recovery_barrier_sha256"], "recovery barrier/session binding differs")
+    phase_ids = {
+        "al_eos": [f"S1-20260810-{value:03d}" for value in range(327, 333)],
+        "mg_required": [f"S1-20260810-{value:03d}" for value in range(333, 335)],
+    }
+    for phase, expected_ids in phase_ids.items():
+        marker = read_json(analysis / "orchestration" / "phases" / f"{phase}.json")
+        require(isinstance(marker, dict) and marker.get("status") == "accepted", f"{phase} marker rejected")
+        require(marker.get("phase") == phase and marker.get("protocol_revision") == config["protocol_revision"], f"{phase} marker identity differs")
+        require(marker.get("accepted_ids") == expected_ids and marker.get("accepted_count") == len(expected_ids), f"{phase} marker denominator differs")
+        require(marker.get("runner_commit") == session["runner_commit"] and marker.get("recovery_barrier_sha256") == summary["recovery_barrier_sha256"], f"{phase} marker provenance differs")
+        require(marker.get("session_sha256") == sha256_file(analysis / "orchestration" / "session.json"), f"{phase} session SHA differs")
+        require(marker.get("config_sha256") == sha256_file(project_root / "config/S1_g1_three_layer_continuation_r2.json"), f"{phase} config SHA differs")
+        require(marker.get("manifest_sha256") == sha256_file(project_root / "config/S1_g1_three_layer_continuation_r2_manifest.tsv"), f"{phase} manifest SHA differs")
+        result_map = marker.get("accepted_result_sha256")
+        require(isinstance(result_map, dict) and list(result_map) == expected_ids, f"{phase} result SHA denominator differs")
+        for experiment_id in expected_ids:
+            require(result_map[experiment_id] == sha256_file(analysis / "raw" / "continuation" / experiment_id / "result.json"), f"{phase} result SHA differs")
+        require(set(marker.get("per_run_core_collision_preflight_sha256", {})) == set(expected_ids), f"{phase} preflight denominator differs")
     require_git_success(project_root, "merge-base", "--is-ancestor", session["runner_commit"], "HEAD")
     require_tracked_matches_head(project_root, [Path(value) for value in REGISTERED_CODE] + [Path(config["versioned_recovery_barrier"])])
     with tempfile.TemporaryDirectory(prefix="g1_three_layer_continuation_r2_replay_") as temporary:

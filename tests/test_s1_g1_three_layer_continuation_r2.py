@@ -4,6 +4,9 @@ from __future__ import annotations
 import sys
 import tempfile
 import unittest
+import json
+import os
+from types import SimpleNamespace
 from decimal import Decimal
 from pathlib import Path
 
@@ -13,8 +16,9 @@ sys.path.insert(0, str(PROJECT_ROOT / "scripts"))
 
 from analyze_s1_g1_three_layer_r1 import p0_metrics  # noqa: E402
 from generate_s1_g1_three_layer_continuation_r2 import generate  # noqa: E402
-from parse_s1_g1_three_layer_continuation_r2 import parse_eig_occ, parse_stress  # noqa: E402
+from parse_s1_g1_three_layer_continuation_r2 import parse_eig_occ, parse_stress, validate_cube_atoms  # noqa: E402
 from recover_s1_g1_three_layer_continuation_r2 import source_snapshot  # noqa: E402
+from run_s1_g1_three_layer_continuation_r2 import inspect_core_collisions  # noqa: E402
 from s1_g1_three_layer_continuation_r2_common import (  # noqa: E402
     load_config,
     load_manifest,
@@ -84,6 +88,80 @@ class ThreeLayerContinuationR2Tests(unittest.TestCase):
 """
         parsed = parse_stress(text, Decimal("-2.0"), config)
         self.assertTrue(parsed["accepted"])
+
+    def test_stress_symmetry_gate_rejects_asymmetric_tensor(self) -> None:
+        config = load_config(PROJECT_ROOT)
+        text = """              Stress_x             Stress_y             Stress_z
+ ----------------------------------------------------------------
+ -1.0 0.1 0.0
+ 0.0 -2.0 0.0
+ 0.0 0.0 -3.0
+"""
+        with self.assertRaisesRegex(ValueError, "symmetry"):
+            parse_stress(text, Decimal("-2.0"), config)
+
+    def test_cube_full_lattice_gate_rejects_determinant_preserving_axis_swap(self) -> None:
+        config = load_config(PROJECT_ROOT)
+        with tempfile.TemporaryDirectory() as temporary:
+            stru = Path(temporary) / "STRU"
+            stru.write_text(
+                """ATOMIC_SPECIES
+Al 26.9815385 Al_std.upf upf201
+
+LATTICE_CONSTANT
+2.0
+
+LATTICE_VECTORS
+1 0 0
+0 1 0
+0 0 1
+
+ATOMIC_POSITIONS
+Direct
+Al
+0.0
+1
+0 0 0 0 0 0
+""",
+                encoding="utf-8",
+            )
+            base = {
+                "origin_bohr": (0.0, 0.0, 0.0),
+                "dimensions": (2, 2, 2),
+                "atom_rows": ((13.0, 3.0, 0.0, 0.0, 0.0),),
+            }
+            accepted = SimpleNamespace(**base, axis_steps_bohr=((1.0, 0.0, 0.0), (0.0, 1.0, 0.0), (0.0, 0.0, 1.0)))
+            self.assertTrue(validate_cube_atoms(accepted, stru, "al", {"z_valence": 3.0}, config)["accepted"])
+            swapped = SimpleNamespace(**base, axis_steps_bohr=((0.0, 1.0, 0.0), (1.0, 0.0, 0.0), (0.0, 0.0, 1.0)))
+            with self.assertRaisesRegex(ValueError, "lattice components"):
+                validate_cube_atoms(swapped, stru, "al", {"z_valence": 3.0}, config)
+
+    def test_physical_core_collision_finds_hyperthread_sibling(self) -> None:
+        config = json.loads(json.dumps(load_config(PROJECT_ROOT)))
+        config["runtime"]["physical_socket_id"] = 0
+        config["runtime"]["physical_core_ids"] = [30]
+        with tempfile.TemporaryDirectory() as temporary:
+            root = Path(temporary)
+            sys_cpu = root / "sys"
+            proc = root / "proc"
+            sys_cpu.mkdir()
+            proc.mkdir()
+            (sys_cpu / "online").write_text("30,106\n", encoding="ascii")
+            for cpu in (30, 106):
+                topology = sys_cpu / f"cpu{cpu}" / "topology"
+                topology.mkdir(parents=True)
+                (topology / "physical_package_id").write_text("0\n", encoding="ascii")
+                (topology / "core_id").write_text("30\n", encoding="ascii")
+                (topology / "thread_siblings_list").write_text("30,106\n", encoding="ascii")
+            process = proc / "100"
+            task = process / "task" / "100"
+            task.mkdir(parents=True)
+            (process / "status").write_text(f"Uid:\t{os.getuid()}\t{os.getuid()}\t{os.getuid()}\t{os.getuid()}\n", encoding="utf-8")
+            (process / "cmdline").write_bytes(b"foreign-solver\0")
+            (task / "status").write_text("Cpus_allowed_list:\t106\n", encoding="utf-8")
+            observed = inspect_core_collisions(config, sys_cpu_root=sys_cpu, proc_root=proc, excluded_pids={1, os.getpid()})
+        self.assertFalse(observed["accepted"])
+        self.assertEqual(observed["collisions"][0]["overlap_logical_cpus"], [106])
 
     def test_source_snapshot_uses_absolute_sha256sum_rows(self) -> None:
         with tempfile.TemporaryDirectory() as temporary:

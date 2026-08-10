@@ -14,6 +14,8 @@ from pathlib import Path
 from analyze_s1_eos import fit_bm3
 from s1_electron_number_common import parse_stru, pseudopotential_zion
 from s1_g1_three_layer_continuation_r2_common import (
+    CONFIG_PATH,
+    MANIFEST_PATH,
     atomic_write,
     canonical_json_bytes,
     find_project_root,
@@ -59,7 +61,33 @@ def parse_kpt(path: Path) -> tuple[int, int, int]:
     return tuple(int(value) for value in fields[:3])
 
 
-def verify_new_result(run_dir: Path, expected_id: str, row: dict[str, str], config: dict) -> dict:
+def verify_file_identity(root: Path, identity: dict, label: str) -> None:
+    path = root / identity["path"]
+    require(path.is_file() and not path.is_symlink(), f"{label} evidence missing: {path}")
+    require(path.stat().st_size == int(identity["size_bytes"]), f"{label} evidence size differs: {path}")
+    require(sha256_file(path) == identity["sha256"], f"{label} evidence SHA differs: {path}")
+
+
+def verify_core_preflight(path: Path, expected_sha256: str, config: dict) -> dict:
+    require(sha256_file(path) == expected_sha256, "core preflight SHA differs")
+    payload = read_json(path)
+    require(isinstance(payload, dict) and payload.get("accepted") is True, "core preflight rejected")
+    require(payload.get("hostname") == config["runtime"]["required_hostname"], "core preflight hostname differs")
+    require(payload.get("collisions") == [], "core preflight collision denominator differs")
+    require(payload.get("physical_socket_id") == int(config["runtime"]["physical_socket_id"]), "core preflight socket differs")
+    require(payload.get("physical_core_ids") == config["runtime"]["physical_core_ids"], "core preflight physical cores differ")
+    require(len(payload.get("target_sibling_logical_cpus", [])) >= len(config["runtime"]["physical_core_ids"]), "core sibling topology incomplete")
+    return payload
+
+
+def verify_new_result(
+    run_dir: Path,
+    expected_id: str,
+    row: dict[str, str],
+    config: dict,
+    runner_commit: str,
+    preflight_root: Path,
+) -> dict:
     result = read_json(run_dir / "result.json")
     metadata = read_json(run_dir / "metadata.json")
     accepted = read_json(run_dir / "accepted.json")
@@ -68,9 +96,21 @@ def verify_new_result(run_dir: Path, expected_id: str, row: dict[str, str], conf
     require(all(isinstance(value, dict) for value in (result, metadata, accepted, attempt, runner_return)), "new payload type differs")
     require(result.get("status") == "accepted" and result.get("experiment_id") == expected_id, "new result identity differs")
     require(result.get("protocol_revision") == config["protocol_revision"], "new protocol differs")
+    require(attempt.get("status") == "formal_attempt_started" and attempt.get("experiment_id") == expected_id, "new attempt identity differs")
+    require(attempt.get("protocol_revision") == config["protocol_revision"] and attempt.get("runner_commit") == runner_commit, "new attempt provenance differs")
+    require(accepted.get("status") == "accepted" and accepted.get("experiment_id") == expected_id, "new accepted identity differs")
+    require(accepted.get("protocol_revision") == config["protocol_revision"] and accepted.get("runner_commit") == runner_commit, "new accepted provenance differs")
     require(accepted.get("result_sha256") == sha256_file(run_dir / "result.json"), "new accepted/result SHA differs")
     require(attempt.get("retry_policy") == "same_id_forbidden_new_revision_and_new_ids_only", "new retry policy differs")
-    require(runner_return.get("return_code") == 0, "new runner return differs")
+    require(runner_return.get("return_code") == 0 and runner_return.get("experiment_id") == expected_id, "new runner return differs")
+    require(metadata.get("runner_commit") == runner_commit, "new metadata runner commit differs")
+    require(attempt.get("phase") == row["phase"] and attempt.get("requirement") == row["requirement"], "new attempt scope differs")
+    preflight_name = attempt.get("core_collision_preflight_path")
+    require(preflight_name == f"{expected_id}.json" and attempt.get("core_collision_preflight_accepted") is True, "new attempt preflight binding differs")
+    preflight_sha256 = attempt.get("core_collision_preflight_sha256")
+    require(isinstance(preflight_sha256, str) and len(preflight_sha256) == 64, "new attempt preflight SHA missing")
+    verify_core_preflight(preflight_root / preflight_name, preflight_sha256, config)
+    require(metadata["runtime"].get("core_collision_preflight_sha256") == preflight_sha256, "new metadata/preflight binding differs")
     bindings = {
         "experiment_id": expected_id,
         "phase": row["phase"],
@@ -97,21 +137,39 @@ def verify_new_result(run_dir: Path, expected_id: str, row: dict[str, str], conf
         require(abs(float(value) - expected_ne) < max(1e-8, expected_ne * 1e-10), "new independent Ne multiplication gate differs")
     require(result["cube_geometry"]["accepted"] and result["eigen_occupations"]["accepted"], "new cube/eig gate differs")
     require(result["stress_trace_gate"]["accepted"] and result["warning_log"]["accepted"], "new stress/warning gate differs")
+    require(float(result["stress_trace_gate"]["symmetry_abs_difference_kbar_max"]) < float(config["acceptance"]["stress_symmetry_abs_difference_kbar_strictly_less_than"]), "new stress symmetry gate differs")
+    require(float(result["cube_geometry"]["max_lattice_component_abs_difference_bohr"]) < float(config["acceptance"]["cube_lattice_component_abs_difference_bohr_strictly_less_than"]), "new cube lattice gate differs")
     require(result["affinity"]["accepted"] and result["affinity"]["physical_core_ids"] == config["runtime"]["physical_core_ids"], "new affinity differs")
     for identity in result["evidence_files"]:
-        path = run_dir / identity["path"]
-        require(path.is_file() and not path.is_symlink(), f"new evidence missing: {path}")
-        require(path.stat().st_size == identity["size_bytes"] and sha256_file(path) == identity["sha256"], "new evidence identity differs")
+        verify_file_identity(run_dir, identity, "new")
     return result
 
 
 def source_result(run_dir: Path, expected_id: str, barrier: dict) -> dict:
     result = read_json(run_dir / "result.json")
+    attempt = read_json(run_dir / "attempt.json")
+    accepted = read_json(run_dir / "accepted.json")
+    runner_return = read_json(run_dir / "runner_return.json")
+    metadata = read_json(run_dir / "metadata.json")
+    pseudo = read_json(run_dir / "pseudo_identity.json")
+    require(all(isinstance(value, dict) for value in (result, attempt, accepted, runner_return, metadata, pseudo)), "source payload type differs")
     require(isinstance(result, dict) and result.get("status") == "accepted" and result.get("experiment_id") == expected_id, "source result differs")
     recovered = {row["experiment_id"]: row for row in barrier["per_run_recovery"]}[expected_id]
     require(recovered["status"] == "accepted_source_evidence", "source recovery row differs")
+    require(sha256_file(run_dir / "attempt.json") == recovered["attempt_sha256"], "source attempt SHA differs")
+    require(sha256_file(run_dir / "accepted.json") == recovered["accepted_sha256"], "source accepted SHA differs")
+    require(sha256_file(run_dir / "runner_return.json") == recovered["runner_return_sha256"], "source runner SHA differs")
+    require(attempt.get("status") == "formal_attempt_started" and attempt.get("experiment_id") == expected_id, "source attempt identity differs")
+    require(accepted.get("status") == "accepted" and accepted.get("experiment_id") == expected_id, "source accepted identity differs")
+    require(runner_return.get("return_code") == 0 and runner_return.get("experiment_id") == expected_id, "source runner return differs")
+    require(metadata.get("runner_commit") == barrier["source_runner_commit"], "source metadata runner commit differs")
     require(recovered["result_sha256"] == sha256_file(run_dir / "result.json"), "source recovery/result SHA differs")
-    require(recovered["accepted_result_sha256"] == recovered["result_sha256"], "source accepted/result binding differs")
+    require(recovered["accepted_result_sha256"] == recovered["result_sha256"] == accepted.get("result_sha256"), "source accepted/result binding differs")
+    enhanced = recovered["enhanced_raw_gates"]
+    require(enhanced.get("accepted") is True and enhanced.get("pseudo_identity") == pseudo, "source enhanced recovery identity differs")
+    require(enhanced.get("external_upf_identity", {}).get("sha256") == pseudo.get("sha256"), "source external UPF recovery binding differs")
+    for identity in enhanced["evidence_files"]:
+        verify_file_identity(run_dir, identity, "source")
     return result
 
 
@@ -120,8 +178,11 @@ def legacy_point(project_root: Path, experiment_id: str, ratio: float, material:
     paths = {name: run_dir / name for name in ("result.json", "STRU", "INPUT", "KPT", "input_metadata.json", "experiment_metadata.json")}
     result = read_json(paths["result.json"])
     metadata = read_json(paths["input_metadata.json"])
+    runtime = read_json(paths["experiment_metadata.json"])
     require(isinstance(result, dict) and result.get("converged") is True, f"legacy result rejected: {experiment_id}")
-    require(isinstance(metadata, dict) and metadata.get("experiment_id") == experiment_id, "legacy metadata ID differs")
+    require(isinstance(metadata, dict) and isinstance(runtime, dict), "legacy metadata type differs")
+    require(runtime.get("experiment_id") == experiment_id, "legacy experiment metadata ID differs")
+    require("experiment_id" not in metadata or metadata.get("experiment_id") == experiment_id, "legacy input metadata ID differs")
     require(metadata.get("material") == material and abs(float(metadata["volume_ratio"]) - ratio) < 1e-12, "legacy material/volume differs")
     local = {
         "al": ("al.gga.psp", "d76ceac60058e230eac514fc419269433a33b199eb6abfa7d6ab43cde248bd1d", 3.0, "XC_GGA_X_PBE+XC_GGA_C_PBE"),
@@ -138,8 +199,7 @@ def legacy_point(project_root: Path, experiment_id: str, ratio: float, material:
         expected_k = (28, 28, 28) if material == "al" else (24, 24, 16)
         require(parse_kpt(paths["KPT"]) == expected_k, "legacy dense k mesh differs")
         require(parsed_input.get("ecutwfc") == ("40",) and parsed_input.get("ecutrho") == ("160",), "legacy KS cutoff differs")
-        runtime = read_json(paths["experiment_metadata.json"])
-        require(isinstance(runtime, dict) and runtime.get("abacus_sha256") == "438c74b9ada4c8df15ffbb66da6755907dfd2a3812ecf868fafd4d7dc4db62e1", "legacy KS runtime differs")
+        require(runtime.get("abacus_sha256") == "438c74b9ada4c8df15ffbb66da6755907dfd2a3812ecf868fafd4d7dc4db62e1", "legacy KS runtime differs")
         require(runtime.get("mpi_ranks") == 4, "legacy KS rank count differs")
         energy = result.get("zero_temp_extrapolated_energy_ev_per_atom")
         role = "legacy_local_PP_quarter_smearing_E_ec"
@@ -207,14 +267,81 @@ def raw_roots(raw_root: Path) -> tuple[Path, Path, Path]:
     return raw_root / "source_r1", raw_root / "continuation", raw_root.parent / "orchestration"
 
 
+def verify_phase_chain(
+    project_root: Path,
+    orchestration: Path,
+    continuation_root: Path,
+    phase: str,
+    expected_ids: list[str],
+    session: dict,
+    barrier_sha256: str,
+    config: dict,
+) -> dict:
+    payload = read_json(orchestration / "phases" / f"{phase}.json")
+    require(isinstance(payload, dict) and payload.get("status") == "accepted", f"{phase} phase rejected")
+    require(payload.get("protocol_revision") == config["protocol_revision"], f"{phase} protocol differs")
+    require(payload.get("phase") == phase and payload.get("runner_commit") == session["runner_commit"], f"{phase} identity differs")
+    require(payload.get("accepted_ids") == expected_ids and payload.get("accepted_count") == len(expected_ids), f"{phase} denominator differs")
+    require(payload.get("recovery_barrier_sha256") == barrier_sha256, f"{phase} recovery binding differs")
+    require(payload.get("session_sha256") == sha256_file(orchestration / "session.json"), f"{phase} session SHA differs")
+    require(payload.get("config_sha256") == sha256_file(project_root / CONFIG_PATH), f"{phase} config SHA differs")
+    require(payload.get("manifest_sha256") == sha256_file(project_root / MANIFEST_PATH), f"{phase} manifest SHA differs")
+    result_map = payload.get("accepted_result_sha256")
+    require(isinstance(result_map, dict) and list(result_map) == expected_ids, f"{phase} result denominator differs")
+    for experiment_id in expected_ids:
+        require(result_map[experiment_id] == sha256_file(continuation_root / experiment_id / "result.json"), f"{phase} result SHA differs: {experiment_id}")
+    detached_path = orchestration / "preflight" / f"{phase}_detached_launch.json"
+    detached_sha256 = payload.get("detached_launcher_proof_sha256")
+    require(isinstance(detached_sha256, str) and sha256_file(detached_path) == detached_sha256, f"{phase} detached proof SHA differs")
+    detached = read_json(detached_path)
+    require(isinstance(detached, dict) and detached.get("accepted") is True and detached.get("session_leader") is True, f"{phase} detached proof rejected")
+    require(detached.get("isatty") == {"0": False, "1": False, "2": False}, f"{phase} detached file descriptors differ")
+    phase_core_sha256 = payload.get("phase_core_collision_preflight_sha256")
+    require(isinstance(phase_core_sha256, str), f"{phase} core preflight SHA missing")
+    verify_core_preflight(orchestration / "preflight" / f"{phase}_core_collision.json", phase_core_sha256, config)
+    per_run = payload.get("per_run_core_collision_preflight_sha256")
+    require(isinstance(per_run, dict) and list(per_run) == expected_ids, f"{phase} per-run preflight denominator differs")
+    for experiment_id in expected_ids:
+        verify_core_preflight(orchestration / "preflight" / f"{experiment_id}.json", per_run[experiment_id], config)
+    return payload
+
+
 def build_final_analysis(project_root: Path, config: dict, rows: list[dict[str, str]], raw_root: Path) -> tuple[dict, list[dict], list[dict]]:
     source_root, continuation_root, orchestration = raw_roots(raw_root)
     barrier = read_json(orchestration / "r1_p0_recovery.json")
     require(isinstance(barrier, dict) and barrier.get("status") == "accepted", "collected recovery barrier rejected")
     require(barrier.get("source_operational_phase_accepted") is False and barrier.get("scientific_p0_recovery_status") == "accepted", "R1 disposition differs")
+    barrier_sha256 = sha256_file(orchestration / "r1_p0_recovery.json")
+    source_session_path = orchestration / "source_r1_session.json"
+    require(sha256_file(source_session_path) == barrier["source_session_sha256"], "source session SHA differs from recovery")
+    source_session = read_json(source_session_path)
+    require(isinstance(source_session, dict) and source_session.get("runner_commit") == barrier["source_runner_commit"], "source session runner differs")
+    require(source_session.get("status") == "active", "source operational disposition differs")
+    session = read_json(orchestration / "session.json")
+    require(isinstance(session, dict) and session.get("status") == "active", "continuation session rejected")
+    require(session.get("protocol_revision") == config["protocol_revision"], "continuation session protocol differs")
+    runner_commit = session.get("runner_commit")
+    require(isinstance(runner_commit, str) and len(runner_commit) == 40, "continuation runner commit missing")
+    require(session.get("recovery_barrier_sha256") == barrier_sha256, "continuation session recovery binding differs")
+    require(session.get("recovery_prereg_commit") == barrier["continuation_prereg_commit"], "continuation prereg binding differs")
+    require(session.get("recovery_source_runner_commit") == barrier["source_runner_commit"], "continuation source runner binding differs")
+    al_phase = verify_phase_chain(project_root, orchestration, continuation_root, "al_eos", list(CONTINUATION_IDS[:6]), session, barrier_sha256, config)
+    verify_phase_chain(project_root, orchestration, continuation_root, "mg_required", list(CONTINUATION_IDS[6:]), session, barrier_sha256, config)
+    require(session.get("initial_detached_launcher_proof_sha256") == al_phase["detached_launcher_proof_sha256"], "session initial detached proof differs")
+    require(session.get("initial_core_collision_preflight_sha256") == al_phase["phase_core_collision_preflight_sha256"], "session initial core preflight differs")
     source_results = {experiment_id: source_result(source_root / experiment_id, experiment_id, barrier) for experiment_id in SOURCE_IDS}
     row_by_id = {row["experiment_id"]: row for row in rows}
-    continuation_results = {experiment_id: verify_new_result(continuation_root / experiment_id, experiment_id, row_by_id[experiment_id], config) for experiment_id in CONTINUATION_IDS}
+    continuation_results = {
+        experiment_id: verify_new_result(
+            continuation_root / experiment_id,
+            experiment_id,
+            row_by_id[experiment_id],
+            config,
+            runner_commit,
+            orchestration / "preflight",
+        )
+        for experiment_id in CONTINUATION_IDS
+    }
     point_rows: list[dict] = []
     source_identities: list[dict] = []
     legacy_audit: list[dict] = []
@@ -270,11 +397,10 @@ def build_final_analysis(project_root: Path, config: dict, rows: list[dict[str, 
     mg = {"status": "accepted_diagnostic_only", "coverage": "mandatory_three_point_three_curve", "ks_nl_point_count": 3, "ks_l_point_count": 3, "of_l_point_count": 3, "scientifically_gated_against_legacy": False, "reason": "KS-NL is PBE/10e while legacy KS-L and OF-L are LDA-PZ/2e", "three_curve_rows": mg_rows, "p0_diagnostic_status": barrier["p0_metrics"]["materials"]["mg"]["status"], "affects_overall": False}
     source_identities = sorted({item["path"]: item for item in source_identities}.values(), key=lambda item: item["path"])
     overall = "accepted" if al_status == "accepted" else "rejected"
-    session = read_json(orchestration / "session.json")
     summary = {
         "schema_version": 2, "protocol_revision": config["protocol_revision"], "status": overall,
         "scope_status": "accepted_al_seven_point_EOS_with_mg_three_curve_diagnostic" if overall == "accepted" else "rejected_al_EOS_scope",
-        "runner_commit": session["runner_commit"], "recovery_barrier_sha256": sha256_file(orchestration / "r1_p0_recovery.json"),
+        "runner_commit": session["runner_commit"], "recovery_barrier_sha256": barrier_sha256,
         "source_r1_run_count": 6, "source_r1_new_run_count": 0, "formal_continuation_run_count": 8,
         "formal_al_hard_continuation_count": 6, "formal_mg_diagnostic_continuation_count": 2,
         "source_r1_operational_disposition": {"status": barrier["source_operational_status"], "phase_accepted": False, "scientific_p0_recovery": "accepted", "joint_operational_barrier_depended_on_al_and_mg": True},
@@ -324,6 +450,11 @@ def collect_evidence(project_root: Path, config: dict) -> Path:
     copy_exact(continuation_state / "session.json", analysis / "orchestration" / "session.json")
     for phase in ("al_eos", "mg_required"):
         copy_exact(continuation_state / "phases" / f"{phase}.json", analysis / "orchestration" / "phases" / f"{phase}.json")
+        for suffix in ("detached_launch", "core_collision"):
+            name = f"{phase}_{suffix}.json"
+            copy_exact(continuation_state / "preflight" / name, analysis / "orchestration" / "preflight" / name)
+    for experiment_id in CONTINUATION_IDS:
+        copy_exact(continuation_state / "preflight" / f"{experiment_id}.json", analysis / "orchestration" / "preflight" / f"{experiment_id}.json")
     copy_exact(source_state / "session.json", analysis / "orchestration" / "source_r1_session.json")
     return analysis
 
