@@ -1,0 +1,281 @@
+{
+  "amplitude": 0.005,
+  "cube_geometry_max_abs_error_bohr": 1.9819008327814913e-05,
+  "cube_geometry_pbc_audit": {
+    "density": {
+      "atom_comparison": "delta_cartesian -> delta_fractional via inverse lattice -> subtract nearest integer -> Cartesian minimum image",
+      "lattice_comparison": "absolute Cartesian; no PBC reduction",
+      "maximum_accepted_geometry_error_bohr": 1.9819008327814913e-05,
+      "maximum_lattice_absolute_error_bohr": 1.9819008327814913e-05,
+      "maximum_minimum_image_atom_absolute_error_bohr": 4.6912720708114364e-07,
+      "maximum_raw_atom_absolute_error_bohr": 4.6912720708114364e-07,
+      "pbc_wrapped_atom_rows": 0
+    },
+    "potential": {
+      "atom_comparison": "delta_cartesian -> delta_fractional via inverse lattice -> subtract nearest integer -> Cartesian minimum image",
+      "lattice_comparison": "absolute Cartesian; no PBC reduction",
+      "maximum_accepted_geometry_error_bohr": 1.9819008327814913e-05,
+      "maximum_lattice_absolute_error_bohr": 1.9819008327814913e-05,
+      "maximum_minimum_image_atom_absolute_error_bohr": 4.6912720708114364e-07,
+      "maximum_raw_atom_absolute_error_bohr": 4.6912720708114364e-07,
+      "pbc_wrapped_atom_rows": 0
+    }
+  },
+  "cube_minimum_mantissa_digits": 18,
+  "density": {
+    "electron_relative_error": 3.080535826427422e-12,
+    "expected_electrons": 4.0,
+    "grid": [
+      25,
+      25,
+      40
+    ],
+    "integrated_electrons": 3.999999999987678,
+    "sha256": "a4cb3e376de956044204ec1d4e6ef997e87c6de650f641616db4aea38f443903"
+  },
+  "elapsed_seconds": 231.08700203802437,
+  "experiment_id": "S1-20260810-212",
+  "forces": [
+    {
+      "atom": "Mg1",
+      "ev_per_angstrom": [
+        0.0,
+        0.0,
+        0.0
+      ]
+    },
+    {
+      "atom": "Mg2",
+      "ev_per_angstrom": [
+        0.0,
+        0.0,
+        0.0
+      ]
+    }
+  ],
+  "hostname": "node01",
+  "identity_max_abs_residual_ev_per_atom": 3.865315e-11,
+  "independent_input_integrity": {
+    "atom_count": 2,
+    "atom_order": [
+      "Mg1",
+      "Mg2"
+    ],
+    "cube_atom_order_and_identity_verified": true,
+    "density_potential_geometry_identical": true,
+    "exact_stru_volume_fraction": {
+      "denominator": 1562500000000000000000000000000000000000000000000000000000000000000000000000000000000000000000,
+      "numerator": 490116541699881458394368070508565682596624417914500505785490731844229116877838514660661111780343
+    },
+    "expected_electrons_from_pseudo_zion": 4.0,
+    "kmesh": [
+      24,
+      24,
+      16
+    ],
+    "pseudopotential_sha256": "4b964580cfbd798708299bb0e0baef2f437983d29e6d7040f63b7532038b4259"
+  },
+  "independent_physical_geometry": {
+    "acceptance_tolerance": 1e-12,
+    "accepted": true,
+    "actual_deformation_gradient": [
+      [
+        0.9975093361076328,
+        0.0,
+        0.0
+      ],
+      [
+        0.0,
+        0.997509336107633,
+        0.0
+      ],
+      [
+        0.0,
+        0.0,
+        1.005
+      ]
+    ],
+    "atom_order": [
+      "Mg1",
+      "Mg2"
+    ],
+    "determinant": 0.9999999999999999,
+    "determinant_error_from_one": 1.1102230246251565e-16,
+    "expected_deformation_gradient": [
+      [
+        0.9975093361076329,
+        0.0,
+        0.0
+      ],
+      [
+        0.0,
+        0.9975093361076329,
+        0.0
+      ],
+      [
+        0.0,
+        0.0,
+        1.005
+      ]
+    ],
+    "kind": "mg_axial",
+    "max_abs_matrix_error": 1.1102230246251565e-16,
+    "unchanged_direct_coordinate_max_abs_error": 0.0
+  },
+  "material": "mg",
+  "pair_id": "mg_axial",
+  "perturbation_kind": "mg_axial",
+  "potential": {
+    "grid": [
+      25,
+      25,
+      40
+    ],
+    "sha256": "772d6df559c7e9ddd3714dac02b14b140f558ba6bc4ed8517c155fb176a6c822"
+  },
+  "protocol_revision": "S1-G1-DISPLACEMENT-STRAIN-REFERENCE-ANALYSIS-R2",
+  "rank_affinity_verified": true,
+  "sign": "+",
+  "status": "accepted",
+  "stress_kbar": [
+    [
+      -29.2051498082,
+      5.053e-07,
+      -1.052e-07
+    ],
+    [
+      5.053e-07,
+      -29.2051495233,
+      9.96e-08
+    ],
+    [
+      -1.052e-07,
+      9.96e-08,
+      -31.786510712
+    ]
+  ],
+  "stress_validation": {
+    "symmetry_max_abs_error_kbar": 0.0,
+    "trace_over_three_minus_pressure_abs_kbar": 3.478333319151261e-07
+  },
+  "thermodynamic": {
+    "all_identity_residuals_strictly_below_limit": true,
+    "atom_count": 2,
+    "chemical_potential_ev": 3.3505420211,
+    "converged": true,
+    "e_kohnsham_table_ev_per_cell": -49.3052835114,
+    "electron_count_reported": 4.0,
+    "energy_labels_ev_per_atom": {
+      "E_Ewald": -29.1465354245,
+      "E_Hartree": 0.05657561745,
+      "E_ec": -24.6523095465,
+      "E_localpp": 6.80823215675,
+      "E_one_elec": 16.0586657277,
+      "E_xc": -11.620683258,
+      "F": -24.652641755711347,
+      "F_s": 9.24976915255,
+      "T_sU": 9.25043357095,
+      "U": -24.651977337311347,
+      "m": -0.0006644184,
+      "mu": 1.67527101055
+    },
+    "energy_labels_ev_per_cell": {
+      "E_Ewald": -58.293070849,
+      "E_Hartree": 0.1131512349,
+      "E_ec": -49.304619093,
+      "E_localpp": 13.6164643135,
+      "E_one_elec": 32.1173314554,
+      "E_xc": -23.241366516,
+      "F": -49.305283511422694,
+      "F_s": 18.4995383051,
+      "T_sU": 18.5008671419,
+      "U": -49.303954674622695,
+      "m": -0.0013288368,
+      "mu": 3.3505420211
+    },
+    "entropy_corrected_estimator_ev": -49.304619093,
+    "entropy_corrected_estimator_semantics": "finite-smearing scalar estimator",
+    "entropy_minus_ts_ev": -0.0013288368,
+    "ewald_energy_ev": -58.293070849,
+    "free_energy_ev": -49.305283511422694,
+    "hartree_energy_ev": 0.1131512349,
+    "identities": {
+      "entropy_corrected": {
+        "acceptance_inequality": "strict_less_than",
+        "acceptance_limit_ev_per_atom": "1E-8",
+        "accepted": true,
+        "lhs_ev_per_cell": "-49.3046190930",
+        "name": "E_ec=F-m/2",
+        "residual_ev_per_atom": "1.134685E-11",
+        "residual_ev_per_cell": "2.26937E-11",
+        "rhs_ev_per_cell": "-49.3046190930226937",
+        "text_rounding_bound_ev_per_cell": "1.0000005E-10"
+      },
+      "final_equals_kohn_sham": {
+        "acceptance_inequality": "strict_less_than",
+        "acceptance_limit_ev_per_atom": "1E-8",
+        "accepted": true,
+        "lhs_ev_per_cell": "-49.3052835114226937",
+        "name": "F=E_KohnSham=!FINAL_ETOT_IS",
+        "residual_ev_per_atom": "-1.134685E-11",
+        "residual_ev_per_cell": "-2.26937E-11",
+        "rhs_ev_per_cell": "-49.3052835114",
+        "text_rounding_bound_ev_per_cell": "5.000005E-11"
+      },
+      "internal_energy_definition": {
+        "acceptance_inequality": "strict_less_than",
+        "acceptance_limit_ev_per_atom": "1E-8",
+        "accepted": true,
+        "lhs_ev_per_cell": "-49.3039546746226937",
+        "name": "U=F-m",
+        "residual_ev_per_atom": "0E-16",
+        "residual_ev_per_cell": "0E-16",
+        "rhs_ev_per_cell": "-49.3039546746226937",
+        "text_rounding_bound_ev_per_cell": "5.000010E-11"
+      },
+      "kinetic_energy_definition": {
+        "acceptance_inequality": "strict_less_than",
+        "acceptance_limit_ev_per_atom": "1E-8",
+        "accepted": true,
+        "lhs_ev_per_cell": "18.5008671419",
+        "name": "T_sU=E_one_elec-E_localpp",
+        "residual_ev_per_atom": "0E-10",
+        "residual_ev_per_cell": "0E-10",
+        "rhs_ev_per_cell": "18.5008671419",
+        "text_rounding_bound_ev_per_cell": "1.5E-10"
+      },
+      "noninteracting_free_energy_definition": {
+        "acceptance_inequality": "strict_less_than",
+        "acceptance_limit_ev_per_atom": "1E-8",
+        "accepted": true,
+        "lhs_ev_per_cell": "18.4995383051",
+        "name": "F_s=T_sU+m",
+        "residual_ev_per_atom": "0E-10",
+        "residual_ev_per_cell": "0E-10",
+        "rhs_ev_per_cell": "18.4995383051",
+        "text_rounding_bound_ev_per_cell": "1.5E-10"
+      },
+      "total_decomposition": {
+        "acceptance_inequality": "strict_less_than",
+        "acceptance_limit_ev_per_atom": "1E-8",
+        "accepted": true,
+        "lhs_ev_per_cell": "-49.3052835114226937",
+        "name": "F=E_one+E_H+E_xc+E_Ewald+m",
+        "residual_ev_per_atom": "3.865315E-11",
+        "residual_ev_per_cell": "7.73063E-11",
+        "rhs_ev_per_cell": "-49.3052835115",
+        "text_rounding_bound_ev_per_cell": "2.5000005E-10"
+      }
+    },
+    "internal_energy_ev": -49.303954674622695,
+    "kinetic_energy_ts_ev": 18.5008671419,
+    "local_pseudopotential_energy_ev": 13.6164643135,
+    "noninteracting_free_energy_fs_ev": 18.4995383051,
+    "one_electron_energy_ev": 32.1173314554,
+    "pressure_gpa": -3.0065603,
+    "pressure_kbar": -30.065603,
+    "xc_energy_ev": -23.241366516,
+    "zero_temperature_exact_claim": false
+  },
+  "zero_temperature_exact_claim": false
+}

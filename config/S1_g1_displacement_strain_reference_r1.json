@@ -1,0 +1,1410 @@
+{
+  "acceptance": {
+    "accepted_runs_exact": 15,
+    "central_difference_pairs_exact": 7,
+    "central_difference_response_is_diagnostic_only": true,
+    "cube_geometry_absolute_tolerance_bohr": 5e-05,
+    "cube_output_precision_exact": 17,
+    "electron_number_relative_error_strictly_less_than": 1e-10,
+    "forces_and_stress_must_be_finite_and_complete": true,
+    "g4_acceptance_claim": false,
+    "registered_runs_exact": 15,
+    "thermodynamic_identity_residual_ev_per_atom_strictly_less_than": 1e-08,
+    "thermodynamic_labels_exact": [
+      "F",
+      "m",
+      "U",
+      "E_ec",
+      "E_one_elec",
+      "E_localpp",
+      "T_sU",
+      "F_s",
+      "E_Hartree",
+      "E_xc",
+      "E_Ewald",
+      "mu"
+    ]
+  },
+  "analysis_root": "analysis/s1/g1_displacement_strain_reference_r1_20260810",
+  "base_commit": "f10008dd7a6e05cb8bf23f1ffd10e99e19b6083d",
+  "cases": [
+    {
+      "amplitude": 0.0,
+      "amplitude_units": "dimensionless",
+      "atom_count": 2,
+      "base_commit": "f10008dd7a6e05cb8bf23f1ffd10e99e19b6083d",
+      "cube_precision": 17,
+      "deformation_action": "r_prime=F*r; row-lattice A_prime=A*F^T; Direct coordinates unchanged for strain",
+      "deformation_gradient_cartesian_column_convention": [
+        [
+          1.0,
+          0.0,
+          0.0
+        ],
+        [
+          0.0,
+          1.0,
+          0.0
+        ],
+        [
+          0.0,
+          0.0,
+          1.0
+        ]
+      ],
+      "displacement_cartesian_angstrom": [
+        0.0,
+        0.0,
+        0.0
+      ],
+      "displacement_fractional": [
+        0.0,
+        0.0,
+        0.0
+      ],
+      "ecutrho_ry": 160,
+      "ecutwfc_ry": 40,
+      "expected_cartesian_positions_bohr": [
+        [
+          0.0,
+          0.0,
+          0.0
+        ],
+        [
+          0.0,
+          3.826695404052102,
+          3.826695404052102
+        ]
+      ],
+      "expected_electrons": 6,
+      "expected_lattice_vectors_bohr": [
+        [
+          0.0,
+          7.653390808104204,
+          7.653390808104204
+        ],
+        [
+          3.826695404052102,
+          0.0,
+          3.826695404052102
+        ],
+        [
+          3.826695404052102,
+          3.826695404052102,
+          0.0
+        ]
+      ],
+      "experiment_id": "S1-20260810-201",
+      "finite_temperature_semantics": "Mermin; entropy-corrected E_ec is not an exact zero-temperature label",
+      "kmesh": [
+        28,
+        28,
+        28
+      ],
+      "material": "al",
+      "pair_id": "",
+      "perturbation_kind": "al_2x1x1_base",
+      "protocol_revision": "S1-G1-DISPLACEMENT-STRAIN-REFERENCE-R1",
+      "pseudopotential": "al.gga.psp",
+      "pseudopotential_sha256": "d76ceac60058e230eac514fc419269433a33b199eb6abfa7d6ab43cde248bd1d",
+      "scf_threshold": 1e-10,
+      "sign": "0",
+      "signed_amplitude": 0.0,
+      "smearing_sigma_ry": 0.001837465,
+      "solver": "ksdft",
+      "source_experiment_id": "S1-20260807-043",
+      "source_run_tree_oid": "f6aebad35880164176afe032f91e0de65d2aa456",
+      "suffix": "g1dsr1_al_201",
+      "zero_temperature_exact_claim": false
+    },
+    {
+      "amplitude": 0.01,
+      "amplitude_units": "angstrom",
+      "atom_count": 2,
+      "base_commit": "f10008dd7a6e05cb8bf23f1ffd10e99e19b6083d",
+      "cube_precision": 17,
+      "deformation_action": "r_prime=F*r; row-lattice A_prime=A*F^T; Direct coordinates unchanged for strain",
+      "deformation_gradient_cartesian_column_convention": [
+        [
+          1.0,
+          0.0,
+          0.0
+        ],
+        [
+          0.0,
+          1.0,
+          0.0
+        ],
+        [
+          0.0,
+          0.0,
+          1.0
+        ]
+      ],
+      "displacement_cartesian_angstrom": [
+        0.01,
+        0.0,
+        0.0
+      ],
+      "displacement_fractional": [
+        -0.001234567901234568,
+        0.002469135802469136,
+        0.002469135802469136
+      ],
+      "ecutrho_ry": 160,
+      "ecutwfc_ry": 40,
+      "expected_cartesian_positions_bohr": [
+        [
+          0.0,
+          0.0,
+          0.0
+        ],
+        [
+          0.018897261254578284,
+          3.826695404052102,
+          3.826695404052102
+        ]
+      ],
+      "expected_electrons": 6,
+      "expected_lattice_vectors_bohr": [
+        [
+          0.0,
+          7.653390808104204,
+          7.653390808104204
+        ],
+        [
+          3.826695404052102,
+          0.0,
+          3.826695404052102
+        ],
+        [
+          3.826695404052102,
+          3.826695404052102,
+          0.0
+        ]
+      ],
+      "experiment_id": "S1-20260810-202",
+      "finite_temperature_semantics": "Mermin; entropy-corrected E_ec is not an exact zero-temperature label",
+      "kmesh": [
+        28,
+        28,
+        28
+      ],
+      "material": "al",
+      "pair_id": "al_displacement_x",
+      "perturbation_kind": "al_2x1x1_displacement_x",
+      "protocol_revision": "S1-G1-DISPLACEMENT-STRAIN-REFERENCE-R1",
+      "pseudopotential": "al.gga.psp",
+      "pseudopotential_sha256": "d76ceac60058e230eac514fc419269433a33b199eb6abfa7d6ab43cde248bd1d",
+      "scf_threshold": 1e-10,
+      "sign": "+",
+      "signed_amplitude": 0.01,
+      "smearing_sigma_ry": 0.001837465,
+      "solver": "ksdft",
+      "source_experiment_id": "S1-20260807-043",
+      "source_run_tree_oid": "f6aebad35880164176afe032f91e0de65d2aa456",
+      "suffix": "g1dsr1_al_202",
+      "zero_temperature_exact_claim": false
+    },
+    {
+      "amplitude": 0.01,
+      "amplitude_units": "angstrom",
+      "atom_count": 2,
+      "base_commit": "f10008dd7a6e05cb8bf23f1ffd10e99e19b6083d",
+      "cube_precision": 17,
+      "deformation_action": "r_prime=F*r; row-lattice A_prime=A*F^T; Direct coordinates unchanged for strain",
+      "deformation_gradient_cartesian_column_convention": [
+        [
+          1.0,
+          0.0,
+          0.0
+        ],
+        [
+          0.0,
+          1.0,
+          0.0
+        ],
+        [
+          0.0,
+          0.0,
+          1.0
+        ]
+      ],
+      "displacement_cartesian_angstrom": [
+        -0.01,
+        0.0,
+        0.0
+      ],
+      "displacement_fractional": [
+        0.001234567901234568,
+        -0.002469135802469136,
+        -0.002469135802469136
+      ],
+      "ecutrho_ry": 160,
+      "ecutwfc_ry": 40,
+      "expected_cartesian_positions_bohr": [
+        [
+          0.0,
+          0.0,
+          0.0
+        ],
+        [
+          -0.018897261254578284,
+          3.826695404052102,
+          3.826695404052102
+        ]
+      ],
+      "expected_electrons": 6,
+      "expected_lattice_vectors_bohr": [
+        [
+          0.0,
+          7.653390808104204,
+          7.653390808104204
+        ],
+        [
+          3.826695404052102,
+          0.0,
+          3.826695404052102
+        ],
+        [
+          3.826695404052102,
+          3.826695404052102,
+          0.0
+        ]
+      ],
+      "experiment_id": "S1-20260810-203",
+      "finite_temperature_semantics": "Mermin; entropy-corrected E_ec is not an exact zero-temperature label",
+      "kmesh": [
+        28,
+        28,
+        28
+      ],
+      "material": "al",
+      "pair_id": "al_displacement_x",
+      "perturbation_kind": "al_2x1x1_displacement_x",
+      "protocol_revision": "S1-G1-DISPLACEMENT-STRAIN-REFERENCE-R1",
+      "pseudopotential": "al.gga.psp",
+      "pseudopotential_sha256": "d76ceac60058e230eac514fc419269433a33b199eb6abfa7d6ab43cde248bd1d",
+      "scf_threshold": 1e-10,
+      "sign": "-",
+      "signed_amplitude": -0.01,
+      "smearing_sigma_ry": 0.001837465,
+      "solver": "ksdft",
+      "source_experiment_id": "S1-20260807-043",
+      "source_run_tree_oid": "f6aebad35880164176afe032f91e0de65d2aa456",
+      "suffix": "g1dsr1_al_203",
+      "zero_temperature_exact_claim": false
+    },
+    {
+      "amplitude": 0.005,
+      "amplitude_units": "dimensionless",
+      "atom_count": 1,
+      "base_commit": "f10008dd7a6e05cb8bf23f1ffd10e99e19b6083d",
+      "cube_precision": 17,
+      "deformation_action": "r_prime=F*r; row-lattice A_prime=A*F^T; Direct coordinates unchanged for strain",
+      "deformation_gradient_cartesian_column_convention": [
+        [
+          1.005,
+          0.0,
+          0.0
+        ],
+        [
+          0.0,
+          0.9975093361076329,
+          0.0
+        ],
+        [
+          0.0,
+          0.0,
+          0.9975093361076329
+        ]
+      ],
+      "displacement_cartesian_angstrom": [
+        0.0,
+        0.0,
+        0.0
+      ],
+      "displacement_fractional": [
+        0.0,
+        0.0,
+        0.0
+      ],
+      "ecutrho_ry": 160,
+      "ecutwfc_ry": 40,
+      "expected_cartesian_positions_bohr": [
+        [
+          0.0,
+          0.0,
+          0.0
+        ]
+      ],
+      "expected_electrons": 3,
+      "expected_lattice_vectors_bohr": [
+        [
+          0.0,
+          3.8171643919821423,
+          3.8171643919821423
+        ],
+        [
+          3.845828881072362,
+          0.0,
+          3.8171643919821423
+        ],
+        [
+          3.845828881072362,
+          3.8171643919821423,
+          0.0
+        ]
+      ],
+      "experiment_id": "S1-20260810-204",
+      "finite_temperature_semantics": "Mermin; entropy-corrected E_ec is not an exact zero-temperature label",
+      "kmesh": [
+        28,
+        28,
+        28
+      ],
+      "material": "al",
+      "pair_id": "al_tetragonal",
+      "perturbation_kind": "al_tetragonal",
+      "protocol_revision": "S1-G1-DISPLACEMENT-STRAIN-REFERENCE-R1",
+      "pseudopotential": "al.gga.psp",
+      "pseudopotential_sha256": "d76ceac60058e230eac514fc419269433a33b199eb6abfa7d6ab43cde248bd1d",
+      "scf_threshold": 1e-10,
+      "sign": "+",
+      "signed_amplitude": 0.005,
+      "smearing_sigma_ry": 0.001837465,
+      "solver": "ksdft",
+      "source_experiment_id": "S1-20260807-043",
+      "source_run_tree_oid": "f6aebad35880164176afe032f91e0de65d2aa456",
+      "suffix": "g1dsr1_al_204",
+      "zero_temperature_exact_claim": false
+    },
+    {
+      "amplitude": 0.005,
+      "amplitude_units": "dimensionless",
+      "atom_count": 1,
+      "base_commit": "f10008dd7a6e05cb8bf23f1ffd10e99e19b6083d",
+      "cube_precision": 17,
+      "deformation_action": "r_prime=F*r; row-lattice A_prime=A*F^T; Direct coordinates unchanged for strain",
+      "deformation_gradient_cartesian_column_convention": [
+        [
+          0.995,
+          0.0,
+          0.0
+        ],
+        [
+          0.0,
+          1.002509414234171,
+          0.0
+        ],
+        [
+          0.0,
+          0.0,
+          1.002509414234171
+        ]
+      ],
+      "displacement_cartesian_angstrom": [
+        0.0,
+        0.0,
+        0.0
+      ],
+      "displacement_fractional": [
+        0.0,
+        0.0,
+        0.0
+      ],
+      "ecutrho_ry": 160,
+      "ecutwfc_ry": 40,
+      "expected_cartesian_positions_bohr": [
+        [
+          0.0,
+          0.0,
+          0.0
+        ]
+      ],
+      "expected_electrons": 3,
+      "expected_lattice_vectors_bohr": [
+        [
+          0.0,
+          3.836298167968867,
+          3.836298167968867
+        ],
+        [
+          3.8075619270318413,
+          0.0,
+          3.836298167968867
+        ],
+        [
+          3.8075619270318413,
+          3.836298167968867,
+          0.0
+        ]
+      ],
+      "experiment_id": "S1-20260810-205",
+      "finite_temperature_semantics": "Mermin; entropy-corrected E_ec is not an exact zero-temperature label",
+      "kmesh": [
+        28,
+        28,
+        28
+      ],
+      "material": "al",
+      "pair_id": "al_tetragonal",
+      "perturbation_kind": "al_tetragonal",
+      "protocol_revision": "S1-G1-DISPLACEMENT-STRAIN-REFERENCE-R1",
+      "pseudopotential": "al.gga.psp",
+      "pseudopotential_sha256": "d76ceac60058e230eac514fc419269433a33b199eb6abfa7d6ab43cde248bd1d",
+      "scf_threshold": 1e-10,
+      "sign": "-",
+      "signed_amplitude": -0.005,
+      "smearing_sigma_ry": 0.001837465,
+      "solver": "ksdft",
+      "source_experiment_id": "S1-20260807-043",
+      "source_run_tree_oid": "f6aebad35880164176afe032f91e0de65d2aa456",
+      "suffix": "g1dsr1_al_205",
+      "zero_temperature_exact_claim": false
+    },
+    {
+      "amplitude": 0.005,
+      "amplitude_units": "dimensionless",
+      "atom_count": 1,
+      "base_commit": "f10008dd7a6e05cb8bf23f1ffd10e99e19b6083d",
+      "cube_precision": 17,
+      "deformation_action": "r_prime=F*r; row-lattice A_prime=A*F^T; Direct coordinates unchanged for strain",
+      "deformation_gradient_cartesian_column_convention": [
+        [
+          1.0,
+          0.005,
+          0.0
+        ],
+        [
+          0.0,
+          1.0,
+          0.0
+        ],
+        [
+          0.0,
+          0.0,
+          1.0
+        ]
+      ],
+      "displacement_cartesian_angstrom": [
+        0.0,
+        0.0,
+        0.0
+      ],
+      "displacement_fractional": [
+        0.0,
+        0.0,
+        0.0
+      ],
+      "ecutrho_ry": 160,
+      "ecutwfc_ry": 40,
+      "expected_cartesian_positions_bohr": [
+        [
+          0.0,
+          0.0,
+          0.0
+        ]
+      ],
+      "expected_electrons": 3,
+      "expected_lattice_vectors_bohr": [
+        [
+          0.01913347702026051,
+          3.826695404052102,
+          3.826695404052102
+        ],
+        [
+          3.826695404052102,
+          0.0,
+          3.826695404052102
+        ],
+        [
+          3.845828881072362,
+          3.826695404052102,
+          0.0
+        ]
+      ],
+      "experiment_id": "S1-20260810-206",
+      "finite_temperature_semantics": "Mermin; entropy-corrected E_ec is not an exact zero-temperature label",
+      "kmesh": [
+        28,
+        28,
+        28
+      ],
+      "material": "al",
+      "pair_id": "al_shear_xy",
+      "perturbation_kind": "al_shear_xy",
+      "protocol_revision": "S1-G1-DISPLACEMENT-STRAIN-REFERENCE-R1",
+      "pseudopotential": "al.gga.psp",
+      "pseudopotential_sha256": "d76ceac60058e230eac514fc419269433a33b199eb6abfa7d6ab43cde248bd1d",
+      "scf_threshold": 1e-10,
+      "sign": "+",
+      "signed_amplitude": 0.005,
+      "smearing_sigma_ry": 0.001837465,
+      "solver": "ksdft",
+      "source_experiment_id": "S1-20260807-043",
+      "source_run_tree_oid": "f6aebad35880164176afe032f91e0de65d2aa456",
+      "suffix": "g1dsr1_al_206",
+      "zero_temperature_exact_claim": false
+    },
+    {
+      "amplitude": 0.005,
+      "amplitude_units": "dimensionless",
+      "atom_count": 1,
+      "base_commit": "f10008dd7a6e05cb8bf23f1ffd10e99e19b6083d",
+      "cube_precision": 17,
+      "deformation_action": "r_prime=F*r; row-lattice A_prime=A*F^T; Direct coordinates unchanged for strain",
+      "deformation_gradient_cartesian_column_convention": [
+        [
+          1.0,
+          -0.005,
+          0.0
+        ],
+        [
+          0.0,
+          1.0,
+          0.0
+        ],
+        [
+          0.0,
+          0.0,
+          1.0
+        ]
+      ],
+      "displacement_cartesian_angstrom": [
+        0.0,
+        0.0,
+        0.0
+      ],
+      "displacement_fractional": [
+        0.0,
+        0.0,
+        0.0
+      ],
+      "ecutrho_ry": 160,
+      "ecutwfc_ry": 40,
+      "expected_cartesian_positions_bohr": [
+        [
+          0.0,
+          0.0,
+          0.0
+        ]
+      ],
+      "expected_electrons": 3,
+      "expected_lattice_vectors_bohr": [
+        [
+          -0.01913347702026051,
+          3.826695404052102,
+          3.826695404052102
+        ],
+        [
+          3.826695404052102,
+          0.0,
+          3.826695404052102
+        ],
+        [
+          3.8075619270318413,
+          3.826695404052102,
+          0.0
+        ]
+      ],
+      "experiment_id": "S1-20260810-207",
+      "finite_temperature_semantics": "Mermin; entropy-corrected E_ec is not an exact zero-temperature label",
+      "kmesh": [
+        28,
+        28,
+        28
+      ],
+      "material": "al",
+      "pair_id": "al_shear_xy",
+      "perturbation_kind": "al_shear_xy",
+      "protocol_revision": "S1-G1-DISPLACEMENT-STRAIN-REFERENCE-R1",
+      "pseudopotential": "al.gga.psp",
+      "pseudopotential_sha256": "d76ceac60058e230eac514fc419269433a33b199eb6abfa7d6ab43cde248bd1d",
+      "scf_threshold": 1e-10,
+      "sign": "-",
+      "signed_amplitude": -0.005,
+      "smearing_sigma_ry": 0.001837465,
+      "solver": "ksdft",
+      "source_experiment_id": "S1-20260807-043",
+      "source_run_tree_oid": "f6aebad35880164176afe032f91e0de65d2aa456",
+      "suffix": "g1dsr1_al_207",
+      "zero_temperature_exact_claim": false
+    },
+    {
+      "amplitude": 0.01,
+      "amplitude_units": "angstrom",
+      "atom_count": 2,
+      "base_commit": "f10008dd7a6e05cb8bf23f1ffd10e99e19b6083d",
+      "cube_precision": 17,
+      "deformation_action": "r_prime=F*r; row-lattice A_prime=A*F^T; Direct coordinates unchanged for strain",
+      "deformation_gradient_cartesian_column_convention": [
+        [
+          1.0,
+          0.0,
+          0.0
+        ],
+        [
+          0.0,
+          1.0,
+          0.0
+        ],
+        [
+          0.0,
+          0.0,
+          1.0
+        ]
+      ],
+      "displacement_cartesian_angstrom": [
+        0.01,
+        0.0,
+        0.0
+      ],
+      "displacement_fractional": [
+        0.0031158471988533684,
+        0.0,
+        0.0
+      ],
+      "ecutrho_ry": 160,
+      "ecutwfc_ry": 40,
+      "expected_cartesian_positions_bohr": [
+        [
+          0.0,
+          0.0,
+          0.0
+        ],
+        [
+          3.0513407747767554,
+          1.750782078834363,
+          4.923492447267825
+        ]
+      ],
+      "expected_electrons": 4,
+      "expected_lattice_vectors_bohr": [
+        [
+          6.064887027044354,
+          0.0,
+          0.0
+        ],
+        [
+          -3.032443513522177,
+          5.252346236503089,
+          0.0
+        ],
+        [
+          0.0,
+          0.0,
+          9.84698489453565
+        ]
+      ],
+      "experiment_id": "S1-20260810-208",
+      "finite_temperature_semantics": "Mermin; entropy-corrected E_ec is not an exact zero-temperature label",
+      "kmesh": [
+        24,
+        24,
+        16
+      ],
+      "material": "mg",
+      "pair_id": "mg_displacement_basal_x",
+      "perturbation_kind": "mg_displacement_basal_x",
+      "protocol_revision": "S1-G1-DISPLACEMENT-STRAIN-REFERENCE-R1",
+      "pseudopotential": "mg.lda.lps",
+      "pseudopotential_sha256": "4b964580cfbd798708299bb0e0baef2f437983d29e6d7040f63b7532038b4259",
+      "scf_threshold": 1e-10,
+      "sign": "+",
+      "signed_amplitude": 0.01,
+      "smearing_sigma_ry": 0.001837465,
+      "solver": "ksdft",
+      "source_experiment_id": "S1-20260807-045",
+      "source_run_tree_oid": "6ffbe064f97f60e3f12782f49824740a854c7422",
+      "suffix": "g1dsr1_mg_208",
+      "zero_temperature_exact_claim": false
+    },
+    {
+      "amplitude": 0.01,
+      "amplitude_units": "angstrom",
+      "atom_count": 2,
+      "base_commit": "f10008dd7a6e05cb8bf23f1ffd10e99e19b6083d",
+      "cube_precision": 17,
+      "deformation_action": "r_prime=F*r; row-lattice A_prime=A*F^T; Direct coordinates unchanged for strain",
+      "deformation_gradient_cartesian_column_convention": [
+        [
+          1.0,
+          0.0,
+          0.0
+        ],
+        [
+          0.0,
+          1.0,
+          0.0
+        ],
+        [
+          0.0,
+          0.0,
+          1.0
+        ]
+      ],
+      "displacement_cartesian_angstrom": [
+        -0.01,
+        0.0,
+        0.0
+      ],
+      "displacement_fractional": [
+        -0.0031158471988533684,
+        0.0,
+        0.0
+      ],
+      "ecutrho_ry": 160,
+      "ecutwfc_ry": 40,
+      "expected_cartesian_positions_bohr": [
+        [
+          0.0,
+          0.0,
+          0.0
+        ],
+        [
+          3.0135462522675986,
+          1.750782078834363,
+          4.923492447267825
+        ]
+      ],
+      "expected_electrons": 4,
+      "expected_lattice_vectors_bohr": [
+        [
+          6.064887027044354,
+          0.0,
+          0.0
+        ],
+        [
+          -3.032443513522177,
+          5.252346236503089,
+          0.0
+        ],
+        [
+          0.0,
+          0.0,
+          9.84698489453565
+        ]
+      ],
+      "experiment_id": "S1-20260810-209",
+      "finite_temperature_semantics": "Mermin; entropy-corrected E_ec is not an exact zero-temperature label",
+      "kmesh": [
+        24,
+        24,
+        16
+      ],
+      "material": "mg",
+      "pair_id": "mg_displacement_basal_x",
+      "perturbation_kind": "mg_displacement_basal_x",
+      "protocol_revision": "S1-G1-DISPLACEMENT-STRAIN-REFERENCE-R1",
+      "pseudopotential": "mg.lda.lps",
+      "pseudopotential_sha256": "4b964580cfbd798708299bb0e0baef2f437983d29e6d7040f63b7532038b4259",
+      "scf_threshold": 1e-10,
+      "sign": "-",
+      "signed_amplitude": -0.01,
+      "smearing_sigma_ry": 0.001837465,
+      "solver": "ksdft",
+      "source_experiment_id": "S1-20260807-045",
+      "source_run_tree_oid": "6ffbe064f97f60e3f12782f49824740a854c7422",
+      "suffix": "g1dsr1_mg_209",
+      "zero_temperature_exact_claim": false
+    },
+    {
+      "amplitude": 0.01,
+      "amplitude_units": "angstrom",
+      "atom_count": 2,
+      "base_commit": "f10008dd7a6e05cb8bf23f1ffd10e99e19b6083d",
+      "cube_precision": 17,
+      "deformation_action": "r_prime=F*r; row-lattice A_prime=A*F^T; Direct coordinates unchanged for strain",
+      "deformation_gradient_cartesian_column_convention": [
+        [
+          1.0,
+          0.0,
+          0.0
+        ],
+        [
+          0.0,
+          1.0,
+          0.0
+        ],
+        [
+          0.0,
+          0.0,
+          1.0
+        ]
+      ],
+      "displacement_cartesian_angstrom": [
+        0.0,
+        0.0,
+        0.01
+      ],
+      "displacement_fractional": [
+        0.0,
+        0.0,
+        0.0019190911184463041
+      ],
+      "ecutrho_ry": 160,
+      "ecutwfc_ry": 40,
+      "expected_cartesian_positions_bohr": [
+        [
+          0.0,
+          0.0,
+          0.0
+        ],
+        [
+          3.0324435135221766,
+          1.750782078834363,
+          4.942389708522404
+        ]
+      ],
+      "expected_electrons": 4,
+      "expected_lattice_vectors_bohr": [
+        [
+          6.064887027044354,
+          0.0,
+          0.0
+        ],
+        [
+          -3.032443513522177,
+          5.252346236503089,
+          0.0
+        ],
+        [
+          0.0,
+          0.0,
+          9.84698489453565
+        ]
+      ],
+      "experiment_id": "S1-20260810-210",
+      "finite_temperature_semantics": "Mermin; entropy-corrected E_ec is not an exact zero-temperature label",
+      "kmesh": [
+        24,
+        24,
+        16
+      ],
+      "material": "mg",
+      "pair_id": "mg_displacement_c_z",
+      "perturbation_kind": "mg_displacement_c_z",
+      "protocol_revision": "S1-G1-DISPLACEMENT-STRAIN-REFERENCE-R1",
+      "pseudopotential": "mg.lda.lps",
+      "pseudopotential_sha256": "4b964580cfbd798708299bb0e0baef2f437983d29e6d7040f63b7532038b4259",
+      "scf_threshold": 1e-10,
+      "sign": "+",
+      "signed_amplitude": 0.01,
+      "smearing_sigma_ry": 0.001837465,
+      "solver": "ksdft",
+      "source_experiment_id": "S1-20260807-045",
+      "source_run_tree_oid": "6ffbe064f97f60e3f12782f49824740a854c7422",
+      "suffix": "g1dsr1_mg_210",
+      "zero_temperature_exact_claim": false
+    },
+    {
+      "amplitude": 0.01,
+      "amplitude_units": "angstrom",
+      "atom_count": 2,
+      "base_commit": "f10008dd7a6e05cb8bf23f1ffd10e99e19b6083d",
+      "cube_precision": 17,
+      "deformation_action": "r_prime=F*r; row-lattice A_prime=A*F^T; Direct coordinates unchanged for strain",
+      "deformation_gradient_cartesian_column_convention": [
+        [
+          1.0,
+          0.0,
+          0.0
+        ],
+        [
+          0.0,
+          1.0,
+          0.0
+        ],
+        [
+          0.0,
+          0.0,
+          1.0
+        ]
+      ],
+      "displacement_cartesian_angstrom": [
+        0.0,
+        0.0,
+        -0.01
+      ],
+      "displacement_fractional": [
+        0.0,
+        0.0,
+        -0.0019190911184463041
+      ],
+      "ecutrho_ry": 160,
+      "ecutwfc_ry": 40,
+      "expected_cartesian_positions_bohr": [
+        [
+          0.0,
+          0.0,
+          0.0
+        ],
+        [
+          3.0324435135221766,
+          1.750782078834363,
+          4.904595186013247
+        ]
+      ],
+      "expected_electrons": 4,
+      "expected_lattice_vectors_bohr": [
+        [
+          6.064887027044354,
+          0.0,
+          0.0
+        ],
+        [
+          -3.032443513522177,
+          5.252346236503089,
+          0.0
+        ],
+        [
+          0.0,
+          0.0,
+          9.84698489453565
+        ]
+      ],
+      "experiment_id": "S1-20260810-211",
+      "finite_temperature_semantics": "Mermin; entropy-corrected E_ec is not an exact zero-temperature label",
+      "kmesh": [
+        24,
+        24,
+        16
+      ],
+      "material": "mg",
+      "pair_id": "mg_displacement_c_z",
+      "perturbation_kind": "mg_displacement_c_z",
+      "protocol_revision": "S1-G1-DISPLACEMENT-STRAIN-REFERENCE-R1",
+      "pseudopotential": "mg.lda.lps",
+      "pseudopotential_sha256": "4b964580cfbd798708299bb0e0baef2f437983d29e6d7040f63b7532038b4259",
+      "scf_threshold": 1e-10,
+      "sign": "-",
+      "signed_amplitude": -0.01,
+      "smearing_sigma_ry": 0.001837465,
+      "solver": "ksdft",
+      "source_experiment_id": "S1-20260807-045",
+      "source_run_tree_oid": "6ffbe064f97f60e3f12782f49824740a854c7422",
+      "suffix": "g1dsr1_mg_211",
+      "zero_temperature_exact_claim": false
+    },
+    {
+      "amplitude": 0.005,
+      "amplitude_units": "dimensionless",
+      "atom_count": 2,
+      "base_commit": "f10008dd7a6e05cb8bf23f1ffd10e99e19b6083d",
+      "cube_precision": 17,
+      "deformation_action": "r_prime=F*r; row-lattice A_prime=A*F^T; Direct coordinates unchanged for strain",
+      "deformation_gradient_cartesian_column_convention": [
+        [
+          0.9975093361076329,
+          0.0,
+          0.0
+        ],
+        [
+          0.0,
+          0.9975093361076329,
+          0.0
+        ],
+        [
+          0.0,
+          0.0,
+          1.005
+        ]
+      ],
+      "displacement_cartesian_angstrom": [
+        0.0,
+        0.0,
+        0.0
+      ],
+      "displacement_fractional": [
+        0.0,
+        0.0,
+        0.0
+      ],
+      "ecutrho_ry": 160,
+      "ecutwfc_ry": 40,
+      "expected_cartesian_positions_bohr": [
+        [
+          0.0,
+          0.0,
+          0.0
+        ],
+        [
+          3.0248907159574037,
+          1.746421469127207,
+          4.948109909504164
+        ]
+      ],
+      "expected_electrons": 4,
+      "expected_lattice_vectors_bohr": [
+        [
+          6.049781431914808,
+          0.0,
+          0.0
+        ],
+        [
+          -3.024890715957404,
+          5.239264407381621,
+          0.0
+        ],
+        [
+          0.0,
+          0.0,
+          9.896219819008328
+        ]
+      ],
+      "experiment_id": "S1-20260810-212",
+      "finite_temperature_semantics": "Mermin; entropy-corrected E_ec is not an exact zero-temperature label",
+      "kmesh": [
+        24,
+        24,
+        16
+      ],
+      "material": "mg",
+      "pair_id": "mg_axial",
+      "perturbation_kind": "mg_axial",
+      "protocol_revision": "S1-G1-DISPLACEMENT-STRAIN-REFERENCE-R1",
+      "pseudopotential": "mg.lda.lps",
+      "pseudopotential_sha256": "4b964580cfbd798708299bb0e0baef2f437983d29e6d7040f63b7532038b4259",
+      "scf_threshold": 1e-10,
+      "sign": "+",
+      "signed_amplitude": 0.005,
+      "smearing_sigma_ry": 0.001837465,
+      "solver": "ksdft",
+      "source_experiment_id": "S1-20260807-045",
+      "source_run_tree_oid": "6ffbe064f97f60e3f12782f49824740a854c7422",
+      "suffix": "g1dsr1_mg_212",
+      "zero_temperature_exact_claim": false
+    },
+    {
+      "amplitude": 0.005,
+      "amplitude_units": "dimensionless",
+      "atom_count": 2,
+      "base_commit": "f10008dd7a6e05cb8bf23f1ffd10e99e19b6083d",
+      "cube_precision": 17,
+      "deformation_action": "r_prime=F*r; row-lattice A_prime=A*F^T; Direct coordinates unchanged for strain",
+      "deformation_gradient_cartesian_column_convention": [
+        [
+          1.002509414234171,
+          0.0,
+          0.0
+        ],
+        [
+          0.0,
+          1.002509414234171,
+          0.0
+        ],
+        [
+          0.0,
+          0.0,
+          0.995
+        ]
+      ],
+      "displacement_cartesian_angstrom": [
+        0.0,
+        0.0,
+        0.0
+      ],
+      "displacement_fractional": [
+        0.0,
+        0.0,
+        0.0
+      ],
+      "ecutrho_ry": 160,
+      "ecutwfc_ry": 40,
+      "expected_cartesian_positions_bohr": [
+        [
+          0.0,
+          0.0,
+          0.0
+        ],
+        [
+          3.0400531704393283,
+          1.7551755163039218,
+          4.898874985031486
+        ]
+      ],
+      "expected_electrons": 4,
+      "expected_lattice_vectors_bohr": [
+        [
+          6.0801063408786575,
+          0.0,
+          0.0
+        ],
+        [
+          -3.0400531704393288,
+          5.265526548911765,
+          0.0
+        ],
+        [
+          0.0,
+          0.0,
+          9.797749970062972
+        ]
+      ],
+      "experiment_id": "S1-20260810-213",
+      "finite_temperature_semantics": "Mermin; entropy-corrected E_ec is not an exact zero-temperature label",
+      "kmesh": [
+        24,
+        24,
+        16
+      ],
+      "material": "mg",
+      "pair_id": "mg_axial",
+      "perturbation_kind": "mg_axial",
+      "protocol_revision": "S1-G1-DISPLACEMENT-STRAIN-REFERENCE-R1",
+      "pseudopotential": "mg.lda.lps",
+      "pseudopotential_sha256": "4b964580cfbd798708299bb0e0baef2f437983d29e6d7040f63b7532038b4259",
+      "scf_threshold": 1e-10,
+      "sign": "-",
+      "signed_amplitude": -0.005,
+      "smearing_sigma_ry": 0.001837465,
+      "solver": "ksdft",
+      "source_experiment_id": "S1-20260807-045",
+      "source_run_tree_oid": "6ffbe064f97f60e3f12782f49824740a854c7422",
+      "suffix": "g1dsr1_mg_213",
+      "zero_temperature_exact_claim": false
+    },
+    {
+      "amplitude": 0.005,
+      "amplitude_units": "dimensionless",
+      "atom_count": 2,
+      "base_commit": "f10008dd7a6e05cb8bf23f1ffd10e99e19b6083d",
+      "cube_precision": 17,
+      "deformation_action": "r_prime=F*r; row-lattice A_prime=A*F^T; Direct coordinates unchanged for strain",
+      "deformation_gradient_cartesian_column_convention": [
+        [
+          1.0,
+          0.0,
+          0.005
+        ],
+        [
+          0.0,
+          1.0,
+          0.0
+        ],
+        [
+          0.0,
+          0.0,
+          1.0
+        ]
+      ],
+      "displacement_cartesian_angstrom": [
+        0.0,
+        0.0,
+        0.0
+      ],
+      "displacement_fractional": [
+        0.0,
+        0.0,
+        0.0
+      ],
+      "ecutrho_ry": 160,
+      "ecutwfc_ry": 40,
+      "expected_cartesian_positions_bohr": [
+        [
+          0.0,
+          0.0,
+          0.0
+        ],
+        [
+          3.0570609757585157,
+          1.750782078834363,
+          4.923492447267825
+        ]
+      ],
+      "expected_electrons": 4,
+      "expected_lattice_vectors_bohr": [
+        [
+          6.064887027044354,
+          0.0,
+          0.0
+        ],
+        [
+          -3.032443513522177,
+          5.252346236503089,
+          0.0
+        ],
+        [
+          0.04923492447267826,
+          0.0,
+          9.84698489453565
+        ]
+      ],
+      "experiment_id": "S1-20260810-214",
+      "finite_temperature_semantics": "Mermin; entropy-corrected E_ec is not an exact zero-temperature label",
+      "kmesh": [
+        24,
+        24,
+        16
+      ],
+      "material": "mg",
+      "pair_id": "mg_shear_xz",
+      "perturbation_kind": "mg_shear_xz",
+      "protocol_revision": "S1-G1-DISPLACEMENT-STRAIN-REFERENCE-R1",
+      "pseudopotential": "mg.lda.lps",
+      "pseudopotential_sha256": "4b964580cfbd798708299bb0e0baef2f437983d29e6d7040f63b7532038b4259",
+      "scf_threshold": 1e-10,
+      "sign": "+",
+      "signed_amplitude": 0.005,
+      "smearing_sigma_ry": 0.001837465,
+      "solver": "ksdft",
+      "source_experiment_id": "S1-20260807-045",
+      "source_run_tree_oid": "6ffbe064f97f60e3f12782f49824740a854c7422",
+      "suffix": "g1dsr1_mg_214",
+      "zero_temperature_exact_claim": false
+    },
+    {
+      "amplitude": 0.005,
+      "amplitude_units": "dimensionless",
+      "atom_count": 2,
+      "base_commit": "f10008dd7a6e05cb8bf23f1ffd10e99e19b6083d",
+      "cube_precision": 17,
+      "deformation_action": "r_prime=F*r; row-lattice A_prime=A*F^T; Direct coordinates unchanged for strain",
+      "deformation_gradient_cartesian_column_convention": [
+        [
+          1.0,
+          0.0,
+          -0.005
+        ],
+        [
+          0.0,
+          1.0,
+          0.0
+        ],
+        [
+          0.0,
+          0.0,
+          1.0
+        ]
+      ],
+      "displacement_cartesian_angstrom": [
+        0.0,
+        0.0,
+        0.0
+      ],
+      "displacement_fractional": [
+        0.0,
+        0.0,
+        0.0
+      ],
+      "ecutrho_ry": 160,
+      "ecutwfc_ry": 40,
+      "expected_cartesian_positions_bohr": [
+        [
+          0.0,
+          0.0,
+          0.0
+        ],
+        [
+          3.0078260512858375,
+          1.750782078834363,
+          4.923492447267825
+        ]
+      ],
+      "expected_electrons": 4,
+      "expected_lattice_vectors_bohr": [
+        [
+          6.064887027044354,
+          0.0,
+          0.0
+        ],
+        [
+          -3.032443513522177,
+          5.252346236503089,
+          0.0
+        ],
+        [
+          -0.04923492447267826,
+          0.0,
+          9.84698489453565
+        ]
+      ],
+      "experiment_id": "S1-20260810-215",
+      "finite_temperature_semantics": "Mermin; entropy-corrected E_ec is not an exact zero-temperature label",
+      "kmesh": [
+        24,
+        24,
+        16
+      ],
+      "material": "mg",
+      "pair_id": "mg_shear_xz",
+      "perturbation_kind": "mg_shear_xz",
+      "protocol_revision": "S1-G1-DISPLACEMENT-STRAIN-REFERENCE-R1",
+      "pseudopotential": "mg.lda.lps",
+      "pseudopotential_sha256": "4b964580cfbd798708299bb0e0baef2f437983d29e6d7040f63b7532038b4259",
+      "scf_threshold": 1e-10,
+      "sign": "-",
+      "signed_amplitude": -0.005,
+      "smearing_sigma_ry": 0.001837465,
+      "solver": "ksdft",
+      "source_experiment_id": "S1-20260807-045",
+      "source_run_tree_oid": "6ffbe064f97f60e3f12782f49824740a854c7422",
+      "suffix": "g1dsr1_mg_215",
+      "zero_temperature_exact_claim": false
+    }
+  ],
+  "execution": {
+    "abacus_path": "/home/shenwei01/wt_melting_runtime_20260724/build-abacus-wt-cpu/source/abacus_pw_para",
+    "abacus_sha256": "2d68a57c7b25608b3550854dabc2e63601eeca956bf185ad7d0967052bdbb4ba",
+    "activation_script": "environment/activate.sh",
+    "attempt_marker": "O_CREAT|O_EXCL before solver",
+    "hostname_exact": "node01",
+    "mpi_ranks_exact": 4,
+    "rank_logical_cpus_exact": [
+      40,
+      41,
+      42,
+      43
+    ],
+    "retry_policy": "none; every ID is single-use"
+  },
+  "pair_count_exact": 7,
+  "parents": {
+    "al": {
+      "electrons_per_atom": 3,
+      "id": "S1-20260807-043",
+      "kmesh": [
+        28,
+        28,
+        28
+      ],
+      "pseudo": "al.gga.psp",
+      "pseudo_sha256": "d76ceac60058e230eac514fc419269433a33b199eb6abfa7d6ab43cde248bd1d",
+      "tree": "f6aebad35880164176afe032f91e0de65d2aa456"
+    },
+    "mg": {
+      "electrons_per_atom": 2,
+      "id": "S1-20260807-045",
+      "kmesh": [
+        24,
+        24,
+        16
+      ],
+      "pseudo": "mg.lda.lps",
+      "pseudo_sha256": "4b964580cfbd798708299bb0e0baef2f437983d29e6d7040f63b7532038b4259",
+      "tree": "6ffbe064f97f60e3f12782f49824740a854c7422"
+    }
+  },
+  "protocol_revision": "S1-G1-DISPLACEMENT-STRAIN-REFERENCE-R1",
+  "run_count_exact": 15,
+  "run_ids_exact": [
+    "S1-20260810-201",
+    "S1-20260810-202",
+    "S1-20260810-203",
+    "S1-20260810-204",
+    "S1-20260810-205",
+    "S1-20260810-206",
+    "S1-20260810-207",
+    "S1-20260810-208",
+    "S1-20260810-209",
+    "S1-20260810-210",
+    "S1-20260810-211",
+    "S1-20260810-212",
+    "S1-20260810-213",
+    "S1-20260810-214",
+    "S1-20260810-215"
+  ],
+  "state_root": "/home/shenwei01/.local/state/m_ofdft/g1_displacement_strain_reference_r1_20260810",
+  "status": "preregistered"
+}

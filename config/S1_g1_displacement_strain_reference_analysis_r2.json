@@ -1,0 +1,71 @@
+{
+  "acceptance": {
+    "accepted_runs_exact": 15,
+    "central_difference_pairs_exact": 7,
+    "cube_geometry_absolute_tolerance_bohr": 5e-05,
+    "cube_output_precision_exact": 17,
+    "electron_number_relative_error_strictly_less_than": 1e-10,
+    "forces_and_stress_must_be_finite_and_complete": true,
+    "g4_acceptance_claim": false,
+    "independent_cartesian_displacement_error_angstrom_strictly_less_than": 1e-09,
+    "independent_deformation_matrix_error_strictly_less_than": 1e-12,
+    "pbc_atom_coordinate_rule": "delta_cartesian_to_fractional_via_inverse_lattice_then_subtract_nearest_integer_then_back_to_cartesian",
+    "registered_runs_exact": 15,
+    "stress_pressure_trace_absolute_error_kbar_strictly_less_than": 5e-05,
+    "stress_symmetry_absolute_error_kbar_strictly_less_than": 5e-08,
+    "thermodynamic_identity_residual_ev_per_atom_strictly_less_than": 1e-08,
+    "thermodynamic_labels_exact": [
+      "F",
+      "m",
+      "U",
+      "E_ec",
+      "E_one_elec",
+      "E_localpp",
+      "T_sU",
+      "F_s",
+      "E_Hartree",
+      "E_xc",
+      "E_Ewald",
+      "mu"
+    ]
+  },
+  "analysis_only": true,
+  "analysis_root": "analysis/s1/g1_displacement_strain_reference_analysis_r2_20260810",
+  "correction": {
+    "lattice_axis_comparison": "absolute Cartesian, never PBC-reduced",
+    "r1_false_negative_experiment_id": "S1-20260810-203",
+    "r1_failure_mode": "legal periodic wrapping of a cube atom row was compared by raw Cartesian subtraction",
+    "r2_atom_comparison": "minimum image in fractional coordinates using the frozen STRU lattice",
+    "solver_rerun_required": false
+  },
+  "protocol_revision": "S1-G1-DISPLACEMENT-STRAIN-REFERENCE-ANALYSIS-R2",
+  "run_count_exact": 15,
+  "run_ids_exact": [
+    "S1-20260810-201",
+    "S1-20260810-202",
+    "S1-20260810-203",
+    "S1-20260810-204",
+    "S1-20260810-205",
+    "S1-20260810-206",
+    "S1-20260810-207",
+    "S1-20260810-208",
+    "S1-20260810-209",
+    "S1-20260810-210",
+    "S1-20260810-211",
+    "S1-20260810-212",
+    "S1-20260810-213",
+    "S1-20260810-214",
+    "S1-20260810-215"
+  ],
+  "source_execution": {
+    "formal_git_head": "bfb9bfc932317208f1aed8a69002ad252f10c6f5",
+    "protocol_revision": "S1-G1-DISPLACEMENT-STRAIN-REFERENCE-R1",
+    "source_config_path": "config/S1_g1_displacement_strain_reference_r1.json",
+    "source_config_sha256": "d54d44190f6feb6bc6ac0e71db31a56869427b48a39b7e52df5e417738df4266",
+    "source_manifest_path": "config/S1_g1_displacement_strain_reference_r1_manifest.tsv",
+    "source_manifest_sha256": "8fe474dcf600285b7772b1c034159d1a0f1986f2ba8cf7138de115ab972c7243",
+    "state_root": "/home/shenwei01/.local/state/m_ofdft/g1_displacement_strain_reference_r1_20260810"
+  },
+  "state_root": "/home/shenwei01/.local/state/m_ofdft/g1_displacement_strain_reference_r1_20260810",
+  "status": "preregistered_analysis_only"
+}

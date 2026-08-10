@@ -1,0 +1,6 @@
+hostname=node01
+rank=1
+pid=2004014
+requested_cpu=41
+affinity_before=0-151
+affinity_after=41
