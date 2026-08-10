@@ -1,0 +1,77 @@
+{
+  "atom_count": 2,
+  "ecutrho_ry": 336,
+  "ecutwfc_ry": 84,
+  "expected_electrons": 20.0,
+  "experiment_id": "S1-20260810-304",
+  "hostname": "node01",
+  "input_identity": {
+    "INPUT_sha256": "f72c4751a68a408a126298f9bac3edcc0f7a879403ca6ee9620ecd325172a765",
+    "KPT_sha256": "d59f4a8d01e74f7ec8fb53fe7de304457198bb3b6da2d7dcebba6c08c3330c4f",
+    "STRU_sha256": "7831563226e88cdce4bd03a2dacf6a0c58ad6a2649b25c88892c0b21507ce97a",
+    "config_sha256": "6e644efe5851c85bb9d2631df485bf6e6447ee943939647a65d4067e3fd9fc04",
+    "manifest_sha256": "e3c6658314c0fac66e946b8c9c8025da012b19989dbf3c6ec2ddc56e0537bdbc"
+  },
+  "kmesh": [
+    24,
+    24,
+    16
+  ],
+  "material": "mg",
+  "phase": "p0",
+  "protocol_revision": "S1-G1-THREE-LAYER-20260810-R1",
+  "pseudo": {
+    "basename": "Mg_std.upf",
+    "format": "upf201",
+    "sha256": "15cdd9380687a47a1f4bc4ab5fe1f0c6d9c50891350fd8534c8f292b3ce0be14",
+    "upstream_commit": "823b18f7701b6303e0e69114eaa645173f706600",
+    "upstream_url": "https://raw.githubusercontent.com/PseudoDojo/ONCVPSP-PBE-SR/823b18f7701b6303e0e69114eaa645173f706600/Mg/Mg_std.upf"
+  },
+  "pseudo_runtime_identity": {
+    "basename": "Mg_std.upf",
+    "beta_angular_momenta": [
+      0,
+      0,
+      1,
+      1
+    ],
+    "core_correction": false,
+    "expanded_nonlocal_projectors_per_atom": 8,
+    "functional": "PBE",
+    "number_of_proj": 4,
+    "pp_beta_element_count": 4,
+    "pp_dij_present": true,
+    "pseudo_type": "NC",
+    "sha256": "15cdd9380687a47a1f4bc4ab5fe1f0c6d9c50891350fd8534c8f292b3ce0be14",
+    "upf_version": "2.0.1",
+    "z_valence": 10.0
+  },
+  "requirement": "p0_required",
+  "role": "normal_common",
+  "runner_commit": "439bf90049551f2b54bf6a17e0fb8689f5dfb100",
+  "runtime": {
+    "binary": "/home/shenwei01/wt_melting_runtime_20260724/build-abacus-wt-cpu/source/abacus_pw_para",
+    "binary_sha256": "2d68a57c7b25608b3550854dabc2e63601eeca956bf185ad7d0967052bdbb4ba",
+    "map_by": "pe-list=30,31,32,33:ordered",
+    "mpi": "/home/shenwei01/wt_melting_runtime_20260724/conda_prefix/bin/mpirun",
+    "physical_core_ids": [
+      30,
+      31,
+      32,
+      33
+    ],
+    "rank_count": 4
+  },
+  "schema_version": 1,
+  "started_utc": "2026-08-10T04:26:46.082887Z",
+  "suffix": "g1tlr1_mg_v100_normal_common",
+  "thermodynamic_semantics": {
+    "E_ec": "F-m/2; finite-smearing estimator",
+    "F": "E_KohnSham=!FINAL_ETOT_IS",
+    "U": "F-m",
+    "local_only_kinetic_decomposition_claim": false,
+    "m": "E_entropy(-TS)<=0",
+    "zero_temperature_exact_claim": false
+  },
+  "volume_ratio": "1.00"
+}

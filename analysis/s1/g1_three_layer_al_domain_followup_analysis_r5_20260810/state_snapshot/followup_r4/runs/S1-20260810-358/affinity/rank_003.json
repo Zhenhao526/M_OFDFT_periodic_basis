@@ -1,0 +1,47 @@
+{
+  "accepted": true,
+  "config_sha256": "a9b3f01ed54bd57659af20c91bc14baeb63aa653b62e83650e7337a2eae630c6",
+  "hostname": "node01",
+  "local_rank": 3,
+  "logical_cpu_affinity": [
+    33,
+    109
+  ],
+  "mode": "solver",
+  "os_logical_cpu_affinity": [
+    33,
+    109
+  ],
+  "physical_package_id": 0,
+  "pid_before_exec": 2215415,
+  "primary_os_logical_cpu_id": 33,
+  "protocol_revision": "S1-G1-THREE-LAYER-AL-DOMAIN-FOLLOWUP-20260810-R4",
+  "rank": 3,
+  "rank_wrapper_sha256": "a1dd3e7f954f014500a01487e2ca8e86c2cda5803e50f324125d362c97a89a49",
+  "schema_version": 1,
+  "sysfs_core_id": 33,
+  "thread_siblings": [
+    33,
+    109
+  ],
+  "topology": [
+    {
+      "os_logical_cpu_id": 33,
+      "physical_package_id": 0,
+      "sysfs_core_id": 33,
+      "thread_siblings": [
+        33,
+        109
+      ]
+    },
+    {
+      "os_logical_cpu_id": 109,
+      "physical_package_id": 0,
+      "sysfs_core_id": 33,
+      "thread_siblings": [
+        33,
+        109
+      ]
+    }
+  ]
+}

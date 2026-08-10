@@ -1,0 +1,258 @@
+{
+  "affinity": {
+    "accepted": true,
+    "physical_core_ids": [
+      30,
+      31,
+      32,
+      33
+    ],
+    "rank_count": 4,
+    "ranks": [
+      {
+        "accepted": true,
+        "evidence_sha256": "763a89ab0dda908ca2e980b111a9d4211857b959dcb3002c3bd21c86107776a7",
+        "expected_physical_core_id": 30,
+        "hostname": "node01",
+        "local_rank": 0,
+        "logical_cpu_affinity": [
+          30,
+          106
+        ],
+        "physical_core_ids": [
+          30
+        ],
+        "pid_before_exec": 2002667,
+        "rank": 0,
+        "schema_version": 1,
+        "topology": [
+          {
+            "core_id": 30,
+            "logical_cpu": 30,
+            "socket_id": 0
+          },
+          {
+            "core_id": 30,
+            "logical_cpu": 106,
+            "socket_id": 0
+          }
+        ]
+      },
+      {
+        "accepted": true,
+        "evidence_sha256": "20ffb6a7ecdfd690be39ad3720f1ec7b4d03746f7ccb598983f0795b0b8845bf",
+        "expected_physical_core_id": 31,
+        "hostname": "node01",
+        "local_rank": 1,
+        "logical_cpu_affinity": [
+          31,
+          107
+        ],
+        "physical_core_ids": [
+          31
+        ],
+        "pid_before_exec": 2002668,
+        "rank": 1,
+        "schema_version": 1,
+        "topology": [
+          {
+            "core_id": 31,
+            "logical_cpu": 31,
+            "socket_id": 0
+          },
+          {
+            "core_id": 31,
+            "logical_cpu": 107,
+            "socket_id": 0
+          }
+        ]
+      },
+      {
+        "accepted": true,
+        "evidence_sha256": "1709505c1d90063e0dd15554e288d0f8a75ea5d8515b2acbfe8f843755ea5dde",
+        "expected_physical_core_id": 32,
+        "hostname": "node01",
+        "local_rank": 2,
+        "logical_cpu_affinity": [
+          32,
+          108
+        ],
+        "physical_core_ids": [
+          32
+        ],
+        "pid_before_exec": 2002669,
+        "rank": 2,
+        "schema_version": 1,
+        "topology": [
+          {
+            "core_id": 32,
+            "logical_cpu": 32,
+            "socket_id": 0
+          },
+          {
+            "core_id": 32,
+            "logical_cpu": 108,
+            "socket_id": 0
+          }
+        ]
+      },
+      {
+        "accepted": true,
+        "evidence_sha256": "c394531bd7c5bff9a3a8998919b752d3f444cb2e51679eaa1a8e21c635a36ec5",
+        "expected_physical_core_id": 33,
+        "hostname": "node01",
+        "local_rank": 3,
+        "logical_cpu_affinity": [
+          33,
+          109
+        ],
+        "physical_core_ids": [
+          33
+        ],
+        "pid_before_exec": 2002670,
+        "rank": 3,
+        "schema_version": 1,
+        "topology": [
+          {
+            "core_id": 33,
+            "logical_cpu": 33,
+            "socket_id": 0
+          },
+          {
+            "core_id": 33,
+            "logical_cpu": 109,
+            "socket_id": 0
+          }
+        ]
+      }
+    ]
+  },
+  "atom_count": 2,
+  "electron_number": {
+    "accepted": true,
+    "cube_grid": [
+      36,
+      36,
+      60
+    ],
+    "cube_voxel_volume_bohr3": 0.004033881001645115,
+    "integrated_cube": 19.999999999985494,
+    "relative_error": 7.252864975271223e-13,
+    "reported": 20.0,
+    "strict_limit": 1e-10
+  },
+  "evidence_files": [
+    {
+      "path": "INPUT",
+      "sha256": "1e7d0550d11febb98a59bd12b363f48389fdce8b1e8865336c7f37225858a3be",
+      "size_bytes": 353
+    },
+    {
+      "path": "STRU",
+      "sha256": "7831563226e88cdce4bd03a2dacf6a0c58ad6a2649b25c88892c0b21507ce97a",
+      "size_bytes": 430
+    },
+    {
+      "path": "KPT",
+      "sha256": "d24e7b65bd0c4fb95d3043b693398eda4e85829f6358bb00f8be3ea1d83d02d5",
+      "size_bytes": 32
+    },
+    {
+      "path": "metadata.json",
+      "sha256": "35a3f6b12cfc659c01ce9d5c011582532880b4bf40bd6d75f7a125b6f95e0a7f",
+      "size_bytes": 2556
+    },
+    {
+      "path": "run.stdout",
+      "sha256": "cacdb453274e82f74a2986020d8dcf3568b76a31472a9fd22f9ffc149ad3659b",
+      "size_bytes": 6714
+    },
+    {
+      "path": "run.stderr",
+      "sha256": "8253437bf1eaca134d03aad6025ddcb7a92474c5d01621fb1d1ad9db5fdd71fb",
+      "size_bytes": 318
+    },
+    {
+      "path": "OUT.g1tlr1_mg_v100_normal_extra/running_scf.log",
+      "sha256": "1a2aa03af5dc0918be48d41330edb1a945c3f1bb7a3e75950cb2a6fefcb25378",
+      "size_bytes": 1581893
+    },
+    {
+      "path": "OUT.g1tlr1_mg_v100_normal_extra/chg.cube",
+      "sha256": "5e4fa180de688fcb1dab1027d21c0ce9fd534e4a871bfadb6db1b7c1cefa894a",
+      "size_bytes": 1879530
+    },
+    {
+      "path": "affinity/rank_000.json",
+      "sha256": "763a89ab0dda908ca2e980b111a9d4211857b959dcb3002c3bd21c86107776a7",
+      "size_bytes": 434
+    },
+    {
+      "path": "affinity/rank_001.json",
+      "sha256": "20ffb6a7ecdfd690be39ad3720f1ec7b4d03746f7ccb598983f0795b0b8845bf",
+      "size_bytes": 434
+    },
+    {
+      "path": "affinity/rank_002.json",
+      "sha256": "1709505c1d90063e0dd15554e288d0f8a75ea5d8515b2acbfe8f843755ea5dde",
+      "size_bytes": 434
+    },
+    {
+      "path": "affinity/rank_003.json",
+      "sha256": "c394531bd7c5bff9a3a8998919b752d3f444cb2e51679eaa1a8e21c635a36ec5",
+      "size_bytes": 434
+    }
+  ],
+  "expected_electrons": 20.0,
+  "experiment_id": "S1-20260810-305",
+  "material": "mg",
+  "phase": "p0",
+  "pressure_gpa": -0.40032389999999995,
+  "pressure_kbar": -4.003239,
+  "protocol_revision": "S1-G1-THREE-LAYER-20260810-R1",
+  "pseudo_identity": {
+    "basename": "Mg_std.upf",
+    "beta_angular_momenta": [
+      0,
+      0,
+      1,
+      1
+    ],
+    "core_correction": false,
+    "expanded_nonlocal_projectors_per_atom": 8,
+    "functional": "PBE",
+    "number_of_proj": 4,
+    "pp_beta_element_count": 4,
+    "pp_dij_present": true,
+    "pseudo_type": "NC",
+    "sha256": "15cdd9380687a47a1f4bc4ab5fe1f0c6d9c50891350fd8534c8f292b3ce0be14",
+    "upf_version": "2.0.1",
+    "z_valence": 10.0
+  },
+  "requirement": "p0_required",
+  "role": "normal_extra_k",
+  "runtime_nonlocal_projectors_total": 16,
+  "schema_version": 1,
+  "semantic_limits": {
+    "entropy_corrected_estimator": "finite-smearing E_ec=F-m/2",
+    "local_only_T_sU_identity_applied": false,
+    "nonlocal_kinetic_decomposition_claim": false,
+    "zero_temperature_exact_claim": false
+  },
+  "status": "accepted",
+  "thermodynamic_labels_ev_per_atom": {
+    "E_ec": -1616.2504023039,
+    "F": -1616.2508717148971,
+    "U": -1616.249932892897,
+    "m": -0.000938822,
+    "mu": 5.5073036373
+  },
+  "thermodynamic_labels_ev_per_cell": {
+    "E_ec": -3232.5008046078,
+    "F": -3232.5017434297943,
+    "U": -3232.499865785794,
+    "m": -0.001877644,
+    "mu": 5.5073036373
+  },
+  "volume_ratio": 1.0
+}

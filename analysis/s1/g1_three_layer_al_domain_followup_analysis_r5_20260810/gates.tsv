@@ -1,0 +1,11 @@
+gate	point	metric	value	limit	inequality	accepted
+strain	S1-20260810-351	absolute_scheme_and_construction_difference_mev_per_atom	0.23832079999408506	20.0	<=	True
+strain	S1-20260810-352	absolute_scheme_and_construction_difference_mev_per_atom	0.23433039999787297	20.0	<=	True
+strain	S1-20260810-353	absolute_scheme_and_construction_difference_mev_per_atom	0.004608300010033872	20.0	<=	True
+strain	S1-20260810-354	absolute_scheme_and_construction_difference_mev_per_atom	0.004608400004713076	20.0	<=	True
+endpoint	v090	anchored_k_difference_mev_per_atom	0.008772699999326505	2.0	<	True
+endpoint	v090	anchored_cutoff_difference_mev_per_atom	0.11227989999440524	1.0	<	True
+endpoint	v090	cutoff_pressure_difference_gpa	0.004055200000001591	0.02	<	True
+endpoint	v110	anchored_k_difference_mev_per_atom	0.0917003000040495	2.0	<	True
+endpoint	v110	anchored_cutoff_difference_mev_per_atom	0.03827180000826047	1.0	<	True
+endpoint	v110	cutoff_pressure_difference_gpa	0.002397900000000952	0.02	<	True

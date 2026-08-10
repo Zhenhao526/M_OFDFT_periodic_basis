@@ -1,0 +1,294 @@
+{
+  "case_live_preflight": {
+    "abacus_collisions": [],
+    "accepted": true,
+    "collision_scan_scope": "live ABACUS solver comm plus three-layer rank-wrapper command lines; complete reserved OS logical/SMT domain",
+    "hostname": "node01",
+    "online_os_logical_cpus": [
+      0,
+      1,
+      2,
+      3,
+      4,
+      5,
+      6,
+      7,
+      8,
+      9,
+      10,
+      11,
+      12,
+      13,
+      14,
+      15,
+      16,
+      17,
+      18,
+      19,
+      20,
+      21,
+      22,
+      23,
+      24,
+      25,
+      26,
+      27,
+      28,
+      29,
+      30,
+      31,
+      32,
+      33,
+      34,
+      35,
+      36,
+      37,
+      38,
+      39,
+      40,
+      41,
+      42,
+      43,
+      44,
+      45,
+      46,
+      47,
+      48,
+      49,
+      50,
+      51,
+      52,
+      53,
+      54,
+      55,
+      56,
+      57,
+      58,
+      59,
+      60,
+      61,
+      62,
+      63,
+      64,
+      65,
+      66,
+      67,
+      68,
+      69,
+      70,
+      71,
+      72,
+      73,
+      74,
+      75,
+      76,
+      77,
+      78,
+      79,
+      80,
+      81,
+      82,
+      83,
+      84,
+      85,
+      86,
+      87,
+      88,
+      89,
+      90,
+      91,
+      92,
+      93,
+      94,
+      95,
+      96,
+      97,
+      98,
+      99,
+      100,
+      101,
+      102,
+      103,
+      104,
+      105,
+      106,
+      107,
+      108,
+      109,
+      110,
+      111,
+      112,
+      113,
+      114,
+      115,
+      116,
+      117,
+      118,
+      119,
+      120,
+      121,
+      122,
+      123,
+      124,
+      125,
+      126,
+      127,
+      128,
+      129,
+      130,
+      131,
+      132,
+      133,
+      134,
+      135,
+      136,
+      137,
+      138,
+      139,
+      140,
+      141,
+      142,
+      143,
+      144,
+      145,
+      146,
+      147,
+      148,
+      149,
+      150,
+      151
+    ],
+    "primary_os_logical_cpu_ids_by_rank": [
+      30,
+      31,
+      32,
+      33
+    ],
+    "required_physical_package_id": 0,
+    "reserved_os_logical_cpus": [
+      30,
+      31,
+      32,
+      33,
+      106,
+      107,
+      108,
+      109
+    ],
+    "sysfs_core_id_by_rank": [
+      30,
+      31,
+      32,
+      33
+    ],
+    "thread_siblings_by_rank": [
+      [
+        30,
+        106
+      ],
+      [
+        31,
+        107
+      ],
+      [
+        32,
+        108
+      ],
+      [
+        33,
+        109
+      ]
+    ],
+    "topology_by_rank": [
+      [
+        {
+          "os_logical_cpu_id": 30,
+          "physical_package_id": 0,
+          "sysfs_core_id": 30,
+          "thread_siblings": [
+            30,
+            106
+          ]
+        },
+        {
+          "os_logical_cpu_id": 106,
+          "physical_package_id": 0,
+          "sysfs_core_id": 30,
+          "thread_siblings": [
+            30,
+            106
+          ]
+        }
+      ],
+      [
+        {
+          "os_logical_cpu_id": 31,
+          "physical_package_id": 0,
+          "sysfs_core_id": 31,
+          "thread_siblings": [
+            31,
+            107
+          ]
+        },
+        {
+          "os_logical_cpu_id": 107,
+          "physical_package_id": 0,
+          "sysfs_core_id": 31,
+          "thread_siblings": [
+            31,
+            107
+          ]
+        }
+      ],
+      [
+        {
+          "os_logical_cpu_id": 32,
+          "physical_package_id": 0,
+          "sysfs_core_id": 32,
+          "thread_siblings": [
+            32,
+            108
+          ]
+        },
+        {
+          "os_logical_cpu_id": 108,
+          "physical_package_id": 0,
+          "sysfs_core_id": 32,
+          "thread_siblings": [
+            32,
+            108
+          ]
+        }
+      ],
+      [
+        {
+          "os_logical_cpu_id": 33,
+          "physical_package_id": 0,
+          "sysfs_core_id": 33,
+          "thread_siblings": [
+            33,
+            109
+          ]
+        },
+        {
+          "os_logical_cpu_id": 109,
+          "physical_package_id": 0,
+          "sysfs_core_id": 33,
+          "thread_siblings": [
+            33,
+            109
+          ]
+        }
+      ]
+    ]
+  },
+  "config_sha256": "a9b3f01ed54bd57659af20c91bc14baeb63aa653b62e83650e7337a2eae630c6",
+  "created_utc": "2026-08-10T10:29:15.429061Z",
+  "experiment_id": "S1-20260810-351",
+  "manifest_sha256": "b9cb926d804edc43b548d93ec44125bf980f4e3915dac8b73980ba85bd6bff6b",
+  "protocol_revision": "S1-G1-THREE-LAYER-AL-DOMAIN-FOLLOWUP-20260810-R4",
+  "retry_policy": "same_id_forbidden_new_revision_and_new_ids_only",
+  "runner_commit": "0c60b0613c5c180f05256ad160d287fe4a5bae8a",
+  "schema_version": 1,
+  "status": "formal_attempt_started"
+}
