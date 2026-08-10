@@ -1,0 +1,137 @@
+{
+  "schema_version": 1,
+  "protocol_revision": "S1-G1-THREE-LAYER-20260810-R1",
+  "base_commit": "f10008dd7a6e05cb8bf23f1ffd10e99e19b6083d",
+  "manifest": "config/S1_g1_three_layer_r1_manifest.tsv",
+  "input_root": "inputs/s1/g1_three_layer_r1",
+  "analysis_root": "analysis/s1/g1_three_layer_r1_20260810",
+  "external_state_root": "/home/shenwei01/.local/state/m_ofdft/s1_g1_three_layer_r1_20260810",
+  "external_pseudo_cache": "/home/shenwei01/.local/state/m_ofdft/pseudos/pseudodojo_oncvpsp_pbe_sr_823b18f",
+  "runtime": {
+    "required_hostname": "node01",
+    "binary": "/home/shenwei01/wt_melting_runtime_20260724/build-abacus-wt-cpu/source/abacus_pw_para",
+    "binary_sha256": "2d68a57c7b25608b3550854dabc2e63601eeca956bf185ad7d0967052bdbb4ba",
+    "abacus_version": "v3.11.0-beta.5",
+    "official_tag": "v3.11.0-beta5",
+    "official_commit": "ee6ec4cdc8956d2f14d84d01a05b8f7e733dfad0",
+    "mpi": "/home/shenwei01/wt_melting_runtime_20260724/conda_prefix/bin/mpirun",
+    "prefix": "/home/shenwei01/wt_melting_runtime_20260724/conda_prefix",
+    "rank_count": 4,
+    "physical_core_ids": [30, 31, 32, 33],
+    "map_by": "pe-list=30,31,32,33:ordered",
+    "omp_num_threads": 1,
+    "per_run_timeout_seconds": 7200
+  },
+  "pseudodojo": {
+    "repository": "PseudoDojo/ONCVPSP-PBE-SR",
+    "commit": "823b18f7701b6303e0e69114eaa645173f706600",
+    "license_note": "UPF bodies say GNU GPL, repository has no standalone LICENSE; cache exact upstream bytes outside this repository pending redistribution clarification",
+    "materials": {
+      "al": {
+        "basename": "Al_std.upf",
+        "url": "https://raw.githubusercontent.com/PseudoDojo/ONCVPSP-PBE-SR/823b18f7701b6303e0e69114eaa645173f706600/Al/Al_std.upf",
+        "sha256": "b02eaa07c5d98f5eeae1bec4155854a7a94ea3635ca6b42e914f3f7ebd6912fb",
+        "git_blob_sha1": "aee4e3ac1868beb75b7d36c7a400a79df147bf38",
+        "upf_version": "2.0.1",
+        "pseudo_type": "NC",
+        "functional": "PBE",
+        "z_valence": 3.0,
+        "number_of_proj_per_atom": 6,
+        "expanded_nonlocal_projectors_per_atom": 18,
+        "core_correction": true,
+        "official_hints_hartree": {"low": 16, "normal": 20, "high": 26},
+        "scan_ry": {"normal": 40, "high": 52}
+      },
+      "mg": {
+        "basename": "Mg_std.upf",
+        "url": "https://raw.githubusercontent.com/PseudoDojo/ONCVPSP-PBE-SR/823b18f7701b6303e0e69114eaa645173f706600/Mg/Mg_std.upf",
+        "sha256": "15cdd9380687a47a1f4bc4ab5fe1f0c6d9c50891350fd8534c8f292b3ce0be14",
+        "git_blob_sha1": "e5cb8378fd905e8639e3767380fdfe616fc841a4",
+        "upf_version": "2.0.1",
+        "pseudo_type": "NC",
+        "functional": "PBE",
+        "z_valence": 10.0,
+        "number_of_proj_per_atom": 4,
+        "expanded_nonlocal_projectors_per_atom": 8,
+        "core_correction": false,
+        "official_hints_hartree": {"low": 38, "normal": 42, "high": 48},
+        "scan_ry": {"normal": 84, "high": 96}
+      }
+    }
+  },
+  "scientific_scope": {
+    "hard_gate_materials": ["al"],
+    "diagnostic_only_materials": ["mg"],
+    "al_comparison": "same-engine PBE/3e LPP-scheme-bias upper bound; PP construction remains confounded",
+    "mg_comparison": "compatibility/convergence diagnostic only because new KS-NL is PBE/10e and legacy KS-L/OF-L is LDA-PZ/2e",
+    "second_independent_ks_closed": false,
+    "qe_d026_scope_closed": false,
+    "zero_temperature_exact_claim": false,
+    "nonlocal_kinetic_decomposition_claim": false
+  },
+  "materials": {
+    "al": {
+      "element": "Al",
+      "mass": 26.9815385,
+      "structure": "fcc_primitive",
+      "a0_angstrom": 4.05,
+      "atom_count": 1,
+      "expected_electrons": 3.0,
+      "common_kmesh": [28, 28, 28],
+      "extra_kmesh": [32, 32, 32]
+    },
+    "mg": {
+      "element": "Mg",
+      "mass": 24.305,
+      "structure": "hcp_primitive",
+      "a0_angstrom": 3.2094,
+      "c0_angstrom": 5.2108,
+      "atom_count": 2,
+      "expected_electrons": 20.0,
+      "common_kmesh": [24, 24, 16],
+      "extra_kmesh": [28, 28, 18]
+    }
+  },
+  "input_contract": {
+    "volume_ratios": [0.90, 0.94, 0.97, 1.00, 1.03, 1.06, 1.10],
+    "smearing_method": "fd",
+    "smearing_sigma_ry": 0.001837465,
+    "scf_thr": 1e-10,
+    "scf_nmax": 200,
+    "ecutrho_over_ecutwfc": 4,
+    "dft_functional": "PBE",
+    "basis_type": "pw",
+    "vnl_in_h": true,
+    "upf_format": "upf201",
+    "density_cube_precision": 17,
+    "fresh_start_required": true
+  },
+  "acceptance": {
+    "electron_relative_error_strictly_less_than": 1e-10,
+    "p0_cutoff_energy_difference_mev_per_atom_strictly_less_than": 1.0,
+    "p0_cutoff_pressure_difference_gpa_strictly_less_than": 0.02,
+    "p0_k_energy_difference_mev_per_atom_strictly_less_than": 2.0,
+    "bm3_max_abs_residual_mev_per_atom_strictly_less_than": 1.0,
+    "al_ksl_vs_ksnl_equilibrium_volume_difference_percent_max": 0.5,
+    "al_ksl_vs_ksnl_bulk_modulus_difference_percent_max": 10.0,
+    "ofdft_vs_ksl_equilibrium_volume_difference_percent_max": 1.0,
+    "ofdft_vs_ksl_bulk_modulus_difference_percent_max": 10.0,
+    "failed_or_missing_required_runs_max": 0
+  },
+  "references": {
+    "al": {
+      "ks_l": ["S1-20260807-047", "S1-20260807-073", "S1-20260807-074", "S1-20260807-043", "S1-20260807-075", "S1-20260807-076", "S1-20260807-049"],
+      "of_l": ["S1-20260805-071", "S1-20260805-072", "S1-20260805-073", "S1-20260805-074", "S1-20260805-075", "S1-20260805-076", "S1-20260805-077"]
+    },
+    "mg": {
+      "ks_l": ["S1-20260807-051", "S1-20260807-077", "S1-20260807-078", "S1-20260807-045", "S1-20260807-079", "S1-20260807-080", "S1-20260807-041"],
+      "of_l": ["S1-20260805-092", "S1-20260805-093", "S1-20260805-094", "S1-20260805-095", "S1-20260805-096", "S1-20260805-097", "S1-20260805-098"]
+    }
+  },
+  "execution_phases": {
+    "p0": ["S1-20260810-301", "S1-20260810-302", "S1-20260810-303", "S1-20260810-304", "S1-20260810-305", "S1-20260810-306"],
+    "al_eos": ["S1-20260810-307", "S1-20260810-308", "S1-20260810-309", "S1-20260810-310", "S1-20260810-311", "S1-20260810-312"],
+    "mg_required": ["S1-20260810-313", "S1-20260810-314"],
+    "mg_optional": ["S1-20260810-315", "S1-20260810-316", "S1-20260810-317", "S1-20260810-318"]
+  }
+}
