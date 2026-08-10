@@ -31,6 +31,12 @@ def require_ancestor(project_root: Path, ancestor: str, descendant: str) -> None
     require(completed.returncode == 0, f"not an ancestor: {ancestor} -> {descendant}")
 
 
+def require_commit_object(project_root: Path, commit: str) -> None:
+    require(isinstance(commit, str) and len(commit) == 40, "invalid frozen commit identity")
+    completed = subprocess.run(["git", "cat-file", "-e", f"{commit}^{{commit}}"], cwd=project_root, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
+    require(completed.returncode == 0, f"frozen source commit object is unavailable: {commit}")
+
+
 def validate_preregistered(project_root: Path, config: dict, rows: list[dict[str, str]]) -> dict:
     head = require_clean_tree(project_root)
     require(config["external_state_root"] == "/home/shenwei01/.local/state/m_ofdft/s1_g1_three_layer_al_domain_followup_r2_20260810", "external state path differs")
@@ -53,7 +59,9 @@ def validate_preregistered(project_root: Path, config: dict, rows: list[dict[str
     require_ancestor(project_root, implementation, head)
     require_ancestor(project_root, config["r1_followup_closure_commit"], head)
     require_ancestor(project_root, config["inherited_three_layer_preregistration_commit"], head)
-    require_ancestor(project_root, continuation["preregistration_commit"], head)
+    # The continuation is an independent branch/state source; its exact commit
+    # must exist locally but need not be merged into the follow-up branch.
+    require_commit_object(project_root, continuation["preregistration_commit"])
     require(head != implementation, "formal preregistration must follow implementation commit")
     closure = read_json(project_root / "analysis/s1/g1_three_layer_al_domain_followup_r1_20260810/superseded_before_execution.json")
     require(isinstance(closure, dict) and closure.get("status") == "superseded_before_execution", "R1 follow-up closure missing")

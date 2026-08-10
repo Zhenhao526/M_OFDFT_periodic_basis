@@ -21,6 +21,7 @@ from run_s1_g1_three_layer_al_followup_r2 import (  # noqa: E402
     acquire_core_locks,
     validate_core_reservation_ack,
     verify_accepted_source,
+    verify_parent_sources,
 )
 from s1_g1_three_layer_al_followup_r2_common import (  # noqa: E402
     canonical_json_bytes,
@@ -28,6 +29,7 @@ from s1_g1_three_layer_al_followup_r2_common import (  # noqa: E402
     parse_cpu_list,
     render_strain_from_base,
     sha256_bytes,
+    sha256_file,
     verify_strain_geometry,
 )
 
@@ -141,6 +143,95 @@ class AlDomainFollowupR2Tests(unittest.TestCase):
             marker_path.write_bytes(canonical_json_bytes(marker))
             with self.assertRaises(ValueError):
                 verify_accepted_source(root, experiment_id, session)
+
+    def test_parent_gate_requires_recovery_and_endpoint_phase_closure(self) -> None:
+        old_protocol = "OLD-R1"
+        continuation_protocol = "CONT-R2"
+        old_runner = "a" * 40
+        continuation_runner = "b" * 40
+        pseudo_sha = "c" * 64
+
+        def write_source(root: Path, experiment_id: str, protocol: str, runner: str, *, al: bool) -> dict:
+            run = root / "runs" / experiment_id
+            run.mkdir(parents=True)
+            input_bytes = f"input {experiment_id}\n".encode()
+            stru_bytes = b"registered endpoint geometry\n" if experiment_id in {"S1-20260810-327", "S1-20260810-328"} else f"stru {experiment_id}\n".encode()
+            (run / "INPUT").write_bytes(input_bytes)
+            (run / "STRU").write_bytes(stru_bytes)
+            evidence = [
+                {"path": "INPUT", "sha256": sha256_bytes(input_bytes), "size_bytes": len(input_bytes)},
+                {"path": "STRU", "sha256": sha256_bytes(stru_bytes), "size_bytes": len(stru_bytes)},
+            ]
+            result = {
+                "schema_version": 1, "protocol_revision": protocol, "status": "accepted",
+                "experiment_id": experiment_id, "evidence_files": evidence,
+                "runtime_nonlocal_projectors_total": 18,
+                "pseudo_identity": {"sha256": pseudo_sha if al else "d" * 64},
+            }
+            (run / "result.json").write_bytes(canonical_json_bytes(result))
+            (run / "runner_return.json").write_bytes(canonical_json_bytes({"schema_version": 1, "experiment_id": experiment_id, "return_code": 0}))
+            marker = {
+                "schema_version": 1, "protocol_revision": protocol, "status": "accepted",
+                "experiment_id": experiment_id, "runner_commit": runner,
+                "result_sha256": sha256_file(run / "result.json"),
+            }
+            (root / "accepted").mkdir(exist_ok=True)
+            (root / "accepted" / f"{experiment_id}.json").write_bytes(canonical_json_bytes(marker))
+            return verify_accepted_source(root, experiment_id, {"protocol_revision": protocol, "runner_commit": runner})
+
+        with tempfile.TemporaryDirectory() as temporary:
+            project = Path(temporary) / "project"
+            old = Path(temporary) / "old"
+            continuation = Path(temporary) / "continuation"
+            old.mkdir()
+            continuation.mkdir()
+            old_session = {"schema_version": 1, "protocol_revision": old_protocol, "runner_commit": old_runner, "status": "active"}
+            continuation_session = {"schema_version": 1, "protocol_revision": continuation_protocol, "runner_commit": continuation_runner, "status": "active"}
+            (old / "session.json").write_bytes(canonical_json_bytes(old_session))
+            (continuation / "session.json").write_bytes(canonical_json_bytes(continuation_session))
+            recovery_ids = [f"S1-20260810-{number:03d}" for number in range(301, 307)]
+            inventory = []
+            for experiment_id in recovery_ids:
+                identity = write_source(old, experiment_id, old_protocol, old_runner, al=experiment_id in recovery_ids[:3])
+                inventory.append({key: identity[key] for key in ("experiment_id", "accepted_marker_sha256", "result_sha256", "runner_return_sha256")})
+            for experiment_id in ("S1-20260810-327", "S1-20260810-328"):
+                write_source(continuation, experiment_id, continuation_protocol, continuation_runner, al=True)
+            barrier = {
+                "schema_version": 1, "protocol_revision": continuation_protocol, "runner_commit": continuation_runner,
+                "status": "accepted", "source_r1_state_root": str(old),
+                "source_r1_session_sha256": sha256_file(old / "session.json"), "source_r1_runner_commit": old_runner,
+                "r1_operational_closure": "incomplete_missing_phase_marker", "source_ids": recovery_ids,
+                "source_ids_no_retry_no_reuse": True, "scientific_p0_statuses": {"al": "accepted", "mg": "accepted"},
+                "accepted_inventory": inventory,
+            }
+            (continuation / "barriers").mkdir()
+            (continuation / "barriers" / "r1_p0_recovery.json").write_bytes(canonical_json_bytes(barrier))
+            phase = {
+                "schema_version": 1, "protocol_revision": continuation_protocol, "runner_commit": continuation_runner,
+                "status": "accepted", "phase": "al_endpoints",
+                "accepted_ids": ["S1-20260810-327", "S1-20260810-328"], "accepted_count": 2,
+            }
+            (continuation / "phases").mkdir()
+            phase_path = continuation / "phases" / "al_endpoints.json"
+            phase_path.write_bytes(canonical_json_bytes(phase))
+            rows = []
+            for common_id, relative in (("S1-20260810-327", "registered/v090/STRU"), ("S1-20260810-328", "registered/v110/STRU")):
+                registered = project / relative
+                registered.parent.mkdir(parents=True, exist_ok=True)
+                registered.write_bytes(b"registered endpoint geometry\n")
+                rows.append({"accepted_common_id": common_id, "registered_geometry_path": relative, "registered_geometry_stru_sha256": sha256_file(registered)})
+            config = {
+                "pseudodojo": {"materials": {"al": {"sha256": pseudo_sha}}},
+                "source_states": {
+                    "r1_p0": {"external_state_root": str(old), "protocol_revision": old_protocol, "runner_commit": old_runner, "session_sha256": sha256_file(old / "session.json"), "required_accepted_ids": recovery_ids},
+                    "continuation_r2": {"external_state_root": str(continuation), "protocol_revision": continuation_protocol, "preregistration_commit": continuation_runner, "recovery_barrier_relative_path": "barriers/r1_p0_recovery.json", "endpoint_phase_marker_relative_path": "phases/al_endpoints.json", "endpoint_phase": "al_endpoints", "required_recovery_ids": recovery_ids, "required_accepted_ids": ["S1-20260810-327", "S1-20260810-328"]},
+                },
+            }
+            self.assertTrue(verify_parent_sources(config, project, rows)["ready"])
+            phase["accepted_count"] = 1
+            phase_path.write_bytes(canonical_json_bytes(phase))
+            with self.assertRaises(ValueError):
+                verify_parent_sources(config, project, rows)
 
     def test_core_ack_and_lock_are_fail_closed(self) -> None:
         with tempfile.TemporaryDirectory() as temporary:
