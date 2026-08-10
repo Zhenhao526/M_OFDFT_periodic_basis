@@ -2,7 +2,7 @@
   "schema_version": 1,
   "protocol_revision": "S1-G1-THREE-LAYER-AL-DOMAIN-FOLLOWUP-20260810-R3",
   "base_main_commit": "f474f0ba7823a0b02b4c025251251c8053f132ed",
-  "implementation_commit": "11d679d282ebfd96e293004e7e4c9195eb612668",
+  "implementation_commit": "cd635a57d53cdc5e44fad9da3c795373ac52d08f",
   "inherited_three_layer_preregistration_commit": "439bf90049551f2b54bf6a17e0fb8689f5dfb100",
   "r1_followup_preregistration_commit": "0785b61c3a414b3c1f31865d31c60093fee849a9",
   "r1_followup_closure_commit": "956729002f7da2249ff035a142b1a116702ebf9a",
