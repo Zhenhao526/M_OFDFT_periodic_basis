@@ -1,0 +1,32 @@
+{
+  "schema_version": 1,
+  "protocol_revision": "S1-G1-THREE-LAYER-AL-DOMAIN-FOLLOWUP-20260810-R2",
+  "status": "superseded_before_execution",
+  "superseded_preregistration_commit": "3a3685b2acd3cccbe5e7d1a9f2130d299084e307",
+  "independent_review_disposition": "rejected_two_evidence_chain_p0_findings",
+  "formal_ids": [
+    "S1-20260810-335",
+    "S1-20260810-336",
+    "S1-20260810-337",
+    "S1-20260810-338",
+    "S1-20260810-339",
+    "S1-20260810-340",
+    "S1-20260810-341",
+    "S1-20260810-342"
+  ],
+  "execution_counts": {
+    "state_roots_created": 0,
+    "attempt_markers": 0,
+    "run_directories": 0,
+    "solver_starts": 0,
+    "accepted_markers": 0
+  },
+  "external_state_was_absent_at_closure": true,
+  "old_preregistration_must_not_be_executed": true,
+  "id_policy": "same_ids_may_appear_only_in_a_committed_replacement_preregistration_because_no_attempt_or_state_ever_existed",
+  "replacement_requirements": [
+    "terminal_exact_attempt_accepted_runner_return_result_metadata_sha_maps",
+    "committed_R1_301_306_base_and_enhanced_raw_parser_replay",
+    "continuation_327_332_attempt_metadata_registered_input_chain"
+  ]
+}
