@@ -1,0 +1,52 @@
+{
+  "atom_count": 1,
+  "ecutrho_ry": 208,
+  "ecutwfc_ry": 52,
+  "expected_electrons": 3.0,
+  "experiment_id": "S1-20260810-324",
+  "geometry_binding": {
+    "complete_stru_byte_identical": true,
+    "deformation_gradient": null,
+    "geometry_payload_definition": "STRU bytes from LATTICE_CONSTANT marker through EOF",
+    "geometry_payload_sha256": "1425164522f9af507e33efc9351f390d379a14cbbafa3aa1b4c71c878bdc03ba",
+    "source_experiment_id": "S1-20260810-307",
+    "source_metadata_path": "inputs/s1/g1_three_layer_r1/S1-20260810-307/metadata.json",
+    "source_metadata_sha256": "f9dc25cc66274a84e4ed7894ceb08724419fb012bde36a5575ed98026a7343c8",
+    "source_stru_path": "inputs/s1/g1_three_layer_r1/S1-20260810-307/STRU",
+    "source_stru_sha256": "54b5c56f06469137e71ba046c5a53b9904b2013a16eaa3e7cc745d3360b4c5ad"
+  },
+  "input_identity": {
+    "INPUT_sha256": "7bfe8084b9afa3b097ae5c33344537f09e31372903cae7ac14c370ace40fbc6c",
+    "KPT_sha256": "9676ccc0047fe4fd875b3027808ab834d234f73a9840b22c16948d3f3ede2cfd",
+    "STRU_sha256": "54b5c56f06469137e71ba046c5a53b9904b2013a16eaa3e7cc745d3360b4c5ad",
+    "config_sha256": "fc6f0da597b3043f0108e4c6e8f9c5917db90745e2e314b594886d868a08a23e",
+    "manifest_sha256": "9eb1bb905dd2dc5d74b621b8663a2a3c439023f5dd6293a852420743e65c8bc2"
+  },
+  "kmesh": [
+    32,
+    32,
+    32
+  ],
+  "material": "al",
+  "phase": "endpoint",
+  "protocol_revision": "S1-G1-THREE-LAYER-AL-DOMAIN-FOLLOWUP-20260810-R1",
+  "pseudo": {
+    "basename": "Al_std.upf",
+    "expanded_nonlocal_projectors_per_atom": 18,
+    "format": "upf201",
+    "sha256": "b02eaa07c5d98f5eeae1bec4155854a7a94ea3635ca6b42e914f3f7ebd6912fb",
+    "z_valence": 3.0
+  },
+  "role": "v090_high_extra_k",
+  "schema_version": 1,
+  "suffix": "g1tlfu1_al_v090_high_extra",
+  "thermodynamic_semantics": {
+    "E_ec": "F-m/2 finite-smearing estimator",
+    "F": "E_KohnSham=!FINAL_ETOT_IS",
+    "U": "F-m",
+    "local_only_kinetic_decomposition_claim": false,
+    "m": "E_entropy(-TS)<=0",
+    "zero_temperature_exact_claim": false
+  },
+  "volume_ratio": "0.90"
+}

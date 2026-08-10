@@ -1,0 +1,68 @@
+{
+  "atom_count": 1,
+  "ecutrho_ry": 160,
+  "ecutwfc_ry": 40,
+  "expected_electrons": 3.0,
+  "experiment_id": "S1-20260810-322",
+  "geometry_binding": {
+    "complete_stru_byte_identical": false,
+    "deformation_gradient": [
+      [
+        1.0,
+        -0.005,
+        0.0
+      ],
+      [
+        0.0,
+        1.0,
+        0.0
+      ],
+      [
+        0.0,
+        0.0,
+        1.0
+      ]
+    ],
+    "geometry_payload_definition": "STRU bytes from LATTICE_CONSTANT marker through EOF",
+    "geometry_payload_sha256": "05a265875e668e0686462a648112bc527dc31065d79b5a0c7df19ebf1e50bcf5",
+    "source_experiment_id": "S1-20260810-207",
+    "source_metadata_path": "inputs/s1/g1_displacement_strain_reference_r1/S1-20260810-207/metadata.json",
+    "source_metadata_sha256": "c9c74e67e92018d01225a6b610df0ac8f43426ef19431a190135eda3362ff197",
+    "source_stru_path": "inputs/s1/g1_displacement_strain_reference_r1/S1-20260810-207/STRU",
+    "source_stru_sha256": "782289a154c58ab4ad7ba91492f9b4d46553ac41ec71d34cf492521b274a2a15"
+  },
+  "input_identity": {
+    "INPUT_sha256": "5f2cab76226e5f75cf03f410ac4393b2f74f6db6bbbe82e2efa7c084f25ed174",
+    "KPT_sha256": "0903e64e14f6e451103ae0d60e2b3afe07dbbee7aaabff907df214bfd1eb0bc8",
+    "STRU_sha256": "ee1cfd58fda6adabbdce9c051564dead65a6594fd5287eb2448497e0e28c84b4",
+    "config_sha256": "fc6f0da597b3043f0108e4c6e8f9c5917db90745e2e314b594886d868a08a23e",
+    "manifest_sha256": "9eb1bb905dd2dc5d74b621b8663a2a3c439023f5dd6293a852420743e65c8bc2"
+  },
+  "kmesh": [
+    28,
+    28,
+    28
+  ],
+  "material": "al",
+  "phase": "strain",
+  "protocol_revision": "S1-G1-THREE-LAYER-AL-DOMAIN-FOLLOWUP-20260810-R1",
+  "pseudo": {
+    "basename": "Al_std.upf",
+    "expanded_nonlocal_projectors_per_atom": 18,
+    "format": "upf201",
+    "sha256": "b02eaa07c5d98f5eeae1bec4155854a7a94ea3635ca6b42e914f3f7ebd6912fb",
+    "z_valence": 3.0
+  },
+  "role": "al_shear_xy_minus",
+  "schema_version": 1,
+  "suffix": "g1tlfu1_al_shear_xy_minus",
+  "thermodynamic_semantics": {
+    "E_ec": "F-m/2 finite-smearing estimator",
+    "F": "E_KohnSham=!FINAL_ETOT_IS",
+    "U": "F-m",
+    "local_only_kinetic_decomposition_claim": false,
+    "m": "E_entropy(-TS)<=0",
+    "zero_temperature_exact_claim": false
+  },
+  "volume_ratio": "1.00"
+}
