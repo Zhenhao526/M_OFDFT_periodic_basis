@@ -202,7 +202,8 @@ def detached_launcher_proof() -> dict:
     pid = os.getpid()
     sid = os.getsid(0)
     tty = {str(fd): os.isatty(fd) for fd in (0, 1, 2)}
-    accepted = sid == pid and not any(tty.values())
+    sighup_ignored = signal.getsignal(signal.SIGHUP) == signal.SIG_IGN
+    accepted = sid == pid and not any(tty.values()) and sighup_ignored
     return {
         "schema_version": 1,
         "pid": pid,
@@ -210,6 +211,7 @@ def detached_launcher_proof() -> dict:
         "session_id": sid,
         "session_leader": sid == pid,
         "isatty": tty,
+        "sighup_ignored": sighup_ignored,
         "accepted": accepted,
         "required_launch_shape": "setsid with stdin /dev/null and stdout/stderr regular files",
         "created_utc": utc_now(),

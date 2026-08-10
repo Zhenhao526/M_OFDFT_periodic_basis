@@ -9,9 +9,14 @@ import io
 import json
 import math
 import shutil
+import tempfile
 from pathlib import Path
 
+import s1_g1_three_layer_common as r1_common
 from analyze_s1_eos import fit_bm3
+from parse_s1_g1_three_layer_continuation_r2 import parse_run as parse_continuation_run
+from parse_s1_g1_three_layer_r1 import parse_run as parse_r1_run
+from recover_s1_g1_three_layer_continuation_r2 import enhanced_raw_checks
 from s1_electron_number_common import parse_stru, pseudopotential_zion
 from s1_g1_three_layer_continuation_r2_common import (
     CONFIG_PATH,
@@ -27,6 +32,7 @@ from s1_g1_three_layer_continuation_r2_common import (
     read_json,
     require,
     sha256_file,
+    validate_pseudo,
 )
 
 
@@ -80,11 +86,35 @@ def verify_core_preflight(path: Path, expected_sha256: str, config: dict) -> dic
     return payload
 
 
+def replay_with_external_upf(
+    run_dir: Path,
+    material: str,
+    config: dict,
+    parser,
+    parser_config: dict,
+) -> tuple[dict, dict | None]:
+    pseudo = config["pseudodojo"]["materials"][material]
+    source = Path(config["external_pseudo_cache"]) / pseudo["basename"]
+    validated = validate_pseudo(source, material, config)
+    require(validated["sha256"] == pseudo["sha256"], "external replay UPF identity differs")
+    with tempfile.TemporaryDirectory(prefix="g1_three_layer_r2_raw_replay_") as temporary:
+        replay = Path(temporary) / "run"
+        shutil.copytree(run_dir, replay)
+        destination = replay / pseudo["basename"]
+        require(not destination.exists(), "UPF body unexpectedly entered collected evidence")
+        shutil.copyfile(source, destination)
+        require(sha256_file(destination) == pseudo["sha256"], "injected replay UPF SHA differs")
+        reparsed = parser(replay, parser_config)
+        enhanced = enhanced_raw_checks(replay, material, config, reparsed) if parser is parse_r1_run else None
+    return reparsed, enhanced
+
+
 def verify_new_result(
     run_dir: Path,
     expected_id: str,
     row: dict[str, str],
     config: dict,
+    project_root: Path,
     runner_commit: str,
     preflight_root: Path,
 ) -> dict:
@@ -104,6 +134,10 @@ def verify_new_result(
     require(attempt.get("retry_policy") == "same_id_forbidden_new_revision_and_new_ids_only", "new retry policy differs")
     require(runner_return.get("return_code") == 0 and runner_return.get("experiment_id") == expected_id, "new runner return differs")
     require(metadata.get("runner_commit") == runner_commit, "new metadata runner commit differs")
+    require(attempt.get("config_sha256") == sha256_file(project_root / CONFIG_PATH), "new attempt config SHA differs")
+    require(attempt.get("manifest_sha256") == sha256_file(project_root / MANIFEST_PATH), "new attempt manifest SHA differs")
+    require(metadata.get("input_identity", {}).get("config_sha256") == sha256_file(project_root / CONFIG_PATH), "new metadata config SHA differs")
+    require(metadata.get("input_identity", {}).get("manifest_sha256") == sha256_file(project_root / MANIFEST_PATH), "new metadata manifest SHA differs")
     require(attempt.get("phase") == row["phase"] and attempt.get("requirement") == row["requirement"], "new attempt scope differs")
     preflight_name = attempt.get("core_collision_preflight_path")
     require(preflight_name == f"{expected_id}.json" and attempt.get("core_collision_preflight_accepted") is True, "new attempt preflight binding differs")
@@ -142,10 +176,12 @@ def verify_new_result(
     require(result["affinity"]["accepted"] and result["affinity"]["physical_core_ids"] == config["runtime"]["physical_core_ids"], "new affinity differs")
     for identity in result["evidence_files"]:
         verify_file_identity(run_dir, identity, "new")
+    replayed, _ = replay_with_external_upf(run_dir, row["material"], config, parse_continuation_run, config)
+    require(canonical_json_bytes(replayed) == (run_dir / "result.json").read_bytes(), "new raw parser replay differs")
     return result
 
 
-def source_result(run_dir: Path, expected_id: str, barrier: dict) -> dict:
+def source_result(run_dir: Path, expected_id: str, barrier: dict, project_root: Path, config: dict) -> dict:
     result = read_json(run_dir / "result.json")
     attempt = read_json(run_dir / "attempt.json")
     accepted = read_json(run_dir / "accepted.json")
@@ -160,7 +196,9 @@ def source_result(run_dir: Path, expected_id: str, barrier: dict) -> dict:
     require(sha256_file(run_dir / "accepted.json") == recovered["accepted_sha256"], "source accepted SHA differs")
     require(sha256_file(run_dir / "runner_return.json") == recovered["runner_return_sha256"], "source runner SHA differs")
     require(attempt.get("status") == "formal_attempt_started" and attempt.get("experiment_id") == expected_id, "source attempt identity differs")
+    require(attempt.get("protocol_revision") == config["source_r1"]["protocol_revision"] and attempt.get("runner_commit") == barrier["source_runner_commit"], "source attempt provenance differs")
     require(accepted.get("status") == "accepted" and accepted.get("experiment_id") == expected_id, "source accepted identity differs")
+    require(accepted.get("protocol_revision") == config["source_r1"]["protocol_revision"] and accepted.get("runner_commit") == barrier["source_runner_commit"], "source accepted provenance differs")
     require(runner_return.get("return_code") == 0 and runner_return.get("experiment_id") == expected_id, "source runner return differs")
     require(metadata.get("runner_commit") == barrier["source_runner_commit"], "source metadata runner commit differs")
     require(recovered["result_sha256"] == sha256_file(run_dir / "result.json"), "source recovery/result SHA differs")
@@ -170,6 +208,10 @@ def source_result(run_dir: Path, expected_id: str, barrier: dict) -> dict:
     require(enhanced.get("external_upf_identity", {}).get("sha256") == pseudo.get("sha256"), "source external UPF recovery binding differs")
     for identity in enhanced["evidence_files"]:
         verify_file_identity(run_dir, identity, "source")
+    r1_config = r1_common.load_config(project_root)
+    replayed, replayed_enhanced = replay_with_external_upf(run_dir, result["material"], config, parse_r1_run, r1_config)
+    require(canonical_json_bytes(replayed) == (run_dir / "result.json").read_bytes(), "source raw parser replay differs")
+    require(replayed_enhanced == enhanced, "source enhanced raw replay differs")
     return result
 
 
@@ -296,6 +338,7 @@ def verify_phase_chain(
     detached = read_json(detached_path)
     require(isinstance(detached, dict) and detached.get("accepted") is True and detached.get("session_leader") is True, f"{phase} detached proof rejected")
     require(detached.get("isatty") == {"0": False, "1": False, "2": False}, f"{phase} detached file descriptors differ")
+    require(detached.get("sighup_ignored") is True, f"{phase} SIGHUP disposition differs")
     phase_core_sha256 = payload.get("phase_core_collision_preflight_sha256")
     require(isinstance(phase_core_sha256, str), f"{phase} core preflight SHA missing")
     verify_core_preflight(orchestration / "preflight" / f"{phase}_core_collision.json", phase_core_sha256, config)
@@ -329,7 +372,7 @@ def build_final_analysis(project_root: Path, config: dict, rows: list[dict[str, 
     verify_phase_chain(project_root, orchestration, continuation_root, "mg_required", list(CONTINUATION_IDS[6:]), session, barrier_sha256, config)
     require(session.get("initial_detached_launcher_proof_sha256") == al_phase["detached_launcher_proof_sha256"], "session initial detached proof differs")
     require(session.get("initial_core_collision_preflight_sha256") == al_phase["phase_core_collision_preflight_sha256"], "session initial core preflight differs")
-    source_results = {experiment_id: source_result(source_root / experiment_id, experiment_id, barrier) for experiment_id in SOURCE_IDS}
+    source_results = {experiment_id: source_result(source_root / experiment_id, experiment_id, barrier, project_root, config) for experiment_id in SOURCE_IDS}
     row_by_id = {row["experiment_id"]: row for row in rows}
     continuation_results = {
         experiment_id: verify_new_result(
@@ -337,6 +380,7 @@ def build_final_analysis(project_root: Path, config: dict, rows: list[dict[str, 
             experiment_id,
             row_by_id[experiment_id],
             config,
+            project_root,
             runner_commit,
             orchestration / "preflight",
         )
