@@ -1,0 +1,47 @@
+{
+  "environment_lock_path": "environment/dftpy_2.2.0_pylibxc_7.0.0.lock.json",
+  "environment_lock_sha256": "82f7d7440672249e99b6ef15b6bec0bbf51ae846f1dc775c9c58cca89d5746f4",
+  "functional_stdout_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+  "previous_pilot": {
+    "evidence_commit": "269fe3a9e69ee8ce6842999c75930942e2a36675",
+    "metrics_sha256": "bae9c78c465c3df6fc41657e7b543bd160aa85109430322a20353ebd89f4142a",
+    "reused_common_sha256": "6bf4c6dd6601b5f6a4bd67e8619144bb66d3ca5e573079347491766e2f9d2329",
+    "status": "evidence_valid_no_candidate_passes_all_g2a_pilot_gates",
+    "summary_sha256": "bc1241bb209ceca21682816dee0af2e142c8d1714524c7f03d7d8c1cc81cab1b"
+  },
+  "protocol_revision": "S2-G2-AL1-BASIS-CONVERGENCE-20260811-R2",
+  "pseudopotential_path": "/home/shenwei01/.local/state/m_ofdft/pseudos/pseudodojo_oncvpsp_pbe_sr_823b18f/Al_std.upf",
+  "pseudopotential_sha256": "b02eaa07c5d98f5eeae1bec4155854a7a94ea3635ca6b42e914f3f7ebd6912fb",
+  "python_executable": "/home/shenwei01/.local/venvs/m_ofdft-dftpy-2.2.0-py311/bin/python",
+  "resolved_python": "/home/shenwei01/xzh_node02_20260724/python/cpython-3.11.15-linux-x86_64-gnu/bin/python3.11",
+  "resolved_python_sha256": "8deffe5dd9ebcf98a062917a4e73bb8fbb7d5846f83dec01fb7506fd5d41c54e",
+  "schema_version": 1,
+  "source": {
+    "density_path": "analysis/s1/g1_three_layer_al_domain_followup_analysis_r5_20260810/state_snapshot/r1_p0/runs/S1-20260810-301/OUT.g1tlr1_al_v100_normal_common/chg.cube",
+    "density_sha256": "0f4cbb5229d217dc6cd3e4138a6bc3ccd3a6408b1baf4e343f9c52653a42ae86",
+    "grid": [
+      24,
+      24,
+      24
+    ],
+    "integrated_electrons": 2.9999999999714753,
+    "result_path": "analysis/s1/g1_three_layer_al_domain_followup_analysis_r5_20260810/state_snapshot/r1_p0/runs/S1-20260810-301/result.json",
+    "result_sha256": "d7ef3e238b92ead5f5fb3a0533a3adfb7f005f9799ac72248f6f3219e11d898f",
+    "structure_path": "inputs/s1/eos_candidates/al/v100/ofdft/STRU",
+    "structure_sha256": "31279eb4f9a5a6ad20376271c79c03a8ead1676cb697b5065515041f6799d437",
+    "volume_bohr3": 112.0731761525681
+  },
+  "thread_environment": {
+    "MKL_NUM_THREADS": "1",
+    "OMP_NUM_THREADS": "1",
+    "OPENBLAS_NUM_THREADS": "1"
+  },
+  "versions": {
+    "ase": "3.29.0",
+    "dftpy": "2.2.0",
+    "numpy": "2.4.6",
+    "pylibxc": "7.0.0",
+    "python": "3.11.15",
+    "scipy": "1.17.1"
+  }
+}
