@@ -1,8 +1,8 @@
 {
   "schema_version": 1,
   "protocol_revision": "S2-G2-ARCHITECTURE-CANDIDATES-20260811-R1",
-  "status": "implementation_pending_preregistration",
-  "implementation_commit": "__FREEZE_IMPLEMENTATION_COMMIT__",
+  "status": "preregistered_no_execution",
+  "implementation_commit": "f84c31b02a95c25578f70c4fad8c70147d9d12ac",
   "base_commit": "751692ef878df5a80707ee6dd73dd03dd81b3a05",
   "stage": "S2",
   "gate": "G2",
