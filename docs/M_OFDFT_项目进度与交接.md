@@ -2,8 +2,8 @@
 
 > 本文件是项目状态的唯一人工入口。任何人接手前先读本文件，再读项目书和当前阶段 README。  
 > 状态词仅使用：`not_started`、`in_progress`、`blocked`、`accepted`、`rejected`、`paused`。  
-> 更新时间：2026-08-11 17:52 CST
-> 文档版本：V4.2
+> 更新时间：2026-08-11 18:12 CST
+> 文档版本：V4.3
 
 ## 0. 十分钟上手摘要
 
@@ -14,11 +14,11 @@
 | 当前闸门 | G2a/G2b；先验证表示/算子正确性、规范唯一性和几何连续性 |
 | 当前负责人 | 远端账户 `shenwei01`；本轮执行与记录：Codex |
 | 当前工作分支 | `codex/r4-execution`；所有实现和计算均在远端服务器完成 |
-| 最近可用提交 | S2 实现 `f84c31b0`；预注册 `cdf90874`；主线合并 `ad402466` |
+| 最近可用提交 | Al1 pilot 实现 `022551e4`；预注册 `8f00abf3`；证据 `269fe3a9`；主线合并 `903f9f28` |
 | 最近通过的数值 smoke | `S1-RUNTIME-SMOKE-20260805-074`：`storage_exact`，五类状态门全部 `accepted`；幂等重验返回 `accepted_committed` |
 | 最近通过的正式分析 | G1 acceptance policy R1：R3/R5 全量重放、17 行 gate、`accepted_g1_6_of_6`、新增 solver 0；证据 `d0386418` |
-| 当前阻塞 | 无；R1 仅完成架构和数据合同预注册，尚无 G2 科学结果 |
-| 下一项唯一动作 | 新 revision 实现 Al 1 原子四路线投影/算子 pilot，冻结数值内核与参考密度重放后再启动任何 S2 计算 |
+| 当前阻塞 | Al 单原子首层 pilot 没有候选通过全部 G2a 门：两条低 G 路线仅固定 WT 误差 `15.04>10 meV/atom` |
+| 下一项唯一动作 | 新 revision 预注册低 G 截断/径向基收敛梯级，保持本轮证据只读并量化达到 WT 门所需自由度 |
 
 ### 必读文件
 
@@ -176,7 +176,7 @@ python3 -m unittest -q tests.unit.test_s1_g1_thermodynamic_label_audit_r4_genera
 |---|---|---|---|---|---|---|---|
 | S0 | 初始化与复现协议 | `accepted` | 2026-08-05 | 2026-08-05 | G0 | `docs/G0_ACCEPTANCE.md`; `analysis/s1/runtime_relocation_equivalence_20260805/` | 数值/归档恢复结论保留；登记的 namespace runtime-isolation 路径已验收，原归档本身不称 hermetic |
 | S1 | 平面波基准闭环 | `accepted` | 2026-08-05 | 2026-08-11 | G1 | 前五项证据同前；三层 R3 `73b3589`；R5 `5401943`；1% policy `d0386418` | G1 6/6；进入 S2 |
-| S2 | 混合密度基表示 | `in_progress` | 2026-08-11 | — | G2 | 协议/配置/12 case：`cdf90874`；主线 `ad402466` | 实现 Al 1 原子四路线 G2a/G2b pilot |
+| S2 | 混合密度基表示 | `in_progress` | 2026-08-11 | — | G2 | 架构预注册 `cdf90874`；Al1 pilot `269fe3a9` | 新 revision 做低 G/径向基收敛梯级 |
 | S3 | 固定 KEDF 自洽求解 | `not_started` | — | — | G3 | — | 等待 G2 |
 | S4A | 固定晶胞解析力 | `not_started` | — | — | G4A | — | 等待 G3 |
 | S4B | 晶胞应力 | `not_started` | — | — | G4B | — | 等待 G4A |
@@ -270,7 +270,11 @@ python3 -m unittest -q tests.unit.test_s1_g1_thermodynamic_label_audit_r4_genera
 - 当前仅启用 Al、G2a/G2b；Mg、ML 和系数空间自洽优化保持关闭。G2c 只有在表示正确性和连续性通过后才执行。
 - 参考密度绑定 G1 已提交的 Al KS-NL V100 cube；全部 G1 state/ID 保持只读。
 - R1 验证结果：12/12 case、13/13 生成物、7/7 单测、预注册 validator `accepted`；新增 solver 0，formal state 与 analysis root 均不存在。
-- 当前唯一动作：以全新 revision 实现 Al 1 原子四路线投影和 Hartree/外势/XC 算子 pilot，先冻结数值内核、条件数/秩和误差口径，再允许执行。
+- Al 单原子 analysis-only pilot 已以实现 `022551e4`、预注册 `8f00abf3`、证据 `269fe3a9` 闭合；committed validator 与 7/7 单测通过，新增 solver 0。
+- 纯原子六高斯路线密度 L2 为 `6.6669%`，出现负密度，Hartree/外势/XC 合计误差 `74.4553 meV/atom`，固定 WT 误差 `527.7920 meV/atom`，首层淘汰。
+- 显式低 G 与互补路线的密度 L2 均为 `0.577099%`，Hartree/外势/XC 合计误差约 `0.3643 meV/atom`，但固定 WT 误差约 `15.0379 meV/atom`，超过 10 meV/atom 门，因此均为 `rejected_pilot`。
+- 互补化在不改变拟合空间/精度的情况下，将归一化重叠条件数由 `101280` 降至 `6494`，确认其规范稳定性优势；这不等于已经通过 G2a。
+- 当前唯一动作：新 revision 预注册低 G 截断和径向基收敛梯级，保持 `269fe3a9` 不变，测定固定 WT 门与有效自由度的共同收敛点。
 
 ## 4. 闸门决策记录
 
@@ -488,18 +492,19 @@ python3 -m unittest -q tests.unit.test_s1_g1_thermodynamic_label_audit_r4_genera
 | 2026-08-11 | D-049 | 按用户授权将新 revision 的 Al `|ΔV0|` 门改为 `≤1%`，其余阈值保持不变 | `0.7660177%≤1%`；`|ΔB0|=2.46585%≤10%`；BM3、R5 strain/k/cutoff/压力均通过；analysis-only 重放新增 solver 0 | 把旧阈值静默覆盖，或为通过而放宽其他门 | policy R1 committed validator 返回 `accepted_g1_6_of_6`；G1 6/6，S1 accepted |
 | 2026-08-11 | D-050 | 最终接受范围仅为 Al ABACUS 同引擎登记 PP 对的 scheme+construction suitability bound | Mg 仍为 diagnostic；OF-L↔KS-L 为 error portrait；第二 KS/QE、projector-only 因果和 G4 未关闭；HQLPP/QE binding smoke 失败且贡献 0 | 声称 D-026/QE、Mg 硬比较或 projector-only 因果已闭合 | 允许进入 S2，但所有范围限制继续写入后续论文/协议 |
 | 2026-08-11 | D-051 | S2 采用四路线、三胞规模的可淘汰架构竞赛，并先做 G2a/G2b | 显式 Gaussian+PW 存在线性相关和性能负证据；互补/范围分离更有希望，纯 PW/FFT 必须保留为共同精度参考 | 预设显式混合为最终架构，或直接进入 ML/自洽优化 | 预注册 12 个 case；Al 先行，Mg/G2c/S3 继续受闸门约束 |
+| 2026-08-11 | D-052 | 接受 Al 单原子首层 pilot 的有效负结果，下一轮只以新 revision 扩展收敛梯级 | 纯原子路线多门失败；两条低 G 路线密度和三算子门通过但 WT 误差约 15.04 meV/atom；互补化显著改善条件数 | 在原 revision 内加 G 或放宽 10 meV 门，或把密度通过误报为 G2a 通过 | `269fe3a9` 永久只读；G2 保持 in_progress，不进入 32/108 原子、Mg、G2c 或 S3 |
 
 ## 9. 最近可用状态
 
 此节必须始终指向一个可运行、可复现的状态；若暂无则明确写“无”。
 
-- 最近可用状态：S2 源 worktree `/home/shenwei01/wt_s2_g2_architecture_r1_20260811` clean@`cdf90874`；主线已以 `ad402466` 合并该预注册。
+- 最近可用状态：S2 Al1 pilot worktree `/home/shenwei01/wt_s2_g2_al1_pilot_r1_20260811` clean@`269fe3a9`；主线 merge 为 `903f9f28`。
 - 对应环境：`environment/` 的 ABACUS v3.11.0-beta.5 CPU + OpenMPI 5.0.10 + LibXC 7.0.0；独立 OF 环境为 `/home/shenwei01/.local/venvs/m_ofdft-dftpy-2.2.0-py311`，身份见锁文件。
-- 已通过测试：S2 R1 为 7/7 单测、12/12 case、13/13 生成物，`--preregistered-only` 返回 accepted；新增 solver 0。全部 G1 committed 结论保持不变。
+- 已通过测试：S2 架构 R1 为 7/7、12/12 case；Al1 pilot 为 7/7、committed validator accepted、5/5 输出逐字重建；科学处置为 evidence-valid/no candidate pass，新增 solver 0。
 - 已知失败/暂停：标签 R1/R2/R3、DFTpy R1、再生成 R1、位移/应变 R1 analyzer、三层旧 R3 0.5% rejection 与 HQLPP/QE binding smoke 的历史链均保持不可变；后续验收链已关闭 G1，失败记录不计当前 accepted 分母。
-- 恢复方法：登录后检查主 HEAD `ad402466`（或其仅含 V4.2 文档更新的后继）、分支 `codex/r4-execution` 和 clean 工作树；S2 预注册复验在登记 worktree运行 `python3 -s -B scripts/validate_s2_g2_architecture_candidates_r1.py --preregistered-only`。所有 G1 state 只读。
+- 恢复方法：登录后检查主 HEAD `903f9f28`（或其仅含 V4.3 文档更新的后继）和 clean 工作树；Al1 pilot 在登记 worktree以冻结 DFTpy Python 运行 `validate_s2_g2_al1_projection_operator_pilot_r1.py --require-committed`。所有 G1 与既有 S2 evidence 只读。
 - 同步方法：node01 对 `codex/r4-execution` 相对 GitHub 已知基线创建并验证增量 bundle，经跳板机传至本机；三端 SHA-256 一致后 fast-forward 推送同名分支，最后以 `git ls-remote` 核验目标 SHA。
-- 当前交接点：S2/G2 R1 已预注册且无计算；下一动作是全新 revision 的 Al 1 原子四路线投影/算子 pilot。Mg、ML、自洽优化和 G2c 尚未启动。
+- 当前交接点：Al1 首层 pilot 已完成且没有全门通过候选；下一动作是新 revision 的低 G/径向基收敛梯级。32/108 原子、Mg、ML、自洽优化和 G2c 尚未启动。
 
 ## 10. 交接说明
 
@@ -669,6 +674,7 @@ python3 -m unittest -q tests.unit.test_s1_g1_thermodynamic_label_audit_r4_genera
 | 2026-08-10 13:20 CST | G1 再生成与位移/应变闭环 | Codex | S1 | 再生成 R2 `d57216d`；位移/应变 R2 `28cd249`；主线 merge `cb0bf1b`/`690f98b` | 再生成 10/10；位移/应变 15/15、7/7、300/300；两项 committed validators 和独立复核均通过 | 两个子项关闭，G1 更新为 5/6；仅余三层对照 |
 | 2026-08-11 17:10 CST | G1 最终验收 | Codex | S1→S2 | R3 `73b3589`；R5 `5401943`；policy `d0386418`；主线 merge `da15ac0` | R3/R5 full replay；17/17 gate；committed validator `accepted_g1_6_of_6`；0 solver | G1 6/6、S1 accepted；范围仅 Al 同引擎登记 PP 对；下一动作进入 S2/G2 |
 | 2026-08-11 17:52 CST | S2/G2 架构预注册 | Codex | S2 | 实现 `f84c31b0`；预注册 `cdf90874`；主线 `ad402466` | 7/7 单测；12/12 case；13/13 生成物；validator accepted；0 solver | 四路线×三胞规模已冻结；下一动作是 Al 1 原子投影/算子 pilot |
+| 2026-08-11 18:12 CST | S2 Al1 投影/算子 pilot | Codex | S2 | 实现 `022551e4`；预注册 `8f00abf3`；证据 `269fe3a9`；主线 `903f9f28` | 7/7 单测；committed validator accepted；5 输出重建；0 solver | 纯原子淘汰；低 G 两路线仅 WT 门失败；下一动作新 revision 收敛梯级 |
 
 ## 11. 文档变更记录
 
@@ -707,3 +713,4 @@ python3 -m unittest -q tests.unit.test_s1_g1_thermodynamic_label_audit_r4_genera
 | 2026-08-10 | V4.0 | Codex | 记录再生成 R1 runtime 假阴性及 R2 10/10 闭环、位移/应变 R1 PBC 分析假阴性及 analysis-only R2 15/15 闭环；G1 从 3/6 更新为 5/6，并登记三层 final scope 拆分要求 |
 | 2026-08-11 | V4.1 | Codex | 记录三层 R3 旧 0.5% 科学拒绝、R5 8/8 应变/端点闭包和用户授权的 1% policy R1；committed replay 接受 G1 6/6、S1 accepted，并将下一动作切换为 S2/G2；保留 QE/Mg/G4 等范围限制 |
 | 2026-08-11 | V4.2 | Codex | 启动 S2/G2；冻结纯 PW/FFT、原子+FFT、显式低 G、互补/范围分离四路线与 1/32/108 原子 12-case 架构合同；记录 0 solver 预注册及下一步 Al 1 原子 pilot |
+| 2026-08-11 | V4.3 | Codex | 记录 Al 单原子四路线 analysis-only pilot：纯原子路线多门失败，显式/互补低 G 路线通过密度与三算子但固定 WT 误差超门；保留有效负证据并切换到新 revision 收敛梯级 |
