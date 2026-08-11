@@ -1,0 +1,27 @@
+{
+  "schema_version": 1,
+  "protocol_revision": "S2-G2-AL-LOCALIZED-ANALYSIS-20260811-R2",
+  "status": "implementation_pending_preregistration",
+  "implementation_commit": "__FREEZE_IMPLEMENTATION_COMMIT__",
+  "base_commit": "66ca1d76c87551f5c09d8ef81791b75f0479e89e",
+  "new_solver_run_count": 0,
+  "source": {
+    "r1_preregistration_commit": "28883776ca47d5a31568cd9a99f2e994df813f88",
+    "r1_closure_commit": "66ca1d76c87551f5c09d8ef81791b75f0479e89e",
+    "r1_config_path": "config/S2_g2_al_localized_eggbox_rank_r1.json",
+    "r1_config_sha256": "de1de3cfba6e8c265df76fbc6e722e11dfcc53da24d64e1d84da21318f255cc7",
+    "r1_closure_path": "analysis/s2/g2_al_localized_eggbox_rank_r1_20260811/operational_failure_closure.json",
+    "r1_closure_sha256": "cf8d83d28b23cd7d8ba5db3dc4a7cdc9ec857461468f60926561ffa172744734",
+    "r1_analyzer_sha256": "6351b128b71bf737634339aa3e51adc22750f9aa2b8e066f7364ded44c5c14ec",
+    "r1_common_sha256": "3b59b14455240e4db5ab879f3b0b1463d614329d2e6d5c8ee30d1489a866b525",
+    "formal_state_root": "/home/shenwei01/.local/state/m_ofdft/s2_g2_al_localized_eggbox_rank_r1_20260811"
+  },
+  "analysis_root": "analysis/s2/g2_al_localized_analysis_r2_20260811",
+  "output_files": ["README.md", "eggbox_metrics.tsv", "projection_metrics.json", "rank_continuity.tsv", "reference_density.cube.zst", "reference_identity.json", "reference_log.txt", "reference_result.json", "reference_stru.txt", "runtime.json", "summary.json"],
+  "disposition": {
+    "accepted_status": "accepted_localized_eggbox_rank_pilot",
+    "rejected_status": "evidence_valid_scientific_gate_rejected",
+    "r1_operational_status": "preserved_parser_false_negative_no_retry",
+    "g2_overall_accepted": false
+  }
+}
