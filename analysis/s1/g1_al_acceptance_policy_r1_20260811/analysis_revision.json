@@ -1,0 +1,12 @@
+{
+  "config_sha256": "546f760cec4465a7166d42b0c705ab74eb9458eb07fd4807aafeaf476f47c913",
+  "implementation_commit": "7b7e342511133371fe6bd364651564b88ac68a47",
+  "integration_base_commit": "7f717330a28c7af09c0b9fa4a078568b42a726e6",
+  "new_solver_run_count": 0,
+  "preregistration_commit": "92036a2983973aefae241772dc78f91099f15d3c",
+  "protocol_revision": "S1-G1-AL-ACCEPTANCE-POLICY-20260811-R1",
+  "schema_version": 1,
+  "source_r3_final_commit": "73b358926dc4e1a576209b3e58c4e86f25ffe9ec",
+  "source_r5_evidence_commit": "54019437539808c91f6c2768e3afcae08ea50439",
+  "status": "accepted"
+}
