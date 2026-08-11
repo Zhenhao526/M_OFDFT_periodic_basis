@@ -1,0 +1,63 @@
+{
+  "atom_count": 1,
+  "candidate_id": "atomic_low_g_explicit",
+  "case_id": "S2-G2-20260811-007",
+  "cell_role": "primitive_equilibrium",
+  "g1_read_only": true,
+  "is_reference": false,
+  "local_perturbation_reference_required_later": false,
+  "material": "Al",
+  "phase": "architecture_registration",
+  "protocol_revision": "S2-G2-ARCHITECTURE-CANDIDATES-20260811-R1",
+  "reference_density_role": "committed_ks_nl_equilibrium_cube",
+  "reference_density_sha256": "0f4cbb5229d217dc6cd3e4138a6bc3ccd3a6408b1baf4e343f9c52653a42ae86",
+  "registered_acceptance": {
+    "combined_energy_abs_error_max_mev_per_atom": 10.0,
+    "component_energy_abs_error_max_mev_per_atom": 10.0,
+    "effective_coefficient_fraction_max": 0.3,
+    "eggbox_energy_peak_to_peak_max_mev_per_atom": 1.0,
+    "eggbox_pseudoforce_max_ev_per_angstrom": 0.002,
+    "electron_number_relative_error_strict_lt": 1e-10,
+    "equilibrium_density_relative_l2_strict_lt": 0.01,
+    "equivalent_supercell_energy_difference_max_mev_per_atom": 1.0,
+    "explicit_hybrid_memory_improvement_min": 2.0,
+    "explicit_hybrid_time_speedup_min": 1.5,
+    "fixed_kedf_non_scf_total_energy_error_p95_mev_per_atom": 10.0,
+    "gauge_equivalent_energy_difference_max_mev_per_atom": 0.1,
+    "hartree_negative_eigenvalue_relative_floor": -1e-12,
+    "hartree_symmetry_relative_strict_lt": 1e-12,
+    "other_performance_metric_degradation_max_fraction": 0.2,
+    "perturbed_density_relative_l2_p95_strict_lt": 0.02,
+    "small_cell_hartree_fft_difference_max_mev_per_atom": 0.1
+  },
+  "registered_rank_contract": {
+    "candidate_thresholds": [
+      1e-08,
+      1e-09,
+      1e-10
+    ],
+    "maximum_effective_condition_number": 100000000.0,
+    "minimum_retained_eigenvalue_over_threshold": 100.0,
+    "per_geometry_hard_rank_selection_forbidden": true,
+    "threshold_decade_total_energy_change_max_mev_per_atom": 2.0
+  },
+  "scientific_result": false,
+  "solver_started": false,
+  "supercell_matrix": [
+    [
+      1,
+      0,
+      0
+    ],
+    [
+      0,
+      1,
+      0
+    ],
+    [
+      0,
+      0,
+      1
+    ]
+  ]
+}

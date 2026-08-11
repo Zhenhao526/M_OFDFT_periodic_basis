@@ -1,0 +1,139 @@
+{
+  "schema_version": 1,
+  "protocol_revision": "S2-G2-ARCHITECTURE-CANDIDATES-20260811-R1",
+  "status": "preregistered_no_execution",
+  "implementation_commit": "f84c31b02a95c25578f70c4fad8c70147d9d12ac",
+  "base_commit": "751692ef878df5a80707ee6dd73dd03dd81b3a05",
+  "stage": "S2",
+  "gate": "G2",
+  "scope": {
+    "material": "Al",
+    "mg_enabled": false,
+    "ml_enabled": false,
+    "self_consistent_coefficient_optimization_enabled": false,
+    "current_subgates": ["G2a", "G2b"],
+    "g2c_performance_is_measured_after_g2a_g2b": true
+  },
+  "g1_source_boundary": {
+    "g1_final_evidence_commit": "d0386418a685b0a2566ada49e6f83cce4e0e48c1",
+    "r3_density_source_commit": "73b358926dc4e1a576209b3e58c4e86f25ffe9ec",
+    "r5_followup_source_commit": "54019437539808c91f6c2768e3afcae08ea50439",
+    "g1_is_read_only": true
+  },
+  "reference_density": {
+    "role": "Al_KS_NL_equilibrium_reference_for_representation_only",
+    "path": "analysis/s1/g1_three_layer_al_domain_followup_analysis_r5_20260810/state_snapshot/r1_p0/runs/S1-20260810-301/OUT.g1tlr1_al_v100_normal_common/chg.cube",
+    "sha256": "0f4cbb5229d217dc6cd3e4138a6bc3ccd3a6408b1baf4e343f9c52653a42ae86",
+    "size_bytes": 334367,
+    "grid": [24, 24, 24],
+    "expected_electrons": 3.0,
+    "structure_path": "inputs/s1/eos_candidates/al/v100/ofdft/STRU",
+    "structure_sha256": "31279eb4f9a5a6ad20376271c79c03a8ead1676cb697b5065515041f6799d437",
+    "perfect_supercells_are_periodic_tiling_diagnostics_only": true,
+    "local_perturbation_108_requires_new_reference": true
+  },
+  "cell_ladder": [
+    {
+      "atom_count": 1,
+      "cell_role": "primitive_equilibrium",
+      "supercell_matrix": [[1, 0, 0], [0, 1, 0], [0, 0, 1]],
+      "reference_density_role": "committed_ks_nl_equilibrium_cube"
+    },
+    {
+      "atom_count": 32,
+      "cell_role": "two_by_two_by_two_conventional_fcc",
+      "supercell_matrix": [[-2, 2, 2], [2, -2, 2], [2, 2, -2]],
+      "reference_density_role": "periodic_supercell_tiling_invariance_only"
+    },
+    {
+      "atom_count": 108,
+      "cell_role": "three_by_three_by_three_conventional_fcc",
+      "supercell_matrix": [[-3, 3, 3], [3, -3, 3], [3, 3, -3]],
+      "reference_density_role": "periodic_supercell_tiling_invariance_only"
+    }
+  ],
+  "candidate_order": [
+    "pw_fft_reference",
+    "atomic_fft",
+    "atomic_low_g_explicit",
+    "atomic_low_g_complementary"
+  ],
+  "candidates": {
+    "pw_fft_reference": {
+      "role": "noncompressive_reference",
+      "density_representation": "full_registered_real_space_grid_and_fft",
+      "long_range_operator": "fft",
+      "g0_convention": "cell_average_carries_exact_electron_number",
+      "may_be_selected_as_compressed_winner": false
+    },
+    "atomic_fft": {
+      "role": "atomic_coefficients_with_fft_operators",
+      "density_representation": "periodic_atom_centered_auxiliary_basis",
+      "long_range_operator": "reconstruct_on_registered_grid_then_fft",
+      "g0_convention": "coefficient_electron_number_constraint",
+      "may_be_selected_as_compressed_winner": true
+    },
+    "atomic_low_g_explicit": {
+      "role": "compensated_atomic_plus_explicit_fixed_low_g",
+      "density_representation": "zero_average_compensated_atomic_functions_plus_g0_and_fixed_low_g",
+      "long_range_operator": "full_block_metric_including_atomic_low_g_cross_terms",
+      "g0_convention": "g0_is_unique_charge_channel",
+      "may_be_selected_as_compressed_winner": true
+    },
+    "atomic_low_g_complementary": {
+      "role": "complementary_projection_or_range_separation",
+      "density_representation": "atomic_functions_projected_out_of_registered_low_g_subspace",
+      "long_range_operator": "complementary_projector_or_smooth_range_separation",
+      "g0_convention": "g0_and_low_g_subspace_are_disjoint_from_atomic_block",
+      "may_be_selected_as_compressed_winner": true
+    }
+  },
+  "atomic_basis_ladder": {
+    "family": "even_tempered_gaussian_density_auxiliary",
+    "alpha_bohr_minus2": [0.15, 0.3, 0.6, 1.2, 2.4, 4.8],
+    "angular_ladders": ["s", "sp", "spd"],
+    "production_choice_must_be_selected_without_per_geometry_rank_changes": true
+  },
+  "low_g_contract": {
+    "eta_q_over_2kf": [0.1, 0.25, 0.5, 0.75, 1.0, 1.5, 2.0, 3.0],
+    "signed_amplitudes": [-0.01, 0.01],
+    "integer_g_set_is_fixed_per_cell_ladder": true,
+    "g_and_minus_g_are_paired": true,
+    "g0_is_separate": true
+  },
+  "rank_contract": {
+    "candidate_thresholds": [1e-08, 1e-09, 1e-10],
+    "maximum_effective_condition_number": 100000000.0,
+    "minimum_retained_eigenvalue_over_threshold": 100.0,
+    "threshold_decade_total_energy_change_max_mev_per_atom": 2.0,
+    "per_geometry_hard_rank_selection_forbidden": true
+  },
+  "acceptance": {
+    "electron_number_relative_error_strict_lt": 1e-10,
+    "equilibrium_density_relative_l2_strict_lt": 0.01,
+    "perturbed_density_relative_l2_p95_strict_lt": 0.02,
+    "component_energy_abs_error_max_mev_per_atom": 10.0,
+    "combined_energy_abs_error_max_mev_per_atom": 10.0,
+    "fixed_kedf_non_scf_total_energy_error_p95_mev_per_atom": 10.0,
+    "gauge_equivalent_energy_difference_max_mev_per_atom": 0.1,
+    "hartree_symmetry_relative_strict_lt": 1e-12,
+    "hartree_negative_eigenvalue_relative_floor": -1e-12,
+    "small_cell_hartree_fft_difference_max_mev_per_atom": 0.1,
+    "equivalent_supercell_energy_difference_max_mev_per_atom": 1.0,
+    "eggbox_energy_peak_to_peak_max_mev_per_atom": 1.0,
+    "eggbox_pseudoforce_max_ev_per_angstrom": 0.002,
+    "effective_coefficient_fraction_max": 0.3,
+    "explicit_hybrid_time_speedup_min": 1.5,
+    "explicit_hybrid_memory_improvement_min": 2.0,
+    "other_performance_metric_degradation_max_fraction": 0.2
+  },
+  "execution_contract": {
+    "registered_case_count": 12,
+    "new_solver_run_count": 0,
+    "formal_state_root": "/home/shenwei01/.local/state/m_ofdft/s2_g2_architecture_candidates_r1_20260811",
+    "formal_state_must_be_absent": true,
+    "analysis_root": "analysis/s2/g2_architecture_candidates_r1_20260811",
+    "analysis_root_must_be_absent": true,
+    "r1_deliverable": "architecture_and_data_contract_preregistration_only"
+  }
+}
