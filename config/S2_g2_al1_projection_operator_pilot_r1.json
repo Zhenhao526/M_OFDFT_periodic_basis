@@ -1,8 +1,8 @@
 {
   "schema_version": 1,
   "protocol_revision": "S2-G2-AL1-PROJECTION-OPERATOR-PILOT-20260811-R1",
-  "status": "implementation_pending_preregistration",
-  "implementation_commit": "__FREEZE_IMPLEMENTATION_COMMIT__",
+  "status": "preregistered_no_execution",
+  "implementation_commit": "022551e4d15e75f95431c0a07db09c022b09a03e",
   "base_commit": "0c0cf82b6b051e4f0dbf421911569ef5f8298afd",
   "architecture_preregistration_commit": "cdf90874702509543fb0856f5ed8fc8c9450d230",
   "scope": {
