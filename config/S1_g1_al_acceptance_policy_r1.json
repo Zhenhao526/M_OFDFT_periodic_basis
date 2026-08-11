@@ -1,9 +1,9 @@
 {
   "schema_version": 1,
   "protocol_revision": "S1-G1-AL-ACCEPTANCE-POLICY-20260811-R1",
-  "status": "implementation_pending_preregistration",
+  "status": "preregistered",
   "registration": {
-    "implementation_commit": "__FREEZE_IMPLEMENTATION_COMMIT__",
+    "implementation_commit": "7b7e342511133371fe6bd364651564b88ac68a47",
     "preregistration_commit": "__FREEZE_PREREGISTRATION_COMMIT__",
     "integration_base_commit": "7f717330a28c7af09c0b9fa4a078568b42a726e6",
     "integration_base_parents": [
