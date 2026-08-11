@@ -1,8 +1,8 @@
 {
   "schema_version": 1,
   "protocol_revision": "S2-G2-AL-LOCALIZED-ANALYSIS-20260811-R2",
-  "status": "implementation_pending_preregistration",
-  "implementation_commit": "__FREEZE_IMPLEMENTATION_COMMIT__",
+  "status": "preregistered_analysis_only",
+  "implementation_commit": "898424d420d804fe81df1e32741ae48c1b75f675",
   "base_commit": "66ca1d76c87551f5c09d8ef81791b75f0479e89e",
   "new_solver_run_count": 0,
   "source": {
