@@ -2,23 +2,23 @@
 
 > 本文件是项目状态的唯一人工入口。任何人接手前先读本文件，再读项目书和当前阶段 README。  
 > 状态词仅使用：`not_started`、`in_progress`、`blocked`、`accepted`、`rejected`、`paused`。  
-> 更新时间：2026-08-10 13:20 CST
-> 文档版本：V4.0
+> 更新时间：2026-08-11 17:10 CST
+> 文档版本：V4.1
 
 ## 0. 十分钟上手摘要
 
 | 项目 | 当前值 |
 |---|---|
-| 当前总状态 | `in_progress`（R4、DFTpy、10 例再生成和位移/应变参考集均已完整验收；G1 为 `pending`，5/6） |
-| 当前阶段 | S1：平面波 OFDFT/KSDFT 基准闭环 |
-| 当前闸门 | G1；六个子项已有五项关闭，仅余 KS-NL→KS-L→OF-L 三层对照 |
+| 当前总状态 | `accepted`（S1/G1 六个子项 6/6 已完成并通过 committed replay） |
+| 当前阶段 | S1 已验收；下一阶段为 S2：混合密度基表示 |
+| 当前闸门 | G2；G1 已按 2026-08-11 授权的 Al `|ΔV0|≤1%` 限定范围关闭 |
 | 当前负责人 | 远端账户 `shenwei01`；本轮执行与记录：Codex |
 | 当前工作分支 | `codex/r4-execution`；所有实现和计算均在远端服务器完成 |
-| 最近可用提交 | `690f98b`：已合并 10 例再生成 R2 与位移/应变 analysis-only R2 的原始运行历史；登记 worktree 的 committed validators 均通过 |
+| 最近可用提交 | `da15ac0`：已合并 R3、R5 与最终 G1 1% policy evidence；最终文档提交紧随其后 |
 | 最近通过的数值 smoke | `S1-RUNTIME-SMOKE-20260805-074`：`storage_exact`，五类状态门全部 `accepted`；幂等重验返回 `accepted_committed` |
-| 最近通过的正式分析 | 位移/应变 analysis-only R2：15/15 点、7/7 中心对、300/300 state→提交证据通过；再生成 R2：10/10 accepted、9 项硬门全通过 |
-| 当前阻塞 | 无计算资源阻塞；三层项仍在运行。Mg PBE/10e 只作 compatibility diagnostic，不能与旧 Mg LDA-PZ/2e 冒充硬比较；独立第二 KS/QE 仍未关闭 |
-| 下一项唯一动作 | 完成三层 R1 的 P0/P1/P2，并以 analysis-only R2 将 Al hard status 与 Mg diagnostic status 独立派生后总体验收 G1 |
+| 最近通过的正式分析 | G1 acceptance policy R1：R3/R5 全量重放、17 行 gate、`accepted_g1_6_of_6`、新增 solver 0；证据 `d0386418` |
+| 当前阻塞 | 无 G1 阻塞；第二独立 KS/QE、Mg 硬比较、projector-only 因果和 G4 力/应力仍为范围限制，但不反向否定本次 Al 限定验收 |
+| 下一项唯一动作 | 启动 S2/G2 的混合密度基架构候选设计与预注册；所有 G1 state/ID 保持只读 |
 
 ### 必读文件
 
@@ -43,7 +43,8 @@
 19. [G1 10 例再生成 R2 协议](S1_G1_REGENERATION_10_R2_PROTOCOL.md)、`analysis/s1/g1_regeneration_10_r2_20260810/README.md`
 20. [G1 位移/应变 R1 协议](S1_G1_DISPLACEMENT_STRAIN_REFERENCE_R1_PROTOCOL.md)、`analysis/s1/g1_displacement_strain_reference_r1_20260810/README.md`
 21. [G1 位移/应变 analysis-only R2 协议](S1_G1_DISPLACEMENT_STRAIN_REFERENCE_ANALYSIS_R2_PROTOCOL.md)、`analysis/s1/g1_displacement_strain_reference_analysis_r2_20260810/README.md`
-22. 三层 R1 独立 worktree：`/home/shenwei01/wt_g1_three_layer_r1_20260810`；正式 external state：`/home/shenwei01/.local/state/m_ofdft/s1_g1_three_layer_r1_20260810`
+22. [G1 Al 1% 验收协议](S1_G1_AL_ACCEPTANCE_POLICY_R1_PROTOCOL.md)、`analysis/s1/g1_al_acceptance_policy_r1_20260811/{README.md,summary.json,gates.tsv,analysis_revision.json}`
+23. 三层 R3 历史拒绝：`analysis/s1/g1_three_layer_analysis_r3_20260810/`；R5 应变/端点闭包：`analysis/s1/g1_three_layer_al_domain_followup_analysis_r5_20260810/`
 
 ### 最近可运行命令
 
@@ -58,6 +59,7 @@ python3 -s scripts/generate_s1_g1_thermodynamic_label_audit_r4.py --project-root
 taskset -c 10 /home/shenwei01/.local/venvs/m_ofdft-dftpy-2.2.0-py311/bin/python scripts/validate_s1_g1_cross_code_dftpy.py analysis/s1/g1_cross_code_dftpy_r2_20260810 --require-committed
 /usr/bin/python3 -s /home/shenwei01/M_OFDFT_g1_regen10_r1_20260810/scripts/validate_s1_g1_regeneration_10_r2.py --require-committed
 /usr/bin/python3 -s /home/shenwei01/wt_g1_displacement_r1_20260810/scripts/validate_s1_g1_displacement_strain_reference_r2.py --require-committed
+cd /home/shenwei01/wt_g1_al_acceptance_policy_r2_20260811 && env PYTHONDONTWRITEBYTECODE=1 PYTHONNOUSERSITE=1 python3 -s -B scripts/validate_s1_g1_al_acceptance_policy_r1.py --require-committed
 python3 -m unittest -q tests.unit.test_s1_g1_thermodynamic_label_audit_r4_generator tests.unit.test_s1_g1_thermodynamic_label_audit_r4_parser tests.unit.test_s1_g1_thermodynamic_label_audit_r4_validator tests.unit.test_s1_g1_thermodynamic_label_audit_r4_analysis tests.unit.test_s1_g1_thermodynamic_label_audit_r4_runner tests.unit.test_s1_g1_thermodynamic_label_audit_r4_launcher
 ./scripts/run_smoke.sh S0-YYYYMMDD-NNN
 ```
@@ -149,6 +151,9 @@ python3 -m unittest -q tests.unit.test_s1_g1_thermodynamic_label_audit_r4_genera
 - [x] 以 `ea90c3e` 预注册再生成 R2 的全新 011–020 和逐 rank O_EXCL proof/ACK barrier；10/10 accepted、失败/缺失/跳过/重试均为 0，9 项硬门全通过，能量、压力、72 标签、密度和势差最大值均为 0，证据提交 `d57216d`；G1 从 3/6 更新为 4/6；
 - [x] 位移/应变 R1 以 201–215 完成 15/15 solver、零失败/重试、累计 4650.7945 秒；旧 analyzer 对 203 合法 PBC wrap 作直接 Cartesian 相减而假失败，R1 analysis 明确 `rejected_analysis_false_negative`，solver state 不改、不重算；
 - [x] 位移/应变 analysis-only R2 复用同一 15 点并加入 minimum-image 与独立 STRU/F 重建：15/15、7/7、300/300 SHA/size 全通过；最大位移误差 `4.4034e-12 Å`、F 误差 `2.22e-16`、cube 几何误差 `1.9819e-05 bohr`、电子数相对误差 `8.3786e-12`、热力学恒等式残差 `1.5261e-10 eV/atom`；证据 `28cd249`，G1 从 4/6 更新为 5/6；
+- [x] 完成 Al 三层 R3：旧预注册 `|ΔV0|≤0.5%` 下 `0.7660177%` 被如实判为 `evidence_valid_scientific_gate_rejected`；R5 复用 351–358 的 8/8 结果确认应变最大 `0.238321 meV/atom`，端点 k/cutoff/压力门全部通过；
+- [x] 根据 2026-08-11 用户授权，以 analysis-only policy R1 将 Al `|ΔV0|` 门修订为 `≤1%`，完整重放 R3/R5 且不启动 solver；17/17 行门通过，committed validator 返回 `accepted_g1_6_of_6`，证据 `d0386418`；G1 从 5/6 更新为 6/6；
+- [x] 限定最终范围为 Al ABACUS 同引擎、登记 PP 对的 scheme+construction suitability bound；Mg 仅 diagnostic，OF-L↔KS-L 保持 error portrait，第二 KS/QE、projector-only 因果和 G4 力/应力均未关闭；HQLPP/QE binding smoke 失败冻结、禁止重试、贡献 0；
 - [x] 扩大调研至原包 8 篇核心文献、扩展包 13 篇全文/241 页、1 篇网页全文及 20 余篇方法/软件补充证据；
 - [x] 识别 AMD-OFDFT 2014 直接先例，收窄“原子中心密度 + 变分 + Pulay 力”的创新主张；
 - [x] 完成闸门式项目再评估：整体 66/100、S0–S4A 核心 73/100、全范围 S0–S7 约 43/100；
@@ -158,20 +163,20 @@ python3 -m unittest -q tests.unit.test_s1_g1_thermodynamic_label_audit_r4_genera
 
 ### 下次开始位置
 
-从提交 `690f98b` 开始；全部历史 external state 只读，不删除、不重启、不重试历史 ID：
+从最终 G1 证据 `d0386418` 及其主线合并 `da15ac0` 开始；全部历史 external state 只读，不删除、不重启、不重试历史 ID：
 
-1. 10 例再生成与位移/应变已关闭；复验必须从各自登记的绝对 worktree 执行上列 committed validator，不得从主工作树篡改冻结路径；
-2. 三层 R1 正在 `/home/shenwei01/wt_g1_three_layer_r1_20260810` 执行：Al PBE/3e 为 hard scope；Mg PBE/10e 仅 compatibility diagnostic，不能伪装成与旧 Mg LDA-PZ/2e 的硬比较；
-3. R1 operational P0 实现会联合检查 Al+Mg。若 Mg P0 通过，可继续 R1；最终必须新增 analysis-only R2，独立派生 Al hard status 与 Mg diagnostic status，overall 只由 Al hard scope 决定；若 Mg P0 失败，则冻结 R1 并以新 revision/新 IDs 继续 Al；
-4. 三层项完成、独立复核和 committed validator 均通过前，G1 保持 `pending`（5/6），不得进入 S2 或 ML。
+1. G1 六个子项已 6/6 accepted；复验必须使用各登记 source worktree 的 committed validator，不得改写历史 R3 0.5% rejection；
+2. S2/G2 是唯一下一动作：先冻结混合密度基候选、量化门和全新 ID，再开始任何 solver；
+3. QE/第二 KS、Mg 硬比较、HQLPP 与 projector-only 因果若继续，必须使用新协议；它们属于外推/诊断限制，不得改写 G1 历史；
+4. S2 前保留所有 G1 state、失败 smoke 和 analysis evidence 为只读，不再消费 G1 ID。
 
 ## 2. 阶段总览
 
 | 阶段 | 名称 | 状态 | 开始日期 | 结束日期 | 闸门 | 证据链接 | 下一动作 |
 |---|---|---|---|---|---|---|---|
 | S0 | 初始化与复现协议 | `accepted` | 2026-08-05 | 2026-08-05 | G0 | `docs/G0_ACCEPTANCE.md`; `analysis/s1/runtime_relocation_equivalence_20260805/` | 数值/归档恢复结论保留；登记的 namespace runtime-isolation 路径已验收，原归档本身不称 hermetic |
-| S1 | 平面波基准闭环 | `in_progress` | 2026-08-05 | — | G1 | 电子数 `c94796d`；R4 `c4e98320`；DFTpy R2 `f10008d`；再生成 `d57216d`；位移/应变 `28cd249` | G1 5/6；仅余三层对照 |
-| S2 | 混合密度基表示 | `not_started` | — | — | G2 | — | 等待 G1 |
+| S1 | 平面波基准闭环 | `accepted` | 2026-08-05 | 2026-08-11 | G1 | 前五项证据同前；三层 R3 `73b3589`；R5 `5401943`；1% policy `d0386418` | G1 6/6；进入 S2 |
+| S2 | 混合密度基表示 | `not_started` | — | — | G2 | — | 下一动作：冻结架构候选和 G2 协议 |
 | S3 | 固定 KEDF 自洽求解 | `not_started` | — | — | G3 | — | 等待 G2 |
 | S4A | 固定晶胞解析力 | `not_started` | — | — | G4A | — | 等待 G3 |
 | S4B | 晶胞应力 | `not_started` | — | — | G4B | — | 等待 G4A |
@@ -215,6 +220,9 @@ python3 -m unittest -q tests.unit.test_s1_g1_thermodynamic_label_audit_r4_genera
 | G1 标签审计 R4 完成证据 | `analysis/s1/g1_thermodynamic_label_audit_r4_20260807/`；`orchestration/s1/g1_thermodynamic_label_audit_r4_20260807/supervisor_completion.json` | `accepted` | 40/40 新运行；42/42 scalar；14/14 smearing pairs；6/6 k pairs；completion `c4e98320` |
 | G1 10 例再生成 R2 | `docs/S1_G1_REGENERATION_10_R2_PROTOCOL.md`；`analysis/s1/g1_regeneration_10_r2_20260810/` | `accepted` | R1 runtime 假阴性冻结；R2 10/10、零失败/重试；证据 `d57216d` |
 | G1 位移/应变 analysis-only R2 | `docs/S1_G1_DISPLACEMENT_STRAIN_REFERENCE_ANALYSIS_R2_PROTOCOL.md`；`analysis/s1/g1_displacement_strain_reference_analysis_r2_20260810/` | `accepted` | R1 solver 15/15；R2 修复 PBC 分析假阴性，15/15、7/7、300/300；证据 `28cd249` |
+| G1 三层 R3 历史分析 | `analysis/s1/g1_three_layer_analysis_r3_20260810/` | `rejected`（证据有效） | 旧 0.5% 门下 `|ΔV0|=0.7660177%`；`|ΔB0|=2.46585%` 与 BM3 门通过；历史结论不回写 |
+| G1 三层 R5 应变/端点 | `analysis/s1/g1_three_layer_al_domain_followup_analysis_r5_20260810/` | `accepted` | 351–358 为 8/8；应变最大 `0.238321 meV/atom`；端点 k/cutoff/压力均通过；新增 solver 0 |
+| G1 1% policy R1 | `docs/S1_G1_AL_ACCEPTANCE_POLICY_R1_PROTOCOL.md`；`analysis/s1/g1_al_acceptance_policy_r1_20260811/` | `accepted` | R3/R5 committed replay；17 行 gate；`accepted_g1_6_of_6`；证据 `d0386418` |
 | 代码仓库 | `https://github.com/Zhenhao526/M_OFDFT_periodic_basis` | 已建立 | 服务器路径 `/home/shenwei01/M_OFDFT_periodic_basis`；node01 通过校验 bundle 中转，由本地推送并以 `ls-remote` 核验 |
 | 环境锁 | `/home/shenwei01/M_OFDFT_periodic_basis/environment/` | 已建立 | 包清单、CMake、系统快照 |
 | 软件清单 | `/home/shenwei01/M_OFDFT_periodic_basis/manifests/` | 已建立 | 二进制、源码包与 LPP 哈希 |
@@ -225,7 +233,7 @@ python3 -m unittest -q tests.unit.test_s1_g1_thermodynamic_label_audit_r4_genera
 
 ## 3A. 当前阶段：S1
 
-- 状态：`in_progress`；R4、DFTpy R2、10 例再生成 R2 和位移/应变 analysis-only R2 已完整验收；G1 为 5/6，尚未总体验收。
+- 状态：`accepted`；G1 六个子项 6/6 已完成，S1 于 2026-08-11 关闭。
 - 核心材料：fcc Al、hcp Mg；每种至少七个体积点 `0.90, 0.94, 0.97, 1.00, 1.03, 1.06, 1.10 V0`。
 - 当前工作仅限基准协议、输入生成、收敛扫描、EOS 与交叉核验；不得提前进入 S2 或 ML。
 - 当前结果：Al WT 在 V0 的 20→30 Ry 变化为 0.011269 meV/atom、0.0000990 GPa；20 Ry 为最小通过候选。
@@ -250,9 +258,9 @@ python3 -m unittest -q tests.unit.test_s1_g1_thermodynamic_label_audit_r4_genera
 - 证据处置：DFTpy R1 的 001–014 因空逐点 stdout 与 Bohr 常数证据实现错误而整体 rejected；错误不影响其观测到的科学趋势，但 R1 不计分、不重试。R2 独立积分最大误差为 Al `3.55e-15`、Mg `5.77e-15`，修正后 committed validator 通过。
 - 当前结果：10 例再生成 R1 的短任务 runtime 轮询假阴性已冻结并排除；R2 的 011–020 为 10/10 accepted，失败/缺失/跳过/重试为 0，能量、压力、标签、密度和势的 replay 最大差为 0，committed validator 通过。
 - 当前结果：位移/应变 R1 求解为 15/15、零失败/重试；旧 analyzer 对 203 周期等价坐标产生假阴性。analysis-only R2 用 minimum-image 和独立 STRU/F 重建复析原证据后 15/15、7/7、300/300 全通过，无需重算 solver；中心差分保持 G1 diagnostic-only，不提前关闭 G4。
-- G1 仍为 `pending`（5/6）：独立电子数、第三 smearing/稠密 k、独立 OFDFT 跨代码、10 例单命令再生成、位移/应变参考集五项 `accepted`；仅余 KS-NL→KS-L→OF-L 三层验证。
+- G1 为 `accepted`（6/6）：前五项保持 accepted；第六项在保留旧 0.5% 拒绝历史的同时，按新 1% Al 限定门由 policy R1 完整重放后通过。
 - runtime-isolation 复核：原 `ldd` 外推仍撤回；登记的重定位 ABACUS + 私有 namespace + 严格审计路径已通过 074 和六点正式复演，因此该限定子项 `accepted`。锁定归档本身仍不得称为天然 hermetic。
-- 当前唯一动作：继续三层 R1 的剩余点，完成独立 analysis-only R2 scope 拆分、证据复核与 committed validator；不得触碰已关闭子项的 state/ID。
+- 当前唯一动作：启动 S2/G2 的混合密度基候选协议；不得触碰已关闭 G1 子项的 state/ID。
 
 ## 4. 闸门决策记录
 
@@ -278,6 +286,9 @@ python3 -m unittest -q tests.unit.test_s1_g1_thermodynamic_label_audit_r4_genera
 | 2026-08-10 | G1/regeneration-10 R2 | `accepted` | Codex | 10/10；失败/缺失/跳过/重试 0；9 项 hard gates；最大科学 replay 差 0 | `analysis/s1/g1_regeneration_10_r2_20260810/`；`d57216d` | 关闭第四个 G1 子项；G1 更新为 4/6 |
 | 2026-08-10 | G1/displacement-strain R1 analysis | `rejected` | Codex | solver 15/15；旧 analyzer 对 203 合法周期 wrap 产生非 PBC Cartesian 假阴性 | external R1 state；`analysis/s1/g1_displacement_strain_reference_r1_20260810/` | solver 不重算；R1 analysis 贡献 0；新 analysis-only R2 |
 | 2026-08-10 | G1/displacement-strain analysis R2 | `accepted` | Codex | 15/15、7/7、300/300；独立几何、Ne、Mermin identity、force/stress 与 PBC 门全通过 | `analysis/s1/g1_displacement_strain_reference_analysis_r2_20260810/`；`28cd249` | 关闭第五个 G1 子项；G1 更新为 5/6；仅余三层 |
+| 2026-08-10 | G1/three-layer analysis R3 | `rejected` | Codex | 执行证据有效；旧预注册 0.5% 门下 Al `|ΔV0|=0.7660177%` 为唯一 hard rejection | `analysis/s1/g1_three_layer_analysis_r3_20260810/`；`73b3589` | 保留历史拒绝；不得事后改写旧阈值 |
+| 2026-08-10 | G1/three-layer follow-up R5 | `accepted` | Codex | 351–358 8/8；4 个 strain 和两个端点 k/cutoff/压力门全通过；0 新重算 | `analysis/s1/g1_three_layer_al_domain_followup_analysis_r5_20260810/`；`5401943` | 排除小应变与端点欠收敛，不单独覆盖 EOS rejection |
+| 2026-08-11 | G1/Al acceptance policy R1 | `accepted` | Codex | 用户授权 `|ΔV0|≤1%`；R3/R5 全量重放、17/17 gate、0 solver；范围限制全部硬编码 | `analysis/s1/g1_al_acceptance_policy_r1_20260811/`；`d0386418` | 第六项关闭；G1 6/6，S1 accepted；下一闸门 G2 |
 
 ## 5. 实验台账
 
@@ -367,7 +378,9 @@ python3 -m unittest -q tests.unit.test_s1_g1_thermodynamic_label_audit_r4_genera
 | G1 DFTpy Mg：EOS RMS / ΔV0 / 最大 ΔP / 最大 abs(ΔN) | `4.1272e-04 meV/atom` / `8.75e-05%` / `0.000105 GPa` / `5.77e-15` | ≤2 / ≤0.2% / ≤0.05 / <1e-10 | 同上 | 通过 |
 | G1 10 例再生成 R2 | 10/10；失败/缺失/跳过/重试 0；9 项 hard gates 全通过 | 10/10、四类失败均 0 | `analysis/s1/g1_regeneration_10_r2_20260810/`；`d57216d` | 子项 `accepted` |
 | G1 位移/应变 R2 | 15/15；7/7 pairs；300/300 SHA/size；最大 N 相对误差 `8.3786e-12` | 15/15、7/7、证据全一致、N<1e-10 | `analysis/s1/g1_displacement_strain_reference_analysis_r2_20260810/`；`28cd249` | 子项 `accepted` |
-| G1 待闭合项 | 5/6 闭合 | 6/6 | 电子数 `c94796d`；标签 R4 `c4e98320`；DFTpy `f10008d`；再生成 `d57216d`；位移/应变 `28cd249` | `pending` |
+| G1 Al 三层 EOS | `|ΔV0|=0.7660177%`；`|ΔB0|=2.4658526%` | `≤1%`；`≤10%` | R3 `73b3589`；policy `d0386418` | 通过；旧 0.5% rejection 保留 |
+| G1 R5 应变/端点 | strain max `0.238321 meV/atom`；两端点 k/cutoff/`|ΔP|` 全过 | strain `≤20`；k `<2`；cutoff `<1 meV/atom`；`|ΔP|<0.02 GPa` | R5 `5401943` | 通过 |
+| G1 总体 | 6/6 闭合 | 6/6 | 前五项证据；R3 `73b3589`；R5 `5401943`；policy `d0386418` | `accepted` |
 | runtime-relocation 六点科学/R8 等价 | 6/6 `storage_exact`；R8 替换结论 6/6 不变 | `|dE|<0.1 meV/atom`、`|dP|<0.02 GPa`；6/6 不翻转 | S1-20260805-113–118；`a01ac70` | `accepted` |
 | whole-runtime 旧前缀隔离 | 074 + 六点均为成功旧访问/执行/映射 0、未知探针 0；每点恰有 22 个登记 ENOENT | 同左；登记探针计数必须精确 | `analysis/s1/runtime_relocation_smoke_20260805/`; `analysis/s1/runtime_relocation_equivalence_20260805/` | 限定 namespace 部署路径 `accepted` |
 | 密度投影 L2 | — | 平衡 <1% | — | 未测 |
@@ -389,7 +402,7 @@ python3 -m unittest -q tests.unit.test_s1_g1_thermodynamic_label_audit_r4_genera
 | B-003 | 2026-08-05 | 项目许可证尚未选择 | S0/S7 | 项目负责人 | 选择许可证或维持内部研究限制 | 是 | `blocked` |
 | B-004 | 2026-08-05 | 已在全新空目录恢复锁定二进制前缀并完成单测/smoke | S0 | Codex | 结果固定于 `S0-20260805-003` | 否 | `accepted` |
 | B-005 | 2026-08-05 | node01 直连 GitHub HTTPS 超时，不能在计算节点直接推送 | S0–S7 | Codex | 暂用完整 Git bundle 经跳板机传回本机后原子推送；后续可配置可审计的出口代理 | 否 | `paused` |
-| B-006 | 2026-08-05 | 第二套独立 OFDFT 原本缺失；现已冻结 DFTpy 2.2.0 并通过 14/14 跨代码门，但独立第二 KS/QE 仍未具备 | S1 | Codex | DFTpy 子阻塞已关闭；三层首批改用 ABACUS engine-controlled KS-NL pilot，不能宣称第二 KS 已关闭 | 否 | `in_progress` |
+| B-006 | 2026-08-05 | 第二套独立 OFDFT 已由 DFTpy 2.2.0 的 14/14 跨代码门关闭；独立第二 KS/QE 仍未具备 | S2+ 外推 | Codex | 不反向否定 Al 限定 G1；若继续 QE，须新协议并明确属于外推能力增强 | 否 | `in_progress` |
 | B-007 | 2026-08-05 | 原 runtime-isolation 证据只覆盖 ABACUS `ldd`；恢复 `mpirun` 可转调旧前缀 `prterun`，运行中也有旧路径成功访问 | G0/S1 | Codex | 已以登记的重定位+私有 namespace 协议完成 074 和六点复演；冻结身份改变时重新打开 | 否 | `accepted` |
 | B-008 | 2026-08-06 | R1 034 的 SSH/PTY 宿主编排在 namespace 子会话完成前中断，使宿主后置 `host_status`、counterpart 与 result 闭包缺失 | S1/G1 | Codex | 在 R2 预注册中冻结脱离 SSH 生命周期的受管启动、唯一 PID/日志/退出状态和同等失败闭包；R1 不重跑 | 否 | `paused` |
 | B-009 | 2026-08-06 | R2 adapter 将 30 个 R2 ID 注入冻结 R1 parser，但 R1 registration validator 仍写死 `len(execution_order)==40`；真实预注册未被执行前正路 parser 回归覆盖 | S1/G1 | Codex | R3 已使用自身 production registration contract；真实生成 40 行正路及 39/41、重复、换序、错误 index、sealed 字节负路均通过；待远端 Linux 和正式 committed registration 复验 | 否 | `in_progress` |
@@ -461,18 +474,21 @@ python3 -m unittest -q tests.unit.test_s1_g1_thermodynamic_label_audit_r4_genera
 | 2026-08-10 | D-045 | 再生成 R1 按 `failed_no_retry` 冻结，以全新 R2 proof/ACK barrier 重做并接受 10/10 | R1-004 solver/science 通过，但短进程 `/proc/cmdline` 瞬时为空造成 runtime 轮询假阴性；R2 逐 rank proof+ACK 消除该竞态且 9 项硬门全通过 | 手工补 R1、重试 004、把 001–003 混入新分母，或降低 runtime 门 | R1 贡献 0；接受 `d57216d`，G1 更新为 4/6；R1/R2 state 均只读 |
 | 2026-08-10 | D-046 | 位移/应变 R1 solver 保留，拒绝旧 R1 分析；以 analysis-only R2 修复 PBC minimum-image 后接受同一 15 点 | 203 的 STRU 与 cube 原子坐标相差整数晶格矢量，旧 analyzer 直接 Cartesian 相减产生假失败；独立重建证实实际位移与形变均正确 | 重算 15 个 solver、放宽几何阈值，或忽略 203 | R1 solver 15/15 不重算；接受 `28cd249` 的 15/15、7/7、300/300，G1 更新为 5/6 |
 | 2026-08-10 | D-047 | 三层最终状态必须拆分为 Al hard status 与 Mg compatibility diagnostic | 预注册科学范围把 Mg 定为 diagnostic-only，但 R1 operational P0 实现联合 Al+Mg；另外 NLPP 与 local BLPS 构造不同，差值不是可证明单调的 projector-only 上界 | 让 Mg diagnostic 否定 Al hard scope，或把登记 PP 对差值称为严格 LPP bias upper bound | R1 不改；若 Mg P0 通过则完成 R1 后新增 analysis-only R2，overall 仅由 Al 派生；术语使用 scheme+construction discrepancy / suitability bound |
+| 2026-08-11 | D-048 | 保留三层 R3 在旧 `|ΔV0|≤0.5%` 门下的科学拒绝，不回写历史 | R3 evidence/terminal/validator 有效，唯一 hard rejection 为 `0.7660177%>0.5%`；R5 又证明应变与端点收敛无异常 | 修改旧 summary、删除 rejection，或把 R5 局部门替代 EOS 门 | 旧 R3 继续作为 `evidence_valid_scientific_gate_rejected` 的可复现历史证据 |
+| 2026-08-11 | D-049 | 按用户授权将新 revision 的 Al `|ΔV0|` 门改为 `≤1%`，其余阈值保持不变 | `0.7660177%≤1%`；`|ΔB0|=2.46585%≤10%`；BM3、R5 strain/k/cutoff/压力均通过；analysis-only 重放新增 solver 0 | 把旧阈值静默覆盖，或为通过而放宽其他门 | policy R1 committed validator 返回 `accepted_g1_6_of_6`；G1 6/6，S1 accepted |
+| 2026-08-11 | D-050 | 最终接受范围仅为 Al ABACUS 同引擎登记 PP 对的 scheme+construction suitability bound | Mg 仍为 diagnostic；OF-L↔KS-L 为 error portrait；第二 KS/QE、projector-only 因果和 G4 未关闭；HQLPP/QE binding smoke 失败且贡献 0 | 声称 D-026/QE、Mg 硬比较或 projector-only 因果已闭合 | 允许进入 S2，但所有范围限制继续写入后续论文/协议 |
 
 ## 9. 最近可用状态
 
 此节必须始终指向一个可运行、可复现的状态；若暂无则明确写“无”。
 
-- 最近可用状态：提交 `690f98b`；R4、DFTpy R2、再生成 R2 和位移/应变 R2 证据均已进入主分支 DAG，主工作树在本轮文档更新前为 clean；GitHub `codex/r4-execution` 待随本轮进度提交增量同步。
+- 最近可用状态：主线合并 `da15ac0`；R3、R5 与 policy R1 最终证据均已进入主分支 DAG，主工作树在本轮文档更新前为 clean；GitHub `codex/r4-execution` 待随 V4.1 文档提交增量同步。
 - 对应环境：`environment/` 的 ABACUS v3.11.0-beta.5 CPU + OpenMPI 5.0.10 + LibXC 7.0.0；独立 OF 环境为 `/home/shenwei01/.local/venvs/m_ofdft-dftpy-2.2.0-py311`，身份见锁文件。
-- 已通过测试：R4 40/40；DFTpy R2 14/14；再生成 R2 10/10 与 11/11 tests；位移/应变 R2 15/15、7/7 与 4/4 tests；各自 committed validator 均通过。此前 S1-R8、runtime relocation 和电子数 90/90 结论不变。
-- 已知失败/暂停：标签 R1/R2/R3、DFTpy R1、再生成 R1 和位移/应变 R1 analyzer 的停止/拒绝链保持不可变且不计当前分母；其后续 R2 均已接受。G1 尚缺三层一项，因此为 5/6。
-- 恢复方法：登录后检查主 HEAD `690f98b`（或其仅含进度更新的后继）、分支 `codex/r4-execution` 和 clean 工作树；再生成/位移复验使用“最近可运行命令”中的登记 worktree 绝对路径。三层继续只读监控其 R1 state，不重启、不重试。
+- 已通过测试：前五个 G1 子项的 committed validators 保持通过；三层 policy R1 为 6/6 tests、R3/R5 full replay、17/17 gate，最终 committed validator 返回 `accepted_g1_6_of_6`。此前 S1-R8、runtime relocation 和电子数 90/90 结论不变。
+- 已知失败/暂停：标签 R1/R2/R3、DFTpy R1、再生成 R1、位移/应变 R1 analyzer、三层旧 R3 0.5% rejection 与 HQLPP/QE binding smoke 的历史链均保持不可变；后续验收链已关闭 G1，失败记录不计当前 accepted 分母。
+- 恢复方法：登录后检查主 HEAD `da15ac0`（或其仅含 V4.1 文档更新的后继）、分支 `codex/r4-execution` 和 clean 工作树；G1 policy 复验使用“最近可运行命令”中的登记 worktree绝对路径。所有 G1 state 只读，不重启、不重试。
 - 同步方法：node01 对 `codex/r4-execution` 相对 GitHub 已知基线创建并验证增量 bundle，经跳板机传至本机；三端 SHA-256 一致后 fast-forward 推送同名分支，最后以 `git ls-remote` 核验目标 SHA。
-- 当前交接点：G1 为 5/6；三层 R1 正在独立 worktree 运行，CPU 30–33。Mg 是 diagnostic-only；final 前必须执行 D-047 的 analysis-only R2 scope 拆分。
+- 当前交接点：G1 为 6/6、S1 accepted；下一动作是 S2/G2。Mg、QE/第二 KS、HQLPP、projector-only 因果和 G4 仍按范围限制保留，不回写 G1 历史。
 
 ## 10. 交接说明
 
@@ -640,6 +656,7 @@ python3 -m unittest -q tests.unit.test_s1_g1_thermodynamic_label_audit_r4_genera
 | 2026-08-10 10:25 CST | G1 标签 R4 验收补写 | Codex | S1 | `c4e98320` | 40/40 runs、42/42 scalar、14/14 smearing pairs、6/6 k pairs；completion/replay accepted | R4 子项关闭，G1 更新为 2/6；开始剩余四项 |
 | 2026-08-10 11:35 CST | G1 独立 DFTpy 跨代码闭环 | Codex | S1 | 预注册 `38aaa91`；R2 修正 `4643b65`；证据 `f10008d` | R1 证据 rejected 并冻结；R2 14/14 accepted；Al/Mg 七点 EOS、V0、压力、电子数门全部通过 | 独立 OFDFT 子项关闭，G1 更新为 3/6；三个剩余子项在独立远端 worktree 并行执行 |
 | 2026-08-10 13:20 CST | G1 再生成与位移/应变闭环 | Codex | S1 | 再生成 R2 `d57216d`；位移/应变 R2 `28cd249`；主线 merge `cb0bf1b`/`690f98b` | 再生成 10/10；位移/应变 15/15、7/7、300/300；两项 committed validators 和独立复核均通过 | 两个子项关闭，G1 更新为 5/6；仅余三层对照 |
+| 2026-08-11 17:10 CST | G1 最终验收 | Codex | S1→S2 | R3 `73b3589`；R5 `5401943`；policy `d0386418`；主线 merge `da15ac0` | R3/R5 full replay；17/17 gate；committed validator `accepted_g1_6_of_6`；0 solver | G1 6/6、S1 accepted；范围仅 Al 同引擎登记 PP 对；下一动作进入 S2/G2 |
 
 ## 11. 文档变更记录
 
@@ -676,3 +693,4 @@ python3 -m unittest -q tests.unit.test_s1_g1_thermodynamic_label_audit_r4_genera
 | 2026-08-10 | V3.8 | Codex | 补写 R4 40/40 与 completion/replay 验收，G1 从 1/6 更新为 2/6；交接起点转为独立 OFDFT、三层对照、位移/应变及 0/10 再生四项 |
 | 2026-08-10 | V3.9 | Codex | 记录 DFTpy R1 证据拒绝与 R2 14/14 正式验收，冻结独立环境/哈希和 EOS/V0/压力/电子数指标；G1 从 2/6 更新为 3/6，并登记三层 Al/Mg 科学边界与剩余三项并行执行入口 |
 | 2026-08-10 | V4.0 | Codex | 记录再生成 R1 runtime 假阴性及 R2 10/10 闭环、位移/应变 R1 PBC 分析假阴性及 analysis-only R2 15/15 闭环；G1 从 3/6 更新为 5/6，并登记三层 final scope 拆分要求 |
+| 2026-08-11 | V4.1 | Codex | 记录三层 R3 旧 0.5% 科学拒绝、R5 8/8 应变/端点闭包和用户授权的 1% policy R1；committed replay 接受 G1 6/6、S1 accepted，并将下一动作切换为 S2/G2；保留 QE/Mg/G4 等范围限制 |
