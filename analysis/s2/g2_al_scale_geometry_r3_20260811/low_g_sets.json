@@ -1,0 +1,7694 @@
+{
+  "cells": [
+    {
+      "atom_count": 32,
+      "coset_fractional_positions": [
+        [
+          0.0,
+          0.0,
+          0.0
+        ],
+        [
+          0.0,
+          0.0,
+          0.5
+        ],
+        [
+          0.0,
+          0.25,
+          0.25
+        ],
+        [
+          0.0,
+          0.25,
+          0.75
+        ],
+        [
+          0.0,
+          0.5,
+          0.0
+        ],
+        [
+          0.0,
+          0.5,
+          0.5
+        ],
+        [
+          0.0,
+          0.75,
+          0.25
+        ],
+        [
+          0.0,
+          0.75,
+          0.75
+        ],
+        [
+          0.25,
+          0.0,
+          0.25
+        ],
+        [
+          0.25,
+          0.0,
+          0.75
+        ],
+        [
+          0.25,
+          0.25,
+          0.0
+        ],
+        [
+          0.25,
+          0.25,
+          0.5
+        ],
+        [
+          0.25,
+          0.5,
+          0.25
+        ],
+        [
+          0.25,
+          0.5,
+          0.75
+        ],
+        [
+          0.25,
+          0.75,
+          0.0
+        ],
+        [
+          0.25,
+          0.75,
+          0.5
+        ],
+        [
+          0.5,
+          0.0,
+          0.0
+        ],
+        [
+          0.5,
+          0.0,
+          0.5
+        ],
+        [
+          0.5,
+          0.25,
+          0.25
+        ],
+        [
+          0.5,
+          0.25,
+          0.75
+        ],
+        [
+          0.5,
+          0.5,
+          0.0
+        ],
+        [
+          0.5,
+          0.5,
+          0.5
+        ],
+        [
+          0.5,
+          0.75,
+          0.25
+        ],
+        [
+          0.5,
+          0.75,
+          0.75
+        ],
+        [
+          0.75,
+          0.0,
+          0.25
+        ],
+        [
+          0.75,
+          0.0,
+          0.75
+        ],
+        [
+          0.75,
+          0.25,
+          0.0
+        ],
+        [
+          0.75,
+          0.25,
+          0.5
+        ],
+        [
+          0.75,
+          0.5,
+          0.25
+        ],
+        [
+          0.75,
+          0.5,
+          0.75
+        ],
+        [
+          0.75,
+          0.75,
+          0.0
+        ],
+        [
+          0.75,
+          0.75,
+          0.5
+        ]
+      ],
+      "coset_position_count": 32,
+      "coset_positions_sha256": "b6159a776304721869d986a2adb84ad65c7904d7bedcb51437d70573de0c7184",
+      "equilibrium_half_space_low_g_count": 194,
+      "equilibrium_low_g_vectors": [
+        {
+          "eta_q_over_2kf": 0.22177833991524476,
+          "integer_vector": [
+            0,
+            0,
+            1
+          ]
+        },
+        {
+          "eta_q_over_2kf": 0.22177833991524476,
+          "integer_vector": [
+            0,
+            1,
+            0
+          ]
+        },
+        {
+          "eta_q_over_2kf": 0.22177833991524476,
+          "integer_vector": [
+            1,
+            0,
+            0
+          ]
+        },
+        {
+          "eta_q_over_2kf": 0.3136419361487295,
+          "integer_vector": [
+            0,
+            1,
+            -1
+          ]
+        },
+        {
+          "eta_q_over_2kf": 0.3136419361487295,
+          "integer_vector": [
+            0,
+            1,
+            1
+          ]
+        },
+        {
+          "eta_q_over_2kf": 0.3136419361487295,
+          "integer_vector": [
+            1,
+            -1,
+            0
+          ]
+        },
+        {
+          "eta_q_over_2kf": 0.3136419361487295,
+          "integer_vector": [
+            1,
+            0,
+            -1
+          ]
+        },
+        {
+          "eta_q_over_2kf": 0.3136419361487295,
+          "integer_vector": [
+            1,
+            0,
+            1
+          ]
+        },
+        {
+          "eta_q_over_2kf": 0.3136419361487295,
+          "integer_vector": [
+            1,
+            1,
+            0
+          ]
+        },
+        {
+          "eta_q_over_2kf": 0.3841313527514847,
+          "integer_vector": [
+            1,
+            -1,
+            -1
+          ]
+        },
+        {
+          "eta_q_over_2kf": 0.3841313527514847,
+          "integer_vector": [
+            1,
+            -1,
+            1
+          ]
+        },
+        {
+          "eta_q_over_2kf": 0.3841313527514847,
+          "integer_vector": [
+            1,
+            1,
+            -1
+          ]
+        },
+        {
+          "eta_q_over_2kf": 0.3841313527514847,
+          "integer_vector": [
+            1,
+            1,
+            1
+          ]
+        },
+        {
+          "eta_q_over_2kf": 0.4435566798304895,
+          "integer_vector": [
+            0,
+            0,
+            2
+          ]
+        },
+        {
+          "eta_q_over_2kf": 0.4435566798304895,
+          "integer_vector": [
+            0,
+            2,
+            0
+          ]
+        },
+        {
+          "eta_q_over_2kf": 0.4435566798304895,
+          "integer_vector": [
+            2,
+            0,
+            0
+          ]
+        },
+        {
+          "eta_q_over_2kf": 0.4959114439875422,
+          "integer_vector": [
+            0,
+            1,
+            -2
+          ]
+        },
+        {
+          "eta_q_over_2kf": 0.4959114439875422,
+          "integer_vector": [
+            0,
+            1,
+            2
+          ]
+        },
+        {
+          "eta_q_over_2kf": 0.4959114439875422,
+          "integer_vector": [
+            0,
+            2,
+            -1
+          ]
+        },
+        {
+          "eta_q_over_2kf": 0.4959114439875422,
+          "integer_vector": [
+            0,
+            2,
+            1
+          ]
+        },
+        {
+          "eta_q_over_2kf": 0.4959114439875422,
+          "integer_vector": [
+            1,
+            -2,
+            0
+          ]
+        },
+        {
+          "eta_q_over_2kf": 0.4959114439875422,
+          "integer_vector": [
+            1,
+            0,
+            -2
+          ]
+        },
+        {
+          "eta_q_over_2kf": 0.4959114439875422,
+          "integer_vector": [
+            1,
+            0,
+            2
+          ]
+        },
+        {
+          "eta_q_over_2kf": 0.4959114439875422,
+          "integer_vector": [
+            1,
+            2,
+            0
+          ]
+        },
+        {
+          "eta_q_over_2kf": 0.4959114439875422,
+          "integer_vector": [
+            2,
+            -1,
+            0
+          ]
+        },
+        {
+          "eta_q_over_2kf": 0.4959114439875422,
+          "integer_vector": [
+            2,
+            0,
+            -1
+          ]
+        },
+        {
+          "eta_q_over_2kf": 0.4959114439875422,
+          "integer_vector": [
+            2,
+            0,
+            1
+          ]
+        },
+        {
+          "eta_q_over_2kf": 0.4959114439875422,
+          "integer_vector": [
+            2,
+            1,
+            0
+          ]
+        },
+        {
+          "eta_q_over_2kf": 0.5432437687938731,
+          "integer_vector": [
+            1,
+            -2,
+            -1
+          ]
+        },
+        {
+          "eta_q_over_2kf": 0.5432437687938731,
+          "integer_vector": [
+            1,
+            -2,
+            1
+          ]
+        },
+        {
+          "eta_q_over_2kf": 0.5432437687938731,
+          "integer_vector": [
+            1,
+            -1,
+            -2
+          ]
+        },
+        {
+          "eta_q_over_2kf": 0.5432437687938731,
+          "integer_vector": [
+            1,
+            -1,
+            2
+          ]
+        },
+        {
+          "eta_q_over_2kf": 0.5432437687938731,
+          "integer_vector": [
+            1,
+            1,
+            -2
+          ]
+        },
+        {
+          "eta_q_over_2kf": 0.5432437687938731,
+          "integer_vector": [
+            1,
+            1,
+            2
+          ]
+        },
+        {
+          "eta_q_over_2kf": 0.5432437687938731,
+          "integer_vector": [
+            1,
+            2,
+            -1
+          ]
+        },
+        {
+          "eta_q_over_2kf": 0.5432437687938731,
+          "integer_vector": [
+            1,
+            2,
+            1
+          ]
+        },
+        {
+          "eta_q_over_2kf": 0.5432437687938731,
+          "integer_vector": [
+            2,
+            -1,
+            -1
+          ]
+        },
+        {
+          "eta_q_over_2kf": 0.5432437687938731,
+          "integer_vector": [
+            2,
+            -1,
+            1
+          ]
+        },
+        {
+          "eta_q_over_2kf": 0.5432437687938731,
+          "integer_vector": [
+            2,
+            1,
+            -1
+          ]
+        },
+        {
+          "eta_q_over_2kf": 0.5432437687938731,
+          "integer_vector": [
+            2,
+            1,
+            1
+          ]
+        },
+        {
+          "eta_q_over_2kf": 0.627283872297459,
+          "integer_vector": [
+            0,
+            2,
+            -2
+          ]
+        },
+        {
+          "eta_q_over_2kf": 0.627283872297459,
+          "integer_vector": [
+            0,
+            2,
+            2
+          ]
+        },
+        {
+          "eta_q_over_2kf": 0.627283872297459,
+          "integer_vector": [
+            2,
+            -2,
+            0
+          ]
+        },
+        {
+          "eta_q_over_2kf": 0.627283872297459,
+          "integer_vector": [
+            2,
+            0,
+            -2
+          ]
+        },
+        {
+          "eta_q_over_2kf": 0.627283872297459,
+          "integer_vector": [
+            2,
+            0,
+            2
+          ]
+        },
+        {
+          "eta_q_over_2kf": 0.627283872297459,
+          "integer_vector": [
+            2,
+            2,
+            0
+          ]
+        },
+        {
+          "eta_q_over_2kf": 0.6653350197457343,
+          "integer_vector": [
+            0,
+            0,
+            3
+          ]
+        },
+        {
+          "eta_q_over_2kf": 0.6653350197457343,
+          "integer_vector": [
+            0,
+            3,
+            0
+          ]
+        },
+        {
+          "eta_q_over_2kf": 0.6653350197457343,
+          "integer_vector": [
+            1,
+            -2,
+            -2
+          ]
+        },
+        {
+          "eta_q_over_2kf": 0.6653350197457343,
+          "integer_vector": [
+            1,
+            -2,
+            2
+          ]
+        },
+        {
+          "eta_q_over_2kf": 0.6653350197457343,
+          "integer_vector": [
+            1,
+            2,
+            -2
+          ]
+        },
+        {
+          "eta_q_over_2kf": 0.6653350197457343,
+          "integer_vector": [
+            1,
+            2,
+            2
+          ]
+        },
+        {
+          "eta_q_over_2kf": 0.6653350197457343,
+          "integer_vector": [
+            2,
+            -2,
+            -1
+          ]
+        },
+        {
+          "eta_q_over_2kf": 0.6653350197457343,
+          "integer_vector": [
+            2,
+            -2,
+            1
+          ]
+        },
+        {
+          "eta_q_over_2kf": 0.6653350197457343,
+          "integer_vector": [
+            2,
+            -1,
+            -2
+          ]
+        },
+        {
+          "eta_q_over_2kf": 0.6653350197457343,
+          "integer_vector": [
+            2,
+            -1,
+            2
+          ]
+        },
+        {
+          "eta_q_over_2kf": 0.6653350197457343,
+          "integer_vector": [
+            2,
+            1,
+            -2
+          ]
+        },
+        {
+          "eta_q_over_2kf": 0.6653350197457343,
+          "integer_vector": [
+            2,
+            1,
+            2
+          ]
+        },
+        {
+          "eta_q_over_2kf": 0.6653350197457343,
+          "integer_vector": [
+            2,
+            2,
+            -1
+          ]
+        },
+        {
+          "eta_q_over_2kf": 0.6653350197457343,
+          "integer_vector": [
+            2,
+            2,
+            1
+          ]
+        },
+        {
+          "eta_q_over_2kf": 0.6653350197457343,
+          "integer_vector": [
+            3,
+            0,
+            0
+          ]
+        },
+        {
+          "eta_q_over_2kf": 0.7013246898232076,
+          "integer_vector": [
+            0,
+            1,
+            -3
+          ]
+        },
+        {
+          "eta_q_over_2kf": 0.7013246898232076,
+          "integer_vector": [
+            0,
+            1,
+            3
+          ]
+        },
+        {
+          "eta_q_over_2kf": 0.7013246898232076,
+          "integer_vector": [
+            0,
+            3,
+            -1
+          ]
+        },
+        {
+          "eta_q_over_2kf": 0.7013246898232076,
+          "integer_vector": [
+            0,
+            3,
+            1
+          ]
+        },
+        {
+          "eta_q_over_2kf": 0.7013246898232076,
+          "integer_vector": [
+            1,
+            -3,
+            0
+          ]
+        },
+        {
+          "eta_q_over_2kf": 0.7013246898232076,
+          "integer_vector": [
+            1,
+            0,
+            -3
+          ]
+        },
+        {
+          "eta_q_over_2kf": 0.7013246898232076,
+          "integer_vector": [
+            1,
+            0,
+            3
+          ]
+        },
+        {
+          "eta_q_over_2kf": 0.7013246898232076,
+          "integer_vector": [
+            1,
+            3,
+            0
+          ]
+        },
+        {
+          "eta_q_over_2kf": 0.7013246898232076,
+          "integer_vector": [
+            3,
+            -1,
+            0
+          ]
+        },
+        {
+          "eta_q_over_2kf": 0.7013246898232076,
+          "integer_vector": [
+            3,
+            0,
+            -1
+          ]
+        },
+        {
+          "eta_q_over_2kf": 0.7013246898232076,
+          "integer_vector": [
+            3,
+            0,
+            1
+          ]
+        },
+        {
+          "eta_q_over_2kf": 0.7013246898232076,
+          "integer_vector": [
+            3,
+            1,
+            0
+          ]
+        },
+        {
+          "eta_q_over_2kf": 0.7355555401267673,
+          "integer_vector": [
+            1,
+            -3,
+            -1
+          ]
+        },
+        {
+          "eta_q_over_2kf": 0.7355555401267673,
+          "integer_vector": [
+            1,
+            -3,
+            1
+          ]
+        },
+        {
+          "eta_q_over_2kf": 0.7355555401267673,
+          "integer_vector": [
+            1,
+            -1,
+            -3
+          ]
+        },
+        {
+          "eta_q_over_2kf": 0.7355555401267673,
+          "integer_vector": [
+            1,
+            -1,
+            3
+          ]
+        },
+        {
+          "eta_q_over_2kf": 0.7355555401267673,
+          "integer_vector": [
+            1,
+            1,
+            -3
+          ]
+        },
+        {
+          "eta_q_over_2kf": 0.7355555401267673,
+          "integer_vector": [
+            1,
+            1,
+            3
+          ]
+        },
+        {
+          "eta_q_over_2kf": 0.7355555401267673,
+          "integer_vector": [
+            1,
+            3,
+            -1
+          ]
+        },
+        {
+          "eta_q_over_2kf": 0.7355555401267673,
+          "integer_vector": [
+            1,
+            3,
+            1
+          ]
+        },
+        {
+          "eta_q_over_2kf": 0.7355555401267673,
+          "integer_vector": [
+            3,
+            -1,
+            -1
+          ]
+        },
+        {
+          "eta_q_over_2kf": 0.7355555401267673,
+          "integer_vector": [
+            3,
+            -1,
+            1
+          ]
+        },
+        {
+          "eta_q_over_2kf": 0.7355555401267673,
+          "integer_vector": [
+            3,
+            1,
+            -1
+          ]
+        },
+        {
+          "eta_q_over_2kf": 0.7355555401267673,
+          "integer_vector": [
+            3,
+            1,
+            1
+          ]
+        },
+        {
+          "eta_q_over_2kf": 0.7682627055029694,
+          "integer_vector": [
+            2,
+            -2,
+            -2
+          ]
+        },
+        {
+          "eta_q_over_2kf": 0.7682627055029694,
+          "integer_vector": [
+            2,
+            -2,
+            2
+          ]
+        },
+        {
+          "eta_q_over_2kf": 0.7682627055029694,
+          "integer_vector": [
+            2,
+            2,
+            -2
+          ]
+        },
+        {
+          "eta_q_over_2kf": 0.7682627055029694,
+          "integer_vector": [
+            2,
+            2,
+            2
+          ]
+        },
+        {
+          "eta_q_over_2kf": 0.799633176351697,
+          "integer_vector": [
+            0,
+            2,
+            -3
+          ]
+        },
+        {
+          "eta_q_over_2kf": 0.799633176351697,
+          "integer_vector": [
+            0,
+            2,
+            3
+          ]
+        },
+        {
+          "eta_q_over_2kf": 0.799633176351697,
+          "integer_vector": [
+            0,
+            3,
+            -2
+          ]
+        },
+        {
+          "eta_q_over_2kf": 0.799633176351697,
+          "integer_vector": [
+            0,
+            3,
+            2
+          ]
+        },
+        {
+          "eta_q_over_2kf": 0.799633176351697,
+          "integer_vector": [
+            2,
+            -3,
+            0
+          ]
+        },
+        {
+          "eta_q_over_2kf": 0.799633176351697,
+          "integer_vector": [
+            2,
+            0,
+            -3
+          ]
+        },
+        {
+          "eta_q_over_2kf": 0.799633176351697,
+          "integer_vector": [
+            2,
+            0,
+            3
+          ]
+        },
+        {
+          "eta_q_over_2kf": 0.799633176351697,
+          "integer_vector": [
+            2,
+            3,
+            0
+          ]
+        },
+        {
+          "eta_q_over_2kf": 0.799633176351697,
+          "integer_vector": [
+            3,
+            -2,
+            0
+          ]
+        },
+        {
+          "eta_q_over_2kf": 0.799633176351697,
+          "integer_vector": [
+            3,
+            0,
+            -2
+          ]
+        },
+        {
+          "eta_q_over_2kf": 0.799633176351697,
+          "integer_vector": [
+            3,
+            0,
+            2
+          ]
+        },
+        {
+          "eta_q_over_2kf": 0.799633176351697,
+          "integer_vector": [
+            3,
+            2,
+            0
+          ]
+        },
+        {
+          "eta_q_over_2kf": 0.8298185637703376,
+          "integer_vector": [
+            1,
+            -3,
+            -2
+          ]
+        },
+        {
+          "eta_q_over_2kf": 0.8298185637703376,
+          "integer_vector": [
+            1,
+            -3,
+            2
+          ]
+        },
+        {
+          "eta_q_over_2kf": 0.8298185637703376,
+          "integer_vector": [
+            1,
+            -2,
+            -3
+          ]
+        },
+        {
+          "eta_q_over_2kf": 0.8298185637703376,
+          "integer_vector": [
+            1,
+            -2,
+            3
+          ]
+        },
+        {
+          "eta_q_over_2kf": 0.8298185637703376,
+          "integer_vector": [
+            1,
+            2,
+            -3
+          ]
+        },
+        {
+          "eta_q_over_2kf": 0.8298185637703376,
+          "integer_vector": [
+            1,
+            2,
+            3
+          ]
+        },
+        {
+          "eta_q_over_2kf": 0.8298185637703376,
+          "integer_vector": [
+            1,
+            3,
+            -2
+          ]
+        },
+        {
+          "eta_q_over_2kf": 0.8298185637703376,
+          "integer_vector": [
+            1,
+            3,
+            2
+          ]
+        },
+        {
+          "eta_q_over_2kf": 0.8298185637703376,
+          "integer_vector": [
+            2,
+            -3,
+            -1
+          ]
+        },
+        {
+          "eta_q_over_2kf": 0.8298185637703376,
+          "integer_vector": [
+            2,
+            -3,
+            1
+          ]
+        },
+        {
+          "eta_q_over_2kf": 0.8298185637703376,
+          "integer_vector": [
+            2,
+            -1,
+            -3
+          ]
+        },
+        {
+          "eta_q_over_2kf": 0.8298185637703376,
+          "integer_vector": [
+            2,
+            -1,
+            3
+          ]
+        },
+        {
+          "eta_q_over_2kf": 0.8298185637703376,
+          "integer_vector": [
+            2,
+            1,
+            -3
+          ]
+        },
+        {
+          "eta_q_over_2kf": 0.8298185637703376,
+          "integer_vector": [
+            2,
+            1,
+            3
+          ]
+        },
+        {
+          "eta_q_over_2kf": 0.8298185637703376,
+          "integer_vector": [
+            2,
+            3,
+            -1
+          ]
+        },
+        {
+          "eta_q_over_2kf": 0.8298185637703376,
+          "integer_vector": [
+            2,
+            3,
+            1
+          ]
+        },
+        {
+          "eta_q_over_2kf": 0.8298185637703376,
+          "integer_vector": [
+            3,
+            -2,
+            -1
+          ]
+        },
+        {
+          "eta_q_over_2kf": 0.8298185637703376,
+          "integer_vector": [
+            3,
+            -2,
+            1
+          ]
+        },
+        {
+          "eta_q_over_2kf": 0.8298185637703376,
+          "integer_vector": [
+            3,
+            -1,
+            -2
+          ]
+        },
+        {
+          "eta_q_over_2kf": 0.8298185637703376,
+          "integer_vector": [
+            3,
+            -1,
+            2
+          ]
+        },
+        {
+          "eta_q_over_2kf": 0.8298185637703376,
+          "integer_vector": [
+            3,
+            1,
+            -2
+          ]
+        },
+        {
+          "eta_q_over_2kf": 0.8298185637703376,
+          "integer_vector": [
+            3,
+            1,
+            2
+          ]
+        },
+        {
+          "eta_q_over_2kf": 0.8298185637703376,
+          "integer_vector": [
+            3,
+            2,
+            -1
+          ]
+        },
+        {
+          "eta_q_over_2kf": 0.8298185637703376,
+          "integer_vector": [
+            3,
+            2,
+            1
+          ]
+        },
+        {
+          "eta_q_over_2kf": 0.887113359660979,
+          "integer_vector": [
+            0,
+            0,
+            4
+          ]
+        },
+        {
+          "eta_q_over_2kf": 0.887113359660979,
+          "integer_vector": [
+            0,
+            4,
+            0
+          ]
+        },
+        {
+          "eta_q_over_2kf": 0.887113359660979,
+          "integer_vector": [
+            4,
+            0,
+            0
+          ]
+        },
+        {
+          "eta_q_over_2kf": 0.9144155209446914,
+          "integer_vector": [
+            0,
+            1,
+            -4
+          ]
+        },
+        {
+          "eta_q_over_2kf": 0.9144155209446914,
+          "integer_vector": [
+            0,
+            1,
+            4
+          ]
+        },
+        {
+          "eta_q_over_2kf": 0.9144155209446914,
+          "integer_vector": [
+            0,
+            4,
+            -1
+          ]
+        },
+        {
+          "eta_q_over_2kf": 0.9144155209446914,
+          "integer_vector": [
+            0,
+            4,
+            1
+          ]
+        },
+        {
+          "eta_q_over_2kf": 0.9144155209446914,
+          "integer_vector": [
+            1,
+            -4,
+            0
+          ]
+        },
+        {
+          "eta_q_over_2kf": 0.9144155209446914,
+          "integer_vector": [
+            1,
+            0,
+            -4
+          ]
+        },
+        {
+          "eta_q_over_2kf": 0.9144155209446914,
+          "integer_vector": [
+            1,
+            0,
+            4
+          ]
+        },
+        {
+          "eta_q_over_2kf": 0.9144155209446914,
+          "integer_vector": [
+            1,
+            4,
+            0
+          ]
+        },
+        {
+          "eta_q_over_2kf": 0.9144155209446914,
+          "integer_vector": [
+            2,
+            -3,
+            -2
+          ]
+        },
+        {
+          "eta_q_over_2kf": 0.9144155209446914,
+          "integer_vector": [
+            2,
+            -3,
+            2
+          ]
+        },
+        {
+          "eta_q_over_2kf": 0.9144155209446914,
+          "integer_vector": [
+            2,
+            -2,
+            -3
+          ]
+        },
+        {
+          "eta_q_over_2kf": 0.9144155209446914,
+          "integer_vector": [
+            2,
+            -2,
+            3
+          ]
+        },
+        {
+          "eta_q_over_2kf": 0.9144155209446914,
+          "integer_vector": [
+            2,
+            2,
+            -3
+          ]
+        },
+        {
+          "eta_q_over_2kf": 0.9144155209446914,
+          "integer_vector": [
+            2,
+            2,
+            3
+          ]
+        },
+        {
+          "eta_q_over_2kf": 0.9144155209446914,
+          "integer_vector": [
+            2,
+            3,
+            -2
+          ]
+        },
+        {
+          "eta_q_over_2kf": 0.9144155209446914,
+          "integer_vector": [
+            2,
+            3,
+            2
+          ]
+        },
+        {
+          "eta_q_over_2kf": 0.9144155209446914,
+          "integer_vector": [
+            3,
+            -2,
+            -2
+          ]
+        },
+        {
+          "eta_q_over_2kf": 0.9144155209446914,
+          "integer_vector": [
+            3,
+            -2,
+            2
+          ]
+        },
+        {
+          "eta_q_over_2kf": 0.9144155209446914,
+          "integer_vector": [
+            3,
+            2,
+            -2
+          ]
+        },
+        {
+          "eta_q_over_2kf": 0.9144155209446914,
+          "integer_vector": [
+            3,
+            2,
+            2
+          ]
+        },
+        {
+          "eta_q_over_2kf": 0.9144155209446914,
+          "integer_vector": [
+            4,
+            -1,
+            0
+          ]
+        },
+        {
+          "eta_q_over_2kf": 0.9144155209446914,
+          "integer_vector": [
+            4,
+            0,
+            -1
+          ]
+        },
+        {
+          "eta_q_over_2kf": 0.9144155209446914,
+          "integer_vector": [
+            4,
+            0,
+            1
+          ]
+        },
+        {
+          "eta_q_over_2kf": 0.9144155209446914,
+          "integer_vector": [
+            4,
+            1,
+            0
+          ]
+        },
+        {
+          "eta_q_over_2kf": 0.9409258084461884,
+          "integer_vector": [
+            0,
+            3,
+            -3
+          ]
+        },
+        {
+          "eta_q_over_2kf": 0.9409258084461884,
+          "integer_vector": [
+            0,
+            3,
+            3
+          ]
+        },
+        {
+          "eta_q_over_2kf": 0.9409258084461884,
+          "integer_vector": [
+            1,
+            -4,
+            -1
+          ]
+        },
+        {
+          "eta_q_over_2kf": 0.9409258084461884,
+          "integer_vector": [
+            1,
+            -4,
+            1
+          ]
+        },
+        {
+          "eta_q_over_2kf": 0.9409258084461884,
+          "integer_vector": [
+            1,
+            -1,
+            -4
+          ]
+        },
+        {
+          "eta_q_over_2kf": 0.9409258084461884,
+          "integer_vector": [
+            1,
+            -1,
+            4
+          ]
+        },
+        {
+          "eta_q_over_2kf": 0.9409258084461884,
+          "integer_vector": [
+            1,
+            1,
+            -4
+          ]
+        },
+        {
+          "eta_q_over_2kf": 0.9409258084461884,
+          "integer_vector": [
+            1,
+            1,
+            4
+          ]
+        },
+        {
+          "eta_q_over_2kf": 0.9409258084461884,
+          "integer_vector": [
+            1,
+            4,
+            -1
+          ]
+        },
+        {
+          "eta_q_over_2kf": 0.9409258084461884,
+          "integer_vector": [
+            1,
+            4,
+            1
+          ]
+        },
+        {
+          "eta_q_over_2kf": 0.9409258084461884,
+          "integer_vector": [
+            3,
+            -3,
+            0
+          ]
+        },
+        {
+          "eta_q_over_2kf": 0.9409258084461884,
+          "integer_vector": [
+            3,
+            0,
+            -3
+          ]
+        },
+        {
+          "eta_q_over_2kf": 0.9409258084461884,
+          "integer_vector": [
+            3,
+            0,
+            3
+          ]
+        },
+        {
+          "eta_q_over_2kf": 0.9409258084461884,
+          "integer_vector": [
+            3,
+            3,
+            0
+          ]
+        },
+        {
+          "eta_q_over_2kf": 0.9409258084461884,
+          "integer_vector": [
+            4,
+            -1,
+            -1
+          ]
+        },
+        {
+          "eta_q_over_2kf": 0.9409258084461884,
+          "integer_vector": [
+            4,
+            -1,
+            1
+          ]
+        },
+        {
+          "eta_q_over_2kf": 0.9409258084461884,
+          "integer_vector": [
+            4,
+            1,
+            -1
+          ]
+        },
+        {
+          "eta_q_over_2kf": 0.9409258084461884,
+          "integer_vector": [
+            4,
+            1,
+            1
+          ]
+        },
+        {
+          "eta_q_over_2kf": 0.9667093715567647,
+          "integer_vector": [
+            1,
+            -3,
+            -3
+          ]
+        },
+        {
+          "eta_q_over_2kf": 0.9667093715567647,
+          "integer_vector": [
+            1,
+            -3,
+            3
+          ]
+        },
+        {
+          "eta_q_over_2kf": 0.9667093715567647,
+          "integer_vector": [
+            1,
+            3,
+            -3
+          ]
+        },
+        {
+          "eta_q_over_2kf": 0.9667093715567647,
+          "integer_vector": [
+            1,
+            3,
+            3
+          ]
+        },
+        {
+          "eta_q_over_2kf": 0.9667093715567647,
+          "integer_vector": [
+            3,
+            -3,
+            -1
+          ]
+        },
+        {
+          "eta_q_over_2kf": 0.9667093715567647,
+          "integer_vector": [
+            3,
+            -3,
+            1
+          ]
+        },
+        {
+          "eta_q_over_2kf": 0.9667093715567647,
+          "integer_vector": [
+            3,
+            -1,
+            -3
+          ]
+        },
+        {
+          "eta_q_over_2kf": 0.9667093715567647,
+          "integer_vector": [
+            3,
+            -1,
+            3
+          ]
+        },
+        {
+          "eta_q_over_2kf": 0.9667093715567647,
+          "integer_vector": [
+            3,
+            1,
+            -3
+          ]
+        },
+        {
+          "eta_q_over_2kf": 0.9667093715567647,
+          "integer_vector": [
+            3,
+            1,
+            3
+          ]
+        },
+        {
+          "eta_q_over_2kf": 0.9667093715567647,
+          "integer_vector": [
+            3,
+            3,
+            -1
+          ]
+        },
+        {
+          "eta_q_over_2kf": 0.9667093715567647,
+          "integer_vector": [
+            3,
+            3,
+            1
+          ]
+        },
+        {
+          "eta_q_over_2kf": 0.9918228879750844,
+          "integer_vector": [
+            0,
+            2,
+            -4
+          ]
+        },
+        {
+          "eta_q_over_2kf": 0.9918228879750844,
+          "integer_vector": [
+            0,
+            2,
+            4
+          ]
+        },
+        {
+          "eta_q_over_2kf": 0.9918228879750844,
+          "integer_vector": [
+            0,
+            4,
+            -2
+          ]
+        },
+        {
+          "eta_q_over_2kf": 0.9918228879750844,
+          "integer_vector": [
+            0,
+            4,
+            2
+          ]
+        },
+        {
+          "eta_q_over_2kf": 0.9918228879750844,
+          "integer_vector": [
+            2,
+            -4,
+            0
+          ]
+        },
+        {
+          "eta_q_over_2kf": 0.9918228879750844,
+          "integer_vector": [
+            2,
+            0,
+            -4
+          ]
+        },
+        {
+          "eta_q_over_2kf": 0.9918228879750844,
+          "integer_vector": [
+            2,
+            0,
+            4
+          ]
+        },
+        {
+          "eta_q_over_2kf": 0.9918228879750844,
+          "integer_vector": [
+            2,
+            4,
+            0
+          ]
+        },
+        {
+          "eta_q_over_2kf": 0.9918228879750844,
+          "integer_vector": [
+            4,
+            -2,
+            0
+          ]
+        },
+        {
+          "eta_q_over_2kf": 0.9918228879750844,
+          "integer_vector": [
+            4,
+            0,
+            -2
+          ]
+        },
+        {
+          "eta_q_over_2kf": 0.9918228879750844,
+          "integer_vector": [
+            4,
+            0,
+            2
+          ]
+        },
+        {
+          "eta_q_over_2kf": 0.9918228879750844,
+          "integer_vector": [
+            4,
+            2,
+            0
+          ]
+        }
+      ],
+      "frozen_equilibrium_vector_sha256": "c1b1b46ef0bffbbfec0df95accb72dfa039001e10f7e17af608d1483960ecbba",
+      "geometry_invariance": [
+        {
+          "frozen_low_g_vector_sha256": "c1b1b46ef0bffbbfec0df95accb72dfa039001e10f7e17af608d1483960ecbba",
+          "frozen_low_g_vectors_unchanged": true,
+          "geometry_id": "equilibrium",
+          "threshold_reselection_matches_frozen": true
+        },
+        {
+          "frozen_low_g_vector_sha256": "c1b1b46ef0bffbbfec0df95accb72dfa039001e10f7e17af608d1483960ecbba",
+          "frozen_low_g_vectors_unchanged": true,
+          "geometry_id": "isotropic_m005",
+          "threshold_reselection_matches_frozen": true
+        },
+        {
+          "frozen_low_g_vector_sha256": "c1b1b46ef0bffbbfec0df95accb72dfa039001e10f7e17af608d1483960ecbba",
+          "frozen_low_g_vectors_unchanged": true,
+          "geometry_id": "isotropic_p005",
+          "threshold_reselection_matches_frozen": true
+        },
+        {
+          "frozen_low_g_vector_sha256": "c1b1b46ef0bffbbfec0df95accb72dfa039001e10f7e17af608d1483960ecbba",
+          "frozen_low_g_vectors_unchanged": true,
+          "geometry_id": "tetragonal_m005",
+          "threshold_reselection_matches_frozen": true
+        },
+        {
+          "frozen_low_g_vector_sha256": "c1b1b46ef0bffbbfec0df95accb72dfa039001e10f7e17af608d1483960ecbba",
+          "frozen_low_g_vectors_unchanged": true,
+          "geometry_id": "tetragonal_p005",
+          "threshold_reselection_matches_frozen": true
+        },
+        {
+          "frozen_low_g_vector_sha256": "c1b1b46ef0bffbbfec0df95accb72dfa039001e10f7e17af608d1483960ecbba",
+          "frozen_low_g_vectors_unchanged": true,
+          "geometry_id": "shear_xy_m005",
+          "threshold_reselection_matches_frozen": true
+        },
+        {
+          "frozen_low_g_vector_sha256": "c1b1b46ef0bffbbfec0df95accb72dfa039001e10f7e17af608d1483960ecbba",
+          "frozen_low_g_vectors_unchanged": true,
+          "geometry_id": "shear_xy_p005",
+          "threshold_reselection_matches_frozen": true
+        }
+      ],
+      "role": "two_by_two_by_two_conventional_fcc",
+      "supercell_matrix": [
+        [
+          -2,
+          2,
+          2
+        ],
+        [
+          2,
+          -2,
+          2
+        ],
+        [
+          2,
+          2,
+          -2
+        ]
+      ]
+    },
+    {
+      "atom_count": 108,
+      "coset_fractional_positions": [
+        [
+          0.0,
+          0.0,
+          0.0
+        ],
+        [
+          0.0,
+          0.0,
+          0.333333333333
+        ],
+        [
+          0.0,
+          0.0,
+          0.666666666667
+        ],
+        [
+          0.0,
+          0.166666666667,
+          0.166666666667
+        ],
+        [
+          0.0,
+          0.166666666667,
+          0.5
+        ],
+        [
+          0.0,
+          0.166666666667,
+          0.833333333333
+        ],
+        [
+          0.0,
+          0.333333333333,
+          0.0
+        ],
+        [
+          0.0,
+          0.333333333333,
+          0.333333333333
+        ],
+        [
+          0.0,
+          0.333333333333,
+          0.666666666667
+        ],
+        [
+          0.0,
+          0.5,
+          0.166666666667
+        ],
+        [
+          0.0,
+          0.5,
+          0.5
+        ],
+        [
+          0.0,
+          0.5,
+          0.833333333333
+        ],
+        [
+          0.0,
+          0.666666666667,
+          0.0
+        ],
+        [
+          0.0,
+          0.666666666667,
+          0.333333333333
+        ],
+        [
+          0.0,
+          0.666666666667,
+          0.666666666667
+        ],
+        [
+          0.0,
+          0.833333333333,
+          0.166666666667
+        ],
+        [
+          0.0,
+          0.833333333333,
+          0.5
+        ],
+        [
+          0.0,
+          0.833333333333,
+          0.833333333333
+        ],
+        [
+          0.166666666667,
+          0.0,
+          0.166666666667
+        ],
+        [
+          0.166666666667,
+          0.0,
+          0.5
+        ],
+        [
+          0.166666666667,
+          0.0,
+          0.833333333333
+        ],
+        [
+          0.166666666667,
+          0.166666666667,
+          0.0
+        ],
+        [
+          0.166666666667,
+          0.166666666667,
+          0.333333333333
+        ],
+        [
+          0.166666666667,
+          0.166666666667,
+          0.666666666667
+        ],
+        [
+          0.166666666667,
+          0.333333333333,
+          0.166666666667
+        ],
+        [
+          0.166666666667,
+          0.333333333333,
+          0.5
+        ],
+        [
+          0.166666666667,
+          0.333333333333,
+          0.833333333333
+        ],
+        [
+          0.166666666667,
+          0.5,
+          0.0
+        ],
+        [
+          0.166666666667,
+          0.5,
+          0.333333333333
+        ],
+        [
+          0.166666666667,
+          0.5,
+          0.666666666667
+        ],
+        [
+          0.166666666667,
+          0.666666666667,
+          0.166666666667
+        ],
+        [
+          0.166666666667,
+          0.666666666667,
+          0.5
+        ],
+        [
+          0.166666666667,
+          0.666666666667,
+          0.833333333333
+        ],
+        [
+          0.166666666667,
+          0.833333333333,
+          0.0
+        ],
+        [
+          0.166666666667,
+          0.833333333333,
+          0.333333333333
+        ],
+        [
+          0.166666666667,
+          0.833333333333,
+          0.666666666667
+        ],
+        [
+          0.333333333333,
+          0.0,
+          0.0
+        ],
+        [
+          0.333333333333,
+          0.0,
+          0.333333333333
+        ],
+        [
+          0.333333333333,
+          0.0,
+          0.666666666667
+        ],
+        [
+          0.333333333333,
+          0.166666666667,
+          0.166666666667
+        ],
+        [
+          0.333333333333,
+          0.166666666667,
+          0.5
+        ],
+        [
+          0.333333333333,
+          0.166666666667,
+          0.833333333333
+        ],
+        [
+          0.333333333333,
+          0.333333333333,
+          0.0
+        ],
+        [
+          0.333333333333,
+          0.333333333333,
+          0.333333333333
+        ],
+        [
+          0.333333333333,
+          0.333333333333,
+          0.666666666667
+        ],
+        [
+          0.333333333333,
+          0.5,
+          0.166666666667
+        ],
+        [
+          0.333333333333,
+          0.5,
+          0.5
+        ],
+        [
+          0.333333333333,
+          0.5,
+          0.833333333333
+        ],
+        [
+          0.333333333333,
+          0.666666666667,
+          0.0
+        ],
+        [
+          0.333333333333,
+          0.666666666667,
+          0.333333333333
+        ],
+        [
+          0.333333333333,
+          0.666666666667,
+          0.666666666667
+        ],
+        [
+          0.333333333333,
+          0.833333333333,
+          0.166666666667
+        ],
+        [
+          0.333333333333,
+          0.833333333333,
+          0.5
+        ],
+        [
+          0.333333333333,
+          0.833333333333,
+          0.833333333333
+        ],
+        [
+          0.5,
+          0.0,
+          0.166666666667
+        ],
+        [
+          0.5,
+          0.0,
+          0.5
+        ],
+        [
+          0.5,
+          0.0,
+          0.833333333333
+        ],
+        [
+          0.5,
+          0.166666666667,
+          0.0
+        ],
+        [
+          0.5,
+          0.166666666667,
+          0.333333333333
+        ],
+        [
+          0.5,
+          0.166666666667,
+          0.666666666667
+        ],
+        [
+          0.5,
+          0.333333333333,
+          0.166666666667
+        ],
+        [
+          0.5,
+          0.333333333333,
+          0.5
+        ],
+        [
+          0.5,
+          0.333333333333,
+          0.833333333333
+        ],
+        [
+          0.5,
+          0.5,
+          0.0
+        ],
+        [
+          0.5,
+          0.5,
+          0.333333333333
+        ],
+        [
+          0.5,
+          0.5,
+          0.666666666667
+        ],
+        [
+          0.5,
+          0.666666666667,
+          0.166666666667
+        ],
+        [
+          0.5,
+          0.666666666667,
+          0.5
+        ],
+        [
+          0.5,
+          0.666666666667,
+          0.833333333333
+        ],
+        [
+          0.5,
+          0.833333333333,
+          0.0
+        ],
+        [
+          0.5,
+          0.833333333333,
+          0.333333333333
+        ],
+        [
+          0.5,
+          0.833333333333,
+          0.666666666667
+        ],
+        [
+          0.666666666667,
+          0.0,
+          0.0
+        ],
+        [
+          0.666666666667,
+          0.0,
+          0.333333333333
+        ],
+        [
+          0.666666666667,
+          0.0,
+          0.666666666667
+        ],
+        [
+          0.666666666667,
+          0.166666666667,
+          0.166666666667
+        ],
+        [
+          0.666666666667,
+          0.166666666667,
+          0.5
+        ],
+        [
+          0.666666666667,
+          0.166666666667,
+          0.833333333333
+        ],
+        [
+          0.666666666667,
+          0.333333333333,
+          0.0
+        ],
+        [
+          0.666666666667,
+          0.333333333333,
+          0.333333333333
+        ],
+        [
+          0.666666666667,
+          0.333333333333,
+          0.666666666667
+        ],
+        [
+          0.666666666667,
+          0.5,
+          0.166666666667
+        ],
+        [
+          0.666666666667,
+          0.5,
+          0.5
+        ],
+        [
+          0.666666666667,
+          0.5,
+          0.833333333333
+        ],
+        [
+          0.666666666667,
+          0.666666666667,
+          0.0
+        ],
+        [
+          0.666666666667,
+          0.666666666667,
+          0.333333333333
+        ],
+        [
+          0.666666666667,
+          0.666666666667,
+          0.666666666667
+        ],
+        [
+          0.666666666667,
+          0.833333333333,
+          0.166666666667
+        ],
+        [
+          0.666666666667,
+          0.833333333333,
+          0.5
+        ],
+        [
+          0.666666666667,
+          0.833333333333,
+          0.833333333333
+        ],
+        [
+          0.833333333333,
+          0.0,
+          0.166666666667
+        ],
+        [
+          0.833333333333,
+          0.0,
+          0.5
+        ],
+        [
+          0.833333333333,
+          0.0,
+          0.833333333333
+        ],
+        [
+          0.833333333333,
+          0.166666666667,
+          0.0
+        ],
+        [
+          0.833333333333,
+          0.166666666667,
+          0.333333333333
+        ],
+        [
+          0.833333333333,
+          0.166666666667,
+          0.666666666667
+        ],
+        [
+          0.833333333333,
+          0.333333333333,
+          0.166666666667
+        ],
+        [
+          0.833333333333,
+          0.333333333333,
+          0.5
+        ],
+        [
+          0.833333333333,
+          0.333333333333,
+          0.833333333333
+        ],
+        [
+          0.833333333333,
+          0.5,
+          0.0
+        ],
+        [
+          0.833333333333,
+          0.5,
+          0.333333333333
+        ],
+        [
+          0.833333333333,
+          0.5,
+          0.666666666667
+        ],
+        [
+          0.833333333333,
+          0.666666666667,
+          0.166666666667
+        ],
+        [
+          0.833333333333,
+          0.666666666667,
+          0.5
+        ],
+        [
+          0.833333333333,
+          0.666666666667,
+          0.833333333333
+        ],
+        [
+          0.833333333333,
+          0.833333333333,
+          0.0
+        ],
+        [
+          0.833333333333,
+          0.833333333333,
+          0.333333333333
+        ],
+        [
+          0.833333333333,
+          0.833333333333,
+          0.666666666667
+        ]
+      ],
+      "coset_position_count": 108,
+      "coset_positions_sha256": "2440d425e2e3363cd1db754b6bebcddcc054424e0b7ac22b1f31d2ec5542ceed",
+      "equilibrium_half_space_low_g_count": 654,
+      "equilibrium_low_g_vectors": [
+        {
+          "eta_q_over_2kf": 0.14785222661016326,
+          "integer_vector": [
+            0,
+            0,
+            1
+          ]
+        },
+        {
+          "eta_q_over_2kf": 0.14785222661016326,
+          "integer_vector": [
+            0,
+            1,
+            0
+          ]
+        },
+        {
+          "eta_q_over_2kf": 0.14785222661016326,
+          "integer_vector": [
+            1,
+            0,
+            0
+          ]
+        },
+        {
+          "eta_q_over_2kf": 0.2090946240991531,
+          "integer_vector": [
+            0,
+            1,
+            -1
+          ]
+        },
+        {
+          "eta_q_over_2kf": 0.2090946240991531,
+          "integer_vector": [
+            0,
+            1,
+            1
+          ]
+        },
+        {
+          "eta_q_over_2kf": 0.2090946240991531,
+          "integer_vector": [
+            1,
+            -1,
+            0
+          ]
+        },
+        {
+          "eta_q_over_2kf": 0.2090946240991531,
+          "integer_vector": [
+            1,
+            0,
+            -1
+          ]
+        },
+        {
+          "eta_q_over_2kf": 0.2090946240991531,
+          "integer_vector": [
+            1,
+            0,
+            1
+          ]
+        },
+        {
+          "eta_q_over_2kf": 0.2090946240991531,
+          "integer_vector": [
+            1,
+            1,
+            0
+          ]
+        },
+        {
+          "eta_q_over_2kf": 0.2560875685009899,
+          "integer_vector": [
+            1,
+            -1,
+            -1
+          ]
+        },
+        {
+          "eta_q_over_2kf": 0.2560875685009899,
+          "integer_vector": [
+            1,
+            -1,
+            1
+          ]
+        },
+        {
+          "eta_q_over_2kf": 0.2560875685009899,
+          "integer_vector": [
+            1,
+            1,
+            -1
+          ]
+        },
+        {
+          "eta_q_over_2kf": 0.2560875685009899,
+          "integer_vector": [
+            1,
+            1,
+            1
+          ]
+        },
+        {
+          "eta_q_over_2kf": 0.2957044532203265,
+          "integer_vector": [
+            0,
+            0,
+            2
+          ]
+        },
+        {
+          "eta_q_over_2kf": 0.2957044532203265,
+          "integer_vector": [
+            0,
+            2,
+            0
+          ]
+        },
+        {
+          "eta_q_over_2kf": 0.2957044532203265,
+          "integer_vector": [
+            2,
+            0,
+            0
+          ]
+        },
+        {
+          "eta_q_over_2kf": 0.33060762932502835,
+          "integer_vector": [
+            0,
+            1,
+            -2
+          ]
+        },
+        {
+          "eta_q_over_2kf": 0.33060762932502835,
+          "integer_vector": [
+            0,
+            1,
+            2
+          ]
+        },
+        {
+          "eta_q_over_2kf": 0.33060762932502835,
+          "integer_vector": [
+            0,
+            2,
+            -1
+          ]
+        },
+        {
+          "eta_q_over_2kf": 0.33060762932502835,
+          "integer_vector": [
+            0,
+            2,
+            1
+          ]
+        },
+        {
+          "eta_q_over_2kf": 0.33060762932502835,
+          "integer_vector": [
+            1,
+            -2,
+            0
+          ]
+        },
+        {
+          "eta_q_over_2kf": 0.33060762932502835,
+          "integer_vector": [
+            1,
+            0,
+            -2
+          ]
+        },
+        {
+          "eta_q_over_2kf": 0.33060762932502835,
+          "integer_vector": [
+            1,
+            0,
+            2
+          ]
+        },
+        {
+          "eta_q_over_2kf": 0.33060762932502835,
+          "integer_vector": [
+            1,
+            2,
+            0
+          ]
+        },
+        {
+          "eta_q_over_2kf": 0.33060762932502835,
+          "integer_vector": [
+            2,
+            -1,
+            0
+          ]
+        },
+        {
+          "eta_q_over_2kf": 0.33060762932502835,
+          "integer_vector": [
+            2,
+            0,
+            -1
+          ]
+        },
+        {
+          "eta_q_over_2kf": 0.33060762932502835,
+          "integer_vector": [
+            2,
+            0,
+            1
+          ]
+        },
+        {
+          "eta_q_over_2kf": 0.33060762932502835,
+          "integer_vector": [
+            2,
+            1,
+            0
+          ]
+        },
+        {
+          "eta_q_over_2kf": 0.36216251252924897,
+          "integer_vector": [
+            1,
+            -2,
+            -1
+          ]
+        },
+        {
+          "eta_q_over_2kf": 0.36216251252924897,
+          "integer_vector": [
+            1,
+            -2,
+            1
+          ]
+        },
+        {
+          "eta_q_over_2kf": 0.36216251252924897,
+          "integer_vector": [
+            1,
+            -1,
+            -2
+          ]
+        },
+        {
+          "eta_q_over_2kf": 0.36216251252924897,
+          "integer_vector": [
+            1,
+            -1,
+            2
+          ]
+        },
+        {
+          "eta_q_over_2kf": 0.36216251252924897,
+          "integer_vector": [
+            1,
+            1,
+            -2
+          ]
+        },
+        {
+          "eta_q_over_2kf": 0.36216251252924897,
+          "integer_vector": [
+            1,
+            1,
+            2
+          ]
+        },
+        {
+          "eta_q_over_2kf": 0.36216251252924897,
+          "integer_vector": [
+            1,
+            2,
+            -1
+          ]
+        },
+        {
+          "eta_q_over_2kf": 0.362162512529249,
+          "integer_vector": [
+            1,
+            2,
+            1
+          ]
+        },
+        {
+          "eta_q_over_2kf": 0.36216251252924897,
+          "integer_vector": [
+            2,
+            -1,
+            -1
+          ]
+        },
+        {
+          "eta_q_over_2kf": 0.36216251252924897,
+          "integer_vector": [
+            2,
+            -1,
+            1
+          ]
+        },
+        {
+          "eta_q_over_2kf": 0.36216251252924897,
+          "integer_vector": [
+            2,
+            1,
+            -1
+          ]
+        },
+        {
+          "eta_q_over_2kf": 0.362162512529249,
+          "integer_vector": [
+            2,
+            1,
+            1
+          ]
+        },
+        {
+          "eta_q_over_2kf": 0.4181892481983062,
+          "integer_vector": [
+            0,
+            2,
+            -2
+          ]
+        },
+        {
+          "eta_q_over_2kf": 0.4181892481983062,
+          "integer_vector": [
+            0,
+            2,
+            2
+          ]
+        },
+        {
+          "eta_q_over_2kf": 0.4181892481983062,
+          "integer_vector": [
+            2,
+            -2,
+            0
+          ]
+        },
+        {
+          "eta_q_over_2kf": 0.4181892481983062,
+          "integer_vector": [
+            2,
+            0,
+            -2
+          ]
+        },
+        {
+          "eta_q_over_2kf": 0.4181892481983062,
+          "integer_vector": [
+            2,
+            0,
+            2
+          ]
+        },
+        {
+          "eta_q_over_2kf": 0.4181892481983062,
+          "integer_vector": [
+            2,
+            2,
+            0
+          ]
+        },
+        {
+          "eta_q_over_2kf": 0.4435566798304898,
+          "integer_vector": [
+            0,
+            0,
+            3
+          ]
+        },
+        {
+          "eta_q_over_2kf": 0.4435566798304898,
+          "integer_vector": [
+            0,
+            3,
+            0
+          ]
+        },
+        {
+          "eta_q_over_2kf": 0.4435566798304898,
+          "integer_vector": [
+            1,
+            -2,
+            -2
+          ]
+        },
+        {
+          "eta_q_over_2kf": 0.4435566798304898,
+          "integer_vector": [
+            1,
+            -2,
+            2
+          ]
+        },
+        {
+          "eta_q_over_2kf": 0.4435566798304898,
+          "integer_vector": [
+            1,
+            2,
+            -2
+          ]
+        },
+        {
+          "eta_q_over_2kf": 0.4435566798304898,
+          "integer_vector": [
+            1,
+            2,
+            2
+          ]
+        },
+        {
+          "eta_q_over_2kf": 0.4435566798304898,
+          "integer_vector": [
+            2,
+            -2,
+            -1
+          ]
+        },
+        {
+          "eta_q_over_2kf": 0.4435566798304898,
+          "integer_vector": [
+            2,
+            -2,
+            1
+          ]
+        },
+        {
+          "eta_q_over_2kf": 0.4435566798304898,
+          "integer_vector": [
+            2,
+            -1,
+            -2
+          ]
+        },
+        {
+          "eta_q_over_2kf": 0.4435566798304898,
+          "integer_vector": [
+            2,
+            -1,
+            2
+          ]
+        },
+        {
+          "eta_q_over_2kf": 0.4435566798304898,
+          "integer_vector": [
+            2,
+            1,
+            -2
+          ]
+        },
+        {
+          "eta_q_over_2kf": 0.4435566798304898,
+          "integer_vector": [
+            2,
+            1,
+            2
+          ]
+        },
+        {
+          "eta_q_over_2kf": 0.4435566798304898,
+          "integer_vector": [
+            2,
+            2,
+            -1
+          ]
+        },
+        {
+          "eta_q_over_2kf": 0.4435566798304898,
+          "integer_vector": [
+            2,
+            2,
+            1
+          ]
+        },
+        {
+          "eta_q_over_2kf": 0.4435566798304898,
+          "integer_vector": [
+            3,
+            0,
+            0
+          ]
+        },
+        {
+          "eta_q_over_2kf": 0.4675497932154721,
+          "integer_vector": [
+            0,
+            1,
+            -3
+          ]
+        },
+        {
+          "eta_q_over_2kf": 0.4675497932154721,
+          "integer_vector": [
+            0,
+            1,
+            3
+          ]
+        },
+        {
+          "eta_q_over_2kf": 0.4675497932154721,
+          "integer_vector": [
+            0,
+            3,
+            -1
+          ]
+        },
+        {
+          "eta_q_over_2kf": 0.4675497932154721,
+          "integer_vector": [
+            0,
+            3,
+            1
+          ]
+        },
+        {
+          "eta_q_over_2kf": 0.4675497932154721,
+          "integer_vector": [
+            1,
+            -3,
+            0
+          ]
+        },
+        {
+          "eta_q_over_2kf": 0.4675497932154721,
+          "integer_vector": [
+            1,
+            0,
+            -3
+          ]
+        },
+        {
+          "eta_q_over_2kf": 0.4675497932154721,
+          "integer_vector": [
+            1,
+            0,
+            3
+          ]
+        },
+        {
+          "eta_q_over_2kf": 0.4675497932154721,
+          "integer_vector": [
+            1,
+            3,
+            0
+          ]
+        },
+        {
+          "eta_q_over_2kf": 0.4675497932154721,
+          "integer_vector": [
+            3,
+            -1,
+            0
+          ]
+        },
+        {
+          "eta_q_over_2kf": 0.4675497932154721,
+          "integer_vector": [
+            3,
+            0,
+            -1
+          ]
+        },
+        {
+          "eta_q_over_2kf": 0.4675497932154721,
+          "integer_vector": [
+            3,
+            0,
+            1
+          ]
+        },
+        {
+          "eta_q_over_2kf": 0.4675497932154721,
+          "integer_vector": [
+            3,
+            1,
+            0
+          ]
+        },
+        {
+          "eta_q_over_2kf": 0.49037036008451185,
+          "integer_vector": [
+            1,
+            -3,
+            -1
+          ]
+        },
+        {
+          "eta_q_over_2kf": 0.49037036008451185,
+          "integer_vector": [
+            1,
+            -3,
+            1
+          ]
+        },
+        {
+          "eta_q_over_2kf": 0.49037036008451185,
+          "integer_vector": [
+            1,
+            -1,
+            -3
+          ]
+        },
+        {
+          "eta_q_over_2kf": 0.49037036008451185,
+          "integer_vector": [
+            1,
+            -1,
+            3
+          ]
+        },
+        {
+          "eta_q_over_2kf": 0.49037036008451185,
+          "integer_vector": [
+            1,
+            1,
+            -3
+          ]
+        },
+        {
+          "eta_q_over_2kf": 0.49037036008451185,
+          "integer_vector": [
+            1,
+            1,
+            3
+          ]
+        },
+        {
+          "eta_q_over_2kf": 0.49037036008451185,
+          "integer_vector": [
+            1,
+            3,
+            -1
+          ]
+        },
+        {
+          "eta_q_over_2kf": 0.49037036008451185,
+          "integer_vector": [
+            1,
+            3,
+            1
+          ]
+        },
+        {
+          "eta_q_over_2kf": 0.49037036008451185,
+          "integer_vector": [
+            3,
+            -1,
+            -1
+          ]
+        },
+        {
+          "eta_q_over_2kf": 0.49037036008451185,
+          "integer_vector": [
+            3,
+            -1,
+            1
+          ]
+        },
+        {
+          "eta_q_over_2kf": 0.49037036008451185,
+          "integer_vector": [
+            3,
+            1,
+            -1
+          ]
+        },
+        {
+          "eta_q_over_2kf": 0.49037036008451185,
+          "integer_vector": [
+            3,
+            1,
+            1
+          ]
+        },
+        {
+          "eta_q_over_2kf": 0.5121751370019798,
+          "integer_vector": [
+            2,
+            -2,
+            -2
+          ]
+        },
+        {
+          "eta_q_over_2kf": 0.5121751370019798,
+          "integer_vector": [
+            2,
+            -2,
+            2
+          ]
+        },
+        {
+          "eta_q_over_2kf": 0.5121751370019798,
+          "integer_vector": [
+            2,
+            2,
+            -2
+          ]
+        },
+        {
+          "eta_q_over_2kf": 0.5121751370019798,
+          "integer_vector": [
+            2,
+            2,
+            2
+          ]
+        },
+        {
+          "eta_q_over_2kf": 0.5330887842344649,
+          "integer_vector": [
+            0,
+            2,
+            -3
+          ]
+        },
+        {
+          "eta_q_over_2kf": 0.5330887842344649,
+          "integer_vector": [
+            0,
+            2,
+            3
+          ]
+        },
+        {
+          "eta_q_over_2kf": 0.5330887842344649,
+          "integer_vector": [
+            0,
+            3,
+            -2
+          ]
+        },
+        {
+          "eta_q_over_2kf": 0.5330887842344649,
+          "integer_vector": [
+            0,
+            3,
+            2
+          ]
+        },
+        {
+          "eta_q_over_2kf": 0.5330887842344649,
+          "integer_vector": [
+            2,
+            -3,
+            0
+          ]
+        },
+        {
+          "eta_q_over_2kf": 0.5330887842344649,
+          "integer_vector": [
+            2,
+            0,
+            -3
+          ]
+        },
+        {
+          "eta_q_over_2kf": 0.5330887842344649,
+          "integer_vector": [
+            2,
+            0,
+            3
+          ]
+        },
+        {
+          "eta_q_over_2kf": 0.5330887842344649,
+          "integer_vector": [
+            2,
+            3,
+            0
+          ]
+        },
+        {
+          "eta_q_over_2kf": 0.5330887842344649,
+          "integer_vector": [
+            3,
+            -2,
+            0
+          ]
+        },
+        {
+          "eta_q_over_2kf": 0.5330887842344649,
+          "integer_vector": [
+            3,
+            0,
+            -2
+          ]
+        },
+        {
+          "eta_q_over_2kf": 0.5330887842344649,
+          "integer_vector": [
+            3,
+            0,
+            2
+          ]
+        },
+        {
+          "eta_q_over_2kf": 0.5330887842344649,
+          "integer_vector": [
+            3,
+            2,
+            0
+          ]
+        },
+        {
+          "eta_q_over_2kf": 0.5532123758468921,
+          "integer_vector": [
+            1,
+            -3,
+            -2
+          ]
+        },
+        {
+          "eta_q_over_2kf": 0.5532123758468921,
+          "integer_vector": [
+            1,
+            -3,
+            2
+          ]
+        },
+        {
+          "eta_q_over_2kf": 0.5532123758468921,
+          "integer_vector": [
+            1,
+            -2,
+            -3
+          ]
+        },
+        {
+          "eta_q_over_2kf": 0.5532123758468921,
+          "integer_vector": [
+            1,
+            -2,
+            3
+          ]
+        },
+        {
+          "eta_q_over_2kf": 0.5532123758468921,
+          "integer_vector": [
+            1,
+            2,
+            -3
+          ]
+        },
+        {
+          "eta_q_over_2kf": 0.5532123758468921,
+          "integer_vector": [
+            1,
+            2,
+            3
+          ]
+        },
+        {
+          "eta_q_over_2kf": 0.5532123758468921,
+          "integer_vector": [
+            1,
+            3,
+            -2
+          ]
+        },
+        {
+          "eta_q_over_2kf": 0.5532123758468921,
+          "integer_vector": [
+            1,
+            3,
+            2
+          ]
+        },
+        {
+          "eta_q_over_2kf": 0.5532123758468921,
+          "integer_vector": [
+            2,
+            -3,
+            -1
+          ]
+        },
+        {
+          "eta_q_over_2kf": 0.5532123758468921,
+          "integer_vector": [
+            2,
+            -3,
+            1
+          ]
+        },
+        {
+          "eta_q_over_2kf": 0.5532123758468921,
+          "integer_vector": [
+            2,
+            -1,
+            -3
+          ]
+        },
+        {
+          "eta_q_over_2kf": 0.5532123758468921,
+          "integer_vector": [
+            2,
+            -1,
+            3
+          ]
+        },
+        {
+          "eta_q_over_2kf": 0.5532123758468921,
+          "integer_vector": [
+            2,
+            1,
+            -3
+          ]
+        },
+        {
+          "eta_q_over_2kf": 0.5532123758468921,
+          "integer_vector": [
+            2,
+            1,
+            3
+          ]
+        },
+        {
+          "eta_q_over_2kf": 0.5532123758468921,
+          "integer_vector": [
+            2,
+            3,
+            -1
+          ]
+        },
+        {
+          "eta_q_over_2kf": 0.5532123758468921,
+          "integer_vector": [
+            2,
+            3,
+            1
+          ]
+        },
+        {
+          "eta_q_over_2kf": 0.5532123758468921,
+          "integer_vector": [
+            3,
+            -2,
+            -1
+          ]
+        },
+        {
+          "eta_q_over_2kf": 0.5532123758468921,
+          "integer_vector": [
+            3,
+            -2,
+            1
+          ]
+        },
+        {
+          "eta_q_over_2kf": 0.5532123758468921,
+          "integer_vector": [
+            3,
+            -1,
+            -2
+          ]
+        },
+        {
+          "eta_q_over_2kf": 0.5532123758468921,
+          "integer_vector": [
+            3,
+            -1,
+            2
+          ]
+        },
+        {
+          "eta_q_over_2kf": 0.5532123758468921,
+          "integer_vector": [
+            3,
+            1,
+            -2
+          ]
+        },
+        {
+          "eta_q_over_2kf": 0.5532123758468921,
+          "integer_vector": [
+            3,
+            1,
+            2
+          ]
+        },
+        {
+          "eta_q_over_2kf": 0.5532123758468921,
+          "integer_vector": [
+            3,
+            2,
+            -1
+          ]
+        },
+        {
+          "eta_q_over_2kf": 0.5532123758468921,
+          "integer_vector": [
+            3,
+            2,
+            1
+          ]
+        },
+        {
+          "eta_q_over_2kf": 0.591408906440653,
+          "integer_vector": [
+            0,
+            0,
+            4
+          ]
+        },
+        {
+          "eta_q_over_2kf": 0.591408906440653,
+          "integer_vector": [
+            0,
+            4,
+            0
+          ]
+        },
+        {
+          "eta_q_over_2kf": 0.591408906440653,
+          "integer_vector": [
+            4,
+            0,
+            0
+          ]
+        },
+        {
+          "eta_q_over_2kf": 0.6096103472964614,
+          "integer_vector": [
+            0,
+            1,
+            -4
+          ]
+        },
+        {
+          "eta_q_over_2kf": 0.6096103472964614,
+          "integer_vector": [
+            0,
+            1,
+            4
+          ]
+        },
+        {
+          "eta_q_over_2kf": 0.6096103472964614,
+          "integer_vector": [
+            0,
+            4,
+            -1
+          ]
+        },
+        {
+          "eta_q_over_2kf": 0.6096103472964614,
+          "integer_vector": [
+            0,
+            4,
+            1
+          ]
+        },
+        {
+          "eta_q_over_2kf": 0.6096103472964614,
+          "integer_vector": [
+            1,
+            -4,
+            0
+          ]
+        },
+        {
+          "eta_q_over_2kf": 0.6096103472964614,
+          "integer_vector": [
+            1,
+            0,
+            -4
+          ]
+        },
+        {
+          "eta_q_over_2kf": 0.6096103472964614,
+          "integer_vector": [
+            1,
+            0,
+            4
+          ]
+        },
+        {
+          "eta_q_over_2kf": 0.6096103472964614,
+          "integer_vector": [
+            1,
+            4,
+            0
+          ]
+        },
+        {
+          "eta_q_over_2kf": 0.6096103472964614,
+          "integer_vector": [
+            2,
+            -3,
+            -2
+          ]
+        },
+        {
+          "eta_q_over_2kf": 0.6096103472964614,
+          "integer_vector": [
+            2,
+            -3,
+            2
+          ]
+        },
+        {
+          "eta_q_over_2kf": 0.6096103472964614,
+          "integer_vector": [
+            2,
+            -2,
+            -3
+          ]
+        },
+        {
+          "eta_q_over_2kf": 0.6096103472964614,
+          "integer_vector": [
+            2,
+            -2,
+            3
+          ]
+        },
+        {
+          "eta_q_over_2kf": 0.6096103472964614,
+          "integer_vector": [
+            2,
+            2,
+            -3
+          ]
+        },
+        {
+          "eta_q_over_2kf": 0.6096103472964614,
+          "integer_vector": [
+            2,
+            2,
+            3
+          ]
+        },
+        {
+          "eta_q_over_2kf": 0.6096103472964614,
+          "integer_vector": [
+            2,
+            3,
+            -2
+          ]
+        },
+        {
+          "eta_q_over_2kf": 0.6096103472964614,
+          "integer_vector": [
+            2,
+            3,
+            2
+          ]
+        },
+        {
+          "eta_q_over_2kf": 0.6096103472964614,
+          "integer_vector": [
+            3,
+            -2,
+            -2
+          ]
+        },
+        {
+          "eta_q_over_2kf": 0.6096103472964614,
+          "integer_vector": [
+            3,
+            -2,
+            2
+          ]
+        },
+        {
+          "eta_q_over_2kf": 0.6096103472964614,
+          "integer_vector": [
+            3,
+            2,
+            -2
+          ]
+        },
+        {
+          "eta_q_over_2kf": 0.6096103472964614,
+          "integer_vector": [
+            3,
+            2,
+            2
+          ]
+        },
+        {
+          "eta_q_over_2kf": 0.6096103472964614,
+          "integer_vector": [
+            4,
+            -1,
+            0
+          ]
+        },
+        {
+          "eta_q_over_2kf": 0.6096103472964614,
+          "integer_vector": [
+            4,
+            0,
+            -1
+          ]
+        },
+        {
+          "eta_q_over_2kf": 0.6096103472964614,
+          "integer_vector": [
+            4,
+            0,
+            1
+          ]
+        },
+        {
+          "eta_q_over_2kf": 0.6096103472964614,
+          "integer_vector": [
+            4,
+            1,
+            0
+          ]
+        },
+        {
+          "eta_q_over_2kf": 0.6272838722974593,
+          "integer_vector": [
+            0,
+            3,
+            -3
+          ]
+        },
+        {
+          "eta_q_over_2kf": 0.6272838722974593,
+          "integer_vector": [
+            0,
+            3,
+            3
+          ]
+        },
+        {
+          "eta_q_over_2kf": 0.6272838722974593,
+          "integer_vector": [
+            1,
+            -4,
+            -1
+          ]
+        },
+        {
+          "eta_q_over_2kf": 0.6272838722974593,
+          "integer_vector": [
+            1,
+            -4,
+            1
+          ]
+        },
+        {
+          "eta_q_over_2kf": 0.6272838722974593,
+          "integer_vector": [
+            1,
+            -1,
+            -4
+          ]
+        },
+        {
+          "eta_q_over_2kf": 0.6272838722974593,
+          "integer_vector": [
+            1,
+            -1,
+            4
+          ]
+        },
+        {
+          "eta_q_over_2kf": 0.6272838722974593,
+          "integer_vector": [
+            1,
+            1,
+            -4
+          ]
+        },
+        {
+          "eta_q_over_2kf": 0.6272838722974593,
+          "integer_vector": [
+            1,
+            1,
+            4
+          ]
+        },
+        {
+          "eta_q_over_2kf": 0.6272838722974593,
+          "integer_vector": [
+            1,
+            4,
+            -1
+          ]
+        },
+        {
+          "eta_q_over_2kf": 0.6272838722974593,
+          "integer_vector": [
+            1,
+            4,
+            1
+          ]
+        },
+        {
+          "eta_q_over_2kf": 0.6272838722974593,
+          "integer_vector": [
+            3,
+            -3,
+            0
+          ]
+        },
+        {
+          "eta_q_over_2kf": 0.6272838722974593,
+          "integer_vector": [
+            3,
+            0,
+            -3
+          ]
+        },
+        {
+          "eta_q_over_2kf": 0.6272838722974593,
+          "integer_vector": [
+            3,
+            0,
+            3
+          ]
+        },
+        {
+          "eta_q_over_2kf": 0.6272838722974593,
+          "integer_vector": [
+            3,
+            3,
+            0
+          ]
+        },
+        {
+          "eta_q_over_2kf": 0.6272838722974593,
+          "integer_vector": [
+            4,
+            -1,
+            -1
+          ]
+        },
+        {
+          "eta_q_over_2kf": 0.6272838722974593,
+          "integer_vector": [
+            4,
+            -1,
+            1
+          ]
+        },
+        {
+          "eta_q_over_2kf": 0.6272838722974593,
+          "integer_vector": [
+            4,
+            1,
+            -1
+          ]
+        },
+        {
+          "eta_q_over_2kf": 0.6272838722974593,
+          "integer_vector": [
+            4,
+            1,
+            1
+          ]
+        },
+        {
+          "eta_q_over_2kf": 0.644472914371177,
+          "integer_vector": [
+            1,
+            -3,
+            -3
+          ]
+        },
+        {
+          "eta_q_over_2kf": 0.644472914371177,
+          "integer_vector": [
+            1,
+            -3,
+            3
+          ]
+        },
+        {
+          "eta_q_over_2kf": 0.644472914371177,
+          "integer_vector": [
+            1,
+            3,
+            -3
+          ]
+        },
+        {
+          "eta_q_over_2kf": 0.6444729143711768,
+          "integer_vector": [
+            1,
+            3,
+            3
+          ]
+        },
+        {
+          "eta_q_over_2kf": 0.644472914371177,
+          "integer_vector": [
+            3,
+            -3,
+            -1
+          ]
+        },
+        {
+          "eta_q_over_2kf": 0.644472914371177,
+          "integer_vector": [
+            3,
+            -3,
+            1
+          ]
+        },
+        {
+          "eta_q_over_2kf": 0.644472914371177,
+          "integer_vector": [
+            3,
+            -1,
+            -3
+          ]
+        },
+        {
+          "eta_q_over_2kf": 0.644472914371177,
+          "integer_vector": [
+            3,
+            -1,
+            3
+          ]
+        },
+        {
+          "eta_q_over_2kf": 0.644472914371177,
+          "integer_vector": [
+            3,
+            1,
+            -3
+          ]
+        },
+        {
+          "eta_q_over_2kf": 0.644472914371177,
+          "integer_vector": [
+            3,
+            1,
+            3
+          ]
+        },
+        {
+          "eta_q_over_2kf": 0.644472914371177,
+          "integer_vector": [
+            3,
+            3,
+            -1
+          ]
+        },
+        {
+          "eta_q_over_2kf": 0.644472914371177,
+          "integer_vector": [
+            3,
+            3,
+            1
+          ]
+        },
+        {
+          "eta_q_over_2kf": 0.6612152586500567,
+          "integer_vector": [
+            0,
+            2,
+            -4
+          ]
+        },
+        {
+          "eta_q_over_2kf": 0.6612152586500567,
+          "integer_vector": [
+            0,
+            2,
+            4
+          ]
+        },
+        {
+          "eta_q_over_2kf": 0.6612152586500567,
+          "integer_vector": [
+            0,
+            4,
+            -2
+          ]
+        },
+        {
+          "eta_q_over_2kf": 0.6612152586500567,
+          "integer_vector": [
+            0,
+            4,
+            2
+          ]
+        },
+        {
+          "eta_q_over_2kf": 0.6612152586500567,
+          "integer_vector": [
+            2,
+            -4,
+            0
+          ]
+        },
+        {
+          "eta_q_over_2kf": 0.6612152586500567,
+          "integer_vector": [
+            2,
+            0,
+            -4
+          ]
+        },
+        {
+          "eta_q_over_2kf": 0.6612152586500567,
+          "integer_vector": [
+            2,
+            0,
+            4
+          ]
+        },
+        {
+          "eta_q_over_2kf": 0.6612152586500567,
+          "integer_vector": [
+            2,
+            4,
+            0
+          ]
+        },
+        {
+          "eta_q_over_2kf": 0.6612152586500567,
+          "integer_vector": [
+            4,
+            -2,
+            0
+          ]
+        },
+        {
+          "eta_q_over_2kf": 0.6612152586500567,
+          "integer_vector": [
+            4,
+            0,
+            -2
+          ]
+        },
+        {
+          "eta_q_over_2kf": 0.6612152586500567,
+          "integer_vector": [
+            4,
+            0,
+            2
+          ]
+        },
+        {
+          "eta_q_over_2kf": 0.6612152586500567,
+          "integer_vector": [
+            4,
+            2,
+            0
+          ]
+        },
+        {
+          "eta_q_over_2kf": 0.6775440201088373,
+          "integer_vector": [
+            1,
+            -4,
+            -2
+          ]
+        },
+        {
+          "eta_q_over_2kf": 0.6775440201088373,
+          "integer_vector": [
+            1,
+            -4,
+            2
+          ]
+        },
+        {
+          "eta_q_over_2kf": 0.6775440201088373,
+          "integer_vector": [
+            1,
+            -2,
+            -4
+          ]
+        },
+        {
+          "eta_q_over_2kf": 0.6775440201088372,
+          "integer_vector": [
+            1,
+            -2,
+            4
+          ]
+        },
+        {
+          "eta_q_over_2kf": 0.6775440201088373,
+          "integer_vector": [
+            1,
+            2,
+            -4
+          ]
+        },
+        {
+          "eta_q_over_2kf": 0.6775440201088372,
+          "integer_vector": [
+            1,
+            2,
+            4
+          ]
+        },
+        {
+          "eta_q_over_2kf": 0.6775440201088372,
+          "integer_vector": [
+            1,
+            4,
+            -2
+          ]
+        },
+        {
+          "eta_q_over_2kf": 0.6775440201088372,
+          "integer_vector": [
+            1,
+            4,
+            2
+          ]
+        },
+        {
+          "eta_q_over_2kf": 0.6775440201088372,
+          "integer_vector": [
+            2,
+            -4,
+            -1
+          ]
+        },
+        {
+          "eta_q_over_2kf": 0.6775440201088372,
+          "integer_vector": [
+            2,
+            -4,
+            1
+          ]
+        },
+        {
+          "eta_q_over_2kf": 0.6775440201088373,
+          "integer_vector": [
+            2,
+            -1,
+            -4
+          ]
+        },
+        {
+          "eta_q_over_2kf": 0.6775440201088372,
+          "integer_vector": [
+            2,
+            -1,
+            4
+          ]
+        },
+        {
+          "eta_q_over_2kf": 0.6775440201088372,
+          "integer_vector": [
+            2,
+            1,
+            -4
+          ]
+        },
+        {
+          "eta_q_over_2kf": 0.6775440201088373,
+          "integer_vector": [
+            2,
+            1,
+            4
+          ]
+        },
+        {
+          "eta_q_over_2kf": 0.6775440201088372,
+          "integer_vector": [
+            2,
+            4,
+            -1
+          ]
+        },
+        {
+          "eta_q_over_2kf": 0.6775440201088372,
+          "integer_vector": [
+            2,
+            4,
+            1
+          ]
+        },
+        {
+          "eta_q_over_2kf": 0.6775440201088372,
+          "integer_vector": [
+            4,
+            -2,
+            -1
+          ]
+        },
+        {
+          "eta_q_over_2kf": 0.6775440201088372,
+          "integer_vector": [
+            4,
+            -2,
+            1
+          ]
+        },
+        {
+          "eta_q_over_2kf": 0.6775440201088372,
+          "integer_vector": [
+            4,
+            -1,
+            -2
+          ]
+        },
+        {
+          "eta_q_over_2kf": 0.6775440201088372,
+          "integer_vector": [
+            4,
+            -1,
+            2
+          ]
+        },
+        {
+          "eta_q_over_2kf": 0.6775440201088372,
+          "integer_vector": [
+            4,
+            1,
+            -2
+          ]
+        },
+        {
+          "eta_q_over_2kf": 0.6775440201088372,
+          "integer_vector": [
+            4,
+            1,
+            2
+          ]
+        },
+        {
+          "eta_q_over_2kf": 0.6775440201088372,
+          "integer_vector": [
+            4,
+            2,
+            -1
+          ]
+        },
+        {
+          "eta_q_over_2kf": 0.6775440201088372,
+          "integer_vector": [
+            4,
+            2,
+            1
+          ]
+        },
+        {
+          "eta_q_over_2kf": 0.6934884138172949,
+          "integer_vector": [
+            2,
+            -3,
+            -3
+          ]
+        },
+        {
+          "eta_q_over_2kf": 0.6934884138172949,
+          "integer_vector": [
+            2,
+            -3,
+            3
+          ]
+        },
+        {
+          "eta_q_over_2kf": 0.6934884138172949,
+          "integer_vector": [
+            2,
+            3,
+            -3
+          ]
+        },
+        {
+          "eta_q_over_2kf": 0.6934884138172949,
+          "integer_vector": [
+            2,
+            3,
+            3
+          ]
+        },
+        {
+          "eta_q_over_2kf": 0.6934884138172949,
+          "integer_vector": [
+            3,
+            -3,
+            -2
+          ]
+        },
+        {
+          "eta_q_over_2kf": 0.6934884138172949,
+          "integer_vector": [
+            3,
+            -3,
+            2
+          ]
+        },
+        {
+          "eta_q_over_2kf": 0.6934884138172949,
+          "integer_vector": [
+            3,
+            -2,
+            -3
+          ]
+        },
+        {
+          "eta_q_over_2kf": 0.6934884138172949,
+          "integer_vector": [
+            3,
+            -2,
+            3
+          ]
+        },
+        {
+          "eta_q_over_2kf": 0.6934884138172949,
+          "integer_vector": [
+            3,
+            2,
+            -3
+          ]
+        },
+        {
+          "eta_q_over_2kf": 0.6934884138172949,
+          "integer_vector": [
+            3,
+            2,
+            3
+          ]
+        },
+        {
+          "eta_q_over_2kf": 0.6934884138172949,
+          "integer_vector": [
+            3,
+            3,
+            -2
+          ]
+        },
+        {
+          "eta_q_over_2kf": 0.6934884138172949,
+          "integer_vector": [
+            3,
+            3,
+            2
+          ]
+        },
+        {
+          "eta_q_over_2kf": 0.7243250250584979,
+          "integer_vector": [
+            2,
+            -4,
+            -2
+          ]
+        },
+        {
+          "eta_q_over_2kf": 0.7243250250584979,
+          "integer_vector": [
+            2,
+            -4,
+            2
+          ]
+        },
+        {
+          "eta_q_over_2kf": 0.7243250250584979,
+          "integer_vector": [
+            2,
+            -2,
+            -4
+          ]
+        },
+        {
+          "eta_q_over_2kf": 0.7243250250584979,
+          "integer_vector": [
+            2,
+            -2,
+            4
+          ]
+        },
+        {
+          "eta_q_over_2kf": 0.7243250250584979,
+          "integer_vector": [
+            2,
+            2,
+            -4
+          ]
+        },
+        {
+          "eta_q_over_2kf": 0.7243250250584979,
+          "integer_vector": [
+            2,
+            2,
+            4
+          ]
+        },
+        {
+          "eta_q_over_2kf": 0.7243250250584979,
+          "integer_vector": [
+            2,
+            4,
+            -2
+          ]
+        },
+        {
+          "eta_q_over_2kf": 0.724325025058498,
+          "integer_vector": [
+            2,
+            4,
+            2
+          ]
+        },
+        {
+          "eta_q_over_2kf": 0.7243250250584979,
+          "integer_vector": [
+            4,
+            -2,
+            -2
+          ]
+        },
+        {
+          "eta_q_over_2kf": 0.7243250250584979,
+          "integer_vector": [
+            4,
+            -2,
+            2
+          ]
+        },
+        {
+          "eta_q_over_2kf": 0.7243250250584979,
+          "integer_vector": [
+            4,
+            2,
+            -2
+          ]
+        },
+        {
+          "eta_q_over_2kf": 0.724325025058498,
+          "integer_vector": [
+            4,
+            2,
+            2
+          ]
+        },
+        {
+          "eta_q_over_2kf": 0.7392611330508163,
+          "integer_vector": [
+            0,
+            0,
+            5
+          ]
+        },
+        {
+          "eta_q_over_2kf": 0.7392611330508163,
+          "integer_vector": [
+            0,
+            3,
+            -4
+          ]
+        },
+        {
+          "eta_q_over_2kf": 0.7392611330508163,
+          "integer_vector": [
+            0,
+            3,
+            4
+          ]
+        },
+        {
+          "eta_q_over_2kf": 0.7392611330508163,
+          "integer_vector": [
+            0,
+            4,
+            -3
+          ]
+        },
+        {
+          "eta_q_over_2kf": 0.7392611330508163,
+          "integer_vector": [
+            0,
+            4,
+            3
+          ]
+        },
+        {
+          "eta_q_over_2kf": 0.7392611330508163,
+          "integer_vector": [
+            0,
+            5,
+            0
+          ]
+        },
+        {
+          "eta_q_over_2kf": 0.7392611330508163,
+          "integer_vector": [
+            3,
+            -4,
+            0
+          ]
+        },
+        {
+          "eta_q_over_2kf": 0.7392611330508163,
+          "integer_vector": [
+            3,
+            0,
+            -4
+          ]
+        },
+        {
+          "eta_q_over_2kf": 0.7392611330508163,
+          "integer_vector": [
+            3,
+            0,
+            4
+          ]
+        },
+        {
+          "eta_q_over_2kf": 0.7392611330508163,
+          "integer_vector": [
+            3,
+            4,
+            0
+          ]
+        },
+        {
+          "eta_q_over_2kf": 0.7392611330508163,
+          "integer_vector": [
+            4,
+            -3,
+            0
+          ]
+        },
+        {
+          "eta_q_over_2kf": 0.7392611330508163,
+          "integer_vector": [
+            4,
+            0,
+            -3
+          ]
+        },
+        {
+          "eta_q_over_2kf": 0.7392611330508163,
+          "integer_vector": [
+            4,
+            0,
+            3
+          ]
+        },
+        {
+          "eta_q_over_2kf": 0.7392611330508163,
+          "integer_vector": [
+            4,
+            3,
+            0
+          ]
+        },
+        {
+          "eta_q_over_2kf": 0.7392611330508163,
+          "integer_vector": [
+            5,
+            0,
+            0
+          ]
+        },
+        {
+          "eta_q_over_2kf": 0.7539013886133649,
+          "integer_vector": [
+            0,
+            1,
+            -5
+          ]
+        },
+        {
+          "eta_q_over_2kf": 0.7539013886133649,
+          "integer_vector": [
+            0,
+            1,
+            5
+          ]
+        },
+        {
+          "eta_q_over_2kf": 0.7539013886133649,
+          "integer_vector": [
+            0,
+            5,
+            -1
+          ]
+        },
+        {
+          "eta_q_over_2kf": 0.7539013886133649,
+          "integer_vector": [
+            0,
+            5,
+            1
+          ]
+        },
+        {
+          "eta_q_over_2kf": 0.7539013886133649,
+          "integer_vector": [
+            1,
+            -5,
+            0
+          ]
+        },
+        {
+          "eta_q_over_2kf": 0.7539013886133649,
+          "integer_vector": [
+            1,
+            -4,
+            -3
+          ]
+        },
+        {
+          "eta_q_over_2kf": 0.7539013886133649,
+          "integer_vector": [
+            1,
+            -4,
+            3
+          ]
+        },
+        {
+          "eta_q_over_2kf": 0.7539013886133649,
+          "integer_vector": [
+            1,
+            -3,
+            -4
+          ]
+        },
+        {
+          "eta_q_over_2kf": 0.7539013886133649,
+          "integer_vector": [
+            1,
+            -3,
+            4
+          ]
+        },
+        {
+          "eta_q_over_2kf": 0.7539013886133649,
+          "integer_vector": [
+            1,
+            0,
+            -5
+          ]
+        },
+        {
+          "eta_q_over_2kf": 0.7539013886133649,
+          "integer_vector": [
+            1,
+            0,
+            5
+          ]
+        },
+        {
+          "eta_q_over_2kf": 0.7539013886133649,
+          "integer_vector": [
+            1,
+            3,
+            -4
+          ]
+        },
+        {
+          "eta_q_over_2kf": 0.7539013886133649,
+          "integer_vector": [
+            1,
+            3,
+            4
+          ]
+        },
+        {
+          "eta_q_over_2kf": 0.7539013886133649,
+          "integer_vector": [
+            1,
+            4,
+            -3
+          ]
+        },
+        {
+          "eta_q_over_2kf": 0.7539013886133649,
+          "integer_vector": [
+            1,
+            4,
+            3
+          ]
+        },
+        {
+          "eta_q_over_2kf": 0.7539013886133649,
+          "integer_vector": [
+            1,
+            5,
+            0
+          ]
+        },
+        {
+          "eta_q_over_2kf": 0.7539013886133649,
+          "integer_vector": [
+            3,
+            -4,
+            -1
+          ]
+        },
+        {
+          "eta_q_over_2kf": 0.7539013886133649,
+          "integer_vector": [
+            3,
+            -4,
+            1
+          ]
+        },
+        {
+          "eta_q_over_2kf": 0.7539013886133649,
+          "integer_vector": [
+            3,
+            -1,
+            -4
+          ]
+        },
+        {
+          "eta_q_over_2kf": 0.7539013886133649,
+          "integer_vector": [
+            3,
+            -1,
+            4
+          ]
+        },
+        {
+          "eta_q_over_2kf": 0.7539013886133649,
+          "integer_vector": [
+            3,
+            1,
+            -4
+          ]
+        },
+        {
+          "eta_q_over_2kf": 0.7539013886133649,
+          "integer_vector": [
+            3,
+            1,
+            4
+          ]
+        },
+        {
+          "eta_q_over_2kf": 0.7539013886133649,
+          "integer_vector": [
+            3,
+            4,
+            -1
+          ]
+        },
+        {
+          "eta_q_over_2kf": 0.7539013886133649,
+          "integer_vector": [
+            3,
+            4,
+            1
+          ]
+        },
+        {
+          "eta_q_over_2kf": 0.7539013886133649,
+          "integer_vector": [
+            4,
+            -3,
+            -1
+          ]
+        },
+        {
+          "eta_q_over_2kf": 0.7539013886133649,
+          "integer_vector": [
+            4,
+            -3,
+            1
+          ]
+        },
+        {
+          "eta_q_over_2kf": 0.7539013886133649,
+          "integer_vector": [
+            4,
+            -1,
+            -3
+          ]
+        },
+        {
+          "eta_q_over_2kf": 0.7539013886133649,
+          "integer_vector": [
+            4,
+            -1,
+            3
+          ]
+        },
+        {
+          "eta_q_over_2kf": 0.7539013886133649,
+          "integer_vector": [
+            4,
+            1,
+            -3
+          ]
+        },
+        {
+          "eta_q_over_2kf": 0.7539013886133649,
+          "integer_vector": [
+            4,
+            1,
+            3
+          ]
+        },
+        {
+          "eta_q_over_2kf": 0.7539013886133649,
+          "integer_vector": [
+            4,
+            3,
+            -1
+          ]
+        },
+        {
+          "eta_q_over_2kf": 0.7539013886133649,
+          "integer_vector": [
+            4,
+            3,
+            1
+          ]
+        },
+        {
+          "eta_q_over_2kf": 0.7539013886133649,
+          "integer_vector": [
+            5,
+            -1,
+            0
+          ]
+        },
+        {
+          "eta_q_over_2kf": 0.7539013886133649,
+          "integer_vector": [
+            5,
+            0,
+            -1
+          ]
+        },
+        {
+          "eta_q_over_2kf": 0.7539013886133649,
+          "integer_vector": [
+            5,
+            0,
+            1
+          ]
+        },
+        {
+          "eta_q_over_2kf": 0.7539013886133649,
+          "integer_vector": [
+            5,
+            1,
+            0
+          ]
+        },
+        {
+          "eta_q_over_2kf": 0.7682627055029698,
+          "integer_vector": [
+            1,
+            -5,
+            -1
+          ]
+        },
+        {
+          "eta_q_over_2kf": 0.7682627055029698,
+          "integer_vector": [
+            1,
+            -5,
+            1
+          ]
+        },
+        {
+          "eta_q_over_2kf": 0.7682627055029698,
+          "integer_vector": [
+            1,
+            -1,
+            -5
+          ]
+        },
+        {
+          "eta_q_over_2kf": 0.7682627055029698,
+          "integer_vector": [
+            1,
+            -1,
+            5
+          ]
+        },
+        {
+          "eta_q_over_2kf": 0.7682627055029698,
+          "integer_vector": [
+            1,
+            1,
+            -5
+          ]
+        },
+        {
+          "eta_q_over_2kf": 0.7682627055029698,
+          "integer_vector": [
+            1,
+            1,
+            5
+          ]
+        },
+        {
+          "eta_q_over_2kf": 0.7682627055029698,
+          "integer_vector": [
+            1,
+            5,
+            -1
+          ]
+        },
+        {
+          "eta_q_over_2kf": 0.7682627055029698,
+          "integer_vector": [
+            1,
+            5,
+            1
+          ]
+        },
+        {
+          "eta_q_over_2kf": 0.7682627055029698,
+          "integer_vector": [
+            3,
+            -3,
+            -3
+          ]
+        },
+        {
+          "eta_q_over_2kf": 0.7682627055029698,
+          "integer_vector": [
+            3,
+            -3,
+            3
+          ]
+        },
+        {
+          "eta_q_over_2kf": 0.7682627055029698,
+          "integer_vector": [
+            3,
+            3,
+            -3
+          ]
+        },
+        {
+          "eta_q_over_2kf": 0.7682627055029699,
+          "integer_vector": [
+            3,
+            3,
+            3
+          ]
+        },
+        {
+          "eta_q_over_2kf": 0.7682627055029698,
+          "integer_vector": [
+            5,
+            -1,
+            -1
+          ]
+        },
+        {
+          "eta_q_over_2kf": 0.7682627055029698,
+          "integer_vector": [
+            5,
+            -1,
+            1
+          ]
+        },
+        {
+          "eta_q_over_2kf": 0.7682627055029698,
+          "integer_vector": [
+            5,
+            1,
+            -1
+          ]
+        },
+        {
+          "eta_q_over_2kf": 0.7682627055029698,
+          "integer_vector": [
+            5,
+            1,
+            1
+          ]
+        },
+        {
+          "eta_q_over_2kf": 0.7962086073975269,
+          "integer_vector": [
+            0,
+            2,
+            -5
+          ]
+        },
+        {
+          "eta_q_over_2kf": 0.7962086073975269,
+          "integer_vector": [
+            0,
+            2,
+            5
+          ]
+        },
+        {
+          "eta_q_over_2kf": 0.7962086073975269,
+          "integer_vector": [
+            0,
+            5,
+            -2
+          ]
+        },
+        {
+          "eta_q_over_2kf": 0.7962086073975269,
+          "integer_vector": [
+            0,
+            5,
+            2
+          ]
+        },
+        {
+          "eta_q_over_2kf": 0.7962086073975269,
+          "integer_vector": [
+            2,
+            -5,
+            0
+          ]
+        },
+        {
+          "eta_q_over_2kf": 0.7962086073975269,
+          "integer_vector": [
+            2,
+            -4,
+            -3
+          ]
+        },
+        {
+          "eta_q_over_2kf": 0.7962086073975269,
+          "integer_vector": [
+            2,
+            -4,
+            3
+          ]
+        },
+        {
+          "eta_q_over_2kf": 0.7962086073975269,
+          "integer_vector": [
+            2,
+            -3,
+            -4
+          ]
+        },
+        {
+          "eta_q_over_2kf": 0.7962086073975269,
+          "integer_vector": [
+            2,
+            -3,
+            4
+          ]
+        },
+        {
+          "eta_q_over_2kf": 0.7962086073975269,
+          "integer_vector": [
+            2,
+            0,
+            -5
+          ]
+        },
+        {
+          "eta_q_over_2kf": 0.7962086073975269,
+          "integer_vector": [
+            2,
+            0,
+            5
+          ]
+        },
+        {
+          "eta_q_over_2kf": 0.7962086073975269,
+          "integer_vector": [
+            2,
+            3,
+            -4
+          ]
+        },
+        {
+          "eta_q_over_2kf": 0.7962086073975269,
+          "integer_vector": [
+            2,
+            3,
+            4
+          ]
+        },
+        {
+          "eta_q_over_2kf": 0.7962086073975267,
+          "integer_vector": [
+            2,
+            4,
+            -3
+          ]
+        },
+        {
+          "eta_q_over_2kf": 0.7962086073975269,
+          "integer_vector": [
+            2,
+            4,
+            3
+          ]
+        },
+        {
+          "eta_q_over_2kf": 0.7962086073975269,
+          "integer_vector": [
+            2,
+            5,
+            0
+          ]
+        },
+        {
+          "eta_q_over_2kf": 0.7962086073975269,
+          "integer_vector": [
+            3,
+            -4,
+            -2
+          ]
+        },
+        {
+          "eta_q_over_2kf": 0.7962086073975269,
+          "integer_vector": [
+            3,
+            -4,
+            2
+          ]
+        },
+        {
+          "eta_q_over_2kf": 0.7962086073975269,
+          "integer_vector": [
+            3,
+            -2,
+            -4
+          ]
+        },
+        {
+          "eta_q_over_2kf": 0.7962086073975269,
+          "integer_vector": [
+            3,
+            -2,
+            4
+          ]
+        },
+        {
+          "eta_q_over_2kf": 0.7962086073975269,
+          "integer_vector": [
+            3,
+            2,
+            -4
+          ]
+        },
+        {
+          "eta_q_over_2kf": 0.7962086073975269,
+          "integer_vector": [
+            3,
+            2,
+            4
+          ]
+        },
+        {
+          "eta_q_over_2kf": 0.7962086073975269,
+          "integer_vector": [
+            3,
+            4,
+            -2
+          ]
+        },
+        {
+          "eta_q_over_2kf": 0.7962086073975269,
+          "integer_vector": [
+            3,
+            4,
+            2
+          ]
+        },
+        {
+          "eta_q_over_2kf": 0.7962086073975269,
+          "integer_vector": [
+            4,
+            -3,
+            -2
+          ]
+        },
+        {
+          "eta_q_over_2kf": 0.7962086073975269,
+          "integer_vector": [
+            4,
+            -3,
+            2
+          ]
+        },
+        {
+          "eta_q_over_2kf": 0.7962086073975269,
+          "integer_vector": [
+            4,
+            -2,
+            -3
+          ]
+        },
+        {
+          "eta_q_over_2kf": 0.7962086073975269,
+          "integer_vector": [
+            4,
+            -2,
+            3
+          ]
+        },
+        {
+          "eta_q_over_2kf": 0.7962086073975267,
+          "integer_vector": [
+            4,
+            2,
+            -3
+          ]
+        },
+        {
+          "eta_q_over_2kf": 0.7962086073975269,
+          "integer_vector": [
+            4,
+            2,
+            3
+          ]
+        },
+        {
+          "eta_q_over_2kf": 0.7962086073975267,
+          "integer_vector": [
+            4,
+            3,
+            -2
+          ]
+        },
+        {
+          "eta_q_over_2kf": 0.7962086073975269,
+          "integer_vector": [
+            4,
+            3,
+            2
+          ]
+        },
+        {
+          "eta_q_over_2kf": 0.7962086073975269,
+          "integer_vector": [
+            5,
+            -2,
+            0
+          ]
+        },
+        {
+          "eta_q_over_2kf": 0.7962086073975269,
+          "integer_vector": [
+            5,
+            0,
+            -2
+          ]
+        },
+        {
+          "eta_q_over_2kf": 0.7962086073975269,
+          "integer_vector": [
+            5,
+            0,
+            2
+          ]
+        },
+        {
+          "eta_q_over_2kf": 0.7962086073975269,
+          "integer_vector": [
+            5,
+            2,
+            0
+          ]
+        },
+        {
+          "eta_q_over_2kf": 0.80981999691752,
+          "integer_vector": [
+            1,
+            -5,
+            -2
+          ]
+        },
+        {
+          "eta_q_over_2kf": 0.80981999691752,
+          "integer_vector": [
+            1,
+            -5,
+            2
+          ]
+        },
+        {
+          "eta_q_over_2kf": 0.80981999691752,
+          "integer_vector": [
+            1,
+            -2,
+            -5
+          ]
+        },
+        {
+          "eta_q_over_2kf": 0.80981999691752,
+          "integer_vector": [
+            1,
+            -2,
+            5
+          ]
+        },
+        {
+          "eta_q_over_2kf": 0.80981999691752,
+          "integer_vector": [
+            1,
+            2,
+            -5
+          ]
+        },
+        {
+          "eta_q_over_2kf": 0.80981999691752,
+          "integer_vector": [
+            1,
+            2,
+            5
+          ]
+        },
+        {
+          "eta_q_over_2kf": 0.80981999691752,
+          "integer_vector": [
+            1,
+            5,
+            -2
+          ]
+        },
+        {
+          "eta_q_over_2kf": 0.80981999691752,
+          "integer_vector": [
+            1,
+            5,
+            2
+          ]
+        },
+        {
+          "eta_q_over_2kf": 0.80981999691752,
+          "integer_vector": [
+            2,
+            -5,
+            -1
+          ]
+        },
+        {
+          "eta_q_over_2kf": 0.80981999691752,
+          "integer_vector": [
+            2,
+            -5,
+            1
+          ]
+        },
+        {
+          "eta_q_over_2kf": 0.80981999691752,
+          "integer_vector": [
+            2,
+            -1,
+            -5
+          ]
+        },
+        {
+          "eta_q_over_2kf": 0.80981999691752,
+          "integer_vector": [
+            2,
+            -1,
+            5
+          ]
+        },
+        {
+          "eta_q_over_2kf": 0.80981999691752,
+          "integer_vector": [
+            2,
+            1,
+            -5
+          ]
+        },
+        {
+          "eta_q_over_2kf": 0.80981999691752,
+          "integer_vector": [
+            2,
+            1,
+            5
+          ]
+        },
+        {
+          "eta_q_over_2kf": 0.80981999691752,
+          "integer_vector": [
+            2,
+            5,
+            -1
+          ]
+        },
+        {
+          "eta_q_over_2kf": 0.80981999691752,
+          "integer_vector": [
+            2,
+            5,
+            1
+          ]
+        },
+        {
+          "eta_q_over_2kf": 0.80981999691752,
+          "integer_vector": [
+            5,
+            -2,
+            -1
+          ]
+        },
+        {
+          "eta_q_over_2kf": 0.80981999691752,
+          "integer_vector": [
+            5,
+            -2,
+            1
+          ]
+        },
+        {
+          "eta_q_over_2kf": 0.80981999691752,
+          "integer_vector": [
+            5,
+            -1,
+            -2
+          ]
+        },
+        {
+          "eta_q_over_2kf": 0.80981999691752,
+          "integer_vector": [
+            5,
+            -1,
+            2
+          ]
+        },
+        {
+          "eta_q_over_2kf": 0.80981999691752,
+          "integer_vector": [
+            5,
+            1,
+            -2
+          ]
+        },
+        {
+          "eta_q_over_2kf": 0.80981999691752,
+          "integer_vector": [
+            5,
+            1,
+            2
+          ]
+        },
+        {
+          "eta_q_over_2kf": 0.80981999691752,
+          "integer_vector": [
+            5,
+            2,
+            -1
+          ]
+        },
+        {
+          "eta_q_over_2kf": 0.80981999691752,
+          "integer_vector": [
+            5,
+            2,
+            1
+          ]
+        },
+        {
+          "eta_q_over_2kf": 0.8363784963966124,
+          "integer_vector": [
+            0,
+            4,
+            -4
+          ]
+        },
+        {
+          "eta_q_over_2kf": 0.8363784963966124,
+          "integer_vector": [
+            0,
+            4,
+            4
+          ]
+        },
+        {
+          "eta_q_over_2kf": 0.8363784963966124,
+          "integer_vector": [
+            4,
+            -4,
+            0
+          ]
+        },
+        {
+          "eta_q_over_2kf": 0.8363784963966124,
+          "integer_vector": [
+            4,
+            0,
+            -4
+          ]
+        },
+        {
+          "eta_q_over_2kf": 0.8363784963966124,
+          "integer_vector": [
+            4,
+            0,
+            4
+          ]
+        },
+        {
+          "eta_q_over_2kf": 0.8363784963966124,
+          "integer_vector": [
+            4,
+            4,
+            0
+          ]
+        },
+        {
+          "eta_q_over_2kf": 0.8493463781922198,
+          "integer_vector": [
+            1,
+            -4,
+            -4
+          ]
+        },
+        {
+          "eta_q_over_2kf": 0.8493463781922198,
+          "integer_vector": [
+            1,
+            -4,
+            4
+          ]
+        },
+        {
+          "eta_q_over_2kf": 0.8493463781922198,
+          "integer_vector": [
+            1,
+            4,
+            -4
+          ]
+        },
+        {
+          "eta_q_over_2kf": 0.8493463781922198,
+          "integer_vector": [
+            1,
+            4,
+            4
+          ]
+        },
+        {
+          "eta_q_over_2kf": 0.8493463781922198,
+          "integer_vector": [
+            2,
+            -5,
+            -2
+          ]
+        },
+        {
+          "eta_q_over_2kf": 0.8493463781922198,
+          "integer_vector": [
+            2,
+            -5,
+            2
+          ]
+        },
+        {
+          "eta_q_over_2kf": 0.8493463781922198,
+          "integer_vector": [
+            2,
+            -2,
+            -5
+          ]
+        },
+        {
+          "eta_q_over_2kf": 0.8493463781922198,
+          "integer_vector": [
+            2,
+            -2,
+            5
+          ]
+        },
+        {
+          "eta_q_over_2kf": 0.8493463781922198,
+          "integer_vector": [
+            2,
+            2,
+            -5
+          ]
+        },
+        {
+          "eta_q_over_2kf": 0.8493463781922198,
+          "integer_vector": [
+            2,
+            2,
+            5
+          ]
+        },
+        {
+          "eta_q_over_2kf": 0.8493463781922198,
+          "integer_vector": [
+            2,
+            5,
+            -2
+          ]
+        },
+        {
+          "eta_q_over_2kf": 0.8493463781922198,
+          "integer_vector": [
+            2,
+            5,
+            2
+          ]
+        },
+        {
+          "eta_q_over_2kf": 0.8493463781922198,
+          "integer_vector": [
+            4,
+            -4,
+            -1
+          ]
+        },
+        {
+          "eta_q_over_2kf": 0.8493463781922198,
+          "integer_vector": [
+            4,
+            -4,
+            1
+          ]
+        },
+        {
+          "eta_q_over_2kf": 0.8493463781922198,
+          "integer_vector": [
+            4,
+            -1,
+            -4
+          ]
+        },
+        {
+          "eta_q_over_2kf": 0.8493463781922198,
+          "integer_vector": [
+            4,
+            -1,
+            4
+          ]
+        },
+        {
+          "eta_q_over_2kf": 0.8493463781922198,
+          "integer_vector": [
+            4,
+            1,
+            -4
+          ]
+        },
+        {
+          "eta_q_over_2kf": 0.8493463781922198,
+          "integer_vector": [
+            4,
+            1,
+            4
+          ]
+        },
+        {
+          "eta_q_over_2kf": 0.8493463781922197,
+          "integer_vector": [
+            4,
+            4,
+            -1
+          ]
+        },
+        {
+          "eta_q_over_2kf": 0.8493463781922198,
+          "integer_vector": [
+            4,
+            4,
+            1
+          ]
+        },
+        {
+          "eta_q_over_2kf": 0.8493463781922198,
+          "integer_vector": [
+            5,
+            -2,
+            -2
+          ]
+        },
+        {
+          "eta_q_over_2kf": 0.8493463781922198,
+          "integer_vector": [
+            5,
+            -2,
+            2
+          ]
+        },
+        {
+          "eta_q_over_2kf": 0.8493463781922198,
+          "integer_vector": [
+            5,
+            2,
+            -2
+          ]
+        },
+        {
+          "eta_q_over_2kf": 0.8493463781922198,
+          "integer_vector": [
+            5,
+            2,
+            2
+          ]
+        },
+        {
+          "eta_q_over_2kf": 0.8621192209096283,
+          "integer_vector": [
+            0,
+            3,
+            -5
+          ]
+        },
+        {
+          "eta_q_over_2kf": 0.8621192209096283,
+          "integer_vector": [
+            0,
+            3,
+            5
+          ]
+        },
+        {
+          "eta_q_over_2kf": 0.8621192209096283,
+          "integer_vector": [
+            0,
+            5,
+            -3
+          ]
+        },
+        {
+          "eta_q_over_2kf": 0.8621192209096283,
+          "integer_vector": [
+            0,
+            5,
+            3
+          ]
+        },
+        {
+          "eta_q_over_2kf": 0.8621192209096283,
+          "integer_vector": [
+            3,
+            -5,
+            0
+          ]
+        },
+        {
+          "eta_q_over_2kf": 0.8621192209096283,
+          "integer_vector": [
+            3,
+            -4,
+            -3
+          ]
+        },
+        {
+          "eta_q_over_2kf": 0.8621192209096283,
+          "integer_vector": [
+            3,
+            -4,
+            3
+          ]
+        },
+        {
+          "eta_q_over_2kf": 0.8621192209096283,
+          "integer_vector": [
+            3,
+            -3,
+            -4
+          ]
+        },
+        {
+          "eta_q_over_2kf": 0.8621192209096283,
+          "integer_vector": [
+            3,
+            -3,
+            4
+          ]
+        },
+        {
+          "eta_q_over_2kf": 0.8621192209096283,
+          "integer_vector": [
+            3,
+            0,
+            -5
+          ]
+        },
+        {
+          "eta_q_over_2kf": 0.8621192209096283,
+          "integer_vector": [
+            3,
+            0,
+            5
+          ]
+        },
+        {
+          "eta_q_over_2kf": 0.8621192209096283,
+          "integer_vector": [
+            3,
+            3,
+            -4
+          ]
+        },
+        {
+          "eta_q_over_2kf": 0.8621192209096283,
+          "integer_vector": [
+            3,
+            3,
+            4
+          ]
+        },
+        {
+          "eta_q_over_2kf": 0.8621192209096282,
+          "integer_vector": [
+            3,
+            4,
+            -3
+          ]
+        },
+        {
+          "eta_q_over_2kf": 0.8621192209096283,
+          "integer_vector": [
+            3,
+            4,
+            3
+          ]
+        },
+        {
+          "eta_q_over_2kf": 0.8621192209096283,
+          "integer_vector": [
+            3,
+            5,
+            0
+          ]
+        },
+        {
+          "eta_q_over_2kf": 0.8621192209096282,
+          "integer_vector": [
+            4,
+            -3,
+            -3
+          ]
+        },
+        {
+          "eta_q_over_2kf": 0.8621192209096282,
+          "integer_vector": [
+            4,
+            -3,
+            3
+          ]
+        },
+        {
+          "eta_q_over_2kf": 0.8621192209096282,
+          "integer_vector": [
+            4,
+            3,
+            -3
+          ]
+        },
+        {
+          "eta_q_over_2kf": 0.8621192209096283,
+          "integer_vector": [
+            4,
+            3,
+            3
+          ]
+        },
+        {
+          "eta_q_over_2kf": 0.8621192209096283,
+          "integer_vector": [
+            5,
+            -3,
+            0
+          ]
+        },
+        {
+          "eta_q_over_2kf": 0.8621192209096283,
+          "integer_vector": [
+            5,
+            0,
+            -3
+          ]
+        },
+        {
+          "eta_q_over_2kf": 0.8621192209096283,
+          "integer_vector": [
+            5,
+            0,
+            3
+          ]
+        },
+        {
+          "eta_q_over_2kf": 0.8621192209096283,
+          "integer_vector": [
+            5,
+            3,
+            0
+          ]
+        },
+        {
+          "eta_q_over_2kf": 0.87470556873465,
+          "integer_vector": [
+            1,
+            -5,
+            -3
+          ]
+        },
+        {
+          "eta_q_over_2kf": 0.87470556873465,
+          "integer_vector": [
+            1,
+            -5,
+            3
+          ]
+        },
+        {
+          "eta_q_over_2kf": 0.87470556873465,
+          "integer_vector": [
+            1,
+            -3,
+            -5
+          ]
+        },
+        {
+          "eta_q_over_2kf": 0.87470556873465,
+          "integer_vector": [
+            1,
+            -3,
+            5
+          ]
+        },
+        {
+          "eta_q_over_2kf": 0.87470556873465,
+          "integer_vector": [
+            1,
+            3,
+            -5
+          ]
+        },
+        {
+          "eta_q_over_2kf": 0.87470556873465,
+          "integer_vector": [
+            1,
+            3,
+            5
+          ]
+        },
+        {
+          "eta_q_over_2kf": 0.87470556873465,
+          "integer_vector": [
+            1,
+            5,
+            -3
+          ]
+        },
+        {
+          "eta_q_over_2kf": 0.8747055687346501,
+          "integer_vector": [
+            1,
+            5,
+            3
+          ]
+        },
+        {
+          "eta_q_over_2kf": 0.8747055687346501,
+          "integer_vector": [
+            3,
+            -5,
+            -1
+          ]
+        },
+        {
+          "eta_q_over_2kf": 0.8747055687346501,
+          "integer_vector": [
+            3,
+            -5,
+            1
+          ]
+        },
+        {
+          "eta_q_over_2kf": 0.87470556873465,
+          "integer_vector": [
+            3,
+            -1,
+            -5
+          ]
+        },
+        {
+          "eta_q_over_2kf": 0.87470556873465,
+          "integer_vector": [
+            3,
+            -1,
+            5
+          ]
+        },
+        {
+          "eta_q_over_2kf": 0.87470556873465,
+          "integer_vector": [
+            3,
+            1,
+            -5
+          ]
+        },
+        {
+          "eta_q_over_2kf": 0.87470556873465,
+          "integer_vector": [
+            3,
+            1,
+            5
+          ]
+        },
+        {
+          "eta_q_over_2kf": 0.87470556873465,
+          "integer_vector": [
+            3,
+            5,
+            -1
+          ]
+        },
+        {
+          "eta_q_over_2kf": 0.8747055687346501,
+          "integer_vector": [
+            3,
+            5,
+            1
+          ]
+        },
+        {
+          "eta_q_over_2kf": 0.8747055687346501,
+          "integer_vector": [
+            5,
+            -3,
+            -1
+          ]
+        },
+        {
+          "eta_q_over_2kf": 0.8747055687346501,
+          "integer_vector": [
+            5,
+            -3,
+            1
+          ]
+        },
+        {
+          "eta_q_over_2kf": 0.87470556873465,
+          "integer_vector": [
+            5,
+            -1,
+            -3
+          ]
+        },
+        {
+          "eta_q_over_2kf": 0.87470556873465,
+          "integer_vector": [
+            5,
+            -1,
+            3
+          ]
+        },
+        {
+          "eta_q_over_2kf": 0.87470556873465,
+          "integer_vector": [
+            5,
+            1,
+            -3
+          ]
+        },
+        {
+          "eta_q_over_2kf": 0.8747055687346501,
+          "integer_vector": [
+            5,
+            1,
+            3
+          ]
+        },
+        {
+          "eta_q_over_2kf": 0.87470556873465,
+          "integer_vector": [
+            5,
+            3,
+            -1
+          ]
+        },
+        {
+          "eta_q_over_2kf": 0.8747055687346501,
+          "integer_vector": [
+            5,
+            3,
+            1
+          ]
+        },
+        {
+          "eta_q_over_2kf": 0.8871133596609796,
+          "integer_vector": [
+            0,
+            0,
+            6
+          ]
+        },
+        {
+          "eta_q_over_2kf": 0.8871133596609796,
+          "integer_vector": [
+            0,
+            6,
+            0
+          ]
+        },
+        {
+          "eta_q_over_2kf": 0.8871133596609796,
+          "integer_vector": [
+            2,
+            -4,
+            -4
+          ]
+        },
+        {
+          "eta_q_over_2kf": 0.8871133596609796,
+          "integer_vector": [
+            2,
+            -4,
+            4
+          ]
+        },
+        {
+          "eta_q_over_2kf": 0.8871133596609796,
+          "integer_vector": [
+            2,
+            4,
+            -4
+          ]
+        },
+        {
+          "eta_q_over_2kf": 0.8871133596609796,
+          "integer_vector": [
+            2,
+            4,
+            4
+          ]
+        },
+        {
+          "eta_q_over_2kf": 0.8871133596609796,
+          "integer_vector": [
+            4,
+            -4,
+            -2
+          ]
+        },
+        {
+          "eta_q_over_2kf": 0.8871133596609796,
+          "integer_vector": [
+            4,
+            -4,
+            2
+          ]
+        },
+        {
+          "eta_q_over_2kf": 0.8871133596609796,
+          "integer_vector": [
+            4,
+            -2,
+            -4
+          ]
+        },
+        {
+          "eta_q_over_2kf": 0.8871133596609796,
+          "integer_vector": [
+            4,
+            -2,
+            4
+          ]
+        },
+        {
+          "eta_q_over_2kf": 0.8871133596609796,
+          "integer_vector": [
+            4,
+            2,
+            -4
+          ]
+        },
+        {
+          "eta_q_over_2kf": 0.8871133596609796,
+          "integer_vector": [
+            4,
+            2,
+            4
+          ]
+        },
+        {
+          "eta_q_over_2kf": 0.8871133596609796,
+          "integer_vector": [
+            4,
+            4,
+            -2
+          ]
+        },
+        {
+          "eta_q_over_2kf": 0.8871133596609796,
+          "integer_vector": [
+            4,
+            4,
+            2
+          ]
+        },
+        {
+          "eta_q_over_2kf": 0.8871133596609796,
+          "integer_vector": [
+            6,
+            0,
+            0
+          ]
+        },
+        {
+          "eta_q_over_2kf": 0.8993499840454624,
+          "integer_vector": [
+            0,
+            1,
+            -6
+          ]
+        },
+        {
+          "eta_q_over_2kf": 0.8993499840454624,
+          "integer_vector": [
+            0,
+            1,
+            6
+          ]
+        },
+        {
+          "eta_q_over_2kf": 0.8993499840454624,
+          "integer_vector": [
+            0,
+            6,
+            -1
+          ]
+        },
+        {
+          "eta_q_over_2kf": 0.8993499840454625,
+          "integer_vector": [
+            0,
+            6,
+            1
+          ]
+        },
+        {
+          "eta_q_over_2kf": 0.8993499840454624,
+          "integer_vector": [
+            1,
+            -6,
+            0
+          ]
+        },
+        {
+          "eta_q_over_2kf": 0.8993499840454624,
+          "integer_vector": [
+            1,
+            0,
+            -6
+          ]
+        },
+        {
+          "eta_q_over_2kf": 0.8993499840454624,
+          "integer_vector": [
+            1,
+            0,
+            6
+          ]
+        },
+        {
+          "eta_q_over_2kf": 0.8993499840454624,
+          "integer_vector": [
+            1,
+            6,
+            0
+          ]
+        },
+        {
+          "eta_q_over_2kf": 0.8993499840454625,
+          "integer_vector": [
+            6,
+            -1,
+            0
+          ]
+        },
+        {
+          "eta_q_over_2kf": 0.8993499840454624,
+          "integer_vector": [
+            6,
+            0,
+            -1
+          ]
+        },
+        {
+          "eta_q_over_2kf": 0.8993499840454625,
+          "integer_vector": [
+            6,
+            0,
+            1
+          ]
+        },
+        {
+          "eta_q_over_2kf": 0.8993499840454624,
+          "integer_vector": [
+            6,
+            1,
+            0
+          ]
+        },
+        {
+          "eta_q_over_2kf": 0.9114223360858328,
+          "integer_vector": [
+            1,
+            -6,
+            -1
+          ]
+        },
+        {
+          "eta_q_over_2kf": 0.9114223360858328,
+          "integer_vector": [
+            1,
+            -6,
+            1
+          ]
+        },
+        {
+          "eta_q_over_2kf": 0.9114223360858328,
+          "integer_vector": [
+            1,
+            -1,
+            -6
+          ]
+        },
+        {
+          "eta_q_over_2kf": 0.9114223360858328,
+          "integer_vector": [
+            1,
+            -1,
+            6
+          ]
+        },
+        {
+          "eta_q_over_2kf": 0.9114223360858328,
+          "integer_vector": [
+            1,
+            1,
+            -6
+          ]
+        },
+        {
+          "eta_q_over_2kf": 0.9114223360858328,
+          "integer_vector": [
+            1,
+            1,
+            6
+          ]
+        },
+        {
+          "eta_q_over_2kf": 0.9114223360858328,
+          "integer_vector": [
+            1,
+            6,
+            -1
+          ]
+        },
+        {
+          "eta_q_over_2kf": 0.9114223360858328,
+          "integer_vector": [
+            1,
+            6,
+            1
+          ]
+        },
+        {
+          "eta_q_over_2kf": 0.9114223360858328,
+          "integer_vector": [
+            2,
+            -5,
+            -3
+          ]
+        },
+        {
+          "eta_q_over_2kf": 0.9114223360858328,
+          "integer_vector": [
+            2,
+            -5,
+            3
+          ]
+        },
+        {
+          "eta_q_over_2kf": 0.9114223360858328,
+          "integer_vector": [
+            2,
+            -3,
+            -5
+          ]
+        },
+        {
+          "eta_q_over_2kf": 0.9114223360858328,
+          "integer_vector": [
+            2,
+            -3,
+            5
+          ]
+        },
+        {
+          "eta_q_over_2kf": 0.9114223360858328,
+          "integer_vector": [
+            2,
+            3,
+            -5
+          ]
+        },
+        {
+          "eta_q_over_2kf": 0.9114223360858328,
+          "integer_vector": [
+            2,
+            3,
+            5
+          ]
+        },
+        {
+          "eta_q_over_2kf": 0.9114223360858328,
+          "integer_vector": [
+            2,
+            5,
+            -3
+          ]
+        },
+        {
+          "eta_q_over_2kf": 0.9114223360858328,
+          "integer_vector": [
+            2,
+            5,
+            3
+          ]
+        },
+        {
+          "eta_q_over_2kf": 0.9114223360858328,
+          "integer_vector": [
+            3,
+            -5,
+            -2
+          ]
+        },
+        {
+          "eta_q_over_2kf": 0.9114223360858328,
+          "integer_vector": [
+            3,
+            -5,
+            2
+          ]
+        },
+        {
+          "eta_q_over_2kf": 0.9114223360858328,
+          "integer_vector": [
+            3,
+            -2,
+            -5
+          ]
+        },
+        {
+          "eta_q_over_2kf": 0.9114223360858328,
+          "integer_vector": [
+            3,
+            -2,
+            5
+          ]
+        },
+        {
+          "eta_q_over_2kf": 0.9114223360858328,
+          "integer_vector": [
+            3,
+            2,
+            -5
+          ]
+        },
+        {
+          "eta_q_over_2kf": 0.9114223360858328,
+          "integer_vector": [
+            3,
+            2,
+            5
+          ]
+        },
+        {
+          "eta_q_over_2kf": 0.9114223360858328,
+          "integer_vector": [
+            3,
+            5,
+            -2
+          ]
+        },
+        {
+          "eta_q_over_2kf": 0.9114223360858328,
+          "integer_vector": [
+            3,
+            5,
+            2
+          ]
+        },
+        {
+          "eta_q_over_2kf": 0.9114223360858328,
+          "integer_vector": [
+            5,
+            -3,
+            -2
+          ]
+        },
+        {
+          "eta_q_over_2kf": 0.9114223360858328,
+          "integer_vector": [
+            5,
+            -3,
+            2
+          ]
+        },
+        {
+          "eta_q_over_2kf": 0.9114223360858328,
+          "integer_vector": [
+            5,
+            -2,
+            -3
+          ]
+        },
+        {
+          "eta_q_over_2kf": 0.9114223360858328,
+          "integer_vector": [
+            5,
+            -2,
+            3
+          ]
+        },
+        {
+          "eta_q_over_2kf": 0.9114223360858328,
+          "integer_vector": [
+            5,
+            2,
+            -3
+          ]
+        },
+        {
+          "eta_q_over_2kf": 0.9114223360858328,
+          "integer_vector": [
+            5,
+            2,
+            3
+          ]
+        },
+        {
+          "eta_q_over_2kf": 0.9114223360858328,
+          "integer_vector": [
+            5,
+            3,
+            -2
+          ]
+        },
+        {
+          "eta_q_over_2kf": 0.9114223360858328,
+          "integer_vector": [
+            5,
+            3,
+            2
+          ]
+        },
+        {
+          "eta_q_over_2kf": 0.9114223360858328,
+          "integer_vector": [
+            6,
+            -1,
+            -1
+          ]
+        },
+        {
+          "eta_q_over_2kf": 0.9114223360858329,
+          "integer_vector": [
+            6,
+            -1,
+            1
+          ]
+        },
+        {
+          "eta_q_over_2kf": 0.9114223360858328,
+          "integer_vector": [
+            6,
+            1,
+            -1
+          ]
+        },
+        {
+          "eta_q_over_2kf": 0.9114223360858328,
+          "integer_vector": [
+            6,
+            1,
+            1
+          ]
+        },
+        {
+          "eta_q_over_2kf": 0.9350995864309442,
+          "integer_vector": [
+            0,
+            2,
+            -6
+          ]
+        },
+        {
+          "eta_q_over_2kf": 0.9350995864309442,
+          "integer_vector": [
+            0,
+            2,
+            6
+          ]
+        },
+        {
+          "eta_q_over_2kf": 0.9350995864309442,
+          "integer_vector": [
+            0,
+            6,
+            -2
+          ]
+        },
+        {
+          "eta_q_over_2kf": 0.9350995864309442,
+          "integer_vector": [
+            0,
+            6,
+            2
+          ]
+        },
+        {
+          "eta_q_over_2kf": 0.9350995864309442,
+          "integer_vector": [
+            2,
+            -6,
+            0
+          ]
+        },
+        {
+          "eta_q_over_2kf": 0.9350995864309442,
+          "integer_vector": [
+            2,
+            0,
+            -6
+          ]
+        },
+        {
+          "eta_q_over_2kf": 0.9350995864309442,
+          "integer_vector": [
+            2,
+            0,
+            6
+          ]
+        },
+        {
+          "eta_q_over_2kf": 0.9350995864309442,
+          "integer_vector": [
+            2,
+            6,
+            0
+          ]
+        },
+        {
+          "eta_q_over_2kf": 0.9350995864309442,
+          "integer_vector": [
+            6,
+            -2,
+            0
+          ]
+        },
+        {
+          "eta_q_over_2kf": 0.9350995864309442,
+          "integer_vector": [
+            6,
+            0,
+            -2
+          ]
+        },
+        {
+          "eta_q_over_2kf": 0.9350995864309442,
+          "integer_vector": [
+            6,
+            0,
+            2
+          ]
+        },
+        {
+          "eta_q_over_2kf": 0.9350995864309442,
+          "integer_vector": [
+            6,
+            2,
+            0
+          ]
+        },
+        {
+          "eta_q_over_2kf": 0.9467161757659505,
+          "integer_vector": [
+            0,
+            4,
+            -5
+          ]
+        },
+        {
+          "eta_q_over_2kf": 0.9467161757659505,
+          "integer_vector": [
+            0,
+            4,
+            5
+          ]
+        },
+        {
+          "eta_q_over_2kf": 0.9467161757659505,
+          "integer_vector": [
+            0,
+            5,
+            -4
+          ]
+        },
+        {
+          "eta_q_over_2kf": 0.9467161757659505,
+          "integer_vector": [
+            0,
+            5,
+            4
+          ]
+        },
+        {
+          "eta_q_over_2kf": 0.9467161757659505,
+          "integer_vector": [
+            1,
+            -6,
+            -2
+          ]
+        },
+        {
+          "eta_q_over_2kf": 0.9467161757659505,
+          "integer_vector": [
+            1,
+            -6,
+            2
+          ]
+        },
+        {
+          "eta_q_over_2kf": 0.9467161757659505,
+          "integer_vector": [
+            1,
+            -2,
+            -6
+          ]
+        },
+        {
+          "eta_q_over_2kf": 0.9467161757659505,
+          "integer_vector": [
+            1,
+            -2,
+            6
+          ]
+        },
+        {
+          "eta_q_over_2kf": 0.9467161757659505,
+          "integer_vector": [
+            1,
+            2,
+            -6
+          ]
+        },
+        {
+          "eta_q_over_2kf": 0.9467161757659505,
+          "integer_vector": [
+            1,
+            2,
+            6
+          ]
+        },
+        {
+          "eta_q_over_2kf": 0.9467161757659505,
+          "integer_vector": [
+            1,
+            6,
+            -2
+          ]
+        },
+        {
+          "eta_q_over_2kf": 0.9467161757659505,
+          "integer_vector": [
+            1,
+            6,
+            2
+          ]
+        },
+        {
+          "eta_q_over_2kf": 0.9467161757659505,
+          "integer_vector": [
+            2,
+            -6,
+            -1
+          ]
+        },
+        {
+          "eta_q_over_2kf": 0.9467161757659505,
+          "integer_vector": [
+            2,
+            -6,
+            1
+          ]
+        },
+        {
+          "eta_q_over_2kf": 0.9467161757659505,
+          "integer_vector": [
+            2,
+            -1,
+            -6
+          ]
+        },
+        {
+          "eta_q_over_2kf": 0.9467161757659505,
+          "integer_vector": [
+            2,
+            -1,
+            6
+          ]
+        },
+        {
+          "eta_q_over_2kf": 0.9467161757659505,
+          "integer_vector": [
+            2,
+            1,
+            -6
+          ]
+        },
+        {
+          "eta_q_over_2kf": 0.9467161757659505,
+          "integer_vector": [
+            2,
+            1,
+            6
+          ]
+        },
+        {
+          "eta_q_over_2kf": 0.9467161757659504,
+          "integer_vector": [
+            2,
+            6,
+            -1
+          ]
+        },
+        {
+          "eta_q_over_2kf": 0.9467161757659505,
+          "integer_vector": [
+            2,
+            6,
+            1
+          ]
+        },
+        {
+          "eta_q_over_2kf": 0.9467161757659505,
+          "integer_vector": [
+            3,
+            -4,
+            -4
+          ]
+        },
+        {
+          "eta_q_over_2kf": 0.9467161757659505,
+          "integer_vector": [
+            3,
+            -4,
+            4
+          ]
+        },
+        {
+          "eta_q_over_2kf": 0.9467161757659505,
+          "integer_vector": [
+            3,
+            4,
+            -4
+          ]
+        },
+        {
+          "eta_q_over_2kf": 0.9467161757659505,
+          "integer_vector": [
+            3,
+            4,
+            4
+          ]
+        },
+        {
+          "eta_q_over_2kf": 0.9467161757659505,
+          "integer_vector": [
+            4,
+            -5,
+            0
+          ]
+        },
+        {
+          "eta_q_over_2kf": 0.9467161757659505,
+          "integer_vector": [
+            4,
+            -4,
+            -3
+          ]
+        },
+        {
+          "eta_q_over_2kf": 0.9467161757659505,
+          "integer_vector": [
+            4,
+            -4,
+            3
+          ]
+        },
+        {
+          "eta_q_over_2kf": 0.9467161757659505,
+          "integer_vector": [
+            4,
+            -3,
+            -4
+          ]
+        },
+        {
+          "eta_q_over_2kf": 0.9467161757659505,
+          "integer_vector": [
+            4,
+            -3,
+            4
+          ]
+        },
+        {
+          "eta_q_over_2kf": 0.9467161757659505,
+          "integer_vector": [
+            4,
+            0,
+            -5
+          ]
+        },
+        {
+          "eta_q_over_2kf": 0.9467161757659505,
+          "integer_vector": [
+            4,
+            0,
+            5
+          ]
+        },
+        {
+          "eta_q_over_2kf": 0.9467161757659505,
+          "integer_vector": [
+            4,
+            3,
+            -4
+          ]
+        },
+        {
+          "eta_q_over_2kf": 0.9467161757659505,
+          "integer_vector": [
+            4,
+            3,
+            4
+          ]
+        },
+        {
+          "eta_q_over_2kf": 0.9467161757659504,
+          "integer_vector": [
+            4,
+            4,
+            -3
+          ]
+        },
+        {
+          "eta_q_over_2kf": 0.9467161757659505,
+          "integer_vector": [
+            4,
+            4,
+            3
+          ]
+        },
+        {
+          "eta_q_over_2kf": 0.9467161757659505,
+          "integer_vector": [
+            4,
+            5,
+            0
+          ]
+        },
+        {
+          "eta_q_over_2kf": 0.9467161757659505,
+          "integer_vector": [
+            5,
+            -4,
+            0
+          ]
+        },
+        {
+          "eta_q_over_2kf": 0.9467161757659505,
+          "integer_vector": [
+            5,
+            0,
+            -4
+          ]
+        },
+        {
+          "eta_q_over_2kf": 0.9467161757659505,
+          "integer_vector": [
+            5,
+            0,
+            4
+          ]
+        },
+        {
+          "eta_q_over_2kf": 0.9467161757659505,
+          "integer_vector": [
+            5,
+            4,
+            0
+          ]
+        },
+        {
+          "eta_q_over_2kf": 0.9467161757659505,
+          "integer_vector": [
+            6,
+            -2,
+            -1
+          ]
+        },
+        {
+          "eta_q_over_2kf": 0.9467161757659505,
+          "integer_vector": [
+            6,
+            -2,
+            1
+          ]
+        },
+        {
+          "eta_q_over_2kf": 0.9467161757659505,
+          "integer_vector": [
+            6,
+            -1,
+            -2
+          ]
+        },
+        {
+          "eta_q_over_2kf": 0.9467161757659505,
+          "integer_vector": [
+            6,
+            -1,
+            2
+          ]
+        },
+        {
+          "eta_q_over_2kf": 0.9467161757659505,
+          "integer_vector": [
+            6,
+            1,
+            -2
+          ]
+        },
+        {
+          "eta_q_over_2kf": 0.9467161757659505,
+          "integer_vector": [
+            6,
+            1,
+            2
+          ]
+        },
+        {
+          "eta_q_over_2kf": 0.9467161757659505,
+          "integer_vector": [
+            6,
+            2,
+            -1
+          ]
+        },
+        {
+          "eta_q_over_2kf": 0.9467161757659505,
+          "integer_vector": [
+            6,
+            2,
+            1
+          ]
+        },
+        {
+          "eta_q_over_2kf": 0.9581919423427068,
+          "integer_vector": [
+            1,
+            -5,
+            -4
+          ]
+        },
+        {
+          "eta_q_over_2kf": 0.9581919423427068,
+          "integer_vector": [
+            1,
+            -5,
+            4
+          ]
+        },
+        {
+          "eta_q_over_2kf": 0.9581919423427068,
+          "integer_vector": [
+            1,
+            -4,
+            -5
+          ]
+        },
+        {
+          "eta_q_over_2kf": 0.9581919423427068,
+          "integer_vector": [
+            1,
+            -4,
+            5
+          ]
+        },
+        {
+          "eta_q_over_2kf": 0.9581919423427068,
+          "integer_vector": [
+            1,
+            4,
+            -5
+          ]
+        },
+        {
+          "eta_q_over_2kf": 0.9581919423427068,
+          "integer_vector": [
+            1,
+            4,
+            5
+          ]
+        },
+        {
+          "eta_q_over_2kf": 0.9581919423427068,
+          "integer_vector": [
+            1,
+            5,
+            -4
+          ]
+        },
+        {
+          "eta_q_over_2kf": 0.9581919423427068,
+          "integer_vector": [
+            1,
+            5,
+            4
+          ]
+        },
+        {
+          "eta_q_over_2kf": 0.9581919423427068,
+          "integer_vector": [
+            4,
+            -5,
+            -1
+          ]
+        },
+        {
+          "eta_q_over_2kf": 0.9581919423427068,
+          "integer_vector": [
+            4,
+            -5,
+            1
+          ]
+        },
+        {
+          "eta_q_over_2kf": 0.9581919423427068,
+          "integer_vector": [
+            4,
+            -1,
+            -5
+          ]
+        },
+        {
+          "eta_q_over_2kf": 0.9581919423427068,
+          "integer_vector": [
+            4,
+            -1,
+            5
+          ]
+        },
+        {
+          "eta_q_over_2kf": 0.9581919423427068,
+          "integer_vector": [
+            4,
+            1,
+            -5
+          ]
+        },
+        {
+          "eta_q_over_2kf": 0.9581919423427068,
+          "integer_vector": [
+            4,
+            1,
+            5
+          ]
+        },
+        {
+          "eta_q_over_2kf": 0.9581919423427068,
+          "integer_vector": [
+            4,
+            5,
+            -1
+          ]
+        },
+        {
+          "eta_q_over_2kf": 0.9581919423427068,
+          "integer_vector": [
+            4,
+            5,
+            1
+          ]
+        },
+        {
+          "eta_q_over_2kf": 0.9581919423427068,
+          "integer_vector": [
+            5,
+            -4,
+            -1
+          ]
+        },
+        {
+          "eta_q_over_2kf": 0.9581919423427068,
+          "integer_vector": [
+            5,
+            -4,
+            1
+          ]
+        },
+        {
+          "eta_q_over_2kf": 0.9581919423427068,
+          "integer_vector": [
+            5,
+            -1,
+            -4
+          ]
+        },
+        {
+          "eta_q_over_2kf": 0.9581919423427068,
+          "integer_vector": [
+            5,
+            -1,
+            4
+          ]
+        },
+        {
+          "eta_q_over_2kf": 0.9581919423427068,
+          "integer_vector": [
+            5,
+            1,
+            -4
+          ]
+        },
+        {
+          "eta_q_over_2kf": 0.9581919423427068,
+          "integer_vector": [
+            5,
+            1,
+            4
+          ]
+        },
+        {
+          "eta_q_over_2kf": 0.9581919423427068,
+          "integer_vector": [
+            5,
+            4,
+            -1
+          ]
+        },
+        {
+          "eta_q_over_2kf": 0.9581919423427068,
+          "integer_vector": [
+            5,
+            4,
+            1
+          ]
+        },
+        {
+          "eta_q_over_2kf": 0.9695318866773142,
+          "integer_vector": [
+            3,
+            -5,
+            -3
+          ]
+        },
+        {
+          "eta_q_over_2kf": 0.9695318866773142,
+          "integer_vector": [
+            3,
+            -5,
+            3
+          ]
+        },
+        {
+          "eta_q_over_2kf": 0.969531886677314,
+          "integer_vector": [
+            3,
+            -3,
+            -5
+          ]
+        },
+        {
+          "eta_q_over_2kf": 0.969531886677314,
+          "integer_vector": [
+            3,
+            -3,
+            5
+          ]
+        },
+        {
+          "eta_q_over_2kf": 0.969531886677314,
+          "integer_vector": [
+            3,
+            3,
+            -5
+          ]
+        },
+        {
+          "eta_q_over_2kf": 0.969531886677314,
+          "integer_vector": [
+            3,
+            3,
+            5
+          ]
+        },
+        {
+          "eta_q_over_2kf": 0.969531886677314,
+          "integer_vector": [
+            3,
+            5,
+            -3
+          ]
+        },
+        {
+          "eta_q_over_2kf": 0.9695318866773142,
+          "integer_vector": [
+            3,
+            5,
+            3
+          ]
+        },
+        {
+          "eta_q_over_2kf": 0.9695318866773142,
+          "integer_vector": [
+            5,
+            -3,
+            -3
+          ]
+        },
+        {
+          "eta_q_over_2kf": 0.9695318866773142,
+          "integer_vector": [
+            5,
+            -3,
+            3
+          ]
+        },
+        {
+          "eta_q_over_2kf": 0.969531886677314,
+          "integer_vector": [
+            5,
+            3,
+            -3
+          ]
+        },
+        {
+          "eta_q_over_2kf": 0.9695318866773142,
+          "integer_vector": [
+            5,
+            3,
+            3
+          ]
+        },
+        {
+          "eta_q_over_2kf": 0.9807407201690237,
+          "integer_vector": [
+            2,
+            -6,
+            -2
+          ]
+        },
+        {
+          "eta_q_over_2kf": 0.9807407201690237,
+          "integer_vector": [
+            2,
+            -6,
+            2
+          ]
+        },
+        {
+          "eta_q_over_2kf": 0.9807407201690237,
+          "integer_vector": [
+            2,
+            -2,
+            -6
+          ]
+        },
+        {
+          "eta_q_over_2kf": 0.9807407201690237,
+          "integer_vector": [
+            2,
+            -2,
+            6
+          ]
+        },
+        {
+          "eta_q_over_2kf": 0.9807407201690237,
+          "integer_vector": [
+            2,
+            2,
+            -6
+          ]
+        },
+        {
+          "eta_q_over_2kf": 0.9807407201690237,
+          "integer_vector": [
+            2,
+            2,
+            6
+          ]
+        },
+        {
+          "eta_q_over_2kf": 0.9807407201690237,
+          "integer_vector": [
+            2,
+            6,
+            -2
+          ]
+        },
+        {
+          "eta_q_over_2kf": 0.9807407201690237,
+          "integer_vector": [
+            2,
+            6,
+            2
+          ]
+        },
+        {
+          "eta_q_over_2kf": 0.9807407201690237,
+          "integer_vector": [
+            6,
+            -2,
+            -2
+          ]
+        },
+        {
+          "eta_q_over_2kf": 0.9807407201690237,
+          "integer_vector": [
+            6,
+            -2,
+            2
+          ]
+        },
+        {
+          "eta_q_over_2kf": 0.9807407201690237,
+          "integer_vector": [
+            6,
+            2,
+            -2
+          ]
+        },
+        {
+          "eta_q_over_2kf": 0.9807407201690237,
+          "integer_vector": [
+            6,
+            2,
+            2
+          ]
+        },
+        {
+          "eta_q_over_2kf": 0.991822887975085,
+          "integer_vector": [
+            0,
+            3,
+            -6
+          ]
+        },
+        {
+          "eta_q_over_2kf": 0.9918228879750852,
+          "integer_vector": [
+            0,
+            3,
+            6
+          ]
+        },
+        {
+          "eta_q_over_2kf": 0.991822887975085,
+          "integer_vector": [
+            0,
+            6,
+            -3
+          ]
+        },
+        {
+          "eta_q_over_2kf": 0.9918228879750852,
+          "integer_vector": [
+            0,
+            6,
+            3
+          ]
+        },
+        {
+          "eta_q_over_2kf": 0.991822887975085,
+          "integer_vector": [
+            2,
+            -5,
+            -4
+          ]
+        },
+        {
+          "eta_q_over_2kf": 0.991822887975085,
+          "integer_vector": [
+            2,
+            -5,
+            4
+          ]
+        },
+        {
+          "eta_q_over_2kf": 0.991822887975085,
+          "integer_vector": [
+            2,
+            -4,
+            -5
+          ]
+        },
+        {
+          "eta_q_over_2kf": 0.991822887975085,
+          "integer_vector": [
+            2,
+            -4,
+            5
+          ]
+        },
+        {
+          "eta_q_over_2kf": 0.991822887975085,
+          "integer_vector": [
+            2,
+            4,
+            -5
+          ]
+        },
+        {
+          "eta_q_over_2kf": 0.991822887975085,
+          "integer_vector": [
+            2,
+            4,
+            5
+          ]
+        },
+        {
+          "eta_q_over_2kf": 0.991822887975085,
+          "integer_vector": [
+            2,
+            5,
+            -4
+          ]
+        },
+        {
+          "eta_q_over_2kf": 0.991822887975085,
+          "integer_vector": [
+            2,
+            5,
+            4
+          ]
+        },
+        {
+          "eta_q_over_2kf": 0.9918228879750852,
+          "integer_vector": [
+            3,
+            -6,
+            0
+          ]
+        },
+        {
+          "eta_q_over_2kf": 0.9918228879750852,
+          "integer_vector": [
+            3,
+            0,
+            -6
+          ]
+        },
+        {
+          "eta_q_over_2kf": 0.991822887975085,
+          "integer_vector": [
+            3,
+            0,
+            6
+          ]
+        },
+        {
+          "eta_q_over_2kf": 0.991822887975085,
+          "integer_vector": [
+            3,
+            6,
+            0
+          ]
+        },
+        {
+          "eta_q_over_2kf": 0.991822887975085,
+          "integer_vector": [
+            4,
+            -5,
+            -2
+          ]
+        },
+        {
+          "eta_q_over_2kf": 0.991822887975085,
+          "integer_vector": [
+            4,
+            -5,
+            2
+          ]
+        },
+        {
+          "eta_q_over_2kf": 0.991822887975085,
+          "integer_vector": [
+            4,
+            -2,
+            -5
+          ]
+        },
+        {
+          "eta_q_over_2kf": 0.991822887975085,
+          "integer_vector": [
+            4,
+            -2,
+            5
+          ]
+        },
+        {
+          "eta_q_over_2kf": 0.991822887975085,
+          "integer_vector": [
+            4,
+            2,
+            -5
+          ]
+        },
+        {
+          "eta_q_over_2kf": 0.991822887975085,
+          "integer_vector": [
+            4,
+            2,
+            5
+          ]
+        },
+        {
+          "eta_q_over_2kf": 0.991822887975085,
+          "integer_vector": [
+            4,
+            5,
+            -2
+          ]
+        },
+        {
+          "eta_q_over_2kf": 0.991822887975085,
+          "integer_vector": [
+            4,
+            5,
+            2
+          ]
+        },
+        {
+          "eta_q_over_2kf": 0.991822887975085,
+          "integer_vector": [
+            5,
+            -4,
+            -2
+          ]
+        },
+        {
+          "eta_q_over_2kf": 0.991822887975085,
+          "integer_vector": [
+            5,
+            -4,
+            2
+          ]
+        },
+        {
+          "eta_q_over_2kf": 0.991822887975085,
+          "integer_vector": [
+            5,
+            -2,
+            -4
+          ]
+        },
+        {
+          "eta_q_over_2kf": 0.991822887975085,
+          "integer_vector": [
+            5,
+            -2,
+            4
+          ]
+        },
+        {
+          "eta_q_over_2kf": 0.991822887975085,
+          "integer_vector": [
+            5,
+            2,
+            -4
+          ]
+        },
+        {
+          "eta_q_over_2kf": 0.991822887975085,
+          "integer_vector": [
+            5,
+            2,
+            4
+          ]
+        },
+        {
+          "eta_q_over_2kf": 0.991822887975085,
+          "integer_vector": [
+            5,
+            4,
+            -2
+          ]
+        },
+        {
+          "eta_q_over_2kf": 0.991822887975085,
+          "integer_vector": [
+            5,
+            4,
+            2
+          ]
+        },
+        {
+          "eta_q_over_2kf": 0.9918228879750852,
+          "integer_vector": [
+            6,
+            -3,
+            0
+          ]
+        },
+        {
+          "eta_q_over_2kf": 0.991822887975085,
+          "integer_vector": [
+            6,
+            0,
+            -3
+          ]
+        },
+        {
+          "eta_q_over_2kf": 0.9918228879750852,
+          "integer_vector": [
+            6,
+            0,
+            3
+          ]
+        },
+        {
+          "eta_q_over_2kf": 0.991822887975085,
+          "integer_vector": [
+            6,
+            3,
+            0
+          ]
+        }
+      ],
+      "frozen_equilibrium_vector_sha256": "cf416815143f4bb4d3421188556a1393dbe1d5f46e2f34d90303ce87ab1c69d5",
+      "geometry_invariance": [
+        {
+          "frozen_low_g_vector_sha256": "cf416815143f4bb4d3421188556a1393dbe1d5f46e2f34d90303ce87ab1c69d5",
+          "frozen_low_g_vectors_unchanged": true,
+          "geometry_id": "equilibrium",
+          "threshold_reselection_matches_frozen": true
+        },
+        {
+          "frozen_low_g_vector_sha256": "cf416815143f4bb4d3421188556a1393dbe1d5f46e2f34d90303ce87ab1c69d5",
+          "frozen_low_g_vectors_unchanged": true,
+          "geometry_id": "isotropic_m005",
+          "threshold_reselection_matches_frozen": true
+        },
+        {
+          "frozen_low_g_vector_sha256": "cf416815143f4bb4d3421188556a1393dbe1d5f46e2f34d90303ce87ab1c69d5",
+          "frozen_low_g_vectors_unchanged": true,
+          "geometry_id": "isotropic_p005",
+          "threshold_reselection_matches_frozen": true
+        },
+        {
+          "frozen_low_g_vector_sha256": "cf416815143f4bb4d3421188556a1393dbe1d5f46e2f34d90303ce87ab1c69d5",
+          "frozen_low_g_vectors_unchanged": true,
+          "geometry_id": "tetragonal_m005",
+          "threshold_reselection_matches_frozen": true
+        },
+        {
+          "frozen_low_g_vector_sha256": "cf416815143f4bb4d3421188556a1393dbe1d5f46e2f34d90303ce87ab1c69d5",
+          "frozen_low_g_vectors_unchanged": true,
+          "geometry_id": "tetragonal_p005",
+          "threshold_reselection_matches_frozen": false
+        },
+        {
+          "frozen_low_g_vector_sha256": "cf416815143f4bb4d3421188556a1393dbe1d5f46e2f34d90303ce87ab1c69d5",
+          "frozen_low_g_vectors_unchanged": true,
+          "geometry_id": "shear_xy_m005",
+          "threshold_reselection_matches_frozen": true
+        },
+        {
+          "frozen_low_g_vector_sha256": "cf416815143f4bb4d3421188556a1393dbe1d5f46e2f34d90303ce87ab1c69d5",
+          "frozen_low_g_vectors_unchanged": true,
+          "geometry_id": "shear_xy_p005",
+          "threshold_reselection_matches_frozen": true
+        }
+      ],
+      "role": "three_by_three_by_three_conventional_fcc",
+      "supercell_matrix": [
+        [
+          -3,
+          3,
+          3
+        ],
+        [
+          3,
+          -3,
+          3
+        ],
+        [
+          3,
+          3,
+          -3
+        ]
+      ]
+    }
+  ],
+  "primitive_equilibrium_vectors": [
+    {
+      "eta_q_over_2kf": 0.7682627055029693,
+      "integer_vector": [
+        0,
+        0,
+        1
+      ]
+    },
+    {
+      "eta_q_over_2kf": 0.7682627055029693,
+      "integer_vector": [
+        0,
+        1,
+        0
+      ]
+    },
+    {
+      "eta_q_over_2kf": 0.7682627055029693,
+      "integer_vector": [
+        1,
+        0,
+        0
+      ]
+    },
+    {
+      "eta_q_over_2kf": 0.7682627055029693,
+      "integer_vector": [
+        1,
+        1,
+        1
+      ]
+    },
+    {
+      "eta_q_over_2kf": 0.8871133596609789,
+      "integer_vector": [
+        0,
+        1,
+        1
+      ]
+    },
+    {
+      "eta_q_over_2kf": 0.8871133596609789,
+      "integer_vector": [
+        1,
+        0,
+        1
+      ]
+    },
+    {
+      "eta_q_over_2kf": 0.8871133596609789,
+      "integer_vector": [
+        1,
+        1,
+        0
+      ]
+    }
+  ],
+  "protocol_revision": "S2-G2-AL-SCALE-GEOMETRY-20260811-R3",
+  "schema_version": 1
+}

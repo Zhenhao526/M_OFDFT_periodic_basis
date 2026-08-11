@@ -1,0 +1,129 @@
+{
+  "schema_version": 1,
+  "protocol_revision": "S2-G2-AL-SCALE-GEOMETRY-20260811-R3",
+  "status": "preregistered_no_execution",
+  "implementation_commit": "c6202428684273f2733fd2f864b1ca375c08b1cd",
+  "base_commit": "4298896727256ef60a72fdf0ee6ae904dabdaafc",
+  "scope": {
+    "stage": "S2",
+    "gates": ["G2a_periodic_tiling", "G2b_geometry_continuity_pilot"],
+    "material": "Al",
+    "atom_counts": [32, 108],
+    "analysis_only": true,
+    "new_solver_run_count": 0,
+    "periodic_tiling_diagnostic_only": true,
+    "localized_perturbation_reference_enabled": false,
+    "eggbox_force_enabled": false,
+    "full_large_cell_gram_enabled": false,
+    "mg_enabled": false,
+    "g2c_enabled": false,
+    "s3_enabled": false
+  },
+  "architecture_source": {
+    "preregistration_commit": "cdf90874702509543fb0856f5ed8fc8c9450d230",
+    "config_path": "config/S2_g2_architecture_candidates_r1.json",
+    "config_sha256": "c2714f193a4ed31732cb652ab7ebbcfacec848b90766e19fd32cd3353c7b8f00"
+  },
+  "selected_source": {
+    "evidence_commit": "b6985a16f073f7ccf0ce4f53572e91ca9165db5a",
+    "summary_path": "analysis/s2/g2_al1_basis_convergence_r2_20260811/summary.json",
+    "summary_sha256": "acc5a3aebefbb3452af7a9431b2d8f5e3c2608a89f07373f82e8b6300e879623",
+    "basis_spectrum_path": "analysis/s2/g2_al1_basis_convergence_r2_20260811/basis_spectrum.json",
+    "basis_spectrum_sha256": "e7bbd9d3e1ef2895aae887ed372537e910086d8c99a4567a3d1bf89e18c0d6cf",
+    "reused_common_path": "scripts/s2_g2_al1_basis_convergence_common_r2.py",
+    "reused_common_sha256": "b986518e5d6d0317a80d3940fa7c0fe5311cf286fd92ec8ce153d7a7690f7695",
+    "candidate_id": "r08_eta100_complementary",
+    "primitive_basis_count": 23,
+    "radial_count_per_atom": 8,
+    "alpha_bohr_minus2": [0.075, 0.15, 0.3, 0.6, 1.2, 2.4, 4.8, 9.6],
+    "low_g_eta_max": 1.0,
+    "primitive_half_space_vector_count": 7,
+    "primitive_real_low_g_count": 14,
+    "expected_primitive_metrics": {
+      "density_relative_l2": 0.005629965943475478,
+      "effective_condition_number": 204761.02444058028,
+      "combined_hartree_external_xc_error_mev_per_atom": 0.2702716932186239,
+      "fixed_kedf_error_mev_per_atom": 4.003408004841447
+    }
+  },
+  "primitive_source": {
+    "density_path": "analysis/s1/g1_three_layer_al_domain_followup_analysis_r5_20260810/state_snapshot/r1_p0/runs/S1-20260810-301/OUT.g1tlr1_al_v100_normal_common/chg.cube",
+    "density_sha256": "0f4cbb5229d217dc6cd3e4138a6bc3ccd3a6408b1baf4e343f9c52653a42ae86",
+    "density_size_bytes": 334367,
+    "result_path": "analysis/s1/g1_three_layer_al_domain_followup_analysis_r5_20260810/state_snapshot/r1_p0/runs/S1-20260810-301/result.json",
+    "result_sha256": "d7ef3e238b92ead5f5fb3a0533a3adfb7f005f9799ac72248f6f3219e11d898f",
+    "structure_path": "inputs/s1/eos_candidates/al/v100/ofdft/STRU",
+    "structure_sha256": "31279eb4f9a5a6ad20376271c79c03a8ead1676cb697b5065515041f6799d437",
+    "grid": [24, 24, 24],
+    "expected_electrons": 3.0,
+    "source_run_id": "S1-20260810-301",
+    "source_commit": "54019437539808c91f6c2768e3afcae08ea50439"
+  },
+  "runtime": {
+    "python": "/home/shenwei01/.local/venvs/m_ofdft-dftpy-2.2.0-py311/bin/python",
+    "resolved_python": "/home/shenwei01/xzh_node02_20260724/python/cpython-3.11.15-linux-x86_64-gnu/bin/python3.11",
+    "resolved_python_sha256": "8deffe5dd9ebcf98a062917a4e73bb8fbb7d5846f83dec01fb7506fd5d41c54e",
+    "environment_lock_path": "environment/dftpy_2.2.0_pylibxc_7.0.0.lock.json",
+    "environment_lock_sha256": "82f7d7440672249e99b6ef15b6bec0bbf51ae846f1dc775c9c58cca89d5746f4",
+    "versions": {"python": "3.11.15", "dftpy": "2.2.0", "pylibxc": "7.0.0", "numpy": "2.4.6", "scipy": "1.17.1", "ase": "3.29.0"},
+    "thread_environment": {"OMP_NUM_THREADS": "1", "MKL_NUM_THREADS": "1", "OPENBLAS_NUM_THREADS": "1"}
+  },
+  "pseudopotential": {
+    "path": "/home/shenwei01/.local/state/m_ofdft/pseudos/pseudodojo_oncvpsp_pbe_sr_823b18f/Al_std.upf",
+    "sha256": "b02eaa07c5d98f5eeae1bec4155854a7a94ea3635ca6b42e914f3f7ebd6912fb",
+    "size_bytes": 273049,
+    "role": "exact_local_component_of_the_registered_Al_KS_NL_UPF"
+  },
+  "geometry_cases": [
+    {"id": "equilibrium", "deformation": [[1.0, 0.0, 0.0], [0.0, 1.0, 0.0], [0.0, 0.0, 1.0]]},
+    {"id": "isotropic_m005", "deformation": [[0.995, 0.0, 0.0], [0.0, 0.995, 0.0], [0.0, 0.0, 0.995]]},
+    {"id": "isotropic_p005", "deformation": [[1.005, 0.0, 0.0], [0.0, 1.005, 0.0], [0.0, 0.0, 1.005]]},
+    {"id": "tetragonal_m005", "deformation": [[0.995, 0.0, 0.0], [0.0, 1.002509414234171, 0.0], [0.0, 0.0, 1.002509414234171]]},
+    {"id": "tetragonal_p005", "deformation": [[1.005, 0.0, 0.0], [0.0, 0.9975093361076329, 0.0], [0.0, 0.0, 0.9975093361076329]]},
+    {"id": "shear_xy_m005", "deformation": [[1.0, -0.005, 0.0], [0.0, 1.0, 0.0], [0.0, 0.0, 1.0]]},
+    {"id": "shear_xy_p005", "deformation": [[1.0, 0.005, 0.0], [0.0, 1.0, 0.0], [0.0, 0.0, 1.0]]}
+  ],
+  "cell_ladder": [
+    {"atom_count": 32, "role": "two_by_two_by_two_conventional_fcc", "supercell_matrix": [[-2, 2, 2], [2, -2, 2], [2, 2, -2]], "expected_half_space_low_g_count": 194},
+    {"atom_count": 108, "role": "three_by_three_by_three_conventional_fcc", "supercell_matrix": [[-3, 3, 3], [3, -3, 3], [3, 3, -3]], "expected_half_space_low_g_count": 654}
+  ],
+  "projection": {
+    "gauge": "complementary",
+    "charge_constraint": "exact_KKT_integral_equals_3_per_primitive_tile",
+    "integer_search_bound": 10,
+    "expanded_search_bound": 11,
+    "lstsq_rcond": 1e-13,
+    "rank_eigen_relative_cutoff": 1e-12,
+    "supercell_low_g_rule": "equilibrium_integer_vectors_frozen_for_all_geometries_no_reselection",
+    "reference_deformation_rule": "fixed_fractional_density_scaled_by_inverse_detF",
+    "supercell_rule": "exact_coset_periodic_tiling_of_primitive_quadrature_values",
+    "large_cell_operator_rule": "periodic_tiling_extensivity_from_recomputed_deformed_primitive_operators"
+  },
+  "acceptance": {
+    "electron_number_relative_error_strict_lt": 1e-10,
+    "equilibrium_density_relative_l2_strict_lt": 0.01,
+    "perturbed_density_relative_l2_p95_strict_lt": 0.02,
+    "minimum_density_floor_electron_per_bohr3": -1e-12,
+    "effective_condition_number_strict_lt": 100000000.0,
+    "component_energy_abs_error_max_mev_per_atom": 10.0,
+    "combined_energy_abs_error_max_mev_per_atom": 10.0,
+    "fixed_kedf_non_scf_total_energy_error_p95_mev_per_atom": 10.0,
+    "equivalent_supercell_energy_difference_max_mev_per_atom": 1.0,
+    "effective_coefficient_fraction_max": 0.3,
+    "required_primitive_basis_count": 23,
+    "required_primitive_effective_rank": 23,
+    "required_low_g_set_unchanged": true
+  },
+  "limitations": {
+    "localized_108_atom_ks_reference_validated": false,
+    "localized_perturbation_physics_validated": false,
+    "eggbox_energy_or_pseudoforce_validated": false,
+    "full_large_cell_gram_condition_validated": false,
+    "g2_overall_accepted": false
+  },
+  "allowed_scientific_dispositions": ["accepted_periodic_tiling_geometry_scale_pilot", "evidence_valid_geometry_scale_pilot_rejected"],
+  "output": {
+    "root": "analysis/s2/g2_al_scale_geometry_r3_20260811",
+    "files": ["README.md", "geometry_metrics.tsv", "low_g_sets.json", "runtime.json", "scale_metrics.tsv", "summary.json"]
+  }
+}
