@@ -2,8 +2,8 @@
 
 > 本文件是项目状态的唯一人工入口。任何人接手前先读本文件，再读项目书和当前阶段 README。  
 > 状态词仅使用：`not_started`、`in_progress`、`blocked`、`accepted`、`rejected`、`paused`。  
-> 更新时间：2026-08-11 18:47 CST
-> 文档版本：V4.4
+> 更新时间：2026-08-11 19:18 CST
+> 文档版本：V4.5
 
 ## 0. 十分钟上手摘要
 
@@ -14,11 +14,11 @@
 | 当前闸门 | G2a/G2b；先验证表示/算子正确性、规范唯一性和几何连续性 |
 | 当前负责人 | 远端账户 `shenwei01`；本轮执行与记录：Codex |
 | 当前工作分支 | `codex/r4-execution`；所有实现和计算均在远端服务器完成 |
-| 最近可用提交 | 收敛 R2 实现 `5eb3ae49`；预注册 `9e561bf4`；证据 `b6985a16`；主线合并 `5e1bcaa0` |
+| 最近可用提交 | 规模/几何 R3 实现 `c6202428`；预注册 `da16a237`；证据 `472b6c35`；主线合并 `c001cfde` |
 | 最近通过的数值 smoke | `S1-RUNTIME-SMOKE-20260805-074`：`storage_exact`，五类状态门全部 `accepted`；幂等重验返回 `accepted_committed` |
 | 最近通过的正式分析 | G1 acceptance policy R1：R3/R5 全量重放、17 行 gate、`accepted_g1_6_of_6`、新增 solver 0；证据 `d0386418` |
-| 当前阻塞 | 选定的 23 函数互补候选仅在 Al 单原子上通过，32/108 原子几何连续性和规模稳定性尚未验证 |
-| 下一项唯一动作 | 新 revision 冻结 `r08_eta100_complementary`，执行 32/108 原子 G2a/G2b 几何连续性与算子误差 pilot |
+| 当前阻塞 | 周期平铺的 32/108 原子规模门已通过；尚缺局域扰动的独立 108 原子参考、eggbox/伪力连续性和真实大胞 Gram 稳定性 |
+| 下一项唯一动作 | 新 revision 构造局域扰动 108 原子参考，执行 eggbox/秩连续性 pilot；通过前不进入 G2c 或 S3 |
 
 ### 必读文件
 
@@ -45,6 +45,7 @@
 21. [G1 位移/应变 analysis-only R2 协议](S1_G1_DISPLACEMENT_STRAIN_REFERENCE_ANALYSIS_R2_PROTOCOL.md)、`analysis/s1/g1_displacement_strain_reference_analysis_r2_20260810/README.md`
 22. [G1 Al 1% 验收协议](S1_G1_AL_ACCEPTANCE_POLICY_R1_PROTOCOL.md)、`analysis/s1/g1_al_acceptance_policy_r1_20260811/{README.md,summary.json,gates.tsv,analysis_revision.json}`
 23. 三层 R3 历史拒绝：`analysis/s1/g1_three_layer_analysis_r3_20260810/`；R5 应变/端点闭包：`analysis/s1/g1_three_layer_al_domain_followup_analysis_r5_20260810/`
+24. [S2 规模/几何 R3 协议](S2_G2_AL_SCALE_GEOMETRY_R3_PROTOCOL.md)、`analysis/s2/g2_al_scale_geometry_r3_20260811/{README.md,summary.json,geometry_metrics.tsv,scale_metrics.tsv}`
 
 ### 最近可运行命令
 
@@ -60,6 +61,7 @@ taskset -c 10 /home/shenwei01/.local/venvs/m_ofdft-dftpy-2.2.0-py311/bin/python 
 /usr/bin/python3 -s /home/shenwei01/M_OFDFT_g1_regen10_r1_20260810/scripts/validate_s1_g1_regeneration_10_r2.py --require-committed
 /usr/bin/python3 -s /home/shenwei01/wt_g1_displacement_r1_20260810/scripts/validate_s1_g1_displacement_strain_reference_r2.py --require-committed
 cd /home/shenwei01/wt_g1_al_acceptance_policy_r2_20260811 && env PYTHONDONTWRITEBYTECODE=1 PYTHONNOUSERSITE=1 python3 -s -B scripts/validate_s1_g1_al_acceptance_policy_r1.py --require-committed
+cd /home/shenwei01/wt_s2_g2_al_scale_geometry_r3_final_20260811 && env OMP_NUM_THREADS=1 MKL_NUM_THREADS=1 OPENBLAS_NUM_THREADS=1 PYTHONDONTWRITEBYTECODE=1 PYTHONNOUSERSITE=1 /home/shenwei01/.local/venvs/m_ofdft-dftpy-2.2.0-py311/bin/python -s -B scripts/validate_s2_g2_al_scale_geometry_r3.py --require-committed
 python3 -m unittest -q tests.unit.test_s1_g1_thermodynamic_label_audit_r4_generator tests.unit.test_s1_g1_thermodynamic_label_audit_r4_parser tests.unit.test_s1_g1_thermodynamic_label_audit_r4_validator tests.unit.test_s1_g1_thermodynamic_label_audit_r4_analysis tests.unit.test_s1_g1_thermodynamic_label_audit_r4_runner tests.unit.test_s1_g1_thermodynamic_label_audit_r4_launcher
 ./scripts/run_smoke.sh S0-YYYYMMDD-NNN
 ```
@@ -154,6 +156,8 @@ python3 -m unittest -q tests.unit.test_s1_g1_thermodynamic_label_audit_r4_genera
 - [x] 完成 Al 三层 R3：旧预注册 `|ΔV0|≤0.5%` 下 `0.7660177%` 被如实判为 `evidence_valid_scientific_gate_rejected`；R5 复用 351–358 的 8/8 结果确认应变最大 `0.238321 meV/atom`，端点 k/cutoff/压力门全部通过；
 - [x] 根据 2026-08-11 用户授权，以 analysis-only policy R1 将 Al `|ΔV0|` 门修订为 `≤1%`，完整重放 R3/R5 且不启动 solver；17/17 行门通过，committed validator 返回 `accepted_g1_6_of_6`，证据 `d0386418`；G1 从 5/6 更新为 6/6；
 - [x] 限定最终范围为 Al ABACUS 同引擎、登记 PP 对的 scheme+construction suitability bound；Mg 仅 diagnostic，OF-L↔KS-L 保持 error portrait，第二 KS/QE、projector-only 因果和 G4 力/应力均未关闭；HQLPP/QE binding smoke 失败冻结、禁止重试、贡献 0；
+- [x] 固定 23 函数 `r08_eta100_complementary`，完成 7 个原胞几何与 32/108 原子共 14 个周期平铺规模案例；7/7、14/14 accepted，committed validator 与 8/8 回归通过，新增 solver 0；
+- [x] 32/108 原子冻结低 G 集分别为 194/654 个半空间整数向量，总基函数数为 645/2173；电子数、逐原子算子广延性和系数规模门全部通过；
 - [x] 扩大调研至原包 8 篇核心文献、扩展包 13 篇全文/241 页、1 篇网页全文及 20 余篇方法/软件补充证据；
 - [x] 识别 AMD-OFDFT 2014 直接先例，收窄“原子中心密度 + 变分 + Pulay 力”的创新主张；
 - [x] 完成闸门式项目再评估：整体 66/100、S0–S4A 核心 73/100、全范围 S0–S7 约 43/100；
@@ -166,7 +170,7 @@ python3 -m unittest -q tests.unit.test_s1_g1_thermodynamic_label_audit_r4_genera
 从最终 G1 证据 `d0386418` 及其主线合并 `da15ac0` 开始；全部历史 external state 只读，不删除、不重启、不重试历史 ID：
 
 1. G1 六个子项已 6/6 accepted；复验必须使用各登记 source worktree 的 committed validator，不得改写历史 R3 0.5% rejection；
-2. S2/G2 是唯一下一动作：先冻结混合密度基候选、量化门和全新 ID，再开始任何 solver；
+2. S2/G2 周期平铺规模/几何 pilot 已 accepted；下一动作是以新 revision 建立局域扰动 108 原子独立参考并验证 eggbox/秩连续性；
 3. QE/第二 KS、Mg 硬比较、HQLPP 与 projector-only 因果若继续，必须使用新协议；它们属于外推/诊断限制，不得改写 G1 历史；
 4. S2 前保留所有 G1 state、失败 smoke 和 analysis evidence 为只读，不再消费 G1 ID。
 
@@ -176,7 +180,7 @@ python3 -m unittest -q tests.unit.test_s1_g1_thermodynamic_label_audit_r4_genera
 |---|---|---|---|---|---|---|---|
 | S0 | 初始化与复现协议 | `accepted` | 2026-08-05 | 2026-08-05 | G0 | `docs/G0_ACCEPTANCE.md`; `analysis/s1/runtime_relocation_equivalence_20260805/` | 数值/归档恢复结论保留；登记的 namespace runtime-isolation 路径已验收，原归档本身不称 hermetic |
 | S1 | 平面波基准闭环 | `accepted` | 2026-08-05 | 2026-08-11 | G1 | 前五项证据同前；三层 R3 `73b3589`；R5 `5401943`；1% policy `d0386418` | G1 6/6；进入 S2 |
-| S2 | 混合密度基表示 | `in_progress` | 2026-08-11 | — | G2 | 架构 `cdf90874`；Al1 pilot `269fe3a9`；收敛 R2 `b6985a16` | 选定候选进入 32/108 原子连续性 pilot |
+| S2 | 混合密度基表示 | `in_progress` | 2026-08-11 | — | G2 | 架构 `cdf90874`；Al1 pilot `269fe3a9`；收敛 R2 `b6985a16`；规模/几何 R3 `472b6c35` | 周期平铺规模门已过；下一步局域 108 原子参考与 eggbox/秩连续性 |
 | S3 | 固定 KEDF 自洽求解 | `not_started` | — | — | G3 | — | 等待 G2 |
 | S4A | 固定晶胞解析力 | `not_started` | — | — | G4A | — | 等待 G3 |
 | S4B | 晶胞应力 | `not_started` | — | — | G4B | — | 等待 G4A |
@@ -277,7 +281,11 @@ python3 -m unittest -q tests.unit.test_s1_g1_thermodynamic_label_audit_r4_genera
 - 收敛 R2 以实现 `5eb3ae49`、预注册 `9e561bf4`、证据 `b6985a16` 闭合：4/6/8/10 个径向函数 × 6 个低 G 壳层 × 2 种规范，共 48 个压缩候选；24/24 显式/互补对通过等价性门，25 个候选、其中 15 个互补候选通过全部原门。
 - 最小合格互补候选为 `r08_eta100_complementary`：8 个径向函数 + 14 个实低 G 函数 + 1 个常数，共 23 个函数；密度 L2 `0.562997%`、最小密度 `0.00221312 e/bohr^3`、条件数 `204761`、三算子合计误差 `0.270272 meV/atom`、固定 WT 误差 `4.003408 meV/atom`。
 - 同空间显式规范的条件数是互补规范的 `35.5894` 倍，进一步支持把互补规范作为后续架构候选；本结论只关闭 Al 单原子表示/算子收敛子步骤。
-- 当前唯一动作：新 revision 固定 `r08_eta100_complementary`，在 32/108 原子上验证几何连续性、规模稳定性和同口径算子误差；通过前不进入 G2c 或 S3。
+- 规模/几何 R3 以实现 `c6202428`、预注册 `da16a237`、证据 `472b6c35` 闭合：固定同一 23 函数候选，原胞平衡态加六个 ±0.5% 各向同性/四方/剪切变形为 7/7 accepted；32/108 原子周期平铺为 14/14 accepted，新增 solver 0。
+- 七个原胞案例的密度 L2 P95 为 `0.573791%`，固定 WT 误差 P95 为 `4.035124 meV/atom`；有效秩恒为 23，最大条件数 `220049.327`，电子数相对误差均约 `3.2e-13`。
+- 32/108 原子各自冻结平衡态整数低 G 集（194/654 个半空间向量），全部几何保持同一函数列；基函数总数为 645/2173，系数占网格点比例约 `0.1458%/0.1455%`，逐原子算子差最大仅浮点舍入量级。
+- 本结论只接受完美周期平铺的几何连续性与规模稳定性；阈值重选跨界被保留为诊断，不允许改变冻结基组。局域缺陷 108 原子参考、eggbox/伪力、完整大胞 Gram 与 G2 overall 均未关闭。
+- 当前唯一动作：新 revision 构造局域扰动 108 原子独立参考，验证 eggbox/秩连续性；通过前不进入 G2c 或 S3。
 
 ## 4. 闸门决策记录
 
@@ -306,6 +314,7 @@ python3 -m unittest -q tests.unit.test_s1_g1_thermodynamic_label_audit_r4_genera
 | 2026-08-10 | G1/three-layer analysis R3 | `rejected` | Codex | 执行证据有效；旧预注册 0.5% 门下 Al `|ΔV0|=0.7660177%` 为唯一 hard rejection | `analysis/s1/g1_three_layer_analysis_r3_20260810/`；`73b3589` | 保留历史拒绝；不得事后改写旧阈值 |
 | 2026-08-10 | G1/three-layer follow-up R5 | `accepted` | Codex | 351–358 8/8；4 个 strain 和两个端点 k/cutoff/压力门全通过；0 新重算 | `analysis/s1/g1_three_layer_al_domain_followup_analysis_r5_20260810/`；`5401943` | 排除小应变与端点欠收敛，不单独覆盖 EOS rejection |
 | 2026-08-11 | G1/Al acceptance policy R1 | `accepted` | Codex | 用户授权 `|ΔV0|≤1%`；R3/R5 全量重放、17/17 gate、0 solver；范围限制全部硬编码 | `analysis/s1/g1_al_acceptance_policy_r1_20260811/`；`d0386418` | 第六项关闭；G1 6/6，S1 accepted；下一闸门 G2 |
+| 2026-08-11 | G2a/G2b periodic-tiling scale/geometry R3 | `accepted` | Codex | 23 函数固定；原胞几何 7/7、32/108 原子平铺 14/14；密度 L2 P95 `0.573791%`、WT P95 `4.035124 meV/atom`；0 solver | `analysis/s2/g2_al_scale_geometry_r3_20260811/`；`472b6c35` | 仅关闭周期平铺规模/几何子门；G2 overall 保持 in_progress，转入局域 108 原子/eggbox/秩连续性 |
 
 ## 5. 实验台账
 
@@ -400,8 +409,9 @@ python3 -m unittest -q tests.unit.test_s1_g1_thermodynamic_label_audit_r4_genera
 | G1 总体 | 6/6 闭合 | 6/6 | 前五项证据；R3 `73b3589`；R5 `5401943`；policy `d0386418` | `accepted` |
 | runtime-relocation 六点科学/R8 等价 | 6/6 `storage_exact`；R8 替换结论 6/6 不变 | `|dE|<0.1 meV/atom`、`|dP|<0.02 GPa`；6/6 不翻转 | S1-20260805-113–118；`a01ac70` | `accepted` |
 | whole-runtime 旧前缀隔离 | 074 + 六点均为成功旧访问/执行/映射 0、未知探针 0；每点恰有 22 个登记 ENOENT | 同左；登记探针计数必须精确 | `analysis/s1/runtime_relocation_smoke_20260805/`; `analysis/s1/runtime_relocation_equivalence_20260805/` | 限定 namespace 部署路径 `accepted` |
-| 密度投影 L2 | — | 平衡 <1% | — | 未测 |
-| 固定 KEDF 能量差 P95 | — | <10 meV/atom | — | 未测 |
+| S2 固定 23 函数密度投影 L2 P95 | `0.573791%`（7 个原胞几何；32/108 平铺同值） | 扰动 `<2%`；平衡 `<1%` | 规模/几何 R3 `472b6c35` | 通过；仅周期平铺域 |
+| S2 固定 KEDF 能量差 P95 | `4.035124 meV/atom` | `<10 meV/atom` | 同上 | 通过；仅周期平铺域 |
+| S2 32/108 基组规模 / 系数占比 | `645/2173`；`0.145806%/0.145547%` | 占比 `<30%` 且逐原子误差稳定 | 同上 | 通过 |
 | 自洽成功率 | — | >95% | — | 未测 |
 | 力有限差分最大偏差 | — | <1e-3 eV/Å | — | 未测 |
 | 应力有限差分最大偏差 | — | <0.05 GPa | — | 未测 |
@@ -497,18 +507,19 @@ python3 -m unittest -q tests.unit.test_s1_g1_thermodynamic_label_audit_r4_genera
 | 2026-08-11 | D-051 | S2 采用四路线、三胞规模的可淘汰架构竞赛，并先做 G2a/G2b | 显式 Gaussian+PW 存在线性相关和性能负证据；互补/范围分离更有希望，纯 PW/FFT 必须保留为共同精度参考 | 预设显式混合为最终架构，或直接进入 ML/自洽优化 | 预注册 12 个 case；Al 先行，Mg/G2c/S3 继续受闸门约束 |
 | 2026-08-11 | D-052 | 接受 Al 单原子首层 pilot 的有效负结果，下一轮只以新 revision 扩展收敛梯级 | 纯原子路线多门失败；两条低 G 路线密度和三算子门通过但 WT 误差约 15.04 meV/atom；互补化显著改善条件数 | 在原 revision 内加 G 或放宽 10 meV 门，或把密度通过误报为 G2a 通过 | `269fe3a9` 永久只读；G2 保持 in_progress，不进入 32/108 原子、Mg、G2c 或 S3 |
 | 2026-08-11 | D-053 | 选择 `r08_eta100_complementary` 作为后续规模/连续性候选 | 48 候选全矩阵中它是按“基函数数→条件数→ID”排序的最小合格互补方案；23 函数且 WT 误差 4.0034 meV/atom | 选择自由度更大的点，或只按单一能量误差挑选显式规范 | 单原子 G2a 收敛子步骤 accepted；G2 overall 仍 in_progress，下一闸门为 32/108 原子连续性 |
+| 2026-08-11 | D-054 | 接受固定 23 函数候选的周期平铺规模/几何 pilot，但不把它外推为局域大胞或完整 G2 通过 | 7/7 原胞几何与 14/14 规模案例通过；32/108 冻结低 G 集、电子数、逐原子算子和系数规模稳定 | 在每个变形上重新选 G，或把完美平铺冒充局域 108 原子参考 | 固定 G 集保持不变；G2 overall 继续 in_progress，下一闸门为局域参考、eggbox/伪力和秩连续性 |
 
 ## 9. 最近可用状态
 
 此节必须始终指向一个可运行、可复现的状态；若暂无则明确写“无”。
 
-- 最近可用状态：S2 Al1 收敛 worktree `/home/shenwei01/wt_s2_g2_al1_convergence_r2_20260811` clean@`b6985a16`；主线 merge 为 `5e1bcaa0`。
+- 最近可用状态：S2 规模/几何 worktree `/home/shenwei01/wt_s2_g2_al_scale_geometry_r3_final_20260811` clean@`472b6c35`；主线 merge 为 `c001cfde`。
 - 对应环境：`environment/` 的 ABACUS v3.11.0-beta.5 CPU + OpenMPI 5.0.10 + LibXC 7.0.0；独立 OF 环境为 `/home/shenwei01/.local/venvs/m_ofdft-dftpy-2.2.0-py311`，身份见锁文件。
-- 已通过测试：S2 架构 R1 7/7；Al1 pilot 7/7；收敛 R2 8/8、48/48 候选、24/24 规范对、6/6 输出逐字重建，committed validator accepted；全部为 analysis-only，新增 solver 0。
+- 已通过测试：S2 架构 R1 7/7；Al1 pilot 7/7；收敛 R2 8/8；规模/几何 R3 为 8/8 回归、7/7 原胞几何、14/14 规模案例、6/6 输出逐字重建，committed validator accepted；全部为 analysis-only，新增 solver 0。
 - 已知失败/暂停：标签 R1/R2/R3、DFTpy R1、再生成 R1、位移/应变 R1 analyzer、三层旧 R3 0.5% rejection 与 HQLPP/QE binding smoke 的历史链均保持不可变；后续验收链已关闭 G1，失败记录不计当前 accepted 分母。
-- 恢复方法：登录后检查主 HEAD `5e1bcaa0`（或其仅含 V4.4 文档更新的后继）和 clean 工作树；在登记收敛 worktree 以冻结 DFTpy Python 运行 `validate_s2_g2_al1_basis_convergence_r2.py --require-committed`。所有 G1 与既有 S2 evidence 只读。
+- 恢复方法：登录后检查主 HEAD `c001cfde`（或其仅含 V4.5 文档更新的后继）和 clean 工作树；在登记规模/几何 worktree 以冻结 DFTpy Python 运行 `validate_s2_g2_al_scale_geometry_r3.py --require-committed`。所有 G1 与既有 S2 evidence 只读。
 - 同步方法：node01 对 `codex/r4-execution` 相对 GitHub 已知基线创建并验证增量 bundle，经跳板机传至本机；三端 SHA-256 一致后 fast-forward 推送同名分支，最后以 `git ls-remote` 核验目标 SHA。
-- 当前交接点：Al1 收敛梯级已选出 23 函数互补候选；下一动作是新 revision 的 32/108 原子几何连续性 pilot。Mg、ML、自洽优化和 G2c 尚未启动。
+- 当前交接点：固定 23 函数候选已通过周期平铺 32/108 原子规模/几何 pilot；下一动作是新 revision 的局域扰动 108 原子参考与 eggbox/秩连续性。Mg、ML、自洽优化和 G2c 尚未启动。
 
 ## 10. 交接说明
 
@@ -680,6 +691,7 @@ python3 -m unittest -q tests.unit.test_s1_g1_thermodynamic_label_audit_r4_genera
 | 2026-08-11 17:52 CST | S2/G2 架构预注册 | Codex | S2 | 实现 `f84c31b0`；预注册 `cdf90874`；主线 `ad402466` | 7/7 单测；12/12 case；13/13 生成物；validator accepted；0 solver | 四路线×三胞规模已冻结；下一动作是 Al 1 原子投影/算子 pilot |
 | 2026-08-11 18:12 CST | S2 Al1 投影/算子 pilot | Codex | S2 | 实现 `022551e4`；预注册 `8f00abf3`；证据 `269fe3a9`；主线 `903f9f28` | 7/7 单测；committed validator accepted；5 输出重建；0 solver | 纯原子淘汰；低 G 两路线仅 WT 门失败；下一动作新 revision 收敛梯级 |
 | 2026-08-11 18:47 CST | S2 Al1 基组收敛梯级 | Codex | S2 | 实现 `5eb3ae49`；预注册 `9e561bf4`；证据 `b6985a16`；主线 `5e1bcaa0` | 8/8 单测；48 候选；24/24 规范对；committed validator accepted；0 solver | 选定 23 函数互补候选；下一动作 32/108 原子连续性 pilot |
+| 2026-08-11 19:18 CST | S2 固定 23 函数规模/几何 pilot | Codex | S2 | 实现 `c6202428`；预注册 `da16a237`；证据 `472b6c35`；主线 `c001cfde` | 8/8 回归；7/7 原胞几何；32/108 共 14/14；committed validator accepted；0 solver | 周期平铺子门 accepted；下一动作局域 108 原子参考与 eggbox/秩连续性 |
 
 ## 11. 文档变更记录
 
@@ -720,3 +732,4 @@ python3 -m unittest -q tests.unit.test_s1_g1_thermodynamic_label_audit_r4_genera
 | 2026-08-11 | V4.2 | Codex | 启动 S2/G2；冻结纯 PW/FFT、原子+FFT、显式低 G、互补/范围分离四路线与 1/32/108 原子 12-case 架构合同；记录 0 solver 预注册及下一步 Al 1 原子 pilot |
 | 2026-08-11 | V4.3 | Codex | 记录 Al 单原子四路线 analysis-only pilot：纯原子路线多门失败，显式/互补低 G 路线通过密度与三算子但固定 WT 误差超门；保留有效负证据并切换到新 revision 收敛梯级 |
 | 2026-08-11 | V4.4 | Codex | 记录 Al 单原子 48 候选收敛矩阵：原 10 meV WT 门不变，选定 23 函数 `r08_eta100_complementary`；关闭单原子收敛子步骤并把唯一下一动作切换为 32/108 原子连续性 pilot |
+| 2026-08-11 | V4.5 | Codex | 固定 23 函数候选，记录 7/7 原胞几何与 32/108 原子 14/14 周期平铺规模 pilot；关闭周期平铺规模/几何子门，但保留局域参考、eggbox/伪力、完整大胞 Gram 和 G2 overall 为未关闭 |
