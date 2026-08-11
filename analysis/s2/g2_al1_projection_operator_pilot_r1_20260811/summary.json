@@ -1,0 +1,180 @@
+{
+  "accepted_candidates": [],
+  "atom_count": 1,
+  "candidate_count": 4,
+  "evidence_valid": true,
+  "gate": "G2a_pilot",
+  "material": "Al",
+  "metrics": [
+    {
+      "basis_count": 13824,
+      "candidate_id": "pw_fft_reference",
+      "combined_hartree_external_xc_error_mev_per_atom": 0.0,
+      "density_max": 0.03163787730777302,
+      "density_min": 0.001725171078775626,
+      "density_relative_l2": 0.0,
+      "density_sha256_float64_le": "0f5d3c21ff3c1d563004d694ce62e73aab3d417eb046c1558a8e2ee2f046a087",
+      "effective_condition_number": 1.0,
+      "effective_rank": 13824,
+      "electron_count": 2.999999999971475,
+      "electron_number_relative_error": 9.50839407209969e-12,
+      "energies_ev_per_atom": {
+        "external": 6.251651957069426,
+        "fixed_kedf": 22.300275610080416,
+        "hartree": 0.09860660494199967,
+        "xc": -21.781068364935027
+      },
+      "errors_mev_per_atom": {
+        "external": 0.0,
+        "fixed_kedf": 0.0,
+        "hartree": 0.0,
+        "xc": 0.0
+      },
+      "failed_gates": [],
+      "gates": {
+        "combined_hartree_external_xc": true,
+        "condition_number": true,
+        "density_l2": true,
+        "electron_number": true,
+        "external": true,
+        "fixed_kedf": true,
+        "hartree": true,
+        "nonnegative_density": true,
+        "xc": true
+      },
+      "status": "accepted_reference"
+    },
+    {
+      "basis_count": 6,
+      "candidate_id": "atomic_fft",
+      "combined_hartree_external_xc_error_mev_per_atom": 74.45529155571197,
+      "density_max": 0.030224196188982932,
+      "density_min": -0.002265233114742443,
+      "density_relative_l2": 0.06666867001166633,
+      "density_sha256_float64_le": "5168c9871bd0f5df5598653822cbb0c59774d4bd96c9ee614ebc02d361dc29a6",
+      "effective_condition_number": 18307.749256750463,
+      "effective_rank": 6,
+      "electron_count": 2.999999999999549,
+      "electron_number_relative_error": 1.5039821240255455e-13,
+      "energies_ev_per_atom": {
+        "external": 6.34409337078443,
+        "fixed_kedf": 22.82806758509491,
+        "hartree": 0.06409351381841898,
+        "xc": -21.76454139597074
+      },
+      "errors_mev_per_atom": {
+        "external": 92.44141371500359,
+        "fixed_kedf": 527.7919750144946,
+        "hartree": -34.51309112358069,
+        "xc": 16.52696896428907
+      },
+      "failed_gates": [
+        "density_l2",
+        "nonnegative_density",
+        "hartree",
+        "external",
+        "xc",
+        "combined_hartree_external_xc",
+        "fixed_kedf"
+      ],
+      "gates": {
+        "combined_hartree_external_xc": false,
+        "condition_number": true,
+        "density_l2": false,
+        "electron_number": true,
+        "external": false,
+        "fixed_kedf": false,
+        "hartree": false,
+        "nonnegative_density": false,
+        "xc": false
+      },
+      "status": "rejected_pilot"
+    },
+    {
+      "basis_count": 21,
+      "candidate_id": "atomic_low_g_explicit",
+      "combined_hartree_external_xc_error_mev_per_atom": 0.364300788721017,
+      "density_max": 0.03132606737451942,
+      "density_min": 0.0009888340193514034,
+      "density_relative_l2": 0.0057709925327212456,
+      "density_sha256_float64_le": "717ed83a5b4177e28279c89bfe2af6be670fd4fe9eb5a97b57a0ce43eec565f7",
+      "effective_condition_number": 101280.17506972085,
+      "effective_rank": 21,
+      "electron_count": 2.9999999999990505,
+      "electron_number_relative_error": 3.1648757688647794e-13,
+      "energies_ev_per_atom": {
+        "external": 6.2520941159272665,
+        "fixed_kedf": 22.315313483045333,
+        "hartree": 0.09856600787023288,
+        "xc": -21.78110562593238
+      },
+      "errors_mev_per_atom": {
+        "external": 0.4421588578402691,
+        "fixed_kedf": 15.037872964917653,
+        "hartree": -0.04059707176679028,
+        "xc": -0.0372609973524618
+      },
+      "failed_gates": [
+        "fixed_kedf"
+      ],
+      "gates": {
+        "combined_hartree_external_xc": true,
+        "condition_number": true,
+        "density_l2": true,
+        "electron_number": true,
+        "external": true,
+        "fixed_kedf": false,
+        "hartree": true,
+        "nonnegative_density": true,
+        "xc": true
+      },
+      "status": "rejected_pilot"
+    },
+    {
+      "basis_count": 21,
+      "candidate_id": "atomic_low_g_complementary",
+      "combined_hartree_external_xc_error_mev_per_atom": 0.3643008707212292,
+      "density_max": 0.03132606737284342,
+      "density_min": 0.0009888339917637112,
+      "density_relative_l2": 0.005770992532721247,
+      "density_sha256_float64_le": "a1dc8b2b46e4750d33f2b17026c286ac0c1494cac9519f4e4dce87399eb25b66",
+      "effective_condition_number": 6493.93375868378,
+      "effective_rank": 21,
+      "electron_count": 2.999999999999049,
+      "electron_number_relative_error": 3.16931666096328e-13,
+      "energies_ev_per_atom": {
+        "external": 6.252094116001761,
+        "fixed_kedf": 22.315313483427296,
+        "hartree": 0.09856600786891041,
+        "xc": -21.78110562592355
+      },
+      "errors_mev_per_atom": {
+        "external": 0.4421589323344577,
+        "fixed_kedf": 15.03787334688056,
+        "hartree": -0.040597073089260194,
+        "xc": -0.03726098852396831
+      },
+      "failed_gates": [
+        "fixed_kedf"
+      ],
+      "gates": {
+        "combined_hartree_external_xc": true,
+        "condition_number": true,
+        "density_l2": true,
+        "electron_number": true,
+        "external": true,
+        "fixed_kedf": false,
+        "hartree": true,
+        "nonnegative_density": true,
+        "xc": true
+      },
+      "status": "rejected_pilot"
+    }
+  ],
+  "new_solver_run_count": 0,
+  "next_action": "new_revision_expand_basis_or_low_g_without_modifying_this_pilot",
+  "protocol_revision": "S2-G2-AL1-PROJECTION-OPERATOR-PILOT-20260811-R1",
+  "schema_version": 1,
+  "stage": "S2",
+  "status": "evidence_valid_no_candidate_passes_all_g2a_pilot_gates"
+}
