@@ -1,8 +1,8 @@
 {
   "schema_version": 1,
   "protocol_revision": "S2-G2-AL1-BASIS-CONVERGENCE-20260811-R2",
-  "status": "implementation_pending_preregistration",
-  "implementation_commit": "__FREEZE_IMPLEMENTATION_COMMIT__",
+  "status": "preregistered_no_execution",
+  "implementation_commit": "5eb3ae49c9889bf83d7cabae32335ff732122f47",
   "base_commit": "9c774e8c30142c1351f43cda7b61c145ff4964c1",
   "architecture_preregistration_commit": "cdf90874702509543fb0856f5ed8fc8c9450d230",
   "scope": {
