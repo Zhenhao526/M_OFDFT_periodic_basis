@@ -1,0 +1,104 @@
+{
+  "schema_version": 1,
+  "protocol_revision": "S2-G2-AL1-PROJECTION-OPERATOR-PILOT-20260811-R1",
+  "status": "preregistered_no_execution",
+  "implementation_commit": "022551e4d15e75f95431c0a07db09c022b09a03e",
+  "base_commit": "0c0cf82b6b051e4f0dbf421911569ef5f8298afd",
+  "architecture_preregistration_commit": "cdf90874702509543fb0856f5ed8fc8c9450d230",
+  "scope": {
+    "stage": "S2",
+    "gate": "G2a_pilot",
+    "material": "Al",
+    "atom_count": 1,
+    "analysis_only": true,
+    "new_solver_run_count": 0,
+    "mg_enabled": false,
+    "ml_enabled": false,
+    "self_consistent_optimization_enabled": false
+  },
+  "source": {
+    "density_path": "analysis/s1/g1_three_layer_al_domain_followup_analysis_r5_20260810/state_snapshot/r1_p0/runs/S1-20260810-301/OUT.g1tlr1_al_v100_normal_common/chg.cube",
+    "density_sha256": "0f4cbb5229d217dc6cd3e4138a6bc3ccd3a6408b1baf4e343f9c52653a42ae86",
+    "density_size_bytes": 334367,
+    "result_path": "analysis/s1/g1_three_layer_al_domain_followup_analysis_r5_20260810/state_snapshot/r1_p0/runs/S1-20260810-301/result.json",
+    "result_sha256": "d7ef3e238b92ead5f5fb3a0533a3adfb7f005f9799ac72248f6f3219e11d898f",
+    "structure_path": "inputs/s1/eos_candidates/al/v100/ofdft/STRU",
+    "structure_sha256": "31279eb4f9a5a6ad20376271c79c03a8ead1676cb697b5065515041f6799d437",
+    "grid": [24, 24, 24],
+    "expected_electrons": 3.0,
+    "source_run_id": "S1-20260810-301",
+    "source_commit": "54019437539808c91f6c2768e3afcae08ea50439"
+  },
+  "runtime": {
+    "python": "/home/shenwei01/.local/venvs/m_ofdft-dftpy-2.2.0-py311/bin/python",
+    "resolved_python": "/home/shenwei01/xzh_node02_20260724/python/cpython-3.11.15-linux-x86_64-gnu/bin/python3.11",
+    "resolved_python_sha256": "8deffe5dd9ebcf98a062917a4e73bb8fbb7d5846f83dec01fb7506fd5d41c54e",
+    "environment_lock_path": "environment/dftpy_2.2.0_pylibxc_7.0.0.lock.json",
+    "environment_lock_sha256": "82f7d7440672249e99b6ef15b6bec0bbf51ae846f1dc775c9c58cca89d5746f4",
+    "versions": {
+      "python": "3.11.15",
+      "dftpy": "2.2.0",
+      "pylibxc": "7.0.0",
+      "numpy": "2.4.6",
+      "scipy": "1.17.1",
+      "ase": "3.29.0"
+    },
+    "thread_environment": {
+      "OMP_NUM_THREADS": "1",
+      "MKL_NUM_THREADS": "1",
+      "OPENBLAS_NUM_THREADS": "1"
+    }
+  },
+  "pseudopotential": {
+    "path": "/home/shenwei01/.local/state/m_ofdft/pseudos/pseudodojo_oncvpsp_pbe_sr_823b18f/Al_std.upf",
+    "sha256": "b02eaa07c5d98f5eeae1bec4155854a7a94ea3635ca6b42e914f3f7ebd6912fb",
+    "size_bytes": 273049,
+    "role": "exact_local_component_of_the_registered_Al_KS_NL_UPF"
+  },
+  "candidate_order": [
+    "pw_fft_reference",
+    "atomic_fft",
+    "atomic_low_g_explicit",
+    "atomic_low_g_complementary"
+  ],
+  "projection": {
+    "atomic_basis_family": "periodic_minimum_image_even_tempered_s_gaussians",
+    "alpha_bohr_minus2": [0.15, 0.3, 0.6, 1.2, 2.4, 4.8],
+    "low_g_eta_max": 1.0,
+    "integer_search_bound": 3,
+    "half_space_rule": "first_nonzero_integer_component_positive",
+    "include_cos_and_sin_for_each_half_space_vector": true,
+    "explicit_atomic_functions_are_zero_average": true,
+    "complementary_atomic_functions_are_projected_out_of_constant_and_low_g": true,
+    "charge_constraint": "exact_KKT_integral_equals_3",
+    "lstsq_rcond": 1e-13,
+    "rank_eigen_relative_cutoff": 1e-12,
+    "development_probe_is_not_formal_evidence": true
+  },
+  "operators": {
+    "hartree": "DFTpy_2.2.0_HARTREE",
+    "external": "DFTpy_2.2.0_LocalPseudo_exact_Al_std_UPF_local_component",
+    "xc": "DFTpy_2.2.0_LibXC_PBE",
+    "fixed_kedf": "DFTpy_2.2.0_WT_alpha_5_over_6_beta_5_over_6_rho0_none",
+    "energy_unit": "eV_per_atom"
+  },
+  "acceptance": {
+    "electron_number_relative_error_strict_lt": 1e-10,
+    "density_relative_l2_strict_lt": 0.01,
+    "minimum_density_floor_electron_per_bohr3": -1e-12,
+    "effective_condition_number_strict_lt": 100000000.0,
+    "hartree_abs_error_strict_lt_mev_per_atom": 10.0,
+    "external_abs_error_strict_lt_mev_per_atom": 10.0,
+    "xc_abs_error_strict_lt_mev_per_atom": 10.0,
+    "combined_hartree_external_xc_abs_error_strict_lt_mev_per_atom": 10.0,
+    "fixed_kedf_abs_error_strict_lt_mev_per_atom": 10.0
+  },
+  "allowed_scientific_dispositions": [
+    "accepted_candidate_exists",
+    "evidence_valid_no_candidate_passes_all_g2a_pilot_gates"
+  ],
+  "output": {
+    "root": "analysis/s2/g2_al1_projection_operator_pilot_r1_20260811",
+    "files": ["README.md", "basis_spectrum.json", "metrics.tsv", "runtime.json", "summary.json"]
+  }
+}
