@@ -1,0 +1,105 @@
+{
+  "accepted": true,
+  "collisions": [],
+  "created_utc": "2026-08-10T07:16:21.812473Z",
+  "excluded_process_ids": [
+    1,
+    2062513,
+    2062514
+  ],
+  "hostname": "node01",
+  "online_logical_cpu_count": 152,
+  "physical_core_ids": [
+    30,
+    31,
+    32,
+    33
+  ],
+  "physical_socket_id": 0,
+  "scanned_narrow_affinity_task_count": 0,
+  "schema_version": 1,
+  "target_sibling_logical_cpus": [
+    30,
+    31,
+    32,
+    33,
+    106,
+    107,
+    108,
+    109
+  ],
+  "topology": [
+    {
+      "logical_cpu": 30,
+      "physical_core_id": 30,
+      "socket_id": 0,
+      "thread_siblings": [
+        30,
+        106
+      ]
+    },
+    {
+      "logical_cpu": 31,
+      "physical_core_id": 31,
+      "socket_id": 0,
+      "thread_siblings": [
+        31,
+        107
+      ]
+    },
+    {
+      "logical_cpu": 32,
+      "physical_core_id": 32,
+      "socket_id": 0,
+      "thread_siblings": [
+        32,
+        108
+      ]
+    },
+    {
+      "logical_cpu": 33,
+      "physical_core_id": 33,
+      "socket_id": 0,
+      "thread_siblings": [
+        33,
+        109
+      ]
+    },
+    {
+      "logical_cpu": 106,
+      "physical_core_id": 30,
+      "socket_id": 0,
+      "thread_siblings": [
+        30,
+        106
+      ]
+    },
+    {
+      "logical_cpu": 107,
+      "physical_core_id": 31,
+      "socket_id": 0,
+      "thread_siblings": [
+        31,
+        107
+      ]
+    },
+    {
+      "logical_cpu": 108,
+      "physical_core_id": 32,
+      "socket_id": 0,
+      "thread_siblings": [
+        32,
+        108
+      ]
+    },
+    {
+      "logical_cpu": 109,
+      "physical_core_id": 33,
+      "socket_id": 0,
+      "thread_siblings": [
+        33,
+        109
+      ]
+    }
+  ]
+}

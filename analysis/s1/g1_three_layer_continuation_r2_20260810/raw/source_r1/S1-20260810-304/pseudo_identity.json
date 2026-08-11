@@ -1,0 +1,19 @@
+{
+  "basename": "Mg_std.upf",
+  "beta_angular_momenta": [
+    0,
+    0,
+    1,
+    1
+  ],
+  "core_correction": false,
+  "expanded_nonlocal_projectors_per_atom": 8,
+  "functional": "PBE",
+  "number_of_proj": 4,
+  "pp_beta_element_count": 4,
+  "pp_dij_present": true,
+  "pseudo_type": "NC",
+  "sha256": "15cdd9380687a47a1f4bc4ab5fe1f0c6d9c50891350fd8534c8f292b3ce0be14",
+  "upf_version": "2.0.1",
+  "z_valence": 10.0
+}

@@ -1,0 +1,39 @@
+{
+  "accepted_count": 6,
+  "accepted_ids": [
+    "S1-20260810-327",
+    "S1-20260810-328",
+    "S1-20260810-329",
+    "S1-20260810-330",
+    "S1-20260810-331",
+    "S1-20260810-332"
+  ],
+  "accepted_result_sha256": {
+    "S1-20260810-327": "0032e69c2202007f3cbd0ffa53a152bc87c8e86cae8ed903f94ed5eb673f7f6a",
+    "S1-20260810-328": "e5b1f961b6da77627c1f593bed6166da9d0d403c708f890fffeacb5bb3a7b738",
+    "S1-20260810-329": "8aacbda7dd1d5c852785b0782a8b62ed6cee32efad6713596ed59f30e408247b",
+    "S1-20260810-330": "c73594d5786e231720baaf2b2e4203ace7bd114091177738c538e2598b167008",
+    "S1-20260810-331": "d36c1b0b4beae50b3f34ca15512c2ff8da1806007da6ac7346e6e514351716bd",
+    "S1-20260810-332": "d4d4e949cdda68c8a84d88da631970513699236c4ebac2fe03912bfc573e8023"
+  },
+  "config_sha256": "9c1447bc134362691357e80309a3df5ff49bfd2ce5eb5e8d4d8d47b935f79c76",
+  "created_utc": "2026-08-10T07:53:23.425577Z",
+  "detached_launcher_proof_sha256": "b102fa3ed6dacadfb177239420ebd67add944d428cf190e70780074c4b858ddb",
+  "manifest_sha256": "747d8f85eee5d0a62c2df72375fae5295ae45c6070648a7284318090b5b4dd5e",
+  "per_run_core_collision_preflight_sha256": {
+    "S1-20260810-327": "b16253be91cb5362a1400ed974a719352812d64169c3a79d7832d63de91cdeff",
+    "S1-20260810-328": "90794a6f329acf35c9213f5234e49b8deacb826d8b636516491b7b5e1f01c87a",
+    "S1-20260810-329": "34a5ababc7b9af952a718d8e557da187d2563e118e92fa1f05a212d3a74fbfde",
+    "S1-20260810-330": "2cf5af841c3341e061fe092e82c7c1835d71c9602da4d34191598059219178b1",
+    "S1-20260810-331": "aaf4ab92adceda84e61f8c51dce08fff6e8dc725be37fe62827a74b7cabbccb2",
+    "S1-20260810-332": "02cfa6b5617ddc36154ddd9f53b6bf05325fea35a2f21d6b3dc96e05c84a5e8f"
+  },
+  "phase": "al_eos",
+  "phase_core_collision_preflight_sha256": "26ec3dfb206a02ecb71c5d9e67fa480b84d743ef80263d0b706bb29c901038c2",
+  "protocol_revision": "S1-G1-THREE-LAYER-CONTINUATION-20260810-R2",
+  "recovery_barrier_sha256": "60765edd6b72fbdbe2ac190581b3c7aad1e91e6ef7d7616be1b6d24e29abf353",
+  "runner_commit": "3205d4972366c8a53a01fee2c5de22a4028b01eb",
+  "schema_version": 1,
+  "session_sha256": "54d40ce86c21d39c823fed683b9e1e97b187f4ee36670be25fa77dff495a7b3f",
+  "status": "accepted"
+}
