@@ -1,0 +1,12 @@
+{
+  "config_sha256": "a9b3f01ed54bd57659af20c91bc14baeb63aa653b62e83650e7337a2eae630c6",
+  "created_utc": "2026-08-10T11:22:30.769914Z",
+  "duration_seconds": 502.25337506923825,
+  "experiment_id": "S1-20260810-357",
+  "manifest_sha256": "b9cb926d804edc43b548d93ec44125bf980f4e3915dac8b73980ba85bd6bff6b",
+  "protocol_revision": "S1-G1-THREE-LAYER-AL-DOMAIN-FOLLOWUP-20260810-R4",
+  "result_sha256": "e30a6da385e2d7a28a3dd3ee3a7e9017a70430afe7a7b7dc54702817fea93a8b",
+  "runner_commit": "0c60b0613c5c180f05256ad160d287fe4a5bae8a",
+  "schema_version": 1,
+  "status": "accepted"
+}

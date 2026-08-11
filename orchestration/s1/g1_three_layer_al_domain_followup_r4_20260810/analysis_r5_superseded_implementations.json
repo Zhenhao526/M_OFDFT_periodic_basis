@@ -1,0 +1,59 @@
+{
+  "schema_version": 1,
+  "analysis_protocol_revision": "S1-G1-THREE-LAYER-AL-DOMAIN-FOLLOWUP-ANALYSIS-20260810-R5",
+  "status": "superseded_before_execution",
+  "r4_analyzer_false_negative_closure_commit": "2ee09e79c8690a108c1ee6eb7cc1338be010650b",
+  "candidates": [
+    {
+      "implementation_commit": "98752ed7965e499e2c95727cf611b2c27156c163",
+      "candidate_kind": "implementation",
+      "unique_parent": "2ee09e79c8690a108c1ee6eb7cc1338be010650b",
+      "status": "superseded_before_execution",
+      "reason": "strict minimal input pseudo schema was incorrectly dispatched to continuation 327-332 full-upstream-schema sources",
+      "preregistration_config_introduced": false,
+      "analysis_output_created": false,
+      "new_solver_run_count": 0
+    },
+    {
+      "implementation_commit": "7adc43019307bf863b778fe0594ff529913e574b",
+      "candidate_kind": "implementation",
+      "unique_parent": "98752ed7965e499e2c95727cf611b2c27156c163",
+      "status": "superseded_before_execution",
+      "reason": "source-specific pseudo replay was corrected and fully replayed, but the implementation was not a direct unique child of the R4 false-negative closure",
+      "preregistration_config_introduced": false,
+      "analysis_output_created": false,
+      "new_solver_run_count": 0
+    },
+    {
+      "implementation_commit": "68b0c895cb4cf8de170381fd802b85185897b325",
+      "unique_parent": "2ee09e79c8690a108c1ee6eb7cc1338be010650b",
+      "candidate_kind": "implementation",
+      "status": "superseded_before_execution",
+      "reason": "the implementation and its later config did not hard-lock the exact five-path closure diff, complete R4 registered-input identities, or exact closure scientific metrics",
+      "preregistration_config_introduced": true,
+      "preregistration_commit": "bacb2564244c5a2860bdd6698766827e406aa4ec",
+      "analysis_output_created": false,
+      "new_solver_run_count": 0
+    },
+    {
+      "implementation_commit": "bacb2564244c5a2860bdd6698766827e406aa4ec",
+      "unique_parent": "68b0c895cb4cf8de170381fd802b85185897b325",
+      "candidate_kind": "config_only_preregistration",
+      "status": "superseded_before_execution",
+      "reason": "the preregistration inherited the incomplete implementation hard chain and was frozen without collect or evidence output",
+      "preregistration_config_introduced": true,
+      "analysis_output_created": false,
+      "new_solver_run_count": 0
+    }
+  ],
+  "final_implementation_contract": {
+    "unique_parent": "2ee09e79c8690a108c1ee6eb7cc1338be010650b",
+    "source_specific_pseudo_dispatch_required": true,
+    "closure_to_implementation_diff_exactly_five_additions": true,
+    "registered_implementation_file_set_must_equal_diff": true,
+    "historical_r4_analyzer_and_registered_inputs_exact_identity_required": true,
+    "closure_scientific_metrics_exact_replay_required": true,
+    "config_must_be_introduced_only_by_single_child_preregistration": true,
+    "old_candidate_commits_must_not_be_ancestors_of_final_preregistration": true
+  }
+}

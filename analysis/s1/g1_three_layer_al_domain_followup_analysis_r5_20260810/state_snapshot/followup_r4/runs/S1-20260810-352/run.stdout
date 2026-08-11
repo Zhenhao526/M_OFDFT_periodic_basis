@@ -1,0 +1,108 @@
+
+                     ▄████▄ █████▄ ▄████▄ ▄█████ ██  ██ ▄█████ 
+                     ██▄▄██ ██▄▄██ ██▄▄██ ██     ██  ██ ▀▀▀▄▄▄ 
+                     ██  ██ ██▄▄█▀ ██  ██ ▀█████ ▀████▀ █████▀ 
+
+                                                                                     
+                                v3.11.0-beta.5
+
+               Atomic-orbital Based Ab-initio Computation at UStc                    
+
+                     Website: http://abacus.ustc.edu.cn/                             
+               Documentation: https://abacus.deepmodeling.com/                       
+                  Repository: https://github.com/abacusmodeling/abacus-develop       
+                              https://github.com/deepmodeling/abacus-develop         
+                      Commit: unknown
+
+ Mon Aug 10 10:35:18 2026
+ MAKE THE DIR         : OUT.g1tlfu4_al_tetragonal_minus/
+ RUNNING WITH DEVICE  : CPU / Intel(R) Xeon(R) Platinum 8368Q CPU @ 2.60GHz (x2)
+ WARNING: some of potential function is set to zero cause of less than 1e-30.
+ UNIFORM GRID DIM     : 24 * 24 * 24
+ UNIFORM GRID DIM(BIG): 24 * 24 * 24
+ DONE(0.0616487  SEC) : SETUP UNITCELL
+ DONE(0.717681   SEC) : INIT K-POINTS
+ ----------------------------------------------------------------
+ Self-consistent calculations for electrons
+ ----------------------------------------------------------------
+ SPIN    KPOINTS         PROCESSES   THREADS/PROC  THREADS/TOTAL 
+ 1       10980           4           1             4             
+ ----------------------------------------------------------------
+ Use plane wave basis
+ ----------------------------------------------------------------
+ ELEMENT NATOM       
+ Al      1           
+ ----------------------------------------------------------------
+ Initial plane wave basis and FFT box
+ ----------------------------------------------------------------
+ DONE(0.797724   SEC) : INIT PLANEWAVE
+ START CHARGE         : ATOMIC
+ DONE(0.811261   SEC) : LOCAL POTENTIAL
+ DONE(0.826044   SEC) : NON-LOCAL POTENTIAL
+ MEMORY FOR PSI (MB)  : 283.48
+ DONE(0.867032   SEC) : INIT BASIS
+
+ ================================================================
+ SELF-CONSISTENT: 
+ ================================================================
+ DONE(8.16385    SEC) : INIT SCF
+ ITER       ETOT/eV          EDIFF/eV         DRHO     TIME/s
+ CG1     -6.30709424e+01   0.00000000e+00   5.7375e-03 114.34
+ CG2     -6.30627842e+01   8.15822227e-03   2.2568e-03  22.59
+ CG3     -6.30634185e+01  -6.34270184e-04   1.4286e-06  22.77
+ CG4     -6.30635111e+01  -9.26521467e-05   1.3182e-06  54.35
+ CG5     -6.30635129e+01  -1.79815417e-06   7.8201e-07  22.61
+ CG6     -6.30635135e+01  -5.35704373e-07   5.5015e-08  22.60
+ CG7     -6.30635137e+01  -2.01509661e-07   2.8810e-08  25.30
+ CG8     -6.30635137e+01  -1.41747845e-08   2.1125e-09  22.79
+ CG9     -6.30635137e+01   1.10518058e-09   2.7845e-10  28.65
+ CG10    -6.30635137e+01  -1.21899040e-09   1.0916e-10  28.67
+ CG11    -6.30635137e+01  -4.66090963e-10   2.9774e-12  23.57
+ ----------------------------------------------------------------
+              Stress_x             Stress_y             Stress_z 
+ ----------------------------------------------------------------
+         -5.4130668210         0.0000010103         0.0000017913 
+          0.0000010103        -9.0149878226        -0.0000003624 
+          0.0000017913        -0.0000003624        -9.0149875463 
+ ----------------------------------------------------------------
+ TOTAL-PRESSURE (EXCLUDE KINETIC PART OF IONS): -7.814347 kbar
+
+ TIME STATISTICS
+-------------------------------------------------------------------
+   CLASS_NAME           NAME         TIME/s  CALLS   AVG/s  PER/%  
+-------------------------------------------------------------------
+                 total               403.36 15       26.89  100.00 
+ Driver          atomic_world        403.36 1        403.36 100.00 
+ Relax_Driver    relax_driver        402.48 1        402.48 99.78  
+ ESolver_KS      runner              395.76 1        395.76 98.12  
+ ESolver_KS_PW   before_scf          7.30   1        7.30   1.81   
+ PSIPrepare      initialize_psi      7.29   1        7.29   1.81   
+ Nonlocal        getvnl              9.33   142740   0.00   2.31   
+ pp_cell_vnl     getvnl              9.28   142740   0.00   2.30   
+ DiagoIterAssist diag_subspace       60.16  120780   0.00   14.91  
+ Operator        hPsi                280.48 5478940  0.00   69.54  
+ Operator        veff_pw             237.96 5478940  0.00   58.99  
+ PW_Basis_K      recip2real          142.51 8388640  0.00   35.33  
+ PW_Basis_K      gathers_copy_pack   8.06   8388640  0.00   2.00   
+ PW_Basis_K      gathers_zero_mpi    10.38  8388640  0.00   2.57   
+ PW_Basis_K      gathers_copy_unpack 8.40   8388640  0.00   2.08   
+ PW_Basis_K      real2recip          103.97 6807520  0.00   25.78  
+ PW_Basis_K      gatherp_copy_pack   6.09   6807520  0.00   1.51   
+ PW_Basis_K      gatherp_copy_unpack 6.65   6807520  0.00   1.65   
+ Operator        nonlocal_pw         37.41  5478940  0.00   9.27   
+ Nonlocal        add_nonlocal_pp     14.94  5478940  0.00   3.70   
+ DiagoIterAssist diag_hegvd          4.30   120780   0.00   1.07   
+ ESolver_KS_PW   hamilt2rho_single   388.22 12       32.35  96.25  
+ HSolverPW       solve               388.22 12       32.35  96.25  
+ HSolverPW       solve_psik          351.13 131760   0.00   87.05  
+ DiagoCG         diag_once           293.97 131760   0.00   72.88  
+ ElecStatePW     psiToRho            27.94  12       2.33   6.93   
+ Stress_PW       cal_stress          5.81   1        5.81   1.44   
+ Stress          stress_nl           5.71   1        5.71   1.42   
+-------------------------------------------------------------------
+
+
+ START  Time  : Mon Aug 10 10:35:18 2026
+ FINISH Time  : Mon Aug 10 10:42:02 2026
+ TOTAL  Time  : 404
+ SEE INFORMATION IN : OUT.g1tlfu4_al_tetragonal_minus/

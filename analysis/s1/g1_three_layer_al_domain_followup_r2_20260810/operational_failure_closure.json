@@ -1,0 +1,89 @@
+{
+  "accepted_count": 0,
+  "accepted_ids": [],
+  "abacus_exec_count": 0,
+  "binding_failure": {
+    "actual_core_id_by_rank": [
+      2,
+      3,
+      4,
+      5
+    ],
+    "actual_os_logical_cpu_domain": [
+      40,
+      41,
+      42,
+      43,
+      116,
+      117,
+      118,
+      119
+    ],
+    "actual_physical_package_id": 1,
+    "failure_stage": "rank_wrapper_before_affinity_evidence_and_before_abacus_execve",
+    "frozen_expected_core_id_by_rank": [
+      40,
+      41,
+      42,
+      43
+    ],
+    "interpretation": "The OpenMPI pe-list selected the intended OS logical CPU cores, but the frozen wrapper incorrectly treated OS CPU labels 40-43 as /sys physical core_id values. On node01 these CPUs are package 1, core_id 2-5. The fail-closed wrapper rejected all four ranks before ABACUS execve.",
+    "openmpi_reported_binding": [
+      "package[1][core:L40]",
+      "package[1][core:L41]",
+      "package[1][core:L42]",
+      "package[1][core:L43]"
+    ],
+    "rank_wrapper_affinity_file_count": 0,
+    "runner_return_code": 1
+  },
+  "closure_created_utc": "2026-08-10T09:02:29Z",
+  "evidence_identities": {
+    "attempt_marker_sha256": "ba31d4f52a045d0d938ad27b2a1030b02f7e4bd49756dafdef1c6d4844af9671",
+    "core_reservation_ack_sha256": "b48434c8d3c7aa564106839c93127d81dad8b2e08597cc2ae409dbd98af838c5",
+    "failure_sha256": "bc610f231b36e861c6ac5b0720ade5f8e0479fda9f168030ea2475c6c95ced20",
+    "launch_stderr_sha256": "a90d65151e9a626cfe49681d172a0c0d9fb9b3cca255f50b5f040c03063187c3",
+    "launch_stdout_sha256": "953a1320e6a94bd8ddd7c6b73f53b7ab10fe5c9313c425d7e77b003ab4cf4e2a",
+    "run_stderr_sha256": "e2ec552729475548fc0d5938d94780ab46dcb08b12b6a4143cbecd5fb28a15da",
+    "runner_return_sha256": "1feda64a819dbb3878dc8c1a4f0d13fd3da922e6b3fcc113aab152666d724bdb",
+    "session_sha256": "79ebbe681ad9bbcf27235a4706c93ef68508f24ce2f8d41cee67a9b705ff84cc"
+  },
+  "external_paths": {
+    "core_reservation_ack": "/home/shenwei01/.local/state/m_ofdft/s1_g1_three_layer_al_domain_followup_r2_core_reservation_ack_20260810.json",
+    "launch_stderr": "/home/shenwei01/.local/state/m_ofdft/s1_g1_three_layer_al_domain_followup_r2_20260810.launch.stderr",
+    "launch_stdout": "/home/shenwei01/.local/state/m_ofdft/s1_g1_three_layer_al_domain_followup_r2_20260810.launch.stdout",
+    "state_root": "/home/shenwei01/.local/state/m_ofdft/s1_g1_three_layer_al_domain_followup_r2_20260810"
+  },
+  "failed_count": 1,
+  "failed_ids": [
+    "S1-20260810-335"
+  ],
+  "implementation_commit": "f26cdeaf889177fe974a526280162b38ec1dec7a",
+  "operational_status": "failed_binding_contract_preserved_no_retry",
+  "preregistration_and_runner_commit": "e57fdacb6cbdc32b20fc29fcb6351a392b49f847",
+  "protocol_revision": "S1-G1-THREE-LAYER-AL-DOMAIN-FOLLOWUP-20260810-R2",
+  "retry_policy": "R2 state and IDs 335-342 are permanently frozen; no restart, deletion, overwrite, or reuse is permitted. Continuation requires a new protocol revision, new state root, and new IDs.",
+  "schema_version": 1,
+  "scientific_contribution_count": 0,
+  "solver_attempt_count": 0,
+  "state_snapshot": {
+    "file_count": 13,
+    "regular_file_bytes": 394112,
+    "relative_sha256sum_list_digest": "b37810d7f0cef28f5a16c9c37cced17b87cda6958615ae95d17500b01d776ade"
+  },
+  "terminal_marker_present": false,
+  "unique_attempt_count": 1,
+  "unique_attempt_ids": [
+    "S1-20260810-335"
+  ],
+  "unattempted_count": 7,
+  "unattempted_ids": [
+    "S1-20260810-336",
+    "S1-20260810-337",
+    "S1-20260810-338",
+    "S1-20260810-339",
+    "S1-20260810-340",
+    "S1-20260810-341",
+    "S1-20260810-342"
+  ]
+}

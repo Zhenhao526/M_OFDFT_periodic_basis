@@ -1,0 +1,58 @@
+{
+  "atom_count": 1,
+  "ecutrho_ry": 160,
+  "ecutwfc_ry": 40,
+  "expected_electrons": 3.0,
+  "experiment_id": "S1-20260810-341",
+  "geometry_binding": {
+    "accepted_common_id": "S1-20260810-328",
+    "construction_base_id": "S1-20260810-308",
+    "construction_base_path": "inputs/s1/g1_three_layer_r1/S1-20260810-308/STRU",
+    "construction_base_stru_sha256": "56e255d9333a1041614c38716c1a7585d3cf14bae58285ee26480e49aed2da8d",
+    "construction_hard_gate": {
+      "accepted": true,
+      "accepted_common_id": "S1-20260810-328",
+      "complete_registered_stru_byte_identical": true,
+      "convention": "complete preregistered endpoint STRU byte identity; accepted 327/328 source is checked at runtime"
+    },
+    "geometry_payload_definition": "STRU bytes from LATTICE_CONSTANT marker through EOF",
+    "geometry_payload_sha256": "7870df4244c681a1f53b292f038e865b405e419e4fb0985bb1c0f81344c38adc",
+    "registered_geometry_id": "S1-20260810-308",
+    "registered_geometry_path": "inputs/s1/g1_three_layer_r1/S1-20260810-308/STRU",
+    "registered_geometry_stru_sha256": "56e255d9333a1041614c38716c1a7585d3cf14bae58285ee26480e49aed2da8d"
+  },
+  "input_identity": {
+    "INPUT_sha256": "6a2a72404c10ee182c938fe4978e7876c0ff3806841ce7cb8c4e1c1ddde0fe18",
+    "KPT_sha256": "9676ccc0047fe4fd875b3027808ab834d234f73a9840b22c16948d3f3ede2cfd",
+    "STRU_sha256": "56e255d9333a1041614c38716c1a7585d3cf14bae58285ee26480e49aed2da8d",
+    "config_sha256": "d790020b26f37a9cd21ad1001a6b1500415dda263a49f233bfcf57305ca8ea7d",
+    "manifest_sha256": "3dac0173e17b927ff05f2faf027273cff89fdd0de433699fc890b14727d17455"
+  },
+  "kmesh": [
+    32,
+    32,
+    32
+  ],
+  "material": "al",
+  "phase": "endpoint",
+  "protocol_revision": "S1-G1-THREE-LAYER-AL-DOMAIN-FOLLOWUP-20260810-R2",
+  "pseudo": {
+    "basename": "Al_std.upf",
+    "expanded_nonlocal_projectors_per_atom": 18,
+    "format": "upf201",
+    "sha256": "b02eaa07c5d98f5eeae1bec4155854a7a94ea3635ca6b42e914f3f7ebd6912fb",
+    "z_valence": 3.0
+  },
+  "role": "v110_normal_extra_k",
+  "schema_version": 1,
+  "suffix": "g1tlfu2_al_v110_normal_extra",
+  "thermodynamic_semantics": {
+    "E_ec": "F-m/2 finite-smearing estimator",
+    "F": "E_KohnSham=!FINAL_ETOT_IS",
+    "U": "F-m",
+    "local_only_kinetic_decomposition_claim": false,
+    "m": "E_entropy(-TS)<=0",
+    "zero_temperature_exact_claim": false
+  },
+  "volume_ratio": "1.10"
+}

@@ -1,0 +1,119 @@
+
+                     ▄████▄ █████▄ ▄████▄ ▄█████ ██  ██ ▄█████ 
+                     ██▄▄██ ██▄▄██ ██▄▄██ ██     ██  ██ ▀▀▀▄▄▄ 
+                     ██  ██ ██▄▄█▀ ██  ██ ▀█████ ▀████▀ █████▀ 
+
+                                                                                     
+                                v3.11.0-beta.5
+
+               Atomic-orbital Based Ab-initio Computation at UStc                    
+
+                     Website: http://abacus.ustc.edu.cn/                             
+               Documentation: https://abacus.deepmodeling.com/                       
+                  Repository: https://github.com/abacusmodeling/abacus-develop       
+                              https://github.com/deepmodeling/abacus-develop         
+                      Commit: unknown
+
+ Mon Aug 10 07:56:44 2026
+ MAKE THE DIR         : OUT.g1tlr2_mg_v090_normal_common/
+ RUNNING WITH DEVICE  : CPU / Intel(R) Xeon(R) Platinum 8368Q CPU @ 2.60GHz (x2)
+ WARNING: some of potential function is set to zero cause of less than 1e-30.
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+ Warning: the number of valence electrons in pseudopotential > 2 for Mg: [Ne] 3s2
+ Pseudopotentials with additional electrons can yield (more) accurate outcomes, but may be less efficient.
+ If you're confident that your chosen pseudopotential is appropriate, you can safely ignore this warning.
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+ UNIFORM GRID DIM     : 36 * 36 * 60
+ UNIFORM GRID DIM(BIG): 36 * 36 * 60
+ DONE(0.0619441  SEC) : SETUP UNITCELL
+ DONE(0.21639    SEC) : INIT K-POINTS
+ ----------------------------------------------------------------
+ Self-consistent calculations for electrons
+ ----------------------------------------------------------------
+ SPIN    KPOINTS         PROCESSES   THREADS/PROC  THREADS/TOTAL 
+ 1       4612            4           1             4             
+ ----------------------------------------------------------------
+ Use plane wave basis
+ ----------------------------------------------------------------
+ ELEMENT NATOM       
+ Mg      2           
+ ----------------------------------------------------------------
+ Initial plane wave basis and FFT box
+ ----------------------------------------------------------------
+ DONE(0.424094   SEC) : INIT PLANEWAVE
+ START CHARGE         : ATOMIC
+ DONE(0.472851   SEC) : LOCAL POTENTIAL
+ DONE(0.484293   SEC) : NON-LOCAL POTENTIAL
+ MEMORY FOR PSI (MB)  : 1351.17
+ DONE(0.559847   SEC) : INIT BASIS
+
+ ================================================================
+ SELF-CONSISTENT: 
+ ================================================================
+ DONE(24.12      SEC) : INIT SCF
+ ITER       ETOT/eV          EDIFF/eV         DRHO     TIME/s
+ CG1     -3.23245986e+03   0.00000000e+00   6.7413e-03 277.34
+ CG2     -3.23245260e+03   7.25918086e-03   2.7776e-03  70.33
+ CG3     -3.23245444e+03  -1.83204734e-03   1.7247e-05  72.88
+ CG4     -3.23245428e+03   1.59895289e-04   4.6214e-05 115.50
+ CG5     -3.23245423e+03   4.30990304e-05   1.4323e-05  71.71
+ CG6     -3.23245425e+03  -1.83533399e-05   5.5602e-06  70.38
+ CG7     -3.23245424e+03   1.62177668e-05   5.1190e-06  70.81
+ CG8     -3.23245422e+03   2.03324163e-05   2.7911e-06  70.59
+ CG9     -3.23245422e+03  -1.38868145e-06   3.3966e-07  74.30
+ CG10    -3.23245422e+03  -3.46287377e-06   6.7483e-08 105.99
+ CG11    -3.23245422e+03  -1.09173087e-06   2.9824e-08  73.42
+ CG12    -3.23245422e+03  -2.02648665e-07   1.8370e-07 102.82
+ CG13    -3.23245422e+03   7.54125269e-08   1.8643e-07  70.35
+ CG14    -3.23245422e+03   1.82381826e-06   1.7799e-07  70.46
+ CG15    -3.23245422e+03  -5.45846679e-07   5.7092e-09 103.54
+ CG16    -3.23245422e+03  -3.17772287e-08   2.0860e-09  97.47
+ CG17    -3.23245422e+03   1.46743852e-08   1.4912e-09  70.96
+ CG18    -3.23245422e+03  -4.35343702e-09   4.3948e-11  80.32
+ ----------------------------------------------------------------
+              Stress_x             Stress_y             Stress_z 
+ ----------------------------------------------------------------
+         41.5275202862        -0.0000006559         0.0000002627 
+         -0.0000006559        41.5275198262        -0.0000004579 
+          0.0000002627        -0.0000004579        39.8482890347 
+ ----------------------------------------------------------------
+ TOTAL-PRESSURE (EXCLUDE KINETIC PART OF IONS): 40.967776 kbar
+
+ TIME STATISTICS
+---------------------------------------------------------------------
+   CLASS_NAME           NAME         TIME/s   CALLS    AVG/s  PER/%  
+---------------------------------------------------------------------
+                 total               1709.47 15       113.96  100.00 
+ Driver          atomic_world        1709.47 1        1709.47 100.00 
+ Relax_Driver    relax_driver        1708.84 1        1708.84 99.96  
+ ESolver_KS      runner              1692.92 1        1692.92 99.03  
+ ESolver_KS_PW   before_scf          23.56   1        23.56   1.38   
+ PSIPrepare      initialize_psi      23.55   1        23.55   1.38   
+ Nonlocal        getvnl              25.30   92240    0.00    1.48   
+ pp_cell_vnl     getvnl              25.27   92240    0.00    1.48   
+ DiagoIterAssist diag_subspace       317.44  83016    0.00    18.57  
+ Operator        hPsi                1282.72 5060273  0.00    75.04  
+ Operator        veff_pw             1136.10 5060273  0.00    66.46  
+ PW_Basis_K      recip2real          716.41  8390137  0.00    41.91  
+ PW_Basis_K      gathers_copy_pack   31.02   8390137  0.00    1.81   
+ PW_Basis_K      gathers_zero_mpi    75.06   8390137  0.00    4.39   
+ PW_Basis_K      gathers_copy_unpack 30.49   8390137  0.00    1.78   
+ PW_Basis_K      real2recip          504.17  6637577  0.00    29.49  
+ PW_Basis_K      gatherp_copy_pack   23.38   6637577  0.00    1.37   
+ PW_Basis_K      gatherp_copy_unpack 41.75   6637577  0.00    2.44   
+ Operator        nonlocal_pw         136.89  5060273  0.00    8.01   
+ Nonlocal        add_nonlocal_pp     64.81   5060273  0.00    3.79   
+ ESolver_KS_PW   hamilt2rho_single   1668.99 19       87.84   97.63  
+ HSolverPW       solve               1668.99 19       87.84   97.63  
+ HSolverPW       solve_psik          1484.72 87628    0.02    86.85  
+ DiagoCG         diag_once           1173.41 87628    0.01    68.64  
+ ElecStatePW     psiToRho            158.97  19       8.37    9.30   
+---------------------------------------------------------------------
+
+
+ START  Time  : Mon Aug 10 07:56:44 2026
+ FINISH Time  : Mon Aug 10 08:25:14 2026
+ TOTAL  Time  : 1710
+ SEE INFORMATION IN : OUT.g1tlr2_mg_v090_normal_common/

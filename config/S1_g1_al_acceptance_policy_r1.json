@@ -1,0 +1,95 @@
+{
+  "schema_version": 1,
+  "protocol_revision": "S1-G1-AL-ACCEPTANCE-POLICY-20260811-R1",
+  "status": "preregistered",
+  "registration": {
+    "implementation_commit": "7b7e342511133371fe6bd364651564b88ac68a47",
+    "preregistration_commit": "__FREEZE_PREREGISTRATION_COMMIT__",
+    "integration_base_commit": "7f717330a28c7af09c0b9fa4a078568b42a726e6",
+    "integration_base_parents": [
+      "54019437539808c91f6c2768e3afcae08ea50439",
+      "73b358926dc4e1a576209b3e58c4e86f25ffe9ec"
+    ]
+  },
+  "analysis_root": "analysis/s1/g1_al_acceptance_policy_r1_20260811",
+  "new_solver_run_count": 0,
+  "source_r3": {
+    "final_commit": "73b358926dc4e1a576209b3e58c4e86f25ffe9ec",
+    "preregistration_commit": "d01ccb1c26e6e6f1335d30875e842f4bd4601e4c",
+    "summary_path": "analysis/s1/g1_three_layer_analysis_r3_20260810/summary.json",
+    "summary_sha256": "12ec371b7135ce06fb658716a433babd6f19ef3e63348805226e13b864537afc",
+    "gate_metrics_path": "analysis/s1/g1_three_layer_analysis_r3_20260810/gate_metrics.tsv",
+    "gate_metrics_sha256": "27d65a4cfc49fb7207ff4203370146d6e5c6f92eaa95cf2958f8ab6fceb965c3",
+    "historical_status": "evidence_valid_scientific_gate_rejected",
+    "historical_equilibrium_volume_difference_percent_max": 0.5
+  },
+  "source_r5": {
+    "evidence_commit": "54019437539808c91f6c2768e3afcae08ea50439",
+    "summary_path": "analysis/s1/g1_three_layer_al_domain_followup_analysis_r5_20260810/summary.json",
+    "summary_sha256": "afdd6161d4b72132e07b0a76bf1a874b055c6b9cb8f541f5ed995f086aff1eb5",
+    "gates_path": "analysis/s1/g1_three_layer_al_domain_followup_analysis_r5_20260810/gates.tsv",
+    "gates_sha256": "c4cd2d7d154c8382438cab32f5315d5980229c8b01307557664ff05eb58926b4",
+    "analysis_revision_path": "analysis/s1/g1_three_layer_al_domain_followup_analysis_r5_20260810/analysis_revision.json",
+    "analysis_revision_sha256": "575e3babbc99e73af4747a19b039777b9d61c7d70e0411417b53fa0200222273"
+  },
+  "acceptance": {
+    "equilibrium_volume_difference_percent_max": 1.0,
+    "bulk_modulus_difference_percent_max": 10.0,
+    "bm3_residual_mev_per_atom_strict_lt": 1.0,
+    "anchored_curve_difference_mev_per_atom_max": 20.0,
+    "strain_difference_mev_per_atom_max": 20.0,
+    "endpoint_k_difference_mev_per_atom_strict_lt": 2.0,
+    "endpoint_cutoff_difference_mev_per_atom_strict_lt": 1.0,
+    "endpoint_pressure_difference_gpa_strict_lt": 0.02
+  },
+  "expected_metrics": {
+    "equilibrium_volume_difference_percent": 0.7660177031576967,
+    "bulk_modulus_difference_percent": 2.46585262559075,
+    "anchored_curve_max_abs_difference_mev_per_atom": 7.117917500004012,
+    "ks_l_bm3_max_abs_residual_mev_per_atom": 0.02345245947310559,
+    "ks_nl_bm3_max_abs_residual_mev_per_atom": 0.05675314747577431,
+    "of_l_vs_ks_l_equilibrium_volume_difference_percent": 1.2126673593465813,
+    "maximum_strain_absolute_difference_mev_per_atom": 0.23832079999408506,
+    "v090_anchored_k_difference_mev_per_atom": 0.008772699999326505,
+    "v090_anchored_cutoff_difference_mev_per_atom": 0.11227989999440524,
+    "v090_cutoff_pressure_difference_gpa": 0.004055200000001591,
+    "v110_anchored_k_difference_mev_per_atom": 0.0917003000040495,
+    "v110_anchored_cutoff_difference_mev_per_atom": 0.03827180000826047,
+    "v110_cutoff_pressure_difference_gpa": 0.002397900000000952
+  },
+  "scope_decision": {
+    "accepted_item6_scope": "Al_ABACUS_same_engine_registered_PP_pair_scheme_plus_construction_suitability_bound",
+    "original_D026_second_independent_KS_or_QE_closed": false,
+    "second_independent_KS_closed": false,
+    "qe_control_closed": false,
+    "mg_compatibility_role": "diagnostic_only_not_in_overall",
+    "of_l_vs_ks_l_role": "accepted_error_portrait_not_physical_accuracy",
+    "hqlpp_qe_binding_smoke_role": "open_failed_no_retry_contributes_zero_not_in_overall",
+    "g4_projector_only_causality_closed": false
+  },
+  "expected_disposition": {
+    "status": "accepted_g1_6_of_6",
+    "evidence_valid": true,
+    "scientific_gate_accepted": true,
+    "accepted_subitems": 6,
+    "required_subitems": 6
+  },
+  "topology": {
+    "implementation_added_paths": [
+      "config/S1_g1_al_acceptance_policy_r1.json",
+      "docs/S1_G1_AL_ACCEPTANCE_POLICY_R1_PROTOCOL.md",
+      "scripts/analyze_s1_g1_al_acceptance_policy_r1.py",
+      "scripts/validate_s1_g1_al_acceptance_policy_r1.py",
+      "tests/test_s1_g1_al_acceptance_policy_r1.py"
+    ],
+    "preregistration_changed_paths": [
+      "config/S1_g1_al_acceptance_policy_r1.json"
+    ],
+    "final_output_files": [
+      "analysis/s1/g1_al_acceptance_policy_r1_20260811/README.md",
+      "analysis/s1/g1_al_acceptance_policy_r1_20260811/analysis_revision.json",
+      "analysis/s1/g1_al_acceptance_policy_r1_20260811/gates.tsv",
+      "analysis/s1/g1_al_acceptance_policy_r1_20260811/summary.json"
+    ]
+  }
+}

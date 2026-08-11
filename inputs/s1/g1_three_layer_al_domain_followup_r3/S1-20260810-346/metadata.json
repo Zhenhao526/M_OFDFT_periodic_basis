@@ -1,0 +1,77 @@
+{
+  "atom_count": 1,
+  "ecutrho_ry": 160,
+  "ecutwfc_ry": 40,
+  "expected_electrons": 3.0,
+  "experiment_id": "S1-20260810-346",
+  "geometry_binding": {
+    "accepted_common_id": null,
+    "construction_base_id": "S1-20260807-043",
+    "construction_base_path": "runs/S1-20260807-043/STRU",
+    "construction_base_stru_sha256": "31279eb4f9a5a6ad20376271c79c03a8ead1676cb697b5065515041f6799d437",
+    "construction_hard_gate": {
+      "accepted": true,
+      "convention": "lattice row matrix A; A_prime=A@F.T; Direct coordinates unchanged",
+      "deformation_gradient": [
+        [
+          1.0,
+          -0.005,
+          0.0
+        ],
+        [
+          0.0,
+          1.0,
+          0.0
+        ],
+        [
+          0.0,
+          0.0,
+          1.0
+        ]
+      ],
+      "determinant_f": 1.0,
+      "direct_coordinate_bytes_unchanged": true,
+      "maximum_lattice_matrix_error": 0.0,
+      "registered_geometry_payload_byte_identical": true
+    },
+    "geometry_payload_definition": "STRU bytes from LATTICE_CONSTANT marker through EOF",
+    "geometry_payload_sha256": "05a265875e668e0686462a648112bc527dc31065d79b5a0c7df19ebf1e50bcf5",
+    "registered_geometry_id": "S1-20260810-207",
+    "registered_geometry_path": "inputs/s1/g1_displacement_strain_reference_r1/S1-20260810-207/STRU",
+    "registered_geometry_stru_sha256": "782289a154c58ab4ad7ba91492f9b4d46553ac41ec71d34cf492521b274a2a15"
+  },
+  "input_identity": {
+    "INPUT_sha256": "794cbc3f1e8860e0fd69f6240dc71279b384ddcb784c1d562f2d0f63e2669b62",
+    "KPT_sha256": "0903e64e14f6e451103ae0d60e2b3afe07dbbee7aaabff907df214bfd1eb0bc8",
+    "STRU_sha256": "ee1cfd58fda6adabbdce9c051564dead65a6594fd5287eb2448497e0e28c84b4",
+    "config_sha256": "2ef3dc53c3bd7e3fd1300f7a14f6546aa76f268c3d35a323fb66d488100a693b",
+    "manifest_sha256": "c4a1ff9f1edaac225cb61284bb3bab42f3595e4617a33a7f8c48ca94a7419fe2"
+  },
+  "kmesh": [
+    28,
+    28,
+    28
+  ],
+  "material": "al",
+  "phase": "strain",
+  "protocol_revision": "S1-G1-THREE-LAYER-AL-DOMAIN-FOLLOWUP-20260810-R3",
+  "pseudo": {
+    "basename": "Al_std.upf",
+    "expanded_nonlocal_projectors_per_atom": 18,
+    "format": "upf201",
+    "sha256": "b02eaa07c5d98f5eeae1bec4155854a7a94ea3635ca6b42e914f3f7ebd6912fb",
+    "z_valence": 3.0
+  },
+  "role": "al_shear_xy_minus",
+  "schema_version": 1,
+  "suffix": "g1tlfu3_al_shear_xy_minus",
+  "thermodynamic_semantics": {
+    "E_ec": "F-m/2 finite-smearing estimator",
+    "F": "E_KohnSham=!FINAL_ETOT_IS",
+    "U": "F-m",
+    "local_only_kinetic_decomposition_claim": false,
+    "m": "E_entropy(-TS)<=0",
+    "zero_temperature_exact_claim": false
+  },
+  "volume_ratio": "1.00"
+}

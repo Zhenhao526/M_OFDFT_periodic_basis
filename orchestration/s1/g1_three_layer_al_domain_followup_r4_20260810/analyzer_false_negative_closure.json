@@ -1,0 +1,131 @@
+{
+  "analysis_output_created": false,
+  "analyzer_command": "python3 scripts/analyze_s1_g1_three_layer_al_followup_r4.py --project-root /home/shenwei01/wt_g1_three_layer_al_followup_r1_20260810 --collect",
+  "analyzer_exit_code": 1,
+  "analyzer_identity": {
+    "git_blob": "b28e5ce1665adb40f3d0320b5817dea0ee669446",
+    "path": "scripts/analyze_s1_g1_three_layer_al_followup_r4.py",
+    "sha256": "4ad34ec8e207bc66b7e4f652b3fbb3570567efcb23d599f9a312afd3d846a83e"
+  },
+  "created_utc": "2026-08-10T11:40:17Z",
+  "diagnostic_scope": {
+    "complete_build_analysis_reached": true,
+    "diagnostic_only_in_memory_bypasses": [
+      "parent source snapshot differs from runner-frozen identity",
+      "input pseudo upstream commit differs",
+      "input pseudo upstream URL differs"
+    ],
+    "remaining_hard_gates_unchanged": true,
+    "third_false_negative_found": false
+  },
+  "false_negatives": [
+    {
+      "classification": "whole_dict_reconstruction_omission",
+      "exception_message": "parent source snapshot differs from runner-frozen identity",
+      "frozen_only_top_level_keys": [
+        "r2_operational_failure_closure",
+        "r3_operational_failure_closure",
+        "r3_parser_regression"
+      ],
+      "observed_only_top_level_keys": [],
+      "other_recursive_differences": [],
+      "required_analysis_r5_resolution": "independently reconstruct all three committed closure/regression identities, add them to observed, and retain exact whole-dictionary equality"
+    },
+    {
+      "classification": "legacy_minimal_input_pseudo_schema_mismatch",
+      "exception_messages": [
+        "input pseudo upstream commit differs",
+        "input pseudo upstream URL differs"
+      ],
+      "executed_input_pseudo_exact_keys": [
+        "basename",
+        "expanded_nonlocal_projectors_per_atom",
+        "format",
+        "sha256",
+        "z_valence"
+      ],
+      "missing_legacy_fields": [
+        "upstream_commit",
+        "upstream_url"
+      ],
+      "required_analysis_r5_resolution": "explicitly map the frozen minimal input schema to the committed config upstream repository/commit/canonical URL/git-blob identity while still cross-binding runtime/result/pseudo_identity and fully validating the external cache SHA/header/projectors"
+    }
+  ],
+  "failure_stage": "verify_snapshot_source_identity before analysis-root creation",
+  "protocol_revision": "S1-G1-THREE-LAYER-AL-DOMAIN-FOLLOWUP-20260810-R4",
+  "r4_input_identities": {
+    "config_git_blob": "e677a94777474a1a44a2355cba10453981f8ae66",
+    "config_sha256": "a9b3f01ed54bd57659af20c91bc14baeb63aa653b62e83650e7337a2eae630c6",
+    "manifest_git_blob": "50d149f8fed696b89dad3b6e75781d108adfb4e5",
+    "manifest_sha256": "b9cb926d804edc43b548d93ec44125bf980f4e3915dac8b73980ba85bd6bff6b",
+    "runner_git_blob": "7f6dd2fe9e0acb4506df5eeabe31abf09bb2a94e",
+    "runner_sha256": "de7c3caa8ac29cb637058f8bdce9e38b0495a4ce415d42d3eee2556973f1ce99"
+  },
+  "r4_operational_terminal": {
+    "accepted_count": 8,
+    "accepted_ids": [
+      "S1-20260810-351",
+      "S1-20260810-352",
+      "S1-20260810-353",
+      "S1-20260810-354",
+      "S1-20260810-355",
+      "S1-20260810-356",
+      "S1-20260810-357",
+      "S1-20260810-358"
+    ],
+    "attempted_count": 8,
+    "duration_seconds_by_id": {
+      "S1-20260810-351": 358.2639311822131,
+      "S1-20260810-352": 408.63156135194004,
+      "S1-20260810-353": 359.6607912974432,
+      "S1-20260810-354": 388.65229022782296,
+      "S1-20260810-355": 557.7821705779061,
+      "S1-20260810-356": 616.7091059498489,
+      "S1-20260810-357": 502.25337506923825,
+      "S1-20260810-358": 662.2222024286166
+    },
+    "failed_count": 0,
+    "retried_count": 0,
+    "runner_commit": "0c60b0613c5c180f05256ad160d287fe4a5bae8a",
+    "runner_return_code": 0,
+    "session_sha256": "e12704a707b21d9a3d93bc2a0107e6eb168f6e93c2701c99fb6e25accfab23f6",
+    "status": "accepted",
+    "terminal_sha256": "18fd603ea1e6082b59a133237fe9f957875d467cc9e69fcbdb7b29b8f27eae43"
+  },
+  "r4_state_identity": {
+    "external_state_root": "/home/shenwei01/.local/state/m_ofdft/s1_g1_three_layer_al_domain_followup_r4_20260810",
+    "file_count": 202,
+    "inventory_algorithm": "sha256 of newline-delimited canonical JSON {path,sha256,size_bytes} records sorted by relative path",
+    "inventory_sha256": "227b582c2a778c9417883678a73e30482af2e96e9c7bb31b1e57360063e6e539",
+    "total_bytes": 121174460
+  },
+  "schema_version": 1,
+  "scientific_diagnostic": {
+    "build_analysis_row_count": 10,
+    "endpoint_v090": {
+      "anchored_cutoff_difference_mev_per_atom": 0.11227989999440524,
+      "anchored_k_difference_mev_per_atom": 0.008772699999326505,
+      "cutoff_pressure_difference_gpa": 0.004055200000001591
+    },
+    "endpoint_v110": {
+      "anchored_cutoff_difference_mev_per_atom": 0.03827180000826047,
+      "anchored_k_difference_mev_per_atom": 0.0917003000040495,
+      "cutoff_pressure_difference_gpa": 0.002397900000000952
+    },
+    "gate_status": "accepted",
+    "maximum_strain_absolute_difference_mev_per_atom": 0.23832079999408506
+  },
+  "status": "evidence_valid_operational_accepted_analyzer_false_negative",
+  "traceback": {
+    "exception_type": "ValueError",
+    "frames": [
+      "analyze_s1_g1_three_layer_al_followup_r4.py:710 <module>",
+      "analyze_s1_g1_three_layer_al_followup_r4.py:694 main",
+      "analyze_s1_g1_three_layer_al_followup_r4.py:638 collect",
+      "analyze_s1_g1_three_layer_al_followup_r4.py:482 build_analysis",
+      "analyze_s1_g1_three_layer_al_followup_r4.py:477 verify_snapshot_source_identity",
+      "s1_g1_three_layer_common.py:46 require"
+    ],
+    "message": "parent source snapshot differs from runner-frozen identity"
+  }
+}

@@ -1,0 +1,16 @@
+{
+  "accepted": true,
+  "created_utc": "2026-08-10T07:16:21.767917Z",
+  "isatty": {
+    "0": false,
+    "1": false,
+    "2": false
+  },
+  "pid": 2062514,
+  "ppid": 2062513,
+  "required_launch_shape": "setsid with stdin /dev/null and stdout/stderr regular files",
+  "schema_version": 1,
+  "session_id": 2062514,
+  "session_leader": true,
+  "sighup_ignored": true
+}

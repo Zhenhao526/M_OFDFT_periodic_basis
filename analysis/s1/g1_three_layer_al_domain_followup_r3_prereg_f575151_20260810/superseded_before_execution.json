@@ -1,0 +1,38 @@
+{
+  "schema_version": 1,
+  "protocol_revision": "S1-G1-THREE-LAYER-AL-DOMAIN-FOLLOWUP-20260810-R3",
+  "status": "superseded_before_execution",
+  "superseded_implementation_commit": "11d679d282ebfd96e293004e7e4c9195eb612668",
+  "superseded_preregistration_commit": "f5751517e5a6d2796cc164674f227ac744c8e7e1",
+  "independent_review_disposition": "rejected_before_smoke_parent_replay_used_new_r3_raw_affinity_schema",
+  "formal_ids": [
+    "S1-20260810-343",
+    "S1-20260810-344",
+    "S1-20260810-345",
+    "S1-20260810-346",
+    "S1-20260810-347",
+    "S1-20260810-348",
+    "S1-20260810-349",
+    "S1-20260810-350"
+  ],
+  "external_state_root": "/home/shenwei01/.local/state/m_ofdft/s1_g1_three_layer_al_domain_followup_r3_20260810",
+  "external_binding_smoke_root": "/home/shenwei01/.local/state/m_ofdft/s1_g1_three_layer_al_domain_followup_r3_binding_smoke_20260810",
+  "execution_counts": {
+    "state_roots_created": 0,
+    "binding_smoke_roots_created": 0,
+    "binding_smoke_rank_starts": 0,
+    "attempt_markers": 0,
+    "run_directories": 0,
+    "solver_starts": 0,
+    "accepted_markers": 0
+  },
+  "external_state_was_absent_at_closure": true,
+  "external_binding_smoke_root_was_absent_at_closure": true,
+  "old_preregistration_must_not_be_executed": true,
+  "id_policy": "same_ids_are_permitted_only_in_the_committed_replacement_preregistration_because_no_state_smoke_attempt_or_solver_ever_existed",
+  "replacement_requirements": [
+    "new_R3_runs_use_only_explicit_os_logical_cpu_physical_package_sysfs_core_id_thread_siblings_evidence",
+    "read_only_R1_and_continuation_sources_replay_their_frozen_legacy_affinity_schema_without_relabelling",
+    "live_parent_dry_run_ready_before_binding_smoke"
+  ]
+}

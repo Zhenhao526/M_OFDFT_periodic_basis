@@ -1,0 +1,59 @@
+{
+  "accepted_run_count": 8,
+  "analysis_protocol_revision": "S1-G1-THREE-LAYER-AL-DOMAIN-FOLLOWUP-ANALYSIS-20260810-R5",
+  "implementation_commit": "223b568e2d05d790217bbcb31dbf0d8840c072e1",
+  "new_solver_run_count": 0,
+  "preregistration_commit": "d5922bedfc55beedd0f9bbb8b2fddeaa95a639d1",
+  "r4_analyzer_false_negative_closure": {
+    "accepted": true,
+    "commit": "2ee09e79c8690a108c1ee6eb7cc1338be010650b",
+    "git_blob": "79e8c976d48bb8d8d9fe576399c40739fa19be23",
+    "historical_r4_analyzer": {
+      "git_blob": "b28e5ce1665adb40f3d0320b5817dea0ee669446",
+      "path": "scripts/analyze_s1_g1_three_layer_al_followup_r4.py",
+      "sha256": "4ad34ec8e207bc66b7e4f652b3fbb3570567efcb23d599f9a312afd3d846a83e"
+    },
+    "registered_input_identities": {
+      "config": {
+        "git_blob": "e677a94777474a1a44a2355cba10453981f8ae66",
+        "path": "config/S1_g1_three_layer_al_domain_followup_r4.json",
+        "sha256": "a9b3f01ed54bd57659af20c91bc14baeb63aa653b62e83650e7337a2eae630c6"
+      },
+      "manifest": {
+        "git_blob": "50d149f8fed696b89dad3b6e75781d108adfb4e5",
+        "path": "config/S1_g1_three_layer_al_domain_followup_r4_manifest.tsv",
+        "sha256": "b9cb926d804edc43b548d93ec44125bf980f4e3915dac8b73980ba85bd6bff6b"
+      },
+      "runner": {
+        "git_blob": "7f6dd2fe9e0acb4506df5eeabe31abf09bb2a94e",
+        "path": "scripts/run_s1_g1_three_layer_al_followup_r4.py",
+        "sha256": "de7c3caa8ac29cb637058f8bdce9e38b0495a4ce415d42d3eee2556973f1ce99"
+      }
+    },
+    "scientific_diagnostic": {
+      "build_analysis_row_count": 10,
+      "endpoint_v090": {
+        "anchored_cutoff_difference_mev_per_atom": 0.11227989999440524,
+        "anchored_k_difference_mev_per_atom": 0.008772699999326505,
+        "cutoff_pressure_difference_gpa": 0.004055200000001591
+      },
+      "endpoint_v110": {
+        "anchored_cutoff_difference_mev_per_atom": 0.03827180000826047,
+        "anchored_k_difference_mev_per_atom": 0.0917003000040495,
+        "cutoff_pressure_difference_gpa": 0.002397900000000952
+      },
+      "gate_status": "accepted",
+      "maximum_strain_absolute_difference_mev_per_atom": 0.23832079999408506
+    },
+    "session_sha256": "e12704a707b21d9a3d93bc2a0107e6eb168f6e93c2701c99fb6e25accfab23f6",
+    "sha256": "2f13c21680152755b5b7e50e2528e2cb467ae03591c779f2284df5d401576234",
+    "state_file_count": 202,
+    "state_inventory_sha256": "227b582c2a778c9417883678a73e30482af2e96e9c7bb31b1e57360063e6e539",
+    "state_total_bytes": 121174460,
+    "terminal_sha256": "18fd603ea1e6082b59a133237fe9f957875d467cc9e69fcbdb7b29b8f27eae43"
+  },
+  "schema_version": 1,
+  "source_r4_protocol_revision": "S1-G1-THREE-LAYER-AL-DOMAIN-FOLLOWUP-20260810-R4",
+  "source_r4_runner_commit": "0c60b0613c5c180f05256ad160d287fe4a5bae8a",
+  "status": "accepted"
+}

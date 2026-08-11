@@ -1,0 +1,171 @@
+{
+  "schema_version": 1,
+  "protocol_revision": "S1-G1-THREE-LAYER-AL-DOMAIN-FOLLOWUP-20260810-R1",
+  "base_main_commit": "f474f0ba7823a0b02b4c025251251c8053f132ed",
+  "implementation_commit": "7e487ba837636eefca87391cd40a7cba42046134",
+  "inherited_three_layer_preregistration_commit": "439bf90049551f2b54bf6a17e0fb8689f5dfb100",
+  "manifest": "config/S1_g1_three_layer_al_domain_followup_r1_manifest.tsv",
+  "input_root": "inputs/s1/g1_three_layer_al_domain_followup_r1",
+  "analysis_root": "analysis/s1/g1_three_layer_al_domain_followup_r1_20260810",
+  "external_state_root": "/home/shenwei01/.local/state/m_ofdft/s1_g1_three_layer_al_domain_followup_r1_20260810",
+  "external_pseudo_cache": "/home/shenwei01/.local/state/m_ofdft/pseudos/pseudodojo_oncvpsp_pbe_sr_823b18f",
+  "formal_ids": [
+    "S1-20260810-319",
+    "S1-20260810-320",
+    "S1-20260810-321",
+    "S1-20260810-322",
+    "S1-20260810-323",
+    "S1-20260810-324",
+    "S1-20260810-325",
+    "S1-20260810-326"
+  ],
+  "runtime": {
+    "required_hostname": "node01",
+    "binary": "/home/shenwei01/wt_melting_runtime_20260724/build-abacus-wt-cpu/source/abacus_pw_para",
+    "binary_sha256": "2d68a57c7b25608b3550854dabc2e63601eeca956bf185ad7d0967052bdbb4ba",
+    "abacus_version": "v3.11.0-beta.5",
+    "mpi": "/home/shenwei01/wt_melting_runtime_20260724/conda_prefix/bin/mpirun",
+    "prefix": "/home/shenwei01/wt_melting_runtime_20260724/conda_prefix",
+    "rank_count": 4,
+    "physical_core_ids": [40, 41, 42, 43],
+    "map_by": "pe-list=40,41,42,43:ordered",
+    "omp_num_threads": 1,
+    "per_run_timeout_seconds": 7200,
+    "live_hostname_core_and_abacus_affinity_preflight_required": true
+  },
+  "pseudodojo": {
+    "repository": "PseudoDojo/ONCVPSP-PBE-SR",
+    "commit": "823b18f7701b6303e0e69114eaa645173f706600",
+    "materials": {
+      "al": {
+        "basename": "Al_std.upf",
+        "url": "https://raw.githubusercontent.com/PseudoDojo/ONCVPSP-PBE-SR/823b18f7701b6303e0e69114eaa645173f706600/Al/Al_std.upf",
+        "sha256": "b02eaa07c5d98f5eeae1bec4155854a7a94ea3635ca6b42e914f3f7ebd6912fb",
+        "git_blob_sha1": "aee4e3ac1868beb75b7d36c7a400a79df147bf38",
+        "upf_version": "2.0.1",
+        "pseudo_type": "NC",
+        "functional": "PBE",
+        "z_valence": 3.0,
+        "number_of_proj_per_atom": 6,
+        "expanded_nonlocal_projectors_per_atom": 18,
+        "core_correction": true
+      }
+    }
+  },
+  "input_contract": {
+    "smearing_method": "fd",
+    "smearing_sigma_ry": 0.001837465,
+    "scf_thr": 1e-10,
+    "scf_nmax": 200,
+    "ecutrho_over_ecutwfc": 4,
+    "density_cube_precision": 17,
+    "fresh_start_required": true,
+    "cal_force": true,
+    "cal_stress": true
+  },
+  "acceptance": {
+    "registered_attempted_completed_accepted_exact": 8,
+    "failed_missing_skipped_retried_exact": 0,
+    "expanded_nonlocal_projectors_total_exact": 18,
+    "electron_relative_error_strictly_less_than": 1e-10,
+    "nbands_exact": 12,
+    "last_band_occupation_strictly_less_than": 1e-8,
+    "cube_geometry_absolute_tolerance_bohr": 5e-5,
+    "stress_symmetry_abs_kbar_max": 1e-10,
+    "stress_trace_pressure_abs_kbar_strictly_less_than": 1e-6,
+    "strain_anchored_difference_mev_per_atom_max": 20.0,
+    "endpoint_anchored_k_difference_mev_per_atom_strictly_less_than": 2.0,
+    "endpoint_anchored_cutoff_difference_mev_per_atom_strictly_less_than": 1.0,
+    "endpoint_cutoff_pressure_difference_gpa_strictly_less_than": 0.02
+  },
+  "scientific_scope": {
+    "material": "al",
+    "functional": "PBE",
+    "valence_electrons_per_atom": 3,
+    "same_engine_lpp_scheme_bias_upper_bound": true,
+    "second_independent_ks_closed": false,
+    "qe_d026_scope_closed": false,
+    "g4_force_or_stress_closed": false,
+    "absolute_cross_pp_energy_gate": false,
+    "zero_temperature_exact_claim": false
+  },
+  "parent_three_layer_r1": {
+    "protocol_revision": "S1-G1-THREE-LAYER-20260810-R1",
+    "runner_commit": "439bf90049551f2b54bf6a17e0fb8689f5dfb100",
+    "external_state_root": "/home/shenwei01/.local/state/m_ofdft/s1_g1_three_layer_r1_20260810",
+    "required_accepted_ids": [
+      "S1-20260810-301",
+      "S1-20260810-302",
+      "S1-20260810-303",
+      "S1-20260810-307",
+      "S1-20260810-308"
+    ],
+    "formal_runner_must_wait_for_all_required_ids": true,
+    "state_is_read_only": true
+  },
+  "legacy_local_references": {
+    "anchor": "S1-20260807-043",
+    "strain_points": [
+      "S1-20260810-204",
+      "S1-20260810-205",
+      "S1-20260810-206",
+      "S1-20260810-207"
+    ],
+    "energy_observable": "finite-smearing E_ec",
+    "displacement_analysis_evidence_commit": "28cd24923db08e072dfabc448eb45934aaff5e9f"
+  },
+  "geometry_bindings": {
+    "S1-20260810-319": {
+      "source_experiment_id": "S1-20260810-204",
+      "source_stru_path": "inputs/s1/g1_displacement_strain_reference_r1/S1-20260810-204/STRU",
+      "source_metadata_path": "inputs/s1/g1_displacement_strain_reference_r1/S1-20260810-204/metadata.json",
+      "source_metadata_sha256": "2507778443f39d9f6638c8df40b617b4c730b1a2101b3d23ec6b6f4f199652b7",
+      "deformation_gradient": [[1.005, 0.0, 0.0], [0.0, 0.9975093361076329, 0.0], [0.0, 0.0, 0.9975093361076329]]
+    },
+    "S1-20260810-320": {
+      "source_experiment_id": "S1-20260810-205",
+      "source_stru_path": "inputs/s1/g1_displacement_strain_reference_r1/S1-20260810-205/STRU",
+      "source_metadata_path": "inputs/s1/g1_displacement_strain_reference_r1/S1-20260810-205/metadata.json",
+      "source_metadata_sha256": "4d5ac2a6a439bd82d8dc52eab1ec10bd221bdc85d127eaa61db9bb1a224750eb",
+      "deformation_gradient": [[0.995, 0.0, 0.0], [0.0, 1.002509414234171, 0.0], [0.0, 0.0, 1.002509414234171]]
+    },
+    "S1-20260810-321": {
+      "source_experiment_id": "S1-20260810-206",
+      "source_stru_path": "inputs/s1/g1_displacement_strain_reference_r1/S1-20260810-206/STRU",
+      "source_metadata_path": "inputs/s1/g1_displacement_strain_reference_r1/S1-20260810-206/metadata.json",
+      "source_metadata_sha256": "030c1f61fd7b9a2aa1480a154a0653111a51242d9b72c2ccfb77408e3ac1c3a4",
+      "deformation_gradient": [[1.0, 0.005, 0.0], [0.0, 1.0, 0.0], [0.0, 0.0, 1.0]]
+    },
+    "S1-20260810-322": {
+      "source_experiment_id": "S1-20260810-207",
+      "source_stru_path": "inputs/s1/g1_displacement_strain_reference_r1/S1-20260810-207/STRU",
+      "source_metadata_path": "inputs/s1/g1_displacement_strain_reference_r1/S1-20260810-207/metadata.json",
+      "source_metadata_sha256": "c9c74e67e92018d01225a6b610df0ac8f43426ef19431a190135eda3362ff197",
+      "deformation_gradient": [[1.0, -0.005, 0.0], [0.0, 1.0, 0.0], [0.0, 0.0, 1.0]]
+    },
+    "S1-20260810-323": {
+      "source_experiment_id": "S1-20260810-307",
+      "source_stru_path": "inputs/s1/g1_three_layer_r1/S1-20260810-307/STRU",
+      "source_metadata_path": "inputs/s1/g1_three_layer_r1/S1-20260810-307/metadata.json",
+      "source_metadata_sha256": "f9dc25cc66274a84e4ed7894ceb08724419fb012bde36a5575ed98026a7343c8"
+    },
+    "S1-20260810-324": {
+      "source_experiment_id": "S1-20260810-307",
+      "source_stru_path": "inputs/s1/g1_three_layer_r1/S1-20260810-307/STRU",
+      "source_metadata_path": "inputs/s1/g1_three_layer_r1/S1-20260810-307/metadata.json",
+      "source_metadata_sha256": "f9dc25cc66274a84e4ed7894ceb08724419fb012bde36a5575ed98026a7343c8"
+    },
+    "S1-20260810-325": {
+      "source_experiment_id": "S1-20260810-308",
+      "source_stru_path": "inputs/s1/g1_three_layer_r1/S1-20260810-308/STRU",
+      "source_metadata_path": "inputs/s1/g1_three_layer_r1/S1-20260810-308/metadata.json",
+      "source_metadata_sha256": "7f8409cd0fa67ffc52c2f311dc908d4e4904c75be1cc09fa63aebdd8bc3ef603"
+    },
+    "S1-20260810-326": {
+      "source_experiment_id": "S1-20260810-308",
+      "source_stru_path": "inputs/s1/g1_three_layer_r1/S1-20260810-308/STRU",
+      "source_metadata_path": "inputs/s1/g1_three_layer_r1/S1-20260810-308/metadata.json",
+      "source_metadata_sha256": "7f8409cd0fa67ffc52c2f311dc908d4e4904c75be1cc09fa63aebdd8bc3ef603"
+    }
+  }
+}

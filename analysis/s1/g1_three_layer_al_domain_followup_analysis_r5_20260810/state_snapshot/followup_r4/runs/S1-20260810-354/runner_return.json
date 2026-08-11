@@ -1,0 +1,33 @@
+{
+  "command": [
+    "/home/shenwei01/wt_melting_runtime_20260724/conda_prefix/bin/mpirun",
+    "--map-by",
+    "pe-list=30,31,32,33:ordered",
+    "--bind-to",
+    "core",
+    "--report-bindings",
+    "-np",
+    "4",
+    "/usr/bin/python3",
+    "/home/shenwei01/wt_g1_three_layer_al_followup_r1_20260810/scripts/s1_g1_three_layer_al_followup_r4_rank_wrapper.py",
+    "--mode",
+    "solver",
+    "--config",
+    "/home/shenwei01/wt_g1_three_layer_al_followup_r1_20260810/config/S1_g1_three_layer_al_domain_followup_r4.json",
+    "--config-sha256",
+    "a9b3f01ed54bd57659af20c91bc14baeb63aa653b62e83650e7337a2eae630c6",
+    "--evidence-dir",
+    "/home/shenwei01/.local/state/m_ofdft/s1_g1_three_layer_al_domain_followup_r4_20260810/runs/S1-20260810-354/affinity",
+    "--binary",
+    "/home/shenwei01/wt_melting_runtime_20260724/build-abacus-wt-cpu/source/abacus_pw_para"
+  ],
+  "config_sha256": "a9b3f01ed54bd57659af20c91bc14baeb63aa653b62e83650e7337a2eae630c6",
+  "duration_seconds": 388.65229022782296,
+  "experiment_id": "S1-20260810-354",
+  "finished_utc": "2026-08-10T10:54:31.962180Z",
+  "manifest_sha256": "b9cb926d804edc43b548d93ec44125bf980f4e3915dac8b73980ba85bd6bff6b",
+  "protocol_revision": "S1-G1-THREE-LAYER-AL-DOMAIN-FOLLOWUP-20260810-R4",
+  "return_code": 0,
+  "runner_commit": "0c60b0613c5c180f05256ad160d287fe4a5bae8a",
+  "schema_version": 1
+}
