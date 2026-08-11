@@ -1,0 +1,1079 @@
+{
+  "atom_counts": [
+    32,
+    108
+  ],
+  "density_relative_l2_p95": 0.0057379098808533,
+  "evidence_valid": true,
+  "fixed_kedf_error_p95_mev_per_atom": 4.035124468007467,
+  "gates": {
+    "all_geometry_cases": true,
+    "all_scale_cases": true,
+    "fixed_kedf_error_p95": true,
+    "perturbed_density_l2_p95": true
+  },
+  "geometry_case_count": 7,
+  "geometry_metrics": [
+    {
+      "basis_count": 23,
+      "cell_sha256_float64_le": "dd8f519db3df92b10497ed4d76d63e4a9ea465c7feb2dca844e49e768d1b44b9",
+      "combined_hartree_external_xc_error_mev_per_atom": 0.2702716932186239,
+      "deformation": [
+        [
+          1.0,
+          0.0,
+          0.0
+        ],
+        [
+          0.0,
+          1.0,
+          0.0
+        ],
+        [
+          0.0,
+          0.0,
+          1.0
+        ]
+      ],
+      "deformation_determinant": 1.0,
+      "density_max": 0.031353993304882304,
+      "density_min": 0.002213119967320146,
+      "density_relative_l2": 0.005629965943475478,
+      "effective_condition_number": 204761.02444058028,
+      "effective_rank": 23,
+      "electron_count": 2.9999999999990505,
+      "electron_number_relative_error": 3.1648757688647794e-13,
+      "energies_ev_per_atom": {
+        "external": 6.252049055540636,
+        "fixed_kedf": 22.304279018085257,
+        "hartree": 0.0985640939923619,
+        "xc": -21.78115268076338
+      },
+      "errors_mev_per_atom": {
+        "external": 0.39709847120938946,
+        "fixed_kedf": 4.003408004841447,
+        "hartree": -0.042510949637766804,
+        "xc": -0.08431582835299878
+      },
+      "failed_gates": [],
+      "functional_stdout_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "gates": {
+        "basis_count": true,
+        "combined_energy": true,
+        "component_energies": true,
+        "condition_number": true,
+        "density_l2": true,
+        "effective_rank": true,
+        "electron_number": true,
+        "fixed_kedf": true,
+        "low_g_set_unchanged": true,
+        "nonnegative_density": true
+      },
+      "geometry_id": "equilibrium",
+      "low_g_half_space_vector_count": 7,
+      "low_g_max_eta": 0.8871133596609789,
+      "low_g_vectors_unchanged": true,
+      "reference_density_sha256_float64_le": "0f5d3c21ff3c1d563004d694ce62e73aab3d417eb046c1558a8e2ee2f046a087",
+      "reference_energies_ev_per_atom": {
+        "external": 6.251651957069426,
+        "fixed_kedf": 22.300275610080416,
+        "hartree": 0.09860660494199967,
+        "xc": -21.781068364935027
+      },
+      "selected_density_sha256_float64_le": "9744f7d2c78c767e3fcff233f7c90c117cfcb4f91a6352b532b5d71e3f28ba4f",
+      "status": "accepted_geometry"
+    },
+    {
+      "basis_count": 23,
+      "cell_sha256_float64_le": "60252ac05f12b57fea3f9be7567534c4c76945d1c9dc25bbccfab62c970fe498",
+      "combined_hartree_external_xc_error_mev_per_atom": 0.25511031229519254,
+      "deformation": [
+        [
+          0.995,
+          0.0,
+          0.0
+        ],
+        [
+          0.0,
+          0.995,
+          0.0
+        ],
+        [
+          0.0,
+          0.0,
+          0.995
+        ]
+      ],
+      "deformation_determinant": 0.985074875,
+      "density_max": 0.031828554959734905,
+      "density_min": 0.0022546965727757314,
+      "density_relative_l2": 0.005630286740683581,
+      "effective_condition_number": 220049.32684717633,
+      "effective_rank": 23,
+      "electron_count": 3.0000000000003757,
+      "electron_number_relative_error": 1.2523315717771766e-13,
+      "energies_ev_per_atom": {
+        "external": 6.295051477627783,
+        "fixed_kedf": 22.529010824336673,
+        "hartree": 0.09905935278574936,
+        "xc": -21.880824330862655
+      },
+      "errors_mev_per_atom": {
+        "external": 0.38293478393214286,
+        "fixed_kedf": 4.048717237935762,
+        "hartree": -0.04276273384840046,
+        "xc": -0.08506173778854986
+      },
+      "failed_gates": [],
+      "functional_stdout_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "gates": {
+        "basis_count": true,
+        "combined_energy": true,
+        "component_energies": true,
+        "condition_number": true,
+        "density_l2": true,
+        "effective_rank": true,
+        "electron_number": true,
+        "fixed_kedf": true,
+        "low_g_set_unchanged": true,
+        "nonnegative_density": true
+      },
+      "geometry_id": "isotropic_m005",
+      "low_g_half_space_vector_count": 7,
+      "low_g_max_eta": 0.8871133596609792,
+      "low_g_vectors_unchanged": true,
+      "reference_density_sha256_float64_le": "3b0f20bb0a7b454ed940e6e0dde62e0191e751d14436814dc00300900fb1232b",
+      "reference_energies_ev_per_atom": {
+        "external": 6.2946685428438505,
+        "fixed_kedf": 22.524962107098737,
+        "hartree": 0.09910211551959776,
+        "xc": -21.880739269124867
+      },
+      "selected_density_sha256_float64_le": "4dc13000604d885359ce2a9b0b4c3c1cd1f105ad2679558a8d63fa33ebff0214",
+      "status": "accepted_geometry"
+    },
+    {
+      "basis_count": 23,
+      "cell_sha256_float64_le": "f5c3e2efb47b8383b25518d2e4a6477fed2ab86a4784c31f76265cab90b9798b",
+      "combined_hartree_external_xc_error_mev_per_atom": 0.284306979810231,
+      "deformation": [
+        [
+          1.005,
+          0.0,
+          0.0
+        ],
+        [
+          0.0,
+          1.005,
+          0.0
+        ],
+        [
+          0.0,
+          0.0,
+          1.005
+        ]
+      ],
+      "deformation_determinant": 1.0150751249999996,
+      "density_max": 0.030888879274339892,
+      "density_min": 0.0021716023600345364,
+      "density_relative_l2": 0.005629390405101549,
+      "effective_condition_number": 190932.09060240275,
+      "effective_rank": 23,
+      "electron_count": 3.0000000000005183,
+      "electron_number_relative_error": 1.7275070263167436e-13,
+      "energies_ev_per_atom": {
+        "external": 6.209681796605398,
+        "fixed_kedf": 22.0828893136749,
+        "hartree": 0.0980737619313252,
+        "xc": -21.682441776697846
+      },
+      "errors_mev_per_atom": {
+        "external": 0.4101547499431035,
+        "fixed_kedf": 3.955019889669842,
+        "hartree": -0.0422628865850011,
+        "xc": -0.08358488354787141
+      },
+      "failed_gates": [],
+      "functional_stdout_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "gates": {
+        "basis_count": true,
+        "combined_energy": true,
+        "component_energies": true,
+        "condition_number": true,
+        "density_l2": true,
+        "effective_rank": true,
+        "electron_number": true,
+        "fixed_kedf": true,
+        "low_g_set_unchanged": true,
+        "nonnegative_density": true
+      },
+      "geometry_id": "isotropic_p005",
+      "low_g_half_space_vector_count": 7,
+      "low_g_max_eta": 0.887113359660979,
+      "low_g_vectors_unchanged": true,
+      "reference_density_sha256_float64_le": "c9072b8990a1e3d6c022146c8faa1785d24873ac1a19878caefbbdc02e75ab4e",
+      "reference_energies_ev_per_atom": {
+        "external": 6.209271641855455,
+        "fixed_kedf": 22.07893429378523,
+        "hartree": 0.09811602481791021,
+        "xc": -21.6823581918143
+      },
+      "selected_density_sha256_float64_le": "241d6f3a676396383a9cab13e10a47364f913edc47b9464d5815edcd6d168d8d",
+      "status": "accepted_geometry"
+    },
+    {
+      "basis_count": 23,
+      "cell_sha256_float64_le": "72da6a7193603681ac6178f51207eef4ed551b5cf45c535301b5190c777af94b",
+      "combined_hartree_external_xc_error_mev_per_atom": 0.27589136600292274,
+      "deformation": [
+        [
+          0.995,
+          0.0,
+          0.0
+        ],
+        [
+          0.0,
+          1.002509414234171,
+          0.0
+        ],
+        [
+          0.0,
+          0.0,
+          1.002509414234171
+        ]
+      ],
+      "deformation_determinant": 1.0,
+      "density_max": 0.03135785140993185,
+      "density_min": 0.002212850423083928,
+      "density_relative_l2": 0.005737112470007269,
+      "effective_condition_number": 209305.38634771074,
+      "effective_rank": 23,
+      "electron_count": 2.9999999999990474,
+      "electron_number_relative_error": 3.1752378504279477e-13,
+      "energies_ev_per_atom": {
+        "external": 6.252112648686963,
+        "fixed_kedf": 22.303994849783308,
+        "hartree": 0.09856319535012055,
+        "xc": -21.781144367817124
+      },
+      "errors_mev_per_atom": {
+        "external": 0.3958058735333836,
+        "fixed_kedf": 3.6734741142119276,
+        "hartree": -0.04483820630840629,
+        "xc": -0.07507630122205455
+      },
+      "failed_gates": [],
+      "functional_stdout_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "gates": {
+        "basis_count": true,
+        "combined_energy": true,
+        "component_energies": true,
+        "condition_number": true,
+        "density_l2": true,
+        "effective_rank": true,
+        "electron_number": true,
+        "fixed_kedf": true,
+        "low_g_set_unchanged": true,
+        "nonnegative_density": true
+      },
+      "geometry_id": "tetragonal_m005",
+      "low_g_half_space_vector_count": 7,
+      "low_g_max_eta": 0.8915712157396777,
+      "low_g_vectors_unchanged": true,
+      "reference_density_sha256_float64_le": "0f5d3c21ff3c1d563004d694ce62e73aab3d417eb046c1558a8e2ee2f046a087",
+      "reference_energies_ev_per_atom": {
+        "external": 6.25171684281343,
+        "fixed_kedf": 22.300321375669096,
+        "hartree": 0.09860803355642896,
+        "xc": -21.7810692915159
+      },
+      "selected_density_sha256_float64_le": "4cb8ae0d61a972008392985ddadd3fc65bbca7112c9bdd32a85001391e82c457",
+      "status": "accepted_geometry"
+    },
+    {
+      "basis_count": 23,
+      "cell_sha256_float64_le": "033ee5c78f84f4a69110bc76634a375e85554c9184ec4107ba630c543ae276e6",
+      "combined_hartree_external_xc_error_mev_per_atom": 0.27573832345920146,
+      "deformation": [
+        [
+          1.005,
+          0.0,
+          0.0
+        ],
+        [
+          0.0,
+          0.9975093361076329,
+          0.0
+        ],
+        [
+          0.0,
+          0.0,
+          0.9975093361076329
+        ]
+      ],
+      "deformation_determinant": 0.9999999999999999,
+      "density_max": 0.03135607608151838,
+      "density_min": 0.0022128185716090167,
+      "density_relative_l2": 0.005738175684468644,
+      "effective_condition_number": 208559.9195374949,
+      "effective_rank": 23,
+      "electron_count": 2.999999999999047,
+      "electron_number_relative_error": 3.176718147794115e-13,
+      "energies_ev_per_atom": {
+        "external": 6.252112071817379,
+        "fixed_kedf": 22.304016246431647,
+        "hartree": 0.09856315365967631,
+        "xc": -21.781144470169796
+      },
+      "errors_mev_per_atom": {
+        "external": 0.39579888591578793,
+        "fixed_kedf": 3.695731282519432,
+        "hartree": -0.04486938969824883,
+        "xc": -0.07519117275833764
+      },
+      "failed_gates": [],
+      "functional_stdout_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "gates": {
+        "basis_count": true,
+        "combined_energy": true,
+        "component_energies": true,
+        "condition_number": true,
+        "density_l2": true,
+        "effective_rank": true,
+        "electron_number": true,
+        "fixed_kedf": true,
+        "low_g_set_unchanged": true,
+        "nonnegative_density": true
+      },
+      "geometry_id": "tetragonal_p005",
+      "low_g_half_space_vector_count": 7,
+      "low_g_max_eta": 0.8893283777398733,
+      "low_g_vectors_unchanged": true,
+      "reference_density_sha256_float64_le": "fa623c023b599109fab93e0159fbe0bf770595a33ff7ca5ffe8fce744e6760ae",
+      "reference_energies_ev_per_atom": {
+        "external": 6.251716272931463,
+        "fixed_kedf": 22.300320515149128,
+        "hartree": 0.09860802304937456,
+        "xc": -21.781069278997037
+      },
+      "selected_density_sha256_float64_le": "0deb7efbec6b17b4ee1af586ac56ac5af672c3f24869aefa91cdffd19fec2d2c",
+      "status": "accepted_geometry"
+    },
+    {
+      "basis_count": 23,
+      "cell_sha256_float64_le": "b7ba6942242f46217d00da3c4bca399f993eee2c1f143d87528637cdcb3d8ddb",
+      "combined_hartree_external_xc_error_mev_per_atom": 0.2717073342951709,
+      "deformation": [
+        [
+          1.0,
+          -0.005,
+          0.0
+        ],
+        [
+          0.0,
+          1.0,
+          0.0
+        ],
+        [
+          0.0,
+          0.0,
+          1.0
+        ]
+      ],
+      "deformation_determinant": 1.0,
+      "density_max": 0.031381425826793555,
+      "density_min": 0.00221180234090691,
+      "density_relative_l2": 0.00567224626667614,
+      "effective_condition_number": 204560.22179481978,
+      "effective_rank": 23,
+      "electron_count": 2.9999999999990505,
+      "electron_number_relative_error": 3.1648757688647794e-13,
+      "energies_ev_per_atom": {
+        "external": 6.252021472885433,
+        "fixed_kedf": 22.30418419591321,
+        "hartree": 0.0985625710559522,
+        "xc": -21.7811494892993
+      },
+      "errors_mev_per_atom": {
+        "external": 0.3959648088196488,
+        "fixed_kedf": 3.897298540195493,
+        "hartree": -0.0434436921242648,
+        "xc": -0.08081378240021309
+      },
+      "failed_gates": [],
+      "functional_stdout_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "gates": {
+        "basis_count": true,
+        "combined_energy": true,
+        "component_energies": true,
+        "condition_number": true,
+        "density_l2": true,
+        "effective_rank": true,
+        "electron_number": true,
+        "fixed_kedf": true,
+        "low_g_set_unchanged": true,
+        "nonnegative_density": true
+      },
+      "geometry_id": "shear_xy_m005",
+      "low_g_half_space_vector_count": 7,
+      "low_g_max_eta": 0.8871244485086699,
+      "low_g_vectors_unchanged": true,
+      "reference_density_sha256_float64_le": "0f5d3c21ff3c1d563004d694ce62e73aab3d417eb046c1558a8e2ee2f046a087",
+      "reference_energies_ev_per_atom": {
+        "external": 6.251625508076613,
+        "fixed_kedf": 22.300286897373013,
+        "hartree": 0.09860601474807647,
+        "xc": -21.7810686755169
+      },
+      "selected_density_sha256_float64_le": "b9a79154f40a7e9f66d23098f40354b06601b3a7c24b37fb614a1e29bbfb7585",
+      "status": "accepted_geometry"
+    },
+    {
+      "basis_count": 23,
+      "cell_sha256_float64_le": "4e117caf08e5bc82022100f1abdd97761142c53cdacb4e7ebd4187437b621715",
+      "combined_hartree_external_xc_error_mev_per_atom": 0.2715943869801979,
+      "deformation": [
+        [
+          1.0,
+          0.005,
+          0.0
+        ],
+        [
+          0.0,
+          1.0,
+          0.0
+        ],
+        [
+          0.0,
+          0.0,
+          1.0
+        ]
+      ],
+      "deformation_determinant": 1.0,
+      "density_max": 0.03138142594840458,
+      "density_min": 0.002211802801586594,
+      "density_relative_l2": 0.005672244492895852,
+      "effective_condition_number": 204560.22179490147,
+      "effective_rank": 23,
+      "electron_count": 2.9999999999990457,
+      "electron_number_relative_error": 3.1811590398926154e-13,
+      "energies_ev_per_atom": {
+        "external": 6.252021475818704,
+        "fixed_kedf": 22.304193074532996,
+        "hartree": 0.09856257104917639,
+        "xc": -21.78114960398648
+      },
+      "errors_mev_per_atom": {
+        "external": 0.3959665892505626,
+        "fixed_kedf": 3.90605460064819,
+        "hartree": -0.04344371141053183,
+        "xc": -0.08092849085983289
+      },
+      "failed_gates": [],
+      "functional_stdout_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "gates": {
+        "basis_count": true,
+        "combined_energy": true,
+        "component_energies": true,
+        "condition_number": true,
+        "density_l2": true,
+        "effective_rank": true,
+        "electron_number": true,
+        "fixed_kedf": true,
+        "low_g_set_unchanged": true,
+        "nonnegative_density": true
+      },
+      "geometry_id": "shear_xy_p005",
+      "low_g_half_space_vector_count": 7,
+      "low_g_max_eta": 0.88712444850867,
+      "low_g_vectors_unchanged": true,
+      "reference_density_sha256_float64_le": "0f5d3c21ff3c1d563004d694ce62e73aab3d417eb046c1558a8e2ee2f046a087",
+      "reference_energies_ev_per_atom": {
+        "external": 6.251625509229453,
+        "fixed_kedf": 22.300287019932348,
+        "hartree": 0.09860601476058692,
+        "xc": -21.78106867549562
+      },
+      "selected_density_sha256_float64_le": "e990e82d2067ac3f7df4eb2c8708eda7113bcac295e43a25effc69401c71008f",
+      "status": "accepted_geometry"
+    }
+  ],
+  "limitations": {
+    "eggbox_energy_or_pseudoforce_validated": false,
+    "full_large_cell_gram_condition_validated": false,
+    "g2_overall_accepted": false,
+    "localized_108_atom_ks_reference_validated": false,
+    "localized_perturbation_physics_validated": false
+  },
+  "material": "Al",
+  "new_solver_run_count": 0,
+  "next_action": "new_revision_obtain_localized_108_atom_reference_and_test_eggbox_rank_continuity_before_G2c",
+  "protocol_revision": "S2-G2-AL-SCALE-GEOMETRY-20260811-R3",
+  "scale_case_count": 14,
+  "scale_metrics": [
+    {
+      "atom_count": 32,
+      "atomic_function_count": 256,
+      "basis_functions_per_atom": 20.15625,
+      "cell_role": "two_by_two_by_two_conventional_fcc",
+      "coset_position_count": 32,
+      "density_relative_l2": 0.005629965943475478,
+      "effective_coefficient_fraction": 0.0014580620659722222,
+      "electron_count": 95.99999999996962,
+      "electron_number_relative_error": 3.1648757688647794e-13,
+      "equivalent_supercell_energy_difference_mev_per_atom": 0.0,
+      "expected_electron_count": 96.0,
+      "failed_gates": [],
+      "gates": {
+        "coefficient_fraction": true,
+        "coset_geometry": true,
+        "electron_number": true,
+        "equivalent_supercell_energy": true,
+        "low_g_set_unchanged": true,
+        "primitive_geometry_source": true
+      },
+      "geometry_id": "equilibrium",
+      "half_space_low_g_count": 194,
+      "low_g_vectors_unchanged": true,
+      "per_atom_errors_mev": {
+        "external": 0.39709847120938946,
+        "fixed_kedf": 4.003408004841447,
+        "hartree": -0.042510949637766804,
+        "xc": -0.08431582835299878
+      },
+      "quadrature_point_count": 442368,
+      "real_low_g_count": 388,
+      "reference_tiled_values_sha256_float64_le": "e6e681ba58ae6ce1c9ee11e1b2ad72d47c467e4744de08e3115cb5f5189bd93c",
+      "selected_tiled_values_sha256_float64_le": "fbf04a4fe736ba4efdfae5761183e8d2f3e81df047d8df369364d9bbbfd135b7",
+      "status": "accepted_scale_tiling",
+      "supercell_cell_sha256_float64_le": "c020a8260bef0a30917086b8ddaeb6426adf54b6993dbe14d77e66ccbc557688",
+      "supercell_determinant": 32,
+      "threshold_reselection_matches_frozen": true,
+      "total_basis_count": 645
+    },
+    {
+      "atom_count": 32,
+      "atomic_function_count": 256,
+      "basis_functions_per_atom": 20.15625,
+      "cell_role": "two_by_two_by_two_conventional_fcc",
+      "coset_position_count": 32,
+      "density_relative_l2": 0.005630286740683581,
+      "effective_coefficient_fraction": 0.0014580620659722222,
+      "electron_count": 96.00000000001202,
+      "electron_number_relative_error": 1.2523315717771766e-13,
+      "equivalent_supercell_energy_difference_mev_per_atom": 0.0,
+      "expected_electron_count": 96.0,
+      "failed_gates": [],
+      "gates": {
+        "coefficient_fraction": true,
+        "coset_geometry": true,
+        "electron_number": true,
+        "equivalent_supercell_energy": true,
+        "low_g_set_unchanged": true,
+        "primitive_geometry_source": true
+      },
+      "geometry_id": "isotropic_m005",
+      "half_space_low_g_count": 194,
+      "low_g_vectors_unchanged": true,
+      "per_atom_errors_mev": {
+        "external": 0.38293478393214286,
+        "fixed_kedf": 4.048717237935762,
+        "hartree": -0.04276273384840046,
+        "xc": -0.08506173778854986
+      },
+      "quadrature_point_count": 442368,
+      "real_low_g_count": 388,
+      "reference_tiled_values_sha256_float64_le": "38fba1a4b3c4af893d95ec9a3a3990ff2d919787d4d23b4a1052c28a0573b091",
+      "selected_tiled_values_sha256_float64_le": "f5f7bfe80b4b27d67b5be7891d0e144482d490c4649b87c59d5445f50838ec15",
+      "status": "accepted_scale_tiling",
+      "supercell_cell_sha256_float64_le": "8e7999b75184cc0e85f46ca1650c3663759fc8aabc3e5e6f0123258791f66554",
+      "supercell_determinant": 32,
+      "threshold_reselection_matches_frozen": true,
+      "total_basis_count": 645
+    },
+    {
+      "atom_count": 32,
+      "atomic_function_count": 256,
+      "basis_functions_per_atom": 20.15625,
+      "cell_role": "two_by_two_by_two_conventional_fcc",
+      "coset_position_count": 32,
+      "density_relative_l2": 0.005629390405101549,
+      "effective_coefficient_fraction": 0.0014580620659722222,
+      "electron_count": 96.00000000001658,
+      "electron_number_relative_error": 1.7275070263167436e-13,
+      "equivalent_supercell_energy_difference_mev_per_atom": 0.0,
+      "expected_electron_count": 96.0,
+      "failed_gates": [],
+      "gates": {
+        "coefficient_fraction": true,
+        "coset_geometry": true,
+        "electron_number": true,
+        "equivalent_supercell_energy": true,
+        "low_g_set_unchanged": true,
+        "primitive_geometry_source": true
+      },
+      "geometry_id": "isotropic_p005",
+      "half_space_low_g_count": 194,
+      "low_g_vectors_unchanged": true,
+      "per_atom_errors_mev": {
+        "external": 0.4101547499431035,
+        "fixed_kedf": 3.955019889669842,
+        "hartree": -0.0422628865850011,
+        "xc": -0.08358488354787141
+      },
+      "quadrature_point_count": 442368,
+      "real_low_g_count": 388,
+      "reference_tiled_values_sha256_float64_le": "7789849bdee50f049a85b8312a9b2d6cf1173670205ee24097e65638f29eecbd",
+      "selected_tiled_values_sha256_float64_le": "ee3dc1b57618c347eecdfd52b4f6be673fff5f1b60bd9a2ecbeea1a0ca1a5d83",
+      "status": "accepted_scale_tiling",
+      "supercell_cell_sha256_float64_le": "32fc1ee7aad53b6c88979c297187eff93018503eeceee3e1c29fff838b6f0f91",
+      "supercell_determinant": 32,
+      "threshold_reselection_matches_frozen": true,
+      "total_basis_count": 645
+    },
+    {
+      "atom_count": 32,
+      "atomic_function_count": 256,
+      "basis_functions_per_atom": 20.15625,
+      "cell_role": "two_by_two_by_two_conventional_fcc",
+      "coset_position_count": 32,
+      "density_relative_l2": 0.005737112470007269,
+      "effective_coefficient_fraction": 0.0014580620659722222,
+      "electron_count": 95.99999999996952,
+      "electron_number_relative_error": 3.1752378504279477e-13,
+      "equivalent_supercell_energy_difference_mev_per_atom": 0.0,
+      "expected_electron_count": 96.0,
+      "failed_gates": [],
+      "gates": {
+        "coefficient_fraction": true,
+        "coset_geometry": true,
+        "electron_number": true,
+        "equivalent_supercell_energy": true,
+        "low_g_set_unchanged": true,
+        "primitive_geometry_source": true
+      },
+      "geometry_id": "tetragonal_m005",
+      "half_space_low_g_count": 194,
+      "low_g_vectors_unchanged": true,
+      "per_atom_errors_mev": {
+        "external": 0.3958058735333836,
+        "fixed_kedf": 3.6734741142119276,
+        "hartree": -0.04483820630840629,
+        "xc": -0.07507630122205455
+      },
+      "quadrature_point_count": 442368,
+      "real_low_g_count": 388,
+      "reference_tiled_values_sha256_float64_le": "e6e681ba58ae6ce1c9ee11e1b2ad72d47c467e4744de08e3115cb5f5189bd93c",
+      "selected_tiled_values_sha256_float64_le": "d92f90d651c18716011b4785ee183f29453e59bfbad8ab169e464bb4a4ee69b0",
+      "status": "accepted_scale_tiling",
+      "supercell_cell_sha256_float64_le": "71deaabf7ad0e98dc6a24a5bcd85c61c1698fa4fccd76f2baf2c6b1444468652",
+      "supercell_determinant": 32,
+      "threshold_reselection_matches_frozen": true,
+      "total_basis_count": 645
+    },
+    {
+      "atom_count": 32,
+      "atomic_function_count": 256,
+      "basis_functions_per_atom": 20.15625,
+      "cell_role": "two_by_two_by_two_conventional_fcc",
+      "coset_position_count": 32,
+      "density_relative_l2": 0.005738175684468644,
+      "effective_coefficient_fraction": 0.0014580620659722222,
+      "electron_count": 95.9999999999695,
+      "electron_number_relative_error": 3.176718147794115e-13,
+      "equivalent_supercell_energy_difference_mev_per_atom": 0.0,
+      "expected_electron_count": 96.0,
+      "failed_gates": [],
+      "gates": {
+        "coefficient_fraction": true,
+        "coset_geometry": true,
+        "electron_number": true,
+        "equivalent_supercell_energy": true,
+        "low_g_set_unchanged": true,
+        "primitive_geometry_source": true
+      },
+      "geometry_id": "tetragonal_p005",
+      "half_space_low_g_count": 194,
+      "low_g_vectors_unchanged": true,
+      "per_atom_errors_mev": {
+        "external": 0.39579888591578793,
+        "fixed_kedf": 3.695731282519432,
+        "hartree": -0.04486938969824883,
+        "xc": -0.07519117275833764
+      },
+      "quadrature_point_count": 442368,
+      "real_low_g_count": 388,
+      "reference_tiled_values_sha256_float64_le": "1136ae32482beb044b3f6559996712e6d72f4346ec0a0ec0b9356a093825d1b8",
+      "selected_tiled_values_sha256_float64_le": "2aec7a09cbcec9f6e8b8a37fc02adf23331d5c9eadb7b897989dfd607ae9fdfc",
+      "status": "accepted_scale_tiling",
+      "supercell_cell_sha256_float64_le": "555c851a3a4e32f8b2169804278c6c1733471c052dc7ebe16fb74e38f40574fa",
+      "supercell_determinant": 32,
+      "threshold_reselection_matches_frozen": true,
+      "total_basis_count": 645
+    },
+    {
+      "atom_count": 32,
+      "atomic_function_count": 256,
+      "basis_functions_per_atom": 20.15625,
+      "cell_role": "two_by_two_by_two_conventional_fcc",
+      "coset_position_count": 32,
+      "density_relative_l2": 0.00567224626667614,
+      "effective_coefficient_fraction": 0.0014580620659722222,
+      "electron_count": 95.99999999996962,
+      "electron_number_relative_error": 3.1648757688647794e-13,
+      "equivalent_supercell_energy_difference_mev_per_atom": 0.0,
+      "expected_electron_count": 96.0,
+      "failed_gates": [],
+      "gates": {
+        "coefficient_fraction": true,
+        "coset_geometry": true,
+        "electron_number": true,
+        "equivalent_supercell_energy": true,
+        "low_g_set_unchanged": true,
+        "primitive_geometry_source": true
+      },
+      "geometry_id": "shear_xy_m005",
+      "half_space_low_g_count": 194,
+      "low_g_vectors_unchanged": true,
+      "per_atom_errors_mev": {
+        "external": 0.3959648088196488,
+        "fixed_kedf": 3.897298540195493,
+        "hartree": -0.0434436921242648,
+        "xc": -0.08081378240021309
+      },
+      "quadrature_point_count": 442368,
+      "real_low_g_count": 388,
+      "reference_tiled_values_sha256_float64_le": "e6e681ba58ae6ce1c9ee11e1b2ad72d47c467e4744de08e3115cb5f5189bd93c",
+      "selected_tiled_values_sha256_float64_le": "c452962a0dc2438ca1babb18ab04b90b7cf3ba1b6943243976700dbfa6f1fca1",
+      "status": "accepted_scale_tiling",
+      "supercell_cell_sha256_float64_le": "d6493b66357b0d80478d0c0f6a155eb3903148d6c16dd89a413049ae9de623ff",
+      "supercell_determinant": 32,
+      "threshold_reselection_matches_frozen": true,
+      "total_basis_count": 645
+    },
+    {
+      "atom_count": 32,
+      "atomic_function_count": 256,
+      "basis_functions_per_atom": 20.15625,
+      "cell_role": "two_by_two_by_two_conventional_fcc",
+      "coset_position_count": 32,
+      "density_relative_l2": 0.005672244492895852,
+      "effective_coefficient_fraction": 0.0014580620659722222,
+      "electron_count": 95.99999999996946,
+      "electron_number_relative_error": 3.1811590398926154e-13,
+      "equivalent_supercell_energy_difference_mev_per_atom": 0.0,
+      "expected_electron_count": 96.0,
+      "failed_gates": [],
+      "gates": {
+        "coefficient_fraction": true,
+        "coset_geometry": true,
+        "electron_number": true,
+        "equivalent_supercell_energy": true,
+        "low_g_set_unchanged": true,
+        "primitive_geometry_source": true
+      },
+      "geometry_id": "shear_xy_p005",
+      "half_space_low_g_count": 194,
+      "low_g_vectors_unchanged": true,
+      "per_atom_errors_mev": {
+        "external": 0.3959665892505626,
+        "fixed_kedf": 3.90605460064819,
+        "hartree": -0.04344371141053183,
+        "xc": -0.08092849085983289
+      },
+      "quadrature_point_count": 442368,
+      "real_low_g_count": 388,
+      "reference_tiled_values_sha256_float64_le": "e6e681ba58ae6ce1c9ee11e1b2ad72d47c467e4744de08e3115cb5f5189bd93c",
+      "selected_tiled_values_sha256_float64_le": "ff9351df5781c2dcbe0b77263137236b885543fe22e0d3ef800f234a19d7ad67",
+      "status": "accepted_scale_tiling",
+      "supercell_cell_sha256_float64_le": "1023fd72811bc30d344c69c8efeb879aeb5e8c63fbcda06119a27ff547936117",
+      "supercell_determinant": 32,
+      "threshold_reselection_matches_frozen": true,
+      "total_basis_count": 645
+    },
+    {
+      "atom_count": 108,
+      "atomic_function_count": 864,
+      "basis_functions_per_atom": 20.12037037037037,
+      "cell_role": "three_by_three_by_three_conventional_fcc",
+      "coset_position_count": 108,
+      "density_relative_l2": 0.005629965943475478,
+      "effective_coefficient_fraction": 0.0014554666066529493,
+      "electron_count": 323.99999999989745,
+      "electron_number_relative_error": 3.1649854205215326e-13,
+      "equivalent_supercell_energy_difference_mev_per_atom": 6.938893903907228e-18,
+      "expected_electron_count": 324.0,
+      "failed_gates": [],
+      "gates": {
+        "coefficient_fraction": true,
+        "coset_geometry": true,
+        "electron_number": true,
+        "equivalent_supercell_energy": true,
+        "low_g_set_unchanged": true,
+        "primitive_geometry_source": true
+      },
+      "geometry_id": "equilibrium",
+      "half_space_low_g_count": 654,
+      "low_g_vectors_unchanged": true,
+      "per_atom_errors_mev": {
+        "external": 0.39709847120938946,
+        "fixed_kedf": 4.003408004841447,
+        "hartree": -0.04251094963776681,
+        "xc": -0.08431582835299878
+      },
+      "quadrature_point_count": 1492992,
+      "real_low_g_count": 1308,
+      "reference_tiled_values_sha256_float64_le": "c28efb2563509d1570c7af5e68de825440dcfc863761155e89973338db470be4",
+      "selected_tiled_values_sha256_float64_le": "957e7f81fea30d4693f2ad7b08199ce67f9683347d3cf9d6d49edb183b7223bb",
+      "status": "accepted_scale_tiling",
+      "supercell_cell_sha256_float64_le": "db0425940746cacfdf75eaa5ac2adeb4fdb03c3918514464c9cf9d2a31c4b7ee",
+      "supercell_determinant": 108,
+      "threshold_reselection_matches_frozen": true,
+      "total_basis_count": 2173
+    },
+    {
+      "atom_count": 108,
+      "atomic_function_count": 864,
+      "basis_functions_per_atom": 20.12037037037037,
+      "cell_role": "three_by_three_by_three_conventional_fcc",
+      "coset_position_count": 108,
+      "density_relative_l2": 0.005630286740683581,
+      "effective_coefficient_fraction": 0.0014554666066529493,
+      "electron_count": 324.0000000000406,
+      "electron_number_relative_error": 1.252660526747436e-13,
+      "equivalent_supercell_energy_difference_mev_per_atom": 0.0,
+      "expected_electron_count": 324.0,
+      "failed_gates": [],
+      "gates": {
+        "coefficient_fraction": true,
+        "coset_geometry": true,
+        "electron_number": true,
+        "equivalent_supercell_energy": true,
+        "low_g_set_unchanged": true,
+        "primitive_geometry_source": true
+      },
+      "geometry_id": "isotropic_m005",
+      "half_space_low_g_count": 654,
+      "low_g_vectors_unchanged": true,
+      "per_atom_errors_mev": {
+        "external": 0.38293478393214286,
+        "fixed_kedf": 4.048717237935762,
+        "hartree": -0.04276273384840046,
+        "xc": -0.08506173778854986
+      },
+      "quadrature_point_count": 1492992,
+      "real_low_g_count": 1308,
+      "reference_tiled_values_sha256_float64_le": "e3357cf82eea40a3fb98b52b7873be5643f23ea1327e230663b48c28085f8a90",
+      "selected_tiled_values_sha256_float64_le": "13423a09f0c2f196d17c9eadd99f1949daae1a855e9186ca878fc531d345fda4",
+      "status": "accepted_scale_tiling",
+      "supercell_cell_sha256_float64_le": "21977b8a664f96f7e70dfc50fd77fb0aa158cb5fb2985f2d99855cb8b269961e",
+      "supercell_determinant": 108,
+      "threshold_reselection_matches_frozen": true,
+      "total_basis_count": 2173
+    },
+    {
+      "atom_count": 108,
+      "atomic_function_count": 864,
+      "basis_functions_per_atom": 20.12037037037037,
+      "cell_role": "three_by_three_by_three_conventional_fcc",
+      "coset_position_count": 108,
+      "density_relative_l2": 0.005629390405101549,
+      "effective_coefficient_fraction": 0.0014554666066529493,
+      "electron_count": 324.000000000056,
+      "electron_number_relative_error": 1.7281101104288856e-13,
+      "equivalent_supercell_energy_difference_mev_per_atom": 6.938893903907228e-18,
+      "expected_electron_count": 324.0,
+      "failed_gates": [],
+      "gates": {
+        "coefficient_fraction": true,
+        "coset_geometry": true,
+        "electron_number": true,
+        "equivalent_supercell_energy": true,
+        "low_g_set_unchanged": true,
+        "primitive_geometry_source": true
+      },
+      "geometry_id": "isotropic_p005",
+      "half_space_low_g_count": 654,
+      "low_g_vectors_unchanged": true,
+      "per_atom_errors_mev": {
+        "external": 0.4101547499431035,
+        "fixed_kedf": 3.955019889669842,
+        "hartree": -0.04226288658500111,
+        "xc": -0.08358488354787141
+      },
+      "quadrature_point_count": 1492992,
+      "real_low_g_count": 1308,
+      "reference_tiled_values_sha256_float64_le": "c6fc2bb39dac81f9d43b9c34aec65b26328d4fd6049d9a0afc79d7711b67a61c",
+      "selected_tiled_values_sha256_float64_le": "fb77b2cde74565d767993c4f9bf049b4c6a5880c5310f63e7c18f6121d6c1a0d",
+      "status": "accepted_scale_tiling",
+      "supercell_cell_sha256_float64_le": "6e1f65733394362269445e90b25ed7f9ee12b8be64571851c23b2ecd4d209453",
+      "supercell_determinant": 108,
+      "threshold_reselection_matches_frozen": true,
+      "total_basis_count": 2173
+    },
+    {
+      "atom_count": 108,
+      "atomic_function_count": 864,
+      "basis_functions_per_atom": 20.12037037037037,
+      "cell_role": "three_by_three_by_three_conventional_fcc",
+      "coset_position_count": 108,
+      "density_relative_l2": 0.005737112470007269,
+      "effective_coefficient_fraction": 0.0014554666066529493,
+      "electron_count": 323.9999999998971,
+      "electron_number_relative_error": 3.1755119795698307e-13,
+      "equivalent_supercell_energy_difference_mev_per_atom": 0.0,
+      "expected_electron_count": 324.0,
+      "failed_gates": [],
+      "gates": {
+        "coefficient_fraction": true,
+        "coset_geometry": true,
+        "electron_number": true,
+        "equivalent_supercell_energy": true,
+        "low_g_set_unchanged": true,
+        "primitive_geometry_source": true
+      },
+      "geometry_id": "tetragonal_m005",
+      "half_space_low_g_count": 654,
+      "low_g_vectors_unchanged": true,
+      "per_atom_errors_mev": {
+        "external": 0.3958058735333836,
+        "fixed_kedf": 3.6734741142119276,
+        "hartree": -0.04483820630840629,
+        "xc": -0.07507630122205455
+      },
+      "quadrature_point_count": 1492992,
+      "real_low_g_count": 1308,
+      "reference_tiled_values_sha256_float64_le": "c28efb2563509d1570c7af5e68de825440dcfc863761155e89973338db470be4",
+      "selected_tiled_values_sha256_float64_le": "ec5a3c9e4ed8c4d017980718bf4a386d64b5ff045f7e41cc327a9ad7512bd498",
+      "status": "accepted_scale_tiling",
+      "supercell_cell_sha256_float64_le": "1a7871c10e97b15bd5e9cc324ec58f44c15a867ce5445a34cf179c90ddf0c947",
+      "supercell_determinant": 108,
+      "threshold_reselection_matches_frozen": true,
+      "total_basis_count": 2173
+    },
+    {
+      "atom_count": 108,
+      "atomic_function_count": 864,
+      "basis_functions_per_atom": 20.12037037037037,
+      "cell_role": "three_by_three_by_three_conventional_fcc",
+      "coset_position_count": 108,
+      "density_relative_l2": 0.005738175684468644,
+      "effective_coefficient_fraction": 0.0014554666066529493,
+      "electron_count": 323.99999999989706,
+      "electron_number_relative_error": 3.17726640607788e-13,
+      "equivalent_supercell_energy_difference_mev_per_atom": 0.0,
+      "expected_electron_count": 324.0,
+      "failed_gates": [],
+      "gates": {
+        "coefficient_fraction": true,
+        "coset_geometry": true,
+        "electron_number": true,
+        "equivalent_supercell_energy": true,
+        "low_g_set_unchanged": true,
+        "primitive_geometry_source": true
+      },
+      "geometry_id": "tetragonal_p005",
+      "half_space_low_g_count": 654,
+      "low_g_vectors_unchanged": true,
+      "per_atom_errors_mev": {
+        "external": 0.39579888591578793,
+        "fixed_kedf": 3.695731282519432,
+        "hartree": -0.04486938969824883,
+        "xc": -0.07519117275833764
+      },
+      "quadrature_point_count": 1492992,
+      "real_low_g_count": 1308,
+      "reference_tiled_values_sha256_float64_le": "b585cad0c03052d0ef41662d9edea1a3d317e394927a620ea0587b503e208aa9",
+      "selected_tiled_values_sha256_float64_le": "1c90217f4dfeaf1263ebcf3e63291187e9823ccffeeeadae9c9ebd8c489398dc",
+      "status": "accepted_scale_tiling",
+      "supercell_cell_sha256_float64_le": "8c247aa369a0a712a4f668d5cbd9a2be3db5b261bd189228fbd416c35b741258",
+      "supercell_determinant": 108,
+      "threshold_reselection_matches_frozen": false,
+      "total_basis_count": 2173
+    },
+    {
+      "atom_count": 108,
+      "atomic_function_count": 864,
+      "basis_functions_per_atom": 20.12037037037037,
+      "cell_role": "three_by_three_by_three_conventional_fcc",
+      "coset_position_count": 108,
+      "density_relative_l2": 0.00567224626667614,
+      "effective_coefficient_fraction": 0.0014554666066529493,
+      "electron_count": 323.99999999989745,
+      "electron_number_relative_error": 3.1649854205215326e-13,
+      "equivalent_supercell_energy_difference_mev_per_atom": 6.938893903907228e-18,
+      "expected_electron_count": 324.0,
+      "failed_gates": [],
+      "gates": {
+        "coefficient_fraction": true,
+        "coset_geometry": true,
+        "electron_number": true,
+        "equivalent_supercell_energy": true,
+        "low_g_set_unchanged": true,
+        "primitive_geometry_source": true
+      },
+      "geometry_id": "shear_xy_m005",
+      "half_space_low_g_count": 654,
+      "low_g_vectors_unchanged": true,
+      "per_atom_errors_mev": {
+        "external": 0.3959648088196488,
+        "fixed_kedf": 3.897298540195493,
+        "hartree": -0.04344369212426479,
+        "xc": -0.08081378240021309
+      },
+      "quadrature_point_count": 1492992,
+      "real_low_g_count": 1308,
+      "reference_tiled_values_sha256_float64_le": "c28efb2563509d1570c7af5e68de825440dcfc863761155e89973338db470be4",
+      "selected_tiled_values_sha256_float64_le": "6d583a9de1b474332a2158f72d6008c27a7bd303ad06a3500f05c18fe656051e",
+      "status": "accepted_scale_tiling",
+      "supercell_cell_sha256_float64_le": "b3299142e4e13efacecc88d546406507f70a676459078b854ceb7ab0d2c1e591",
+      "supercell_determinant": 108,
+      "threshold_reselection_matches_frozen": true,
+      "total_basis_count": 2173
+    },
+    {
+      "atom_count": 108,
+      "atomic_function_count": 864,
+      "basis_functions_per_atom": 20.12037037037037,
+      "cell_role": "three_by_three_by_three_conventional_fcc",
+      "coset_position_count": 108,
+      "density_relative_l2": 0.005672244492895852,
+      "effective_coefficient_fraction": 0.0014554666066529493,
+      "electron_count": 323.99999999989694,
+      "electron_number_relative_error": 3.180775259093979e-13,
+      "equivalent_supercell_energy_difference_mev_per_atom": 6.938893903907228e-18,
+      "expected_electron_count": 324.0,
+      "failed_gates": [],
+      "gates": {
+        "coefficient_fraction": true,
+        "coset_geometry": true,
+        "electron_number": true,
+        "equivalent_supercell_energy": true,
+        "low_g_set_unchanged": true,
+        "primitive_geometry_source": true
+      },
+      "geometry_id": "shear_xy_p005",
+      "half_space_low_g_count": 654,
+      "low_g_vectors_unchanged": true,
+      "per_atom_errors_mev": {
+        "external": 0.3959665892505626,
+        "fixed_kedf": 3.90605460064819,
+        "hartree": -0.043443711410531834,
+        "xc": -0.08092849085983289
+      },
+      "quadrature_point_count": 1492992,
+      "real_low_g_count": 1308,
+      "reference_tiled_values_sha256_float64_le": "c28efb2563509d1570c7af5e68de825440dcfc863761155e89973338db470be4",
+      "selected_tiled_values_sha256_float64_le": "1607fb25295bde325b3f211a9c6bbcd8c19e1b33cc9e4996b057d658854fd002",
+      "status": "accepted_scale_tiling",
+      "supercell_cell_sha256_float64_le": "2b7dfbbcf7837d327dd8774d109132360c4c39baef4f5b258a749146b7f6ab3d",
+      "supercell_determinant": 108,
+      "threshold_reselection_matches_frozen": true,
+      "total_basis_count": 2173
+    }
+  ],
+  "schema_version": 1,
+  "selected_candidate_id": "r08_eta100_complementary",
+  "stage": "S2",
+  "status": "accepted_periodic_tiling_geometry_scale_pilot"
+}
