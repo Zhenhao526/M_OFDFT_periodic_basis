@@ -1,0 +1,23 @@
+INPUT_PARAMETERS
+suffix s2_g2_al108_localized_r1
+out_chg 1 17
+calculation scf
+esolver_type ksdft
+basis_type pw
+dft_functional PBE
+symmetry 0
+pseudo_dir .
+pseudo_rcut 16
+ecutwfc 40
+ecutrho 160
+nbands 180
+scf_nmax 250
+scf_thr 1.0e-09
+cal_force 1
+cal_stress 1
+ks_solver cg
+smearing_method fd
+smearing_sigma 0.001837465
+mixing_type broyden
+mixing_beta 0.2
+vnl_in_h 1
