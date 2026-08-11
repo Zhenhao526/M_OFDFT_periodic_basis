@@ -1,0 +1,56 @@
+{
+  "atomic_function_count": 864,
+  "base_functional_stdout_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+  "base_operator_energies_ev_per_cell": {
+    "reference": {
+      "combined_hartree_external_xc": -1667.2474049220064,
+      "external": 674.7532959503872,
+      "fixed_kedf": 2405.351806738011,
+      "hartree": 9.213523457468215,
+      "total_with_fixed_wt": 738.1044018160046,
+      "xc": -2351.2142243298617
+    },
+    "selected": {
+      "combined_hartree_external_xc": -1667.119021922971,
+      "external": 674.8923484608938,
+      "fixed_kedf": 2405.843538685482,
+      "hartree": 9.210145137827965,
+      "total_with_fixed_wt": 738.7245167625113,
+      "xc": -2351.2215155216927
+    }
+  },
+  "basis_count": 2173,
+  "component_energy_errors_mev_per_atom": {
+    "combined_hartree_external_xc": 1.1887314725506124,
+    "external": 1.2875232454318932,
+    "fixed_kedf": 4.553073587696114,
+    "hartree": -0.031280737409721544,
+    "total_with_fixed_wt": 5.741805060246726,
+    "xc": -0.06751103547197056
+  },
+  "density_relative_l2": 0.0046793543575598135,
+  "effective_coefficient_fraction": 0.002456099898726852,
+  "half_space_low_g_count": 654,
+  "quadrature_point_count": 884736,
+  "real_low_g_count": 1308,
+  "reference_electrons": 324.00000000013483,
+  "schema_version": 1,
+  "selected_density_minimum": 0.0025945703450062155,
+  "selected_electrons": 324.0000000001348,
+  "status": "evidence_valid_scientific_gate_rejected",
+  "threshold_decade_max_change_mev_per_atom": 0.0043159628475564205,
+  "threshold_totals": [
+    {
+      "relative_cutoff": 1e-08,
+      "total_energy_ev_per_atom": 6.840046558986829
+    },
+    {
+      "relative_cutoff": 1e-09,
+      "total_energy_ev_per_atom": 6.840046137837952
+    },
+    {
+      "relative_cutoff": 1e-10,
+      "total_energy_ev_per_atom": 6.840041821875104
+    }
+  ]
+}

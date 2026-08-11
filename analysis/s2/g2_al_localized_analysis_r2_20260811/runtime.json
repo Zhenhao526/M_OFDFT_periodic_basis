@@ -1,0 +1,111 @@
+{
+  "analysis_revision": {
+    "analyzer_sha256": "b655c32cae4e534c38afd7ea8374f13478d3be55fb1a3582f50fefe19c49fa98",
+    "implementation_commit": "898424d420d804fe81df1e32741ae48c1b75f675",
+    "protocol_revision": "S2-G2-AL-LOCALIZED-ANALYSIS-20260811-R2",
+    "source_r1_preregistration_commit": "28883776ca47d5a31568cd9a99f2e994df813f88"
+  },
+  "analyzer_commit": "898424d420d804fe81df1e32741ae48c1b75f675",
+  "analyzer_sha256": "6351b128b71bf737634339aa3e51adc22750f9aa2b8e066f7364ded44c5c14ec",
+  "config_sha256": "de1de3cfba6e8c265df76fbc6e722e11dfcc53da24d64e1d84da21318f255cc7",
+  "schema_version": 1,
+  "solver": {
+    "binary": "/home/shenwei01/wt_melting_runtime_20260724/build-abacus-wt-cpu/source/abacus_pw_para",
+    "binary_sha256": "2d68a57c7b25608b3550854dabc2e63601eeca956bf185ad7d0967052bdbb4ba",
+    "hostname": "node05",
+    "logical_cpu_pairs": [
+      [
+        0,
+        76
+      ],
+      [
+        1,
+        77
+      ],
+      [
+        2,
+        78
+      ],
+      [
+        3,
+        79
+      ],
+      [
+        4,
+        80
+      ],
+      [
+        5,
+        81
+      ],
+      [
+        6,
+        82
+      ],
+      [
+        7,
+        83
+      ],
+      [
+        8,
+        84
+      ],
+      [
+        9,
+        85
+      ],
+      [
+        10,
+        86
+      ],
+      [
+        11,
+        87
+      ],
+      [
+        12,
+        88
+      ],
+      [
+        13,
+        89
+      ],
+      [
+        14,
+        90
+      ],
+      [
+        15,
+        91
+      ]
+    ],
+    "map_by": "pe-list=0,1,2,3,4,5,6,7,8,9,10,11,12,13,14,15:ordered",
+    "mpi": "/home/shenwei01/wt_melting_runtime_20260724/conda_prefix/bin/mpirun",
+    "mpi_sha256": "7ae46f275cdccb2b9783d283986f5eac82c837106b7693a6638ecad5e44cfa20",
+    "per_run_timeout_seconds": 14400,
+    "physical_core_ids": [
+      0,
+      1,
+      2,
+      3,
+      4,
+      5,
+      6,
+      7,
+      8,
+      9,
+      10,
+      11,
+      12,
+      13,
+      14,
+      15
+    ],
+    "rank_count": 16,
+    "thread_environment": {
+      "MKL_NUM_THREADS": "1",
+      "OMP_NUM_THREADS": "1",
+      "OPENBLAS_NUM_THREADS": "1"
+    }
+  }
+}

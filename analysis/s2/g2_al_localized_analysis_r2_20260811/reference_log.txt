@@ -1,0 +1,1295 @@
+                                                                                     
+                              ABACUS v3.11.0-beta.5
+
+               Atomic-orbital Based Ab-initio Computation at UStc                    
+
+                     Website: http://abacus.ustc.edu.cn/                             
+               Documentation: https://abacus.deepmodeling.com/                       
+                  Repository: https://github.com/abacusmodeling/abacus-develop       
+                              https://github.com/deepmodeling/abacus-develop         
+                      Commit: unknown
+
+    Start Time is Tue Aug 11 19:53:04 2026
+                                                                                     
+ ------------------------------------------------------------------------------------
+
+ READING GENERAL INFORMATION
+                           global_out_dir = OUT.s2_g2_al108_localized_r1/
+                           global_in_card = INPUT
+                               pseudo_dir = ./
+                              orbital_dir = 
+                                    DRANK = 1
+                                    DSIZE = 16
+                                   DCOLOR = 1
+                                    GRANK = 1
+                                    GSIZE = 1
+
+
+ >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
+ |                                                                    |
+ |                        #Setup Unitcell#                            |
+ | From the input file and the structure file we know the number of   |
+ | different elments in this unitcell, then we list the detail        |
+ | information for each element, especially the zeta and polar atomic |
+ | orbital number for each element. The total atom number is counted. |
+ | We calculate the nearest atom distance for each atom and show the  |
+ | Cartesian and Direct coordinates for each atom. We list the file   |
+ | address for atomic orbitals. The volume and the lattice vectors    |
+ | in real and reciprocal space is also shown.                        |
+ |                                                                    |
+ <<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<
+
+ READING UNITCELL INFORMATION
+                       Number of elements = 1
+                  Lattice constant (Bohr) = 1.88973
+              Lattice constant (Angstrom) = 1
+
+ READING ATOM TYPE 1
+                               Atom label = Al
+                      L=0, number of zeta = 1
+                      L=1, number of zeta = 1
+                      L=2, number of zeta = 1
+            Number of atoms for this type = 108
+
+                        TOTAL ATOM NUMBER = 108
+
+ DIRECT COORDINATES
+ atom                  x                  y                  z     mag
+   Al     0.000000000000     0.000000000000     0.000000000000  0.0000
+   Al     0.000000000000     0.000000000000     0.333333333332  0.0000
+   Al     0.000000000000     0.000000000000     0.666666666668  0.0000
+   Al     0.000000000000     0.166666666668     0.166666666668  0.0000
+   Al     0.000000000000     0.166666666668     0.500000000000  0.0000
+   Al     0.000000000000     0.166666666668     0.833333333332  0.0000
+   Al     0.000000000000     0.333333333332     0.000000000000  0.0000
+   Al     0.000000000000     0.333333333332     0.333333333332  0.0000
+   Al     0.000000000000     0.333333333332     0.666666666668  0.0000
+   Al     0.000000000000     0.500000000000     0.166666666668  0.0000
+   Al     0.000000000000     0.500000000000     0.500000000000  0.0000
+   Al     0.000000000000     0.500000000000     0.833333333332  0.0000
+   Al     0.000000000000     0.666666666668     0.000000000000  0.0000
+   Al     0.000000000000     0.666666666668     0.333333333332  0.0000
+   Al     0.000000000000     0.666666666668     0.666666666668  0.0000
+   Al     0.000000000000     0.833333333332     0.166666666668  0.0000
+   Al     0.000000000000     0.833333333332     0.500000000000  0.0000
+   Al     0.000000000000     0.833333333332     0.833333333332  0.0000
+   Al     0.166666666668     0.000000000000     0.166666666668  0.0000
+   Al     0.166666666668     0.000000000000     0.500000000000  0.0000
+   Al     0.166666666668     0.000000000000     0.833333333332  0.0000
+   Al     0.166666666668     0.166666666668     0.000000000000  0.0000
+   Al     0.166666666668     0.166666666668     0.333333333332  0.0000
+   Al     0.166666666668     0.166666666668     0.666666666668  0.0000
+   Al     0.166666666668     0.333333333332     0.166666666668  0.0000
+   Al     0.166666666668     0.333333333332     0.500000000000  0.0000
+   Al     0.166666666668     0.333333333332     0.833333333332  0.0000
+   Al     0.166666666668     0.500000000000     0.000000000000  0.0000
+   Al     0.166666666668     0.500000000000     0.333333333332  0.0000
+   Al     0.166666666668     0.500000000000     0.666666666668  0.0000
+   Al     0.166666666668     0.666666666668     0.166666666668  0.0000
+   Al     0.166666666668     0.666666666668     0.500000000000  0.0000
+   Al     0.166666666668     0.666666666668     0.833333333332  0.0000
+   Al     0.166666666668     0.833333333332     0.000000000000  0.0000
+   Al     0.166666666668     0.833333333332     0.333333333332  0.0000
+   Al     0.166666666668     0.833333333332     0.666666666668  0.0000
+   Al     0.333333333332     0.000000000000     0.000000000000  0.0000
+   Al     0.333333333332     0.000000000000     0.333333333332  0.0000
+   Al     0.333333333332     0.000000000000     0.666666666668  0.0000
+   Al     0.333333333332     0.166666666668     0.166666666668  0.0000
+   Al     0.333333333332     0.166666666668     0.500000000000  0.0000
+   Al     0.333333333332     0.166666666668     0.833333333332  0.0000
+   Al     0.333333333332     0.333333333332     0.000000000000  0.0000
+   Al     0.333333333332     0.333333333332     0.333333333332  0.0000
+   Al     0.333333333332     0.333333333332     0.666666666668  0.0000
+   Al     0.333333333332     0.500000000000     0.166666666668  0.0000
+   Al     0.337448559671     0.500000000000     0.500000000000  0.0000
+   Al     0.333333333332     0.500000000000     0.833333333332  0.0000
+   Al     0.333333333332     0.666666666668     0.000000000000  0.0000
+   Al     0.333333333332     0.666666666668     0.333333333332  0.0000
+   Al     0.333333333332     0.666666666668     0.666666666668  0.0000
+   Al     0.333333333332     0.833333333332     0.166666666668  0.0000
+   Al     0.333333333332     0.833333333332     0.500000000000  0.0000
+   Al     0.333333333332     0.833333333332     0.833333333332  0.0000
+   Al     0.500000000000     0.000000000000     0.166666666668  0.0000
+   Al     0.500000000000     0.000000000000     0.500000000000  0.0000
+   Al     0.500000000000     0.000000000000     0.833333333332  0.0000
+   Al     0.500000000000     0.166666666668     0.000000000000  0.0000
+   Al     0.500000000000     0.166666666668     0.333333333332  0.0000
+   Al     0.500000000000     0.166666666668     0.666666666668  0.0000
+   Al     0.500000000000     0.333333333332     0.166666666668  0.0000
+   Al     0.500000000000     0.333333333332     0.500000000000  0.0000
+   Al     0.500000000000     0.333333333332     0.833333333332  0.0000
+   Al     0.500000000000     0.500000000000     0.000000000000  0.0000
+   Al     0.500000000000     0.500000000000     0.333333333332  0.0000
+   Al     0.500000000000     0.500000000000     0.666666666668  0.0000
+   Al     0.500000000000     0.666666666668     0.166666666668  0.0000
+   Al     0.500000000000     0.666666666668     0.500000000000  0.0000
+   Al     0.500000000000     0.666666666668     0.833333333332  0.0000
+   Al     0.500000000000     0.833333333332     0.000000000000  0.0000
+   Al     0.500000000000     0.833333333332     0.333333333332  0.0000
+   Al     0.500000000000     0.833333333332     0.666666666668  0.0000
+   Al     0.666666666668     0.000000000000     0.000000000000  0.0000
+   Al     0.666666666668     0.000000000000     0.333333333332  0.0000
+   Al     0.666666666668     0.000000000000     0.666666666668  0.0000
+   Al     0.666666666668     0.166666666668     0.166666666668  0.0000
+   Al     0.666666666668     0.166666666668     0.500000000000  0.0000
+   Al     0.666666666668     0.166666666668     0.833333333332  0.0000
+   Al     0.666666666668     0.333333333332     0.000000000000  0.0000
+   Al     0.666666666668     0.333333333332     0.333333333332  0.0000
+   Al     0.666666666668     0.333333333332     0.666666666668  0.0000
+   Al     0.666666666668     0.500000000000     0.166666666668  0.0000
+   Al     0.666666666668     0.500000000000     0.500000000000  0.0000
+   Al     0.666666666668     0.500000000000     0.833333333332  0.0000
+   Al     0.666666666668     0.666666666668     0.000000000000  0.0000
+   Al     0.666666666668     0.666666666668     0.333333333332  0.0000
+   Al     0.666666666668     0.666666666668     0.666666666668  0.0000
+   Al     0.666666666668     0.833333333332     0.166666666668  0.0000
+   Al     0.666666666668     0.833333333332     0.500000000000  0.0000
+   Al     0.666666666668     0.833333333332     0.833333333332  0.0000
+   Al     0.833333333332     0.000000000000     0.166666666668  0.0000
+   Al     0.833333333332     0.000000000000     0.500000000000  0.0000
+   Al     0.833333333332     0.000000000000     0.833333333332  0.0000
+   Al     0.833333333332     0.166666666668     0.000000000000  0.0000
+   Al     0.833333333332     0.166666666668     0.333333333332  0.0000
+   Al     0.833333333332     0.166666666668     0.666666666668  0.0000
+   Al     0.833333333332     0.333333333332     0.166666666668  0.0000
+   Al     0.833333333332     0.333333333332     0.500000000000  0.0000
+   Al     0.833333333332     0.333333333332     0.833333333332  0.0000
+   Al     0.833333333332     0.500000000000     0.000000000000  0.0000
+   Al     0.833333333332     0.500000000000     0.333333333332  0.0000
+   Al     0.833333333332     0.500000000000     0.666666666668  0.0000
+   Al     0.833333333332     0.666666666668     0.166666666668  0.0000
+   Al     0.833333333332     0.666666666668     0.500000000000  0.0000
+   Al     0.833333333332     0.666666666668     0.833333333332  0.0000
+   Al     0.833333333332     0.833333333332     0.000000000000  0.0000
+   Al     0.833333333332     0.833333333332     0.333333333332  0.0000
+   Al     0.833333333332     0.833333333332     0.666666666668  0.0000
+
+ ATOMIC VELOCITIES
+ atom                 vx                 vy                 vz
+   Al                  0                  0                  0
+   Al                  0                  0                  0
+   Al                  0                  0                  0
+   Al                  0                  0                  0
+   Al                  0                  0                  0
+   Al                  0                  0                  0
+   Al                  0                  0                  0
+   Al                  0                  0                  0
+   Al                  0                  0                  0
+   Al                  0                  0                  0
+   Al                  0                  0                  0
+   Al                  0                  0                  0
+   Al                  0                  0                  0
+   Al                  0                  0                  0
+   Al                  0                  0                  0
+   Al                  0                  0                  0
+   Al                  0                  0                  0
+   Al                  0                  0                  0
+   Al                  0                  0                  0
+   Al                  0                  0                  0
+   Al                  0                  0                  0
+   Al                  0                  0                  0
+   Al                  0                  0                  0
+   Al                  0                  0                  0
+   Al                  0                  0                  0
+   Al                  0                  0                  0
+   Al                  0                  0                  0
+   Al                  0                  0                  0
+   Al                  0                  0                  0
+   Al                  0                  0                  0
+   Al                  0                  0                  0
+   Al                  0                  0                  0
+   Al                  0                  0                  0
+   Al                  0                  0                  0
+   Al                  0                  0                  0
+   Al                  0                  0                  0
+   Al                  0                  0                  0
+   Al                  0                  0                  0
+   Al                  0                  0                  0
+   Al                  0                  0                  0
+   Al                  0                  0                  0
+   Al                  0                  0                  0
+   Al                  0                  0                  0
+   Al                  0                  0                  0
+   Al                  0                  0                  0
+   Al                  0                  0                  0
+   Al                  0                  0                  0
+   Al                  0                  0                  0
+   Al                  0                  0                  0
+   Al                  0                  0                  0
+   Al                  0                  0                  0
+   Al                  0                  0                  0
+   Al                  0                  0                  0
+   Al                  0                  0                  0
+   Al                  0                  0                  0
+   Al                  0                  0                  0
+   Al                  0                  0                  0
+   Al                  0                  0                  0
+   Al                  0                  0                  0
+   Al                  0                  0                  0
+   Al                  0                  0                  0
+   Al                  0                  0                  0
+   Al                  0                  0                  0
+   Al                  0                  0                  0
+   Al                  0                  0                  0
+   Al                  0                  0                  0
+   Al                  0                  0                  0
+   Al                  0                  0                  0
+   Al                  0                  0                  0
+   Al                  0                  0                  0
+   Al                  0                  0                  0
+   Al                  0                  0                  0
+   Al                  0                  0                  0
+   Al                  0                  0                  0
+   Al                  0                  0                  0
+   Al                  0                  0                  0
+   Al                  0                  0                  0
+   Al                  0                  0                  0
+   Al                  0                  0                  0
+   Al                  0                  0                  0
+   Al                  0                  0                  0
+   Al                  0                  0                  0
+   Al                  0                  0                  0
+   Al                  0                  0                  0
+   Al                  0                  0                  0
+   Al                  0                  0                  0
+   Al                  0                  0                  0
+   Al                  0                  0                  0
+   Al                  0                  0                  0
+   Al                  0                  0                  0
+   Al                  0                  0                  0
+   Al                  0                  0                  0
+   Al                  0                  0                  0
+   Al                  0                  0                  0
+   Al                  0                  0                  0
+   Al                  0                  0                  0
+   Al                  0                  0                  0
+   Al                  0                  0                  0
+   Al                  0                  0                  0
+   Al                  0                  0                  0
+   Al                  0                  0                  0
+   Al                  0                  0                  0
+   Al                  0                  0                  0
+   Al                  0                  0                  0
+   Al                  0                  0                  0
+   Al                  0                  0                  0
+   Al                  0                  0                  0
+   Al                  0                  0                  0
+
+                     Cell volume (Bohr^3) = 12103.9
+                        Cell volume (A^3) = 1793.61
+
+ Lattice vectors: (Cartesian coordinate: in unit of a_0)
+               +12.15              +4e-16              +4e-16
+               +4e-16              +12.15              -4e-16
+               -4e-16              -4e-16              +12.15
+ Reciprocal vectors: (Cartesian coordinate: in unit of 2 pi/a_0)
+           +0.0823045        -2.70961e-18        +2.70961e-18
+         -2.70961e-18          +0.0823045        +2.70961e-18
+         -2.70961e-18        +2.70961e-18          +0.0823045
+
+ #ENERGY SOLVER# ksdft_pw
+ RUNNING WITH DEVICE  : CPU / Intel(R) Xeon(R) Platinum 8368Q CPU @ 2.60GHz (x2)
+
+
+ >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
+ |                                                                    |
+ |                 #Read Pseudopotentials Files#                      |
+ | ABACUS supports norm-conserving (NC) pseudopotentials for both     |
+ | plane wave basis and numerical atomic orbital basis sets.          |
+ | In addition, ABACUS supports ultrasoft pseudopotentials (USPP)     |
+ | for plane wave basis set.                                          |
+ |                                                                    |
+ <<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<
+
+                PAO radial cut off (Bohr) = 16
+
+                     Pseudopotential file = Al_std.upf
+                     Pseudopotential type = NC
+          Exchange-correlation functional = PBE
+                 Nonlocal core correction = 1
+                        Valence electrons = 3
+                                     Lmax = 2
+                           Number of zeta = 2
+                     Number of projectors = 6
+                           L of projector = 0
+                           L of projector = 0
+                           L of projector = 1
+                           L of projector = 1
+                           L of projector = 2
+                           L of projector = 2
+         Number of pseudo atomic orbitals = 432
+            Electron number of element Al = 3
+      Total electron number of element Al = 324
+          Autoset the number of electrons = 324
+               Occupied electronic states = 162
+     Number of electronic states (NBANDS) = 180
+
+
+ >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
+ |                                                                    |
+ |           #Setup Plane Waves of Charge/Potential#                  |
+ | Use the kinetic energy cutoff and the lattice vectors to generate  |
+ | the dimensions of FFT grid, which is used to represent the charge  |
+ | density or potential. If USPP is used, a double grid technique     |
+ | is applied.                                                        |
+ |                                                                    |
+ <<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<
+
+ SETUP PLANE WAVES FOR CHARGE/POTENTIAL
+  Energy cutoff for charge/potential (Ry) = 160
+            FFT grid for charge/potential = [ 96, 96, 96 ]
+           Number of FFT grids this proc. = 55296
+                Division for big FFT grid = [ 1, 1, 1 ]
+      FFT (big) grid for charge/potential = [ 96, 96, 96 ]
+     Number of FFT (big) grids this proc. = 55296
+                    Number of plane waves = 413621
+        Number of sticks on FFT x-y plane = 6721
+
+ PARALLEL PW FOR CHARGE/POTENTIAL
+     PROC   COLUMNS(POT)             PW
+        1            420          25852
+        2            420          25852
+        3            420          25852
+        4            420          25852
+        5            420          25852
+        6            420          25852
+        7            420          25852
+        8            420          25852
+        9            421          25855
+       10            420          25850
+       11            420          25850
+       12            420          25850
+       13            420          25850
+       14            420          25850
+       15            420          25850
+       16            420          25850
+ --------------- SUM -------------------
+       16           6721         413621
+
+                            Number of |g| = 1735
+                                  Max |g| = 14.4693
+                                  Min |g| = 0.00677404
+ DONE : SETUP UNITCELL Time : 0.0690423 (SEC)
+
+
+ >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
+ |                                                                    |
+ |                       #Setup K-points#                             |
+ | We setup the k-points according to input parameters.               |
+ | The reduced k-points are set according to symmetry operations.     |
+ | We treat the spin as another set of k-points.                      |
+ |                                                                    |
+ <<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<
+
+
+ SETUP K-POINTS
+                                    nspin = 1
+                   Input type of k points = Monkhorst-Pack(Gamma)
+                                   nkstot = 1
+           Number of irreducible k-points = 1
+
+ K-POINTS REDUCTION ACCORDING TO SYMMETRY
+     IBZ    DIRECT_X    DIRECT_Y    DIRECT_Z  WEIGHT  ibz2bz
+       1  0.00000000  0.00000000  0.00000000  1.0000       0
+
+                               nkstot now = 1
+ K-POINTS DIRECT COORDINATES
+ KPOINTS    DIRECT_X    DIRECT_Y    DIRECT_Z  WEIGHT
+       1  0.00000000  0.00000000  0.00000000  1.0000
+
+
+       Number of k-points in this process = 1
+       Minimum distributed k-point number = 1
+
+ K-POINTS CARTESIAN COORDINATES
+ KPOINTS CARTESIAN_X CARTESIAN_Y CARTESIAN_Z  WEIGHT
+       1  0.00000000  0.00000000  0.00000000  2.0000
+
+
+ K-POINTS DIRECT COORDINATES
+ KPOINTS    DIRECT_X    DIRECT_Y    DIRECT_Z  WEIGHT
+       1  0.00000000  0.00000000  0.00000000  2.0000
+
+ DONE : INIT K-POINTS Time : 0.0692081 (SEC)
+
+ XC:	gga_x_pbe	gga_c_pbe	
+
+ >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
+ |                                                                    |
+ | Setup charge mixing parameters                                     |
+ |                                                                    |
+ <<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<
+
+                              mixing_type = broyden
+                              mixing_beta = 0.2
+                               mixing_gg0 = 1
+                           mixing_gg0_min = 0.1
+                              mixing_ndim = 8
+
+
+ >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
+ |                                                                    |
+ |              #Setup Plane Waves of Wave Functions#                 |
+ | Use the kinetic energy cutoff and the lattice vectors to generate  |
+ | the dimensions of FFT grid, which is used to represent the wave    |
+ | functions of electrons.                                            |
+ |                                                                    |
+ <<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<
+
+ SETUP PLANE WAVES FOR WAVE FUNCTIONS
+     Energy cutoff for wavefunc (unit:Ry) = 40
+              FFT grid for wave functions = [ 96, 96, 96 ]
+              Number of total plane waves = 51867
+        Number of sticks on FFT x-y plane = 1685
+
+ PARALLEL PW FOR WAVE FUNCTIONS
+     PROC   COLUMNS(POT)             PW
+        1            106           3244
+        2            106           3244
+        3            106           3244
+        4            105           3241
+        5            105           3241
+        6            105           3241
+        7            105           3241
+        8            105           3241
+        9            105           3241
+       10            105           3241
+       11            105           3241
+       12            105           3241
+       13            105           3241
+       14            105           3241
+       15            106           3242
+       16            106           3242
+ --------------- sum -------------------
+       16           1685          51867
+ DONE : INIT PLANEWAVE Time : 0.175715 (SEC)
+
+                                 init_chg = atomic
+ DONE : LOCAL POTENTIAL Time : 0.259035 (SEC)
+
+
+ SETUP NONLOCAL PSEUDOPOTENTIALS IN PLANE WAVE BASIS
+ Al non-local projectors:
+ projector 1 L=0
+ projector 2 L=0
+ projector 3 L=1
+ projector 4 L=1
+ projector 5 L=2
+ projector 6 L=2
+      TOTAL NUMBER OF NONLOCAL PROJECTORS = 1944
+
+ *** Memory Allocation Warning ***  VNL::vkb 96.2271 MB
+
+ Init Non-Local PseudoPotential table : 
+ Init Non-Local-Pseudopotential done.
+ DONE : NON-LOCAL POTENTIAL Time : 0.349814 (SEC)
+
+                                     npwx = 3244
+
+ Using ATOMIC starting wave functions for all 432 atomic orbitals (covers 180 bands)
+
+ Make real space PAO into reciprocal space.
+       max mesh points in Pseudopotential = 1601
+     dq(describe PAO in reciprocal space) = 0.01
+                                    max q = 763
+
+ number of pseudo atomic orbitals for Al is 2
+WARNING: norm of atomic wavefunction # 2 of atomic type Al is 0.999994, renormalized
+ DONE : INIT BASIS Time : 0.400374 (SEC)
+
+ ================================================================
+ SELF-CONSISTENT
+ ================================================================
+
+ *** Memory Allocation Warning ***  DiagSub::temp 21.3838 MB
+ DONE : INIT SCF Time : 1.82408 (SEC)
+
+
+ ++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+ --> #ION MOVE#         1  #ELEC ITER#         1
+ ++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+ Average iterative diagonalization steps for k-points is 2
+ current threshold of diagonalizaiton is 0.01
+ Notice: Threshold on eigenvalues was too large.
+ hsover_error=3.24 > DRHO=0.580282
+ Origin diag ethr = 0.01
+ New diag ethr = 0.000179099
+ Average iterative diagonalization steps for k-points is 3
+ current threshold of diagonalizaiton is 0.000179099
+ Electron density deviation 0.609409
+                          Diago Threshold = 0.000179099
+ ----------------------------------------------------------
+      Energy           Rydberg                 eV          
+ ----------------------------------------------------------
+  E_KohnSham     -500.6569466798      -6811.7872181271     
+  E_Harris       -498.4718352325      -6782.0572516789     
+  E_Fermi        0.6077236381         8.2685042874         
+  E_gap(k)       0.0761511213         1.0360891592         
+ ----------------------------------------------------------
+
+
+ ++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+ --> #ION MOVE#         1  #ELEC ITER#         2
+ ++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+ Average iterative diagonalization steps for k-points is 2
+ current threshold of diagonalizaiton is 0.000188089
+ Electron density deviation 0.399253
+                          Diago Threshold = 0.000188089
+ ----------------------------------------------------------
+      Energy           Rydberg                 eV          
+ ----------------------------------------------------------
+  E_KohnSham     -500.5324685307      -6810.0936060233     
+  E_Harris       -498.7004510245      -6785.1677291037     
+  E_Fermi        0.6072415515         8.2619451626         
+  E_gap(k)       0.0758962341         1.0326212400         
+ ----------------------------------------------------------
+
+
+ ++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+ --> #ION MOVE#         1  #ELEC ITER#         3
+ ++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+ Average iterative diagonalization steps for k-points is 2
+ current threshold of diagonalizaiton is 0.000123226
+ Electron density deviation 0.00561671
+                          Diago Threshold = 0.000123226
+ ----------------------------------------------------------
+      Energy           Rydberg                 eV          
+ ----------------------------------------------------------
+  E_KohnSham     -500.5408708823      -6810.2079258817     
+  E_Harris       -500.4702948986      -6809.2476903614     
+  E_Fermi        0.6055490936         8.2389180923         
+  E_gap(k)       0.0014832054         0.0201800446         
+ ----------------------------------------------------------
+
+
+ ++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+ --> #ION MOVE#         1  #ELEC ITER#         4
+ ++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+ Average iterative diagonalization steps for k-points is 4
+ current threshold of diagonalizaiton is 1.73355e-06
+ Electron density deviation 0.0389122
+                          Diago Threshold = 1.73355e-06
+ ----------------------------------------------------------
+      Energy           Rydberg                 eV          
+ ----------------------------------------------------------
+  E_KohnSham     -500.5542154103      -6810.3894874993     
+  E_Harris       -500.5609190403      -6810.4806950647     
+  E_Fermi        0.6038407305         8.2156746199         
+  E_gap(k)       0.0725650566         0.9872982459         
+ ----------------------------------------------------------
+
+
+ ++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+ --> #ION MOVE#         1  #ELEC ITER#         5
+ ++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+ Average iterative diagonalization steps for k-points is 2
+ current threshold of diagonalizaiton is 1.73355e-06
+ Electron density deviation 0.0524236
+                          Diago Threshold = 1.73355e-06
+ ----------------------------------------------------------
+      Energy           Rydberg                 eV          
+ ----------------------------------------------------------
+  E_KohnSham     -500.5525258231      -6810.3664994863     
+  E_Harris       -500.5667513239      -6810.5600473540     
+  E_Fermi        0.6037571107         8.2145369133         
+  E_gap(k)       0.0007301269         0.0099338864         
+ ----------------------------------------------------------
+
+
+ ++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+ --> #ION MOVE#         1  #ELEC ITER#         6
+ ++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+ Average iterative diagonalization steps for k-points is 2
+ current threshold of diagonalizaiton is 1.73355e-06
+ Electron density deviation 0.0405369
+                          Diago Threshold = 1.73355e-06
+ ----------------------------------------------------------
+      Energy           Rydberg                 eV          
+ ----------------------------------------------------------
+  E_KohnSham     -500.5480263300      -6810.3052807425     
+  E_Harris       -500.5539721019      -6810.3861771191     
+  E_Fermi        0.6038475659         8.2157676202         
+  E_gap(k)       0.0007109702         0.0096732453         
+ ----------------------------------------------------------
+
+
+ ++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+ --> #ION MOVE#         1  #ELEC ITER#         7
+ ++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+ Average iterative diagonalization steps for k-points is 2
+ current threshold of diagonalizaiton is 1.73355e-06
+ Electron density deviation 0.008583
+                          Diago Threshold = 1.73355e-06
+ ----------------------------------------------------------
+      Energy           Rydberg                 eV          
+ ----------------------------------------------------------
+  E_KohnSham     -500.5501058214      -6810.3335736746     
+  E_Harris       -500.5420271517      -6810.2236577343     
+  E_Fermi        0.6039978027         8.2178116956         
+  E_gap(k)       0.0744453920         1.0128815213         
+ ----------------------------------------------------------
+
+
+ ++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+ --> #ION MOVE#         1  #ELEC ITER#         8
+ ++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+ Average iterative diagonalization steps for k-points is 2
+ current threshold of diagonalizaiton is 1.73355e-06
+ Electron density deviation 0.0173467
+                          Diago Threshold = 1.73355e-06
+ ----------------------------------------------------------
+      Energy           Rydberg                 eV          
+ ----------------------------------------------------------
+  E_KohnSham     -500.5474019938      -6810.2967862122     
+  E_Harris       -500.5461734991      -6810.2800716843     
+  E_Fermi        0.6039396559         8.2170205684         
+  E_gap(k)       0.0735747772         1.0010361985         
+ ----------------------------------------------------------
+
+
+ ++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+ --> #ION MOVE#         1  #ELEC ITER#         9
+ ++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+ Average iterative diagonalization steps for k-points is 2
+ current threshold of diagonalizaiton is 1.73355e-06
+ Electron density deviation 0.00164409
+                          Diago Threshold = 1.73355e-06
+ ----------------------------------------------------------
+      Energy           Rydberg                 eV          
+ ----------------------------------------------------------
+  E_KohnSham     -500.5482505227      -6810.3083310406     
+  E_Harris       -500.5396657410      -6810.1915290926     
+  E_Fermi        0.6040197907         8.2181108583         
+  E_gap(k)       0.0752396792         1.0236883524         
+ ----------------------------------------------------------
+
+
+ ++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+ --> #ION MOVE#         1  #ELEC ITER#        10
+ ++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+ Average iterative diagonalization steps for k-points is 2
+ current threshold of diagonalizaiton is 5.07436e-07
+ Electron density deviation 0.000615713
+                          Diago Threshold = 5.07436e-07
+ ----------------------------------------------------------
+      Energy           Rydberg                 eV          
+ ----------------------------------------------------------
+  E_KohnSham     -500.5484461275      -6810.3109923803     
+  E_Harris       -500.5441542984      -6810.2525990499     
+  E_Fermi        0.6040041665         8.2178982802         
+  E_gap(k)       0.0752415905         1.0237143579         
+ ----------------------------------------------------------
+
+
+ ++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+ --> #ION MOVE#         1  #ELEC ITER#        11
+ ++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+ Average iterative diagonalization steps for k-points is 2
+ current threshold of diagonalizaiton is 1.90035e-07
+ Electron density deviation 0.000553717
+                          Diago Threshold = 1.90035e-07
+ ----------------------------------------------------------
+      Energy           Rydberg                 eV          
+ ----------------------------------------------------------
+  E_KohnSham     -500.5484233239      -6810.3106821213     
+  E_Harris       -500.5442675969      -6810.2541405546     
+  E_Fermi        0.6040025784         8.2178766731         
+  E_gap(k)       0.0752555775         1.0239046607         
+ ----------------------------------------------------------
+
+
+ ++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+ --> #ION MOVE#         1  #ELEC ITER#        12
+ ++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+ Average iterative diagonalization steps for k-points is 2
+ current threshold of diagonalizaiton is 1.709e-07
+ Electron density deviation 0.000184042
+                          Diago Threshold = 1.709e-07
+ ----------------------------------------------------------
+      Energy           Rydberg                 eV          
+ ----------------------------------------------------------
+  E_KohnSham     -500.5484145854      -6810.3105632274     
+  E_Harris       -500.5458817110      -6810.2761017034     
+  E_Fermi        0.6040003702         8.2178466289         
+  E_gap(k)       0.0751979719         1.0231208965         
+ ----------------------------------------------------------
+
+
+ ++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+ --> #ION MOVE#         1  #ELEC ITER#        13
+ ++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+ Average iterative diagonalization steps for k-points is 3
+ current threshold of diagonalizaiton is 5.68032e-08
+ Electron density deviation 1.3689e-05
+                          Diago Threshold = 5.68032e-08
+ ----------------------------------------------------------
+      Energy           Rydberg                 eV          
+ ----------------------------------------------------------
+  E_KohnSham     -500.5484528762      -6810.3110842011     
+  E_Harris       -500.5462542612      -6810.2811705088     
+  E_Fermi        0.6039973554         8.2178056105         
+  E_gap(k)       0.0750983306         1.0217652066         
+ ----------------------------------------------------------
+
+
+ ++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+ --> #ION MOVE#         1  #ELEC ITER#        14
+ ++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+ Average iterative diagonalization steps for k-points is 4
+ current threshold of diagonalizaiton is 4.22499e-09
+ Electron density deviation 1.56675e-05
+                          Diago Threshold = 4.22499e-09
+ ----------------------------------------------------------
+      Energy           Rydberg                 eV          
+ ----------------------------------------------------------
+  E_KohnSham     -500.5484824451      -6810.3114865066     
+  E_Harris       -500.5460122872      -6810.2778782839     
+  E_Fermi        0.6039919907         8.2177326203         
+  E_gap(k)       0.0751104492         1.0219300881         
+ ----------------------------------------------------------
+
+
+ ++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+ --> #ION MOVE#         1  #ELEC ITER#        15
+ ++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+ Average iterative diagonalization steps for k-points is 2
+ current threshold of diagonalizaiton is 4.22499e-09
+ Electron density deviation 1.30463e-05
+                          Diago Threshold = 4.22499e-09
+ ----------------------------------------------------------
+      Energy           Rydberg                 eV          
+ ----------------------------------------------------------
+  E_KohnSham     -500.5484927428      -6810.3116266140     
+  E_Harris       -500.5457274207      -6810.2740024767     
+  E_Fermi        0.6039899990         8.2177055216         
+  E_gap(k)       0.0751125828         1.0219591180         
+ ----------------------------------------------------------
+
+
+ ++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+ --> #ION MOVE#         1  #ELEC ITER#        16
+ ++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+ Average iterative diagonalization steps for k-points is 2
+ current threshold of diagonalizaiton is 4.02665e-09
+ Electron density deviation 1.57826e-05
+                          Diago Threshold = 4.02665e-09
+ ----------------------------------------------------------
+      Energy           Rydberg                 eV          
+ ----------------------------------------------------------
+  E_KohnSham     -500.5484919432      -6810.3116157351     
+  E_Harris       -500.5458963500      -6810.2763008775     
+  E_Fermi        0.6039896015         8.2177001138         
+  E_gap(k)       0.0751070965         1.0218844727         
+ ----------------------------------------------------------
+
+
+ ++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+ --> #ION MOVE#         1  #ELEC ITER#        17
+ ++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+ Average iterative diagonalization steps for k-points is 2
+ current threshold of diagonalizaiton is 4.02665e-09
+ Electron density deviation 1.24168e-05
+                          Diago Threshold = 4.02665e-09
+ ----------------------------------------------------------
+      Energy           Rydberg                 eV          
+ ----------------------------------------------------------
+  E_KohnSham     -500.5484907120      -6810.3115989828     
+  E_Harris       -500.5465573766      -6810.2852946061     
+  E_Fermi        0.6039890472         8.2176925714         
+  E_gap(k)       0.0751118194         1.0219487310         
+ ----------------------------------------------------------
+
+
+ ++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+ --> #ION MOVE#         1  #ELEC ITER#        18
+ ++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+ Average iterative diagonalization steps for k-points is 2
+ current threshold of diagonalizaiton is 3.83236e-09
+ Electron density deviation 4.53078e-06
+                          Diago Threshold = 3.83236e-09
+ ----------------------------------------------------------
+      Energy           Rydberg                 eV          
+ ----------------------------------------------------------
+  E_KohnSham     -500.5484903819      -6810.3115944920     
+  E_Harris       -500.5474851773      -6810.2979179816     
+  E_Fermi        0.6039884627         8.2176846190         
+  E_gap(k)       0.0751250091         1.0221281867         
+ ----------------------------------------------------------
+
+
+ ++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+ --> #ION MOVE#         1  #ELEC ITER#        19
+ ++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+ Average iterative diagonalization steps for k-points is 2
+ current threshold of diagonalizaiton is 1.39839e-09
+ Electron density deviation 6.00372e-07
+                          Diago Threshold = 1.39839e-09
+ ----------------------------------------------------------
+      Energy           Rydberg                 eV          
+ ----------------------------------------------------------
+  E_KohnSham     -500.5484947949      -6810.3116545336     
+  E_Harris       -500.5481902307      -6810.3075107261     
+  E_Fermi        0.6039871755         8.2176671051         
+  E_gap(k)       0.0751362127         1.0222806184         
+ ----------------------------------------------------------
+
+
+ ++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+ --> #ION MOVE#         1  #ELEC ITER#        20
+ ++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+ Average iterative diagonalization steps for k-points is 4
+ current threshold of diagonalizaiton is 1.853e-10
+ Electron density deviation 5.03663e-07
+                          Diago Threshold = 1.853e-10
+ ----------------------------------------------------------
+      Energy           Rydberg                 eV          
+ ----------------------------------------------------------
+  E_KohnSham     -500.5485071017      -6810.3118219771     
+  E_Harris       -500.5482033088      -6810.3076886617     
+  E_Fermi        0.6039845396         8.2176312425         
+  E_gap(k)       0.0751361697         1.0222800338         
+ ----------------------------------------------------------
+
+
+ ++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+ --> #ION MOVE#         1  #ELEC ITER#        21
+ ++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+ Average iterative diagonalization steps for k-points is 2
+ current threshold of diagonalizaiton is 1.55452e-10
+ Electron density deviation 7.06837e-07
+                          Diago Threshold = 1.55452e-10
+ ----------------------------------------------------------
+      Energy           Rydberg                 eV          
+ ----------------------------------------------------------
+  E_KohnSham     -500.5485071254      -6810.3118222985     
+  E_Harris       -500.5483355709      -6810.3094881804     
+  E_Fermi        0.6039844630         8.2176301999         
+  E_gap(k)       0.0751391907         1.0223211360         
+ ----------------------------------------------------------
+
+
+ ++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+ --> #ION MOVE#         1  #ELEC ITER#        22
+ ++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+ Average iterative diagonalization steps for k-points is 2
+ current threshold of diagonalizaiton is 1.55452e-10
+ Electron density deviation 7.50933e-07
+                          Diago Threshold = 1.55452e-10
+ ----------------------------------------------------------
+      Energy           Rydberg                 eV          
+ ----------------------------------------------------------
+  E_KohnSham     -500.5485071599      -6810.3118227681     
+  E_Harris       -500.5483822319      -6810.3101230365     
+  E_Fermi        0.6039844470         8.2176299821         
+  E_gap(k)       0.0751391945         1.0223211886         
+ ----------------------------------------------------------
+
+
+ ++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+ --> #ION MOVE#         1  #ELEC ITER#        23
+ ++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+ Average iterative diagonalization steps for k-points is 2
+ current threshold of diagonalizaiton is 1.55452e-10
+ Electron density deviation 1.09452e-06
+                          Diago Threshold = 1.55452e-10
+ ----------------------------------------------------------
+      Energy           Rydberg                 eV          
+ ----------------------------------------------------------
+  E_KohnSham     -500.5485071627      -6810.3118228072     
+  E_Harris       -500.5483690168      -6810.3099432345     
+  E_Fermi        0.6039845335         8.2176311596         
+  E_gap(k)       0.0751417319         1.0223557113         
+ ----------------------------------------------------------
+
+
+ ++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+ --> #ION MOVE#         1  #ELEC ITER#        24
+ ++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+ Average iterative diagonalization steps for k-points is 2
+ current threshold of diagonalizaiton is 1.55452e-10
+ Electron density deviation 1.21016e-06
+                          Diago Threshold = 1.55452e-10
+ ----------------------------------------------------------
+      Energy           Rydberg                 eV          
+ ----------------------------------------------------------
+  E_KohnSham     -500.5485071841      -6810.3118230973     
+  E_Harris       -500.5482076164      -6810.3077472698     
+  E_Fermi        0.6039847199         8.2176336950         
+  E_gap(k)       0.0751439869         1.0223863925         
+ ----------------------------------------------------------
+
+
+ ++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+ --> #ION MOVE#         1  #ELEC ITER#        25
+ ++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+ Average iterative diagonalization steps for k-points is 2
+ current threshold of diagonalizaiton is 1.55452e-10
+ Electron density deviation 1.4381e-06
+                          Diago Threshold = 1.55452e-10
+ ----------------------------------------------------------
+      Energy           Rydberg                 eV          
+ ----------------------------------------------------------
+  E_KohnSham     -500.5485070671      -6810.3118215059     
+  E_Harris       -500.5482795322      -6810.3087257346     
+  E_Fermi        0.6039846726         8.2176330522         
+  E_gap(k)       0.0751453777         1.0224053156         
+ ----------------------------------------------------------
+
+
+ ++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+ --> #ION MOVE#         1  #ELEC ITER#        26
+ ++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+ Average iterative diagonalization steps for k-points is 2
+ current threshold of diagonalizaiton is 1.55452e-10
+ Electron density deviation 8.09973e-07
+                          Diago Threshold = 1.55452e-10
+ ----------------------------------------------------------
+      Energy           Rydberg                 eV          
+ ----------------------------------------------------------
+  E_KohnSham     -500.5485071827      -6810.3118230781     
+  E_Harris       -500.5483397552      -6810.3095451102     
+  E_Fermi        0.6039845063         8.2176307892         
+  E_gap(k)       0.0751403865         1.0223374066         
+ ----------------------------------------------------------
+
+
+ ++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+ --> #ION MOVE#         1  #ELEC ITER#        27
+ ++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+ Average iterative diagonalization steps for k-points is 2
+ current threshold of diagonalizaiton is 1.55452e-10
+ Electron density deviation 1.67991e-06
+                          Diago Threshold = 1.55452e-10
+ ----------------------------------------------------------
+      Energy           Rydberg                 eV          
+ ----------------------------------------------------------
+  E_KohnSham     -500.5485072119      -6810.3118234766     
+  E_Harris       -500.5483161900      -6810.3092244895     
+  E_Fermi        0.6039846429         8.2176326478         
+  E_gap(k)       0.0751457520         1.0224104078         
+ ----------------------------------------------------------
+
+
+ ++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+ --> #ION MOVE#         1  #ELEC ITER#        28
+ ++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+ Average iterative diagonalization steps for k-points is 2
+ current threshold of diagonalizaiton is 1.55452e-10
+ Electron density deviation 1.9194e-06
+                          Diago Threshold = 1.55452e-10
+ ----------------------------------------------------------
+      Energy           Rydberg                 eV          
+ ----------------------------------------------------------
+  E_KohnSham     -500.5485067753      -6810.3118175357     
+  E_Harris       -500.5484026729      -6810.3104011498     
+  E_Fermi        0.6039845563         8.2176314698         
+  E_gap(k)       0.0751469814         1.0224271350         
+ ----------------------------------------------------------
+
+
+ ++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+ --> #ION MOVE#         1  #ELEC ITER#        29
+ ++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+ Average iterative diagonalization steps for k-points is 2
+ current threshold of diagonalizaiton is 1.55452e-10
+ Electron density deviation 1.32956e-07
+                          Diago Threshold = 1.55452e-10
+ ----------------------------------------------------------
+      Energy           Rydberg                 eV          
+ ----------------------------------------------------------
+  E_KohnSham     -500.5485069458      -6810.3118198551     
+  E_Harris       -500.5482932135      -6810.3089118780     
+  E_Fermi        0.6039844876         8.2176305344         
+  E_gap(k)       0.0751341557         1.0222526323         
+ ----------------------------------------------------------
+
+
+ ++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+ --> #ION MOVE#         1  #ELEC ITER#        30
+ ++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+ Average iterative diagonalization steps for k-points is 2
+ current threshold of diagonalizaiton is 4.10358e-11
+ Electron density deviation 3.11959e-07
+                          Diago Threshold = 4.10358e-11
+ ----------------------------------------------------------
+      Energy           Rydberg                 eV          
+ ----------------------------------------------------------
+  E_KohnSham     -500.5485069001      -6810.3118192341     
+  E_Harris       -500.5483478892      -6810.3096557800     
+  E_Fermi        0.6039846196         8.2176323311         
+  E_gap(k)       0.0751401386         1.0223340337         
+ ----------------------------------------------------------
+
+
+ ++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+ --> #ION MOVE#         1  #ELEC ITER#        31
+ ++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+ Average iterative diagonalization steps for k-points is 2
+ current threshold of diagonalizaiton is 4.10358e-11
+ Electron density deviation 9.41828e-08
+                          Diago Threshold = 4.10358e-11
+ ----------------------------------------------------------
+      Energy           Rydberg                 eV          
+ ----------------------------------------------------------
+  E_KohnSham     -500.5485069462      -6810.3118198608     
+  E_Harris       -500.5484662106      -6810.3112656241     
+  E_Fermi        0.6039844474         8.2176299877         
+  E_gap(k)       0.0751324880         1.0222299421         
+ ----------------------------------------------------------
+
+
+ ++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+ --> #ION MOVE#         1  #ELEC ITER#        32
+ ++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+ Average iterative diagonalization steps for k-points is 2
+ current threshold of diagonalizaiton is 2.90688e-11
+ Electron density deviation 8.31791e-09
+                          Diago Threshold = 2.90688e-11
+ ----------------------------------------------------------
+      Energy           Rydberg                 eV          
+ ----------------------------------------------------------
+  E_KohnSham     -500.5485069521      -6810.3118199409     
+  E_Harris       -500.5485183092      -6810.3119744630     
+  E_Fermi        0.6039844535         8.2176300716         
+  E_gap(k)       0.0751354531         1.0222702835         
+ ----------------------------------------------------------
+
+
+ ++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+ --> #ION MOVE#         1  #ELEC ITER#        33
+ ++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+ Average iterative diagonalization steps for k-points is 3
+ current threshold of diagonalizaiton is 2.56726e-12
+ Electron density deviation 1.12054e-08
+                          Diago Threshold = 2.56726e-12
+ ----------------------------------------------------------
+      Energy           Rydberg                 eV          
+ ----------------------------------------------------------
+  E_KohnSham     -500.5485069548      -6810.3118199785     
+  E_Harris       -500.5485127792      -6810.3118992236     
+  E_Fermi        0.6039844783         8.2176304078         
+  E_gap(k)       0.0751364463         1.0222837969         
+ ----------------------------------------------------------
+
+
+ ++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+ --> #ION MOVE#         1  #ELEC ITER#        34
+ ++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+ Average iterative diagonalization steps for k-points is 2
+ current threshold of diagonalizaiton is 2.56726e-12
+ Electron density deviation 8.90273e-10
+                          Diago Threshold = 2.56726e-12
+ ----------------------------------------------------------
+      Energy           Rydberg                 eV          
+ ----------------------------------------------------------
+  E_KohnSham     -500.5485069548      -6810.3118199782     
+  E_KS(sigma->0) -500.5357616480      -6810.1384111827     
+  E_Harris       -500.5485046885      -6810.3117891437     
+  E_band         82.2442071209        1118.9898443363      
+  E_one_elec     314.6432615525       4280.9411944178      
+  E_Hartree      0.6771848340         9.2135723422         
+  E_xc           -233.5573519062      -3177.7107957150     
+  E_Ewald        -582.2861108215      -7922.4089734321     
+  E_entropy(-TS) -0.0254906137        -0.3468175912        
+  E_descf        0.0000000000         0.0000000000         
+  E_localpp      49.5917507881        674.7303845137       
+  E_exx          0.0000000000         0.0000000000         
+  E_Fermi        0.6039844823         8.2176304627         
+  E_gap(k)       0.0751357025         1.0222736771         
+ ----------------------------------------------------------
+
+ #SCF IS CONVERGED#
+ #TOTAL ENERGY# -6810.31182 eV
+ Write data to file: OUT.s2_g2_al108_localized_r1/chg.cube
+ Write eigenvalues and occupations to file: OUT.s2_g2_al108_localized_r1/eig_occ.txt
+
+
+
+ #TOTAL-FORCE (eV/Angstrom)#
+ -------------------------------------------------------------------------
+     Atoms              Force_x              Force_y              Force_z 
+ -------------------------------------------------------------------------
+       Al1        -0.0051370605         0.0000140220        -0.0000042924 
+       Al2        -0.0029921285        -0.0000020585         0.0089153878 
+       Al3        -0.0029913032        -0.0000020031        -0.0089132758 
+       Al4         0.0004787604        -0.0014959192        -0.0015164837 
+       Al5        -0.0032762813        -0.0067341695        -0.0000008186 
+       Al6         0.0004773952        -0.0014999873         0.0015186165 
+       Al7        -0.0030016507         0.0088921592         0.0000048572 
+       Al8         0.0000720842         0.0010589545         0.0010730335 
+       Al9         0.0000687101         0.0010532931        -0.0010761696 
+      Al10        -0.0032862591        -0.0000005403        -0.0067561961 
+      Al11         0.0029198441        -0.0000060137        -0.0000009290 
+      Al12        -0.0032868282         0.0000068643         0.0067560415 
+      Al13        -0.0030096922        -0.0089009984         0.0000009307 
+      Al14         0.0000691881        -0.0010540732         0.0010688257 
+      Al15         0.0000659240        -0.0010508729        -0.0010680162 
+      Al16         0.0004741004         0.0014915277        -0.0015075439 
+      Al17        -0.0032839028         0.0067392739         0.0000000000 
+      Al18         0.0004816924         0.0014903471         0.0015060424 
+      Al19        -0.0052084681         0.0000012231         0.0068757412 
+      Al20        -0.0079544457        -0.0000019197        -0.0000018986 
+      Al21        -0.0052130851         0.0000067315        -0.0068716485 
+      Al22        -0.0052130472         0.0068843358        -0.0000059712 
+      Al23        -0.0028094380         0.0008959218        -0.0014648496 
+      Al24        -0.0028062843         0.0009035433         0.0014730298 
+      Al25        -0.0028167002        -0.0014906805         0.0008758119 
+      Al26         0.0215784506         0.0290679253         0.0000026001 
+      Al27        -0.0028066245        -0.0015034181        -0.0008809971 
+      Al28        -0.0079503355         0.0000009092         0.0000034842 
+      Al29         0.0215625929         0.0000007117         0.0290974092 
+      Al30         0.0215621929        -0.0000095879        -0.0291016003 
+      Al31        -0.0028083586         0.0014946828         0.0008848806 
+      Al32         0.0215749089        -0.0290652034        -0.0000081055 
+      Al33        -0.0028158139         0.0014972913        -0.0008759587 
+      Al34        -0.0052048687        -0.0068873987        -0.0000003895 
+      Al35        -0.0028045521        -0.0009002864        -0.0014729840 
+      Al36        -0.0028132926        -0.0008958731         0.0014699986 
+      Al37         0.0295847734         0.0000031641         0.0000000000 
+      Al38         0.0036514449        -0.0000039678        -0.0001719377 
+      Al39         0.0036546674        -0.0000016310         0.0001715865 
+      Al40         0.0057348621        -0.0000481019        -0.0000619050 
+      Al41         0.0057159815         0.0000787720         0.0000004710 
+      Al42         0.0057353903        -0.0000405553         0.0000611755 
+      Al43         0.0036577591        -0.0001860555        -0.0000034788 
+      Al44         0.0028423521         0.0006899185         0.0007237182 
+      Al45         0.0028433273         0.0006867080        -0.0007180305 
+      Al46         0.0057432494         0.0000047173         0.0000374112 
+      Al47        -0.2026826050        -0.0000100223        -0.0000034241 
+      Al48         0.0057477767        -0.0000031261        -0.0000333020 
+      Al49         0.0036615265         0.0001811308         0.0000013972 
+      Al50         0.0028392525        -0.0006854215         0.0007119962 
+      Al51         0.0028456159        -0.0006827701        -0.0007172261 
+      Al52         0.0057335867         0.0000403637        -0.0000561235 
+      Al53         0.0057233082        -0.0000691741        -0.0000048744 
+      Al54         0.0057343537         0.0000444970         0.0000613113 
+      Al55        -0.0049971027        -0.0000028440        -0.0089253076 
+      Al56        -0.0051258986        -0.0000105886         0.0000009178 
+      Al57        -0.0049975488         0.0000074107         0.0089238261 
+      Al58        -0.0049896023        -0.0089026836        -0.0000061378 
+      Al59        -0.0027796574        -0.0012791834         0.0016440867 
+      Al60        -0.0027738269        -0.0012730085        -0.0016362281 
+      Al61        -0.0027675697         0.0016399921        -0.0012949505 
+      Al62         0.0253013319        -0.0328521730         0.0000069959 
+      Al63        -0.0027663998         0.0016340465         0.0012899054 
+      Al64        -0.0051280101         0.0000086885        -0.0000018401 
+      Al65         0.0253109248         0.0000017645        -0.0328522827 
+      Al66         0.0253184179        -0.0000132365         0.0328526050 
+      Al67        -0.0027638263        -0.0016361831        -0.0012994090 
+      Al68         0.0253051587         0.0328633863        -0.0000044772 
+      Al69        -0.0027631414        -0.0016424354         0.0013034902 
+      Al70        -0.0049862570         0.0088965165         0.0000054837 
+      Al71        -0.0027762059         0.0012774421         0.0016469884 
+      Al72        -0.0027757924         0.0012825605        -0.0016513463 
+      Al73        -0.0074256767         0.0000044181         0.0000000000 
+      Al74        -0.0030102185        -0.0000108926        -0.0068830358 
+      Al75        -0.0030126821         0.0000023522         0.0068822163 
+      Al76         0.0009389015         0.0013302163         0.0012899034 
+      Al77        -0.0035467958         0.0045610520         0.0000065669 
+      Al78         0.0009440238         0.0013341738        -0.0012943245 
+      Al79        -0.0030054326        -0.0069205618        -0.0000060610 
+      Al80         0.0005564214        -0.0011312656        -0.0011312143 
+      Al81         0.0005566771        -0.0011347062         0.0011342559 
+      Al82        -0.0035590088         0.0000123718         0.0045429369 
+      Al83         0.0018222247        -0.0000054407         0.0000056128 
+      Al84        -0.0035638854         0.0000007529        -0.0045473479 
+      Al85        -0.0030012514         0.0069172421         0.0000064705 
+      Al86         0.0005608984         0.0011414013        -0.0011370805 
+      Al87         0.0005596601         0.0011338647         0.0011311921 
+      Al88         0.0009462785        -0.0013384090         0.0012908373 
+      Al89        -0.0035467084        -0.0045554886        -0.0000028793 
+      Al90         0.0009381468        -0.0013378326        -0.0012884928 
+      Al91         0.0005683466        -0.0000046083         0.0002658310 
+      Al92         0.0254684516        -0.0000098965        -0.0000012622 
+      Al93         0.0005708658         0.0000156087        -0.0002628556 
+      Al94         0.0005587310         0.0002962418        -0.0000089785 
+      Al95         0.0005159738        -0.0000046846        -0.0002287535 
+      Al96         0.0005070873         0.0000006175         0.0002367163 
+      Al97         0.0005100507        -0.0002471078        -0.0000311782 
+      Al98         0.0047790284        -0.0001358863         0.0000068462 
+      Al99         0.0004993931        -0.0002608044         0.0000245850 
+     Al100         0.0254663710         0.0000123597         0.0000054470 
+     Al101         0.0047775008         0.0000023022        -0.0001267404 
+     Al102         0.0047725462        -0.0000039889         0.0001209198 
+     Al103         0.0004965413         0.0002529141        -0.0000346896 
+     Al104         0.0047769416         0.0001445168        -0.0000009600 
+     Al105         0.0005048578         0.0002488787         0.0000351339 
+     Al106         0.0005485089        -0.0003101499         0.0000095928 
+     Al107         0.0005057600         0.0000033147        -0.0002286475 
+     Al108         0.0005144313         0.0000004932         0.0002196659 
+ -------------------------------------------------------------------------
+
+ #TOTAL-STRESS (kbar)#
+ ----------------------------------------------------------------
+              Stress_x             Stress_y             Stress_z 
+ ----------------------------------------------------------------
+         -2.7343214551         0.0000011179        -0.0000016038 
+          0.0000011179        -2.8354410678         0.0000037758 
+         -0.0000016038         0.0000037758        -2.8355480200 
+ ----------------------------------------------------------------
+ #TOTAL-PRESSURE# (EXCLUDE KINETIC PART OF IONS): -2.801770 kbar
+
+ --------------------------------------------
+ !FINAL_ETOT_IS -6810.3118199782347801 eV
+ --------------------------------------------
+
+
+
+ TIME STATISTICS
+-----------------------------------------------------------------
+   CLASS_NAME          NAME        TIME/s  CALLS   AVG/s  PER/%  
+-----------------------------------------------------------------
+                 total             475.72 15       31.71  100.00 
+ Driver          atomic_world      475.72 1        475.72 100.00 
+ Relax_Driver    relax_driver      475.29 1        475.29 99.91  
+ ESolver_KS      runner            471.86 1        471.86 99.19  
+ Operator        hPsi              435.20 15727    0.03   91.48  
+ Operator        veff_pw           19.73  15727    0.00   4.15   
+ PW_Basis_K      recip2real        12.48  28365    0.00   2.62   
+ PW_Basis_K      real2recip        6.99   22065    0.00   1.47   
+ Operator        nonlocal_pw       415.15 15727    0.03   87.27  
+ Nonlocal        add_nonlocal_pp   201.62 15727    0.01   42.38  
+ ESolver_KS_PW   hamilt2rho_single 469.08 35       13.40  98.60  
+ HSolverPW       solve             469.08 35       13.40  98.60  
+ HSolverPW       solve_psik        465.25 35       13.29  97.80  
+ DiagoCG         diag_once         446.35 35       12.75  93.83  
+ DiagoIterAssist diag_subspace     18.52  33       0.56   3.89   
+-----------------------------------------------------------------
+
+
+ NAME-------------------------|MEMORY(MB)------------------
+                         total      2725.6739
+                      VNL::vkb      1538.5353
+                 DiagSub::temp       341.8967
+            Nonlocal<PW>::becp       205.0312
+              Nonlocal<PW>::ps       205.0312
+                        Psi_PW       142.4570
+                  DiagSub::hcc        45.5625
+                  DiagSub::scc        45.5625
+                  DiagSub::vcc        45.5625
+                  SF::eigts123        15.1882
+              Veff<PW>::porter        13.5000
+             Veff<PW>::porter1        13.5000
+              Meta<PW>::porter        13.5000
+                 ElecSPW::wfcr        13.5000
+               ElecSPW::wfcr_a        13.5000
+                     VNL::vkb1         7.1228
+                      Chg::rho         6.7500
+                 Chg::rho_save         6.7500
+                 Chg::rho_core         6.7500
+                 Pot::veff_fix         6.7500
+                     Pot::veff         6.7500
+              Pot::veff_smooth         6.7500
+                  SF::strucFac         6.3114
+                      VNL::ylm         3.5614
+             YlmReal::Ylm_Real         3.5614
+                     Chg::rhog         3.1557
+                Chg::rhog_save         3.1557
+                Chg::rhog_core         3.1557
+                  PW_B_K::gcar         1.1871
+ -------------   < 1.0 MB has been ignored ----------------
+ ----------------------------------------------------------
+
+ Start  Time  : Tue Aug 11 19:53:04 2026
+ Finish Time  : Tue Aug 11 20:01:00 2026
+ Total  Time  : 0 h 7 mins 56 secs 
