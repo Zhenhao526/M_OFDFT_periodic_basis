@@ -1,8 +1,8 @@
 {
   "schema_version": 1,
   "protocol_revision": "S2-G2-AL-SCALE-GEOMETRY-20260811-R3",
-  "status": "implementation_pending_preregistration",
-  "implementation_commit": "__FREEZE_IMPLEMENTATION_COMMIT__",
+  "status": "preregistered_no_execution",
+  "implementation_commit": "c6202428684273f2733fd2f864b1ca375c08b1cd",
   "base_commit": "4298896727256ef60a72fdf0ee6ae904dabdaafc",
   "scope": {
     "stage": "S2",
