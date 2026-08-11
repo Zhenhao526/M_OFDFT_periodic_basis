@@ -1,0 +1,60 @@
+{
+  "atom_count": 108,
+  "candidate_id": "r08_eta100_complementary",
+  "component_energy_errors_mev_per_atom": {
+    "combined_hartree_external_xc": 1.1887314725506124,
+    "external": 1.2875232454318932,
+    "fixed_kedf": 4.553073587696114,
+    "hartree": -0.031280737409721544,
+    "total_with_fixed_wt": 5.741805060246726,
+    "xc": -0.06751103547197056
+  },
+  "density_relative_l2": 0.0046793543575598135,
+  "eggbox_energy_peak_to_peak_mev_per_atom": 0.37435919789086114,
+  "eggbox_pseudoforce_max_ev_per_angstrom": 0.008360314927332283,
+  "evidence_valid": true,
+  "experiment_id": "S2-20260811-001",
+  "failed_gates": [
+    "eggbox_pseudoforce",
+    "full_effective_rank"
+  ],
+  "g2_overall_accepted": false,
+  "gates": {
+    "basis_count": true,
+    "coefficient_fraction": true,
+    "combined_energy": true,
+    "component_energies": true,
+    "condition": true,
+    "density_floor": true,
+    "density_l2": true,
+    "eggbox_energy": true,
+    "eggbox_phase_count": true,
+    "eggbox_pseudoforce": false,
+    "electron_number": true,
+    "fixed_wt_total": true,
+    "full_effective_rank": false,
+    "low_g_unchanged": true,
+    "rank_path_count": true,
+    "reference_solver": true,
+    "retained_margin": true,
+    "threshold_decade": true
+  },
+  "limitations": {
+    "g2_overall_accepted": false,
+    "g2c_performance_validated": false,
+    "low_q_response_validated": false,
+    "mg_validated": false
+  },
+  "new_solver_run_count": 0,
+  "protocol_revision": "S2-G2-AL-LOCALIZED-ANALYSIS-20260811-R2",
+  "r1_operational_disposition": "preserved_parser_false_negative_no_retry",
+  "rank_path_maximum_condition_number": 37980015.04851519,
+  "rank_path_minimum_effective_rank": 2171,
+  "rank_path_minimum_retained_over_cutoff": 263.296367503439,
+  "reference_eggbox_energy_peak_to_peak_mev_per_atom": 0.11708123532727654,
+  "schema_version": 1,
+  "scientific_gate_accepted": false,
+  "source_solver_run_count": 1,
+  "status": "evidence_valid_scientific_gate_rejected",
+  "threshold_decade_max_change_mev_per_atom": 0.0043159628475564205
+}
