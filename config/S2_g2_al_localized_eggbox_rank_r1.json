@@ -1,8 +1,8 @@
 {
   "schema_version": 1,
   "protocol_revision": "S2-G2-AL-LOCALIZED-EGGBOX-RANK-20260811-R1",
-  "status": "implementation_pending_preregistration",
-  "implementation_commit": "__FREEZE_IMPLEMENTATION_COMMIT__",
+  "status": "preregistered_no_execution",
+  "implementation_commit": "bd80d8b600aa5ed95856ae300bf60ca5e36ce815",
   "base_commit": "84dc83560bbdd8712f291a5a304e41e65c33ed47",
   "stage": "S2",
   "gate": "G2a_G2b_localized_eggbox_rank_pilot",
