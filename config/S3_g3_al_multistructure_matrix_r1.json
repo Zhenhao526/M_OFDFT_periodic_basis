@@ -1,8 +1,8 @@
 {
   "schema_version": 1,
   "protocol_revision": "S3-G3-AL-MULTISTRUCTURE-MATRIX-20260812-R1",
-  "status": "implementation_pending_preregistration",
-  "implementation_commit": "__FREEZE_IMPLEMENTATION_COMMIT__",
+  "status": "preregistered_matrix_no_execution",
+  "implementation_commit": "db9409ad537d398a760cbf7363f6a82799ef6a9c",
   "base_commit": "231fa52864f943586f14f0e5fdca4eb7e2094495",
   "source_policy_commit": "3f2322c5d91486abf2e8a6894ec9033c9d7087bf",
   "candidate_id": "r08_eta100_complementary_23_function",
