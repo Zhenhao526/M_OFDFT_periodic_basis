@@ -1,0 +1,75 @@
+{
+  "schema_version": 1,
+  "protocol_revision": "S2-G2-AL-LOCALIZED-DENSE-GRID-20260812-R1",
+  "status": "implementation_pending_preregistration",
+  "base_commit": "85b0a3da4b60094757264540342b2517c85436bc",
+  "implementation_commit": "__FREEZE_IMPLEMENTATION_COMMIT__",
+  "supersedes_preregistration_commit_before_execution": "05ac59d207f019b3ad5a186f3805c3ef142e4bfc",
+  "new_solver_run_count": 0,
+  "source": {
+    "localized_r2_evidence_commit": "aeacc5a65e134c448f2360f1844eea41bfc08c0d",
+    "localized_r2_config_path": "config/S2_g2_al_localized_analysis_r2.json",
+    "localized_r2_config_sha256": "48ef8ddad534bf011bb84974d862be25de0f82f23bb0321b47ec1f97f7954b4a",
+    "localized_r2_analyzer_sha256": "b655c32cae4e534c38afd7ea8374f13478d3be55fb1a3582f50fefe19c49fa98",
+    "localized_r1_analyzer_sha256": "6351b128b71bf737634339aa3e51adc22750f9aa2b8e066f7364ded44c5c14ec",
+    "localized_r1_common_sha256": "3b59b14455240e4db5ab879f3b0b1463d614329d2e6d5c8ee30d1489a866b525",
+    "localized_r2_summary_path": "analysis/s2/g2_al_localized_analysis_r2_20260811/summary.json",
+    "localized_r2_summary_sha256": "6306b8e8f3764328705f1381091833cc03f6cdf35843328f1df3f2b1e71c753a",
+    "diagnostic_96_path": "analysis/s2/g2_al_localized_grid_refinement_diag_r1_20260812/result_96.json",
+    "diagnostic_96_sha256": "83bdeda8dbade6c2d78156f5cc6abeb9310407740b2f70a85faeaa2374d3eaa5",
+    "diagnostic_128_path": "analysis/s2/g2_al_localized_grid_refinement_diag_r1_20260812/result_128.json",
+    "diagnostic_128_sha256": "d5e76f820f552efa200fd6960072086692e9a3f6e30ce629ccf69c6a6ba6962a"
+  },
+  "analysis": {
+    "target_grids": [128, 144],
+    "phase_count": 16,
+    "rank_relative_cutoffs": [1e-8, 1e-9, 1e-10],
+    "production_rank_relative_cutoff": 1e-10,
+    "near_null_subspace_dimension": 2,
+    "resampling": "periodic_Fourier_resample_each_axis_scipy_signal_resample",
+    "rebuild_projection_independently_on_each_target_grid": true,
+    "rank_displacements_angstrom": [-0.05, -0.025, 0.0, 0.025, 0.05]
+  },
+  "acceptance": {
+    "required_total_basis_count": 2173,
+    "minimum_effective_rank": 2171,
+    "maximum_rank_deficiency": 2,
+    "maximum_rank_span_across_path": 1,
+    "effective_condition_number_strict_lt": 1e8,
+    "minimum_retained_eigenvalue_over_cutoff_min": 100.0,
+    "adjacent_near_null_subspace_principal_angle_max_degrees": 15.0,
+    "cross_grid_near_null_subspace_principal_angle_max_degrees": 5.0,
+    "localized_density_relative_l2_strict_lt": 0.02,
+    "component_energy_abs_error_max_mev_per_atom": 10.0,
+    "combined_energy_abs_error_max_mev_per_atom": 10.0,
+    "fixed_kedf_total_energy_error_max_mev_per_atom": 10.0,
+    "electron_relative_error_strict_lt": 1e-10,
+    "eggbox_energy_peak_to_peak_max_mev_per_atom": 1.0,
+    "reference_pseudoforce_max_ev_per_angstrom": 0.002,
+    "projection_excess_pseudoforce_max_ev_per_angstrom": 0.002,
+    "selected_pseudoforce_max_ev_per_angstrom": 0.004,
+    "cross_grid_pseudoforce_change_max_ev_per_angstrom": 0.0005,
+    "cross_grid_energy_peak_to_peak_change_max_mev_per_atom": 0.1
+  },
+  "execution": {
+    "analysis_root": "analysis/s2/g2_al_localized_dense_grid_r1_20260812",
+    "external_state_root": "/home/shenwei01/.local/state/m_ofdft/s2_g2_al_localized_dense_grid_r1_20260812",
+    "python": "/home/shenwei01/.local/venvs/m_ofdft-dftpy-2.2.0-py311/bin/python",
+    "hostname": "node01",
+    "logical_cpus": [36, 37, 74, 75, 112, 113, 150, 151],
+    "physical_cores": [
+      {"package": 0, "core_id": 36, "siblings": [36, 112]},
+      {"package": 0, "core_id": 37, "siblings": [37, 113]},
+      {"package": 1, "core_id": 36, "siblings": [74, 150]},
+      {"package": 1, "core_id": 37, "siblings": [75, 151]}
+    ],
+    "retry_policy": "analysis_once_no_overwrite"
+  },
+  "output_files": [
+    "README.md",
+    "grid_metrics.tsv",
+    "rank_continuity.tsv",
+    "subspace_continuity.tsv",
+    "summary.json"
+  ]
+}
