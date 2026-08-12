@@ -1,0 +1,32 @@
+{
+  "atom_count": 1,
+  "expected_electrons": 3.0,
+  "experiment_id": "S3-20260812-032",
+  "input_identity": {
+    "INPUT_sha256": "15c8b78e07f6d17c6cc6f0c79236e09cf4e6d592b35d8dc8fc22edbd06e207c2",
+    "KPT_sha256": "0903e64e14f6e451103ae0d60e2b3afe07dbbee7aaabff907df214bfd1eb0bc8",
+    "STRU_sha256": "cadcb003c0ee90ea8b327937c6fd58715d91d44cdf3b078a4e5e34181c890cb9"
+  },
+  "material": "al",
+  "phase": "ksdft_reference",
+  "protocol_revision": "S3-G3-KSDFT-REFERENCE-20260812-R1",
+  "pseudo": {
+    "basename": "Al_std.upf",
+    "format": "upf201",
+    "sha256": "b02eaa07c5d98f5eeae1bec4155854a7a94ea3635ca6b42e914f3f7ebd6912fb",
+    "upstream_commit": "823b18f7701b6303e0e69114eaa645173f706600",
+    "upstream_url": "https://raw.githubusercontent.com/PseudoDojo/ONCVPSP-PBE-SR/823b18f7701b6303e0e69114eaa645173f706600/Al/Al_std.upf"
+  },
+  "requirement": "ksdft_scientific_hard_reference",
+  "role": "ks_nl_physical_reference",
+  "schema_version": 1,
+  "suffix": "s3ks_al_v1005",
+  "thermodynamic_semantics": {
+    "E_ec": "F-m/2; finite-smearing estimator",
+    "F": "E_KohnSham=!FINAL_ETOT_IS",
+    "U": "F-m",
+    "absolute_cross_functional_energy_comparison_forbidden": true,
+    "m": "E_entropy(-TS)<=0"
+  },
+  "volume_ratio": 1.005
+}
