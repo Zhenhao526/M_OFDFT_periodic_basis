@@ -1,0 +1,55 @@
+#!/usr/bin/env python3
+from __future__ import annotations
+import argparse,hashlib,json,os,signal,subprocess,sys,time,traceback
+from pathlib import Path
+from s3_g3_wt_coefficient_common_r1 import CONFIG_REL,canonical,git,load,require,resource_preflight,sha_path,source_exact,validate_config,write_exclusive
+
+def best_effort_progress(payload,printer=print):
+    try: printer(json.dumps(payload,sort_keys=True),flush=True)
+    except (BrokenPipeError,OSError): return False
+    return True
+
+def main():
+    p=argparse.ArgumentParser(); p.add_argument("--project-root",type=Path,default=Path(__file__).resolve().parents[1]); p.add_argument("--dry-run",action="store_true"); a=p.parse_args(); root=a.project_root.resolve(); c=load(root); validate_config(c); require(str(root)==c["execution"]["execution_worktree_root"],"execution worktree root differs"); source_exact(root,c); require(git(root,"status","--porcelain")=="","dirty"); require(c["status"]=="preregistered_no_execution","not preregistered"); head=git(root,"rev-parse","HEAD"); require(git(root,"show","-s","--format=%P",head).split()==[c["implementation_commit"]],"not prereg HEAD"); state=Path(c["execution"]["state_root"]); total=len(c["formal_cases"])
+    if a.dry_run: require(not state.exists(),"state exists"); print(json.dumps({"status":"accepted_dry_run","case_count":total,"state_exists":False},sort_keys=True)); return 0
+    signal.signal(signal.SIGHUP,signal.SIG_IGN); require(os.getsid(0)==os.getpid() and all(not os.isatty(fd) for fd in (0,1,2)),"runner is not detached session leader")
+    require(not state.exists(),"state exists"); initial_preflight=resource_preflight(c)
+    bootstrap=state.with_name(state.name+f".bootstrap.{os.getpid()}"); require(not bootstrap.exists(),"bootstrap exists")
+    session={"schema_version":1,"protocol_revision":c["protocol_revision"],"runner_commit":head,"config_sha256":sha_path(root/CONFIG_REL),"case_ids":[x["experiment_id"] for x in c["formal_cases"]],"resource_preflight":initial_preflight,"detached":{"pid":os.getpid(),"sid":os.getsid(0),"parent_pid":os.getppid(),"sighup_ignored":signal.getsignal(signal.SIGHUP)==signal.SIG_IGN,"no_tty":all(not os.isatty(fd) for fd in (0,1,2))},"started_unix_ns":time.time_ns()}
+    try:
+        bootstrap.mkdir(parents=True,exist_ok=False); (bootstrap/"runs").mkdir(); write_exclusive(bootstrap/"session.json",canonical(session)); os.rename(bootstrap,state)
+    except BaseException:
+        (bootstrap/"session.json").unlink(missing_ok=True)
+        if (bootstrap/"runs").exists(): (bootstrap/"runs").rmdir()
+        if bootstrap.exists(): bootstrap.rmdir()
+        raise
+    session_sha=sha_path(state/"session.json")
+    env={"HOME":os.environ["HOME"],"PATH":os.environ["PATH"],"PYTHONPATH":str(root/"scripts"),"OMP_NUM_THREADS":"1","MKL_NUM_THREADS":"1","OPENBLAS_NUM_THREADS":"1","PYTHONDONTWRITEBYTECODE":"1","PYTHONNOUSERSITE":"1"}; accepted_ids=[]; result_sha256={}; return_sha256={}; attempt_sha256={}; run_inventory={}
+    def freeze_failure(index,row,run,return_code,reason):
+        run.mkdir(exist_ok=True)
+        if not (run/"attempt.json").exists(): write_exclusive(run/"attempt.json",canonical({"schema_version":1,"status":"formal_started","experiment_id":row["experiment_id"],"attempt_number":1,"started_unix_ns":time.time_ns()}))
+        attempt_sha256[row["experiment_id"]]=sha_path(run/"attempt.json")
+        if not (run/"command.json").exists():
+            cmd=["taskset","-c",str(c["runtime"]["logical_cpu"]),c["runtime"]["python"],"-s","-B",str(root/"scripts/run_s3_g3_wt_coefficient_worker_r1.py"),"--project-root",str(root),"--experiment-id",row["experiment_id"],"--run-directory",str(run)]
+            write_exclusive(run/"command.json",canonical({"argv":cmd,"cwd":str(root),"environment":env}))
+        if not (run/"resource_preflight.json").exists(): write_exclusive(run/"resource_preflight.json",canonical({"status":"failed","error":"runner_exception_before_or_during_preflight"}))
+        if not (run/"stdout.txt").exists(): write_exclusive(run/"stdout.txt",b"")
+        if not (run/"stderr.txt").exists(): write_exclusive(run/"stderr.txt",reason.encode())
+        if not (run/"runner_return.json").exists(): write_exclusive(run/"runner_return.json",canonical({"schema_version":1,"experiment_id":row["experiment_id"],"return_code":return_code,"reason":reason}))
+        return_sha256[row["experiment_id"]]=sha_path(run/"runner_return.json"); run_inventory[row["experiment_id"]]={p.name:{"sha256":sha_path(p),"size_bytes":p.stat().st_size} for p in sorted(run.iterdir()) if p.is_file() and not p.is_symlink()}
+        attempted=[x["experiment_id"] for x in c["formal_cases"][:index]]; unattempted=[x["experiment_id"] for x in c["formal_cases"][index:]]; failure={"schema_version":1,"status":"failed_no_retry","experiment_id":row["experiment_id"],"return_code":return_code,"reason":reason,"attempted_ids":attempted,"accepted_ids":accepted_ids,"unattempted_ids":unattempted,"attempt_sha256":attempt_sha256,"runner_return_sha256":return_sha256}; write_exclusive(state/"failure.json",canonical(failure)); failure_sha=sha_path(state/"failure.json")
+        terminal={"schema_version":1,"status":"failed_no_retry","attempted":index,"accepted":len(accepted_ids),"failed":1,"missing":0,"skipped":total-index,"retried":0,"runner_return_code":return_code,"attempted_ids":attempted,"accepted_ids":accepted_ids,"unattempted_ids":unattempted,"attempt_sha256":attempt_sha256,"runner_return_sha256":return_sha256,"result_sha256":result_sha256,"run_inventory":run_inventory,"session_sha256":session_sha,"failure_sha256":failure_sha,"finished_unix_ns":time.time_ns()}; write_exclusive(state/"terminal.json",canonical(terminal)); return return_code
+    for index,row in enumerate(c["formal_cases"],1):
+        run=state/"runs"/f"{index:02d}_{row['experiment_id']}"
+        try:
+            run.mkdir(); attempt={"schema_version":1,"status":"formal_started","experiment_id":row["experiment_id"],"attempt_number":1,"started_unix_ns":time.time_ns()}; write_exclusive(run/"attempt.json",canonical(attempt)); attempt_sha256[row["experiment_id"]]=sha_path(run/"attempt.json")
+            cmd=["taskset","-c",str(c["runtime"]["logical_cpu"]),c["runtime"]["python"],"-s","-B",str(root/"scripts/run_s3_g3_wt_coefficient_worker_r1.py"),"--project-root",str(root),"--experiment-id",row["experiment_id"],"--run-directory",str(run)]; write_exclusive(run/"command.json",canonical({"argv":cmd,"cwd":str(root),"environment":env}))
+            case_pre=resource_preflight(c); write_exclusive(run/"resource_preflight.json",canonical(case_pre)); proc=subprocess.run(cmd,cwd=root,env=env,text=True,stdout=subprocess.PIPE,stderr=subprocess.PIPE); write_exclusive(run/"stdout.txt",proc.stdout.encode()); write_exclusive(run/"stderr.txt",proc.stderr.encode()); write_exclusive(run/"runner_return.json",canonical({"schema_version":1,"experiment_id":row["experiment_id"],"return_code":proc.returncode})); return_sha256[row["experiment_id"]]=sha_path(run/"runner_return.json")
+            if proc.returncode!=0: return freeze_failure(index,row,run,proc.returncode,"worker_nonzero_return")
+            result=json.loads(proc.stdout.strip().splitlines()[-1]); require(result["experiment_id"]==row["experiment_id"] and result["status"] in {"accepted","completed_scientific_rejected"},"worker result differs"); write_exclusive(run/"result.json",canonical(result)); accepted_ids.append(row["experiment_id"]); result_sha256[row["experiment_id"]]=sha_path(run/"result.json"); run_inventory[row["experiment_id"]]={p.name:{"sha256":sha_path(p),"size_bytes":p.stat().st_size} for p in sorted(run.iterdir()) if p.is_file() and not p.is_symlink()}; best_effort_progress({"completed":index,"total":total,"experiment_id":row["experiment_id"],"scientific_status":result["status"],"energy_ev_per_atom":result["energy_ev_per_atom"],"wall_seconds":result["wall_seconds"]})
+        except BaseException as exc:
+            if not (run/"stderr.txt").exists():
+                run.mkdir(exist_ok=True); write_exclusive(run/"stderr.txt",traceback.format_exc().encode())
+            return freeze_failure(index,row,run,70,f"runner_exception:{type(exc).__name__}")
+    terminal={"schema_version":1,"status":"accepted","attempted":total,"accepted":total,"failed":0,"missing":0,"skipped":0,"retried":0,"runner_return_code":0,"attempted_ids":[x["experiment_id"] for x in c["formal_cases"]],"accepted_ids":accepted_ids,"unattempted_ids":[],"attempt_sha256":attempt_sha256,"runner_return_sha256":return_sha256,"result_sha256":result_sha256,"run_inventory":run_inventory,"session_sha256":session_sha,"finished_unix_ns":time.time_ns()}; write_exclusive(state/"terminal.json",canonical(terminal)); return 0
+if __name__=="__main__": raise SystemExit(main())

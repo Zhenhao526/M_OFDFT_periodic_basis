@@ -2,23 +2,23 @@
 
 > 本文件是项目状态的唯一人工入口。任何人接手前先读本文件，再读项目书和当前阶段 README。  
 > 状态词仅使用：`not_started`、`in_progress`、`blocked`、`accepted`、`rejected`、`paused`。  
-> 更新时间：2026-08-12 14:55 CST
-> 文档版本：V5.4
+> 更新时间：2026-08-12 15:10 CST
+> 文档版本：V5.5
 
 ## 0. 十分钟上手摘要
 
 | 项目 | 当前值 |
 |---|---|
-| 当前总状态 | `blocked`（S1/G1 已验收；23函数 Al 密度展开精度已接受，但 G2c 端到端性能硬门在 32/108/256 原子三档全部失败） |
-| 当前阶段 | S2：周期原子/混合密度基表示验证 |
-| 当前闸门 | G2c 已形成有效负证据：约 794–800 倍表示压缩未转化为端到端时间或峰值内存收益 |
+| 当前总状态 | `in_progress`（S1/G1 已验收；Al 23函数密度表示与约794–800倍表示压缩已接受；G2c性能拒绝保留但不再阻塞S3） |
+| 当前阶段 | S3：固定 WT-KEDF 系数空间自洽 pilot |
+| 当前闸门 | G3 pilot；比较三初值23函数系数优化与同设置完整网格WT参考，不附带加速主张 |
 | 当前负责人 | 远端账户 `shenwei01`；本轮执行与记录：Codex |
-| 当前工作分支 | `codex/r4-execution`；所有实现和计算均在远端服务器完成 |
-| 最近可用提交 | G2c performance R1：实现 `bb23411b`；预注册 `0ba305fd`；证据 `2a27822b` |
+| 当前工作分支 | `codex/s3-wt-coefficient-pilot-r1`；正式执行仅允许来自独立审计通过后的精确预注册提交 |
+| 最近可用提交 | S3 fixed-WT coefficient pilot R1：implementation 已冻结并在独立审计中，尚未预注册或正式执行；上一闭包为 G2c 证据 `2a27822b` |
 | 最近通过的数值 smoke | `S1-RUNTIME-SMOKE-20260805-074`：`storage_exact`，五类状态门全部 `accepted`；幂等重验返回 `accepted_committed` |
 | 最近通过的正式分析 | G1 acceptance policy R1：R3/R5 全量重放、17 行 gate、`accepted_g1_6_of_6`、新增 solver 0；证据 `d0386418` |
-| 当前阻塞 | 候选自由度仅为网格的约 `0.125%`，但三档峰值内存均无改善；时间仅 32 原子快 `3.7%`，108/256 原子分别慢 `24.6%/2.7%`，不满足 `1.5x` 时间或 `2x` 内存门 |
-| 下一项唯一动作 | 不启动 S3；先决定是否以新 revision 实现不物化完整网格的算子原生压缩路径。若不做该架构重构，则结束 S2 压缩加速路线 |
+| 当前阻塞 | 无执行前科学阻塞；必须先完成新revision实现、测试、config-only预注册和独立审计。G2c性能负结论继续限制任何加速/节省内存表述 |
+| 下一项唯一动作 | 完成并独立审计 Al 固定WT的29点pilot预注册：24³/32³/40³网格收敛、三体积×两路线×三初值核心矩阵及三步长压力平台；允许每步重建完整网格和FFT，失败不重试 |
 
 ### 必读文件
 
@@ -177,7 +177,7 @@ python3 -m unittest -q tests.unit.test_s1_g1_thermodynamic_label_audit_r4_genera
 从 G2c performance R1 证据 `2a27822b` 开始；全部历史 external state 只读，不删除、不重启、不重试历史 ID：
 
 1. G1 六个子项已 6/6 accepted；复验必须使用各登记 source worktree 的 committed validator，不得改写历史 R3 0.5% rejection；
-2. S2/G2 的密度精度与表示压缩已成立，但 G2c 端到端性能三档均 rejected；S3 不得启动，继续只能新 revision 实现不物化完整网格的算子原生压缩路径；
+2. S2/G2 的密度精度与表示压缩已成立，但 G2c 端到端性能三档均 rejected；这是 D-064 之前的历史处置。D-064 保留该工程拒绝，同时允许以新 revision 开展固定 WT 的系数空间正确性 pilot；
 3. QE/第二 KS、Mg 硬比较、HQLPP 与 projector-only 因果若继续，必须使用新协议；它们属于外推/诊断限制，不得改写 G1 历史；
 4. S2 前保留所有 G1 state、失败 smoke 和 analysis evidence 为只读，不再消费 G1 ID。
 
@@ -187,8 +187,8 @@ python3 -m unittest -q tests.unit.test_s1_g1_thermodynamic_label_audit_r4_genera
 |---|---|---|---|---|---|---|---|
 | S0 | 初始化与复现协议 | `accepted` | 2026-08-05 | 2026-08-05 | G0 | `docs/G0_ACCEPTANCE.md`; `analysis/s1/runtime_relocation_equivalence_20260805/` | 数值/归档恢复结论保留；登记的 namespace runtime-isolation 路径已验收，原归档本身不称 hermetic |
 | S1 | 平面波基准闭环 | `accepted` | 2026-08-05 | 2026-08-11 | G1 | 前五项证据同前；三层 R3 `73b3589`；R5 `5401943`；1% policy `d0386418` | G1 6/6；进入 S2 |
-| S2 | 混合密度基表示 | `blocked` | 2026-08-11 | — | G2 | 架构 `cdf90874`；Al1 `b6985a16`；规模 `472b6c35`；policy `987ca097`；G2c `2a27822b` | 精度/表示压缩通过，端到端性能拒绝；S3 未授权 |
-| S3 | 固定 KEDF 自洽求解 | `not_started` | — | — | G3 | — | 等待 G2 |
+| S2 | 混合密度基表示 | `accepted`（Al密度表示限定） | 2026-08-11 | 2026-08-12 | G2 | policy `987ca097`；G2c `2a27822b` | 表示精度/压缩接受；性能拒绝作为工程限制保留 |
+| S3 | 固定 KEDF 自洽求解 | `in_progress` | 2026-08-12 | — | G3 | 新revision实现中 | 下一动作：Al WT系数空间三初值pilot |
 | S4A | 固定晶胞解析力 | `not_started` | — | — | G4A | — | 等待 G3 |
 | S4B | 晶胞应力 | `not_started` | — | — | G4B | — | 等待 G4A |
 | S4C | 短时 NVE | `not_started` | — | — | G4C | — | 等待 G4A；建议等待 G4B |
@@ -278,7 +278,7 @@ python3 -m unittest -q tests.unit.test_s1_g1_thermodynamic_label_audit_r4_genera
 - 状态：`blocked`；G2 架构竞赛与密度展开精度已闭合，但 G2c performance R1 在三档规模均未通过性能门。
 - R1 登记 12 个架构单元：纯 PW/FFT、原子基+FFT、显式原子+低 G、互补投影/范围分离四路线，分别覆盖 1、32、108 原子。
 - 32/108 原子胞由固定整数超胞矩阵定义；完美晶体周期复制只用于超胞等价性和性能诊断，不冒充 108 原子局域扰动参考。
-- 当前仅启用 Al；Mg、ML 和系数空间自洽优化保持关闭。新 policy 接受了 G2a/G2b 精度与伪力证据，但 G2c 已有效拒绝，因此 S3 仍未获授权。
+- 该段记录的是 D-064 之前的历史边界：当时仅启用 Al，Mg、ML 和系数空间自洽优化保持关闭。D-064 后，Mg/ML 仍关闭，但固定 WT 的 Al 系数空间正确性 pilot 已以新 revision 获授权；G2c 性能拒绝不变。
 - 参考密度绑定 G1 已提交的 Al KS-NL V100 cube；全部 G1 state/ID 保持只读。
 - R1 验证结果：12/12 case、13/13 生成物、7/7 单测、预注册 validator `accepted`；新增 solver 0，formal state 与 analysis root 均不存在。
 - Al 单原子 analysis-only pilot 已以实现 `022551e4`、预注册 `8f00abf3`、证据 `269fe3a9` 闭合；committed validator 与 7/7 单测通过，新增 solver 0。
@@ -311,11 +311,11 @@ python3 -m unittest -q tests.unit.test_s1_g1_thermodynamic_label_audit_r4_genera
 - 首个 prereg `78a0e140` 在生成任何分析输出前，因旧解析入口要求历史 `architecture_preregistration_commit` 字段而 fail-closed；它未产生科学贡献。replacement 只补该只读身份兼容字段，候选、输入与全部阈值不变。
 - density-expansion policy R1 保留 `73b592fb`、`f0dcdf27`、`4f889030` 的历史拒绝原文，并把 `rank_floor/rank_deficiency/rank_path_span/condition/retained_margin/adjacent_subspace/cross_grid_subspace` 七项改为诊断。它们仍说明系数规范不唯一、近零空间不稳定，但不再否决“密度能否准确展开”。
 - 新 policy 对原 23 函数 `r08_eta100_complementary` 重算 11 个硬门并获得 11/11：最大密度 L2 `0.467941%`、单项能量误差 `1.30055 meV/atom`、固定 WT 总误差 `5.68575 meV/atom`、eggbox 能量 `0.00426945 meV/atom`、最大参考/候选/新增伪力 `1.79043e-4/1.52952e-4/3.31785e-4 eV/Å`，跨网格伪力变化 `3.24747e-4 eV/Å`，均低于原阈值。
-- 结论限定为 `accepted_density_expansion_candidate`：不声称系数唯一或良态，不改写历史拒绝，不关闭 Mg 或 G2c 性能，也不启动 S3。此前四路线 Stage B 计划被该用户授权的目标重定义取代，不再是当前下一动作。
+- 该结论仍限定为 `accepted_density_expansion_candidate`：不声称系数唯一或良态，不改写历史拒绝，也不关闭 Mg 或 G2c 性能。“不启动 S3”是当时处置，已由 D-064 的新验收 revision 后续修订；当前只授权固定 WT、Al V100 的系数空间 pilot。
 - G2c performance R1 已以 18/18 冷启动单线程案例闭合，CPU 74/150 竞争扫描全程通过，新增电子结构 solver 0。32/108/256 原子的共同精度门全部通过，密度 L2 均为 `0.564796%`，合并能量误差均约 `0.0796043 meV/atom`。
 - 23 函数候选的系数自由度为 `645/2173/5119`，只占 `80³/120³/160³` 网格自由度的 `0.12598%/0.12575%/0.12498%`，即约 `793.8x/795.2x/800.2x` 的表示压缩。
 - 端到端性能未通过：时间中位数 PW→candidate 为 `6.484→6.243 s`、`6.291→7.841 s`、`11.346→11.652 s`；峰值内存为 `188.586→188.637 MiB`、`353.344→353.582 MiB`、`680.871→681.117 MiB`。三档均未达到 `1.5x` 时间或 `2x` 内存收益。
-- 原因边界明确：当前候选路线仍先重建完整实空间网格，再执行与 PW/FFT 相同的 Hartree、局域赝势、PBE XC 和固定 WT 算子链。系数存储被压缩，但主内存与公共 FFT 工作没有消失。G2c 状态为 `evidence_valid_g2c_performance_rejected`，不得因系数少宣称加速，S3 不启动。
+- 原因边界明确：当前候选路线仍先重建完整实空间网格，再执行与 PW/FFT 相同的 Hartree、局域赝势、PBE XC 和固定 WT 算子链。系数存储被压缩，但主内存与公共 FFT 工作没有消失。G2c 状态为 `evidence_valid_g2c_performance_rejected`，不得因系数少宣称加速；D-064 仅将这一性能拒绝从 S3 正确性 pilot 的前置条件中移除。
 
 ## 4. 闸门决策记录
 
@@ -351,7 +351,7 @@ python3 -m unittest -q tests.unit.test_s1_g1_thermodynamic_label_audit_r4_genera
 | 2026-08-12 | G2 next architecture matrix R1 | `preregistered` | Codex | 四路线8行：1 reference + 7 compressed；淘汰空间禁止换规范重入；Stage A/B顺序与原门全部冻结 | `config/S2_g2_next_architecture_matrix_r1.{json,tsv}`；`5e9054e3` | 下一动作仅执行atomic_fft r08/r10单原子Stage A；0 solver |
 | 2026-08-12 | G2a atomic_fft Stage A R1 replacement | `rejected`（证据有效） | Codex | r08/r10均0新solver重放；密度L2约6.6%，WT误差419.8/495.6 meV/atom；r10条件数1.736e8；晋级0/2 | `analysis/s2/g2_atomic_fft_stage_a_r1_20260812/`；`cd9a132d` | atomic_fft不进入Stage B；下一revision只执行reference+五个历史合格低G候选 |
 | 2026-08-12 | G2a/G2b density-expansion policy R1 | `accepted`（Al限定） | Codex | 历史秩/角度拒绝不变；七项降为诊断；密度、电子数、能量、eggbox、伪力及跨网格11/11硬门通过；0 solver | `analysis/s2/g2_density_expansion_acceptance_policy_r1_20260812/`；`987ca097` | 接受23函数Al密度展开候选；转G2c性能，Mg/S3仍关闭 |
-| 2026-08-12 | G2c performance R1 | `rejected`（证据有效） | Codex | 18/18；32/108/256共同精度全过；表示压缩约794–800x；时间加速`1.039x/0.802x/0.974x`，内存改善约`0.9997x/0.9993x/0.9996x`，三档性能门全失败 | `analysis/s2/g2c_performance_r1_20260812/`；`2a27822b` | 不启动S3；仅新revision的算子原生压缩实现可继续挑战G2c |
+| 2026-08-12 | G2c performance R1 | `rejected`（证据有效） | Codex | 18/18；32/108/256共同精度全过；表示压缩约794–800x；时间加速`1.039x/0.802x/0.974x`，内存改善约`0.9997x/0.9993x/0.9996x`，三档性能门全失败 | `analysis/s2/g2c_performance_r1_20260812/`；`2a27822b` | 历史处置为不启动S3；D-064后仍禁止加速声明，但不再阻塞固定WT正确性pilot |
 
 ## 5. 实验台账
 
@@ -563,6 +563,7 @@ python3 -m unittest -q tests.unit.test_s1_g1_thermodynamic_label_audit_r4_genera
 | 2026-08-12 | D-061 | 接受 atomic_fft Stage A 的有效负结果，不把 r08/r10 带入 Stage B | 增加径向函数未解决纯原子表示的单原子密度/算子误差；r10还触发条件数与非负性门；0/2 晋级 | 放宽1%密度或10 meV算子门，或因函数更多而跳过Stage A | 原门不变；Stage B矩阵缩为PW/FFT参考加五个历史合格低G候选，G2 overall仍in_progress |
 | 2026-08-12 | D-062 | 将秩、条件数、谱裕量和子空间角度降为密度展开目标的诊断，并重新接受23函数候选 | 用户明确当前目标是密度展开；密度/电子数/能量/eggbox/伪力11/11已通过，坏秩只限制系数规范解释 | 回写旧拒绝，或声称系数唯一/良态，或直接宣称性能通过 | 新policy只接受Al密度展开；旧拒绝永久保留；下一步G2c实测压缩与性能 |
 | 2026-08-12 | D-063 | 接受 G2c 的有效负性能证据，不把约800倍系数压缩写成端到端加速 | 三档共同精度均过，但完整网格重建与公共FFT算子主导时间/内存；三档均未达到1.5x时间或2x内存门 | 只报告系数占比、放宽性能门，或用32原子约4%波动宣称加速 | G2被性能门阻塞，S3不启动；继续只能新revision实现不物化完整网格的算子原生路径 |
+| 2026-08-12 | D-064 | 将G2c性能门从S3科学前置条件降为独立工程限制，授权固定WT系数空间pilot | 用户接受23函数Al密度表示及约794–800倍表示压缩，同时要求保留G2c拒绝；S3允许每步完整网格重建和FFT | 回写G2c为通过、宣称加速，或跳过完整网格同设置参考 | 新revision/新ID/state；full-grid与coeff各三初值，含网格收敛、三体积核心矩阵和压力平台共29点；七项用户硬门；独立审计后才能执行，失败不重试 |
 
 ## 9. 最近可用状态
 
@@ -574,7 +575,7 @@ python3 -m unittest -q tests.unit.test_s1_g1_thermodynamic_label_audit_r4_genera
 - 已知失败/暂停：局域 R1 solver 成功后被旧单原子 cube parser 假拒绝；R2 只读恢复后的满秩与伪力失败仍为历史权威结论。后续 128³ 诊断已将伪力问题定位到旧分析网格，但秩 2171–2172/2173 尚未闭合。所有旧 state/ID 禁止重跑。
 - 恢复方法：在登记 R2 worktree 用冻结 DFTpy Python 运行 `PYTHONPATH=scripts .../python -s -B scripts/validate_s2_g2_al_localized_analysis_r2.py --require-committed`；验证器应 exit 0 并报告 `evidence_valid_scientific_gate_rejected`。
 - 同步方法：node01 对 `codex/r4-execution` 相对 GitHub 已知基线创建并验证增量 bundle，经跳板机传至本机；三端 SHA-256 一致后 fast-forward 推送同名分支，最后以 `git ls-remote` 核验目标 SHA。
-- 当前交接点：23函数候选的密度展开精度与约800倍表示压缩得到确认，但当前“重建完整网格后走公共FFT算子”的实现没有端到端时间/内存收益。G2c有效拒绝，S3/Mg/ML均未启动；下一步若继续，必须新revision改为算子原生压缩路径。
+- 当前交接点：23函数候选的密度展开精度与约800倍表示压缩得到确认，但当前“重建完整网格后走公共FFT算子”的实现没有端到端时间/内存收益。G2c有效拒绝且不得宣称加速；按D-064，S3的Al V100固定WT正确性pilot正在新revision中实现，Mg/ML仍未启动。
 
 ## 10. 交接说明
 
@@ -755,7 +756,7 @@ python3 -m unittest -q tests.unit.test_s1_g1_thermodynamic_label_audit_r4_genera
 | 2026-08-12 14:42 CST | S2 下一架构候选矩阵预注册 | Codex | S2 | implementation `1f1fbe1a`；prereg `5e9054e3` | 4/4测试；8行/4路线；7压缩候选；淘汰空间无重入；0 solver | 矩阵冻结；下一动作atomic_fft r08/r10单原子Stage A |
 | 2026-08-12 14:16 CST | S2 atomic_fft Stage A replacement | Codex | S2 | implementation `1a5eb198`；prereg `0c2feb90`；evidence `cd9a132d` | committed replay accepted；r08/r10均rejected；0 solver | atomic_fft晋级0/2；下一动作Stage B只含reference+五个历史合格低G候选 |
 | 2026-08-12 14:28 CST | S2 23函数密度展开验收policy | Codex | S2 | implementation `54451b51`；prereg `0c503eb0`；evidence `987ca097` | 历史拒绝保留；7诊断；11/11硬门；0 solver | Al密度展开候选accepted；下一动作G2c性能/压缩 |
-| 2026-08-12 14:55 CST | S2 G2c 32/108/256 性能对照 | Codex | S2 | implementation `bb23411b`；prereg `0ba305fd`；evidence `2a27822b` | 18/18；精度与约794–800x表示压缩通过；时间/峰值内存三档均未过性能门；0 solver | 有效性能拒绝；S3不启动，后续仅允许新revision的算子原生压缩路线 |
+| 2026-08-12 14:55 CST | S2 G2c 32/108/256 性能对照 | Codex | S2 | implementation `bb23411b`；prereg `0ba305fd`；evidence `2a27822b` | 18/18；精度与约794–800x表示压缩通过；时间/峰值内存三档均未过性能门；0 solver | 有效性能拒绝；当时不启动S3，后由D-064授权固定WT正确性pilot但不改变性能结论 |
 
 ## 11. 文档变更记录
 
@@ -806,3 +807,4 @@ python3 -m unittest -q tests.unit.test_s1_g1_thermodynamic_label_audit_r4_genera
 | 2026-08-12 | V5.2 | Codex | 执行atomic_fft Stage A：r08/r10在原单原子门下均被有效拒绝、0候选晋级；保留0 solver committed证据，将下一动作切为不含atomic_fft的六行局域108原子Stage B |
 | 2026-08-12 | V5.3 | Codex | 新建密度展开验收policy：历史秩/角度拒绝不改写，七项降为诊断；依128³/144³密度、能量、eggbox和伪力11/11硬门重新接受23函数Al候选，下一动作转G2c性能/压缩 |
 | 2026-08-12 | V5.4 | Codex | 记录G2c 32/108/256原子18点共同精度性能对照：约794–800倍表示压缩成立，但时间无稳定加速、峰值内存无下降；冻结有效负证据，阻止S3并把后续限定为新revision的算子原生压缩实现 |
+| 2026-08-12 | V5.5 | Codex | 按用户授权调整G2→S3决策：保留G2c性能拒绝和无加速结论，但接受Al 23函数密度表示并允许进入固定WT系数空间pilot；冻结每步完整网格/FFT、完整网格参考、三初值及七项硬门 |
