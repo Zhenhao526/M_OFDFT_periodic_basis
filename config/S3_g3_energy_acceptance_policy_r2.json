@@ -1,8 +1,8 @@
 {
   "schema_version": 1,
   "protocol_revision": "S3-G3-ENERGY-ACCEPTANCE-POLICY-20260812-R2",
-  "status": "implementation_pending_preregistration",
-  "implementation_commit": "__FREEZE_IMPLEMENTATION_COMMIT__",
+  "status": "preregistered_no_execution",
+  "implementation_commit": "b7d751f67fc205a2f35a9e304f7e14270e4677a0",
   "base_commit": "f8ca6cd330d0ff8f492518c327442da71413e2da",
   "source": {
     "evidence_commit": "25b2109cea0d89d00a8775534a95e78239543954",
