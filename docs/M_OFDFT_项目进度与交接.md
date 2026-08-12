@@ -308,6 +308,7 @@ python3 -m unittest -q tests.unit.test_s1_g1_thermodynamic_label_audit_r4_genera
 - `r08_eta100_explicit/complementary` 因张成空间相同而随 23 函数空间一并淘汰，禁止通过更换规范重新进入。`r10_eta130_explicit` 因历史条件数门失败未登记。
 - Stage A 仅筛选两个新 `atomic_fft` 径向档；Stage B 才使用 108 原子独立参考、五几何、128³/144³ 和 16 相位。所有原密度、能量、秩、条件数、谱裕量、`15°`、eggbox 与伪力门保持不变。
 - Stage A replacement 已以 0 新 solver 重放冻结单原子密度。`r08_atomic_fft` 的密度 L2 为 `6.64203%`、三算子合计误差 `78.4241 meV/atom`、WT 误差 `419.793 meV/atom`；`r10_atomic_fft` 的密度 L2 为 `6.61133%`、条件数 `1.73647e8`、三算子合计误差 `73.5114 meV/atom`、WT 误差 `495.576 meV/atom`。两者均未通过全部原门，Stage B 晋级数为 0。
+- 首个 prereg `78a0e140` 在生成任何分析输出前，因旧解析入口要求历史 `architecture_preregistration_commit` 字段而 fail-closed；它未产生科学贡献。replacement 只补该只读身份兼容字段，候选、输入与全部阈值不变。
 - 当前唯一动作：新 revision 执行 Stage B 的 PW/FFT 参考和五个历史合格低 G 候选；`atomic_fft` 本轮不进入局域 108 原子矩阵，G2c/S3/Mg 继续关闭。
 
 ## 4. 闸门决策记录
