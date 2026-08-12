@@ -1,9 +1,9 @@
 {
   "schema_version": 1,
   "protocol_revision": "S2-G2-NEXT-ARCHITECTURE-MATRIX-20260812-R1",
-  "status": "implementation_pending_preregistration",
+  "status": "preregistered_no_execution",
   "base_commit": "483699e0752cab16d7d565646ee2563f7250207c",
-  "implementation_commit": "__FREEZE_IMPLEMENTATION_COMMIT__",
+  "implementation_commit": "1f1fbe1aeb1c04c549118399caf6ee94d80817f3",
   "new_solver_run_count": 0,
   "source": {
     "architecture_config_path": "config/S2_g2_architecture_candidates_r1.json",
