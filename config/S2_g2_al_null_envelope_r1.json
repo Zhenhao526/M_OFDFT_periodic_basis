@@ -1,0 +1,40 @@
+{
+  "schema_version": 1,
+  "protocol_revision": "S2-G2-AL-NULL-ENVELOPE-20260812-R1",
+  "status": "implementation_pending_preregistration",
+  "base_commit": "3c85d239c3f13c0df3ae7120e2436fa8ee2c1d32",
+  "implementation_commit": "__FREEZE_IMPLEMENTATION_COMMIT__",
+  "new_solver_run_count": 0,
+  "source": {
+    "joint_svd_evidence_commit": "f0dcdf27636bcdfdfb0ed4f824cdf2dc33aa3f31",
+    "joint_svd_config_path": "config/S2_g2_al_joint_svd_r1.json",
+    "joint_svd_config_sha256": "20993a6d93b2a0bbeed171b5db2b3537339ec3c21c5a5bf45d8deb9ef2b044b7",
+    "joint_svd_analyzer_path": "scripts/analyze_s2_g2_al_joint_svd_r1.py",
+    "joint_svd_analyzer_sha256": "55ddfa716737f808d6eb15daf84008638e2ed151678f99a7ea1c989d44abc6f6",
+    "joint_svd_summary_path": "analysis/s2/g2_al_joint_svd_r1_20260812/summary.json",
+    "joint_svd_summary_sha256": "eaec1d7e9c6a903c396521311f3e4d4255fff4f11d8b95159c6f7d77c7e34448"
+  },
+  "analysis": {
+    "target_grids": [128, 144],
+    "rank_displacements_angstrom": [-0.05, -0.025, 0.0, 0.025, 0.05],
+    "local_bad_subspace_dimension": 2,
+    "local_subspace_count": 10,
+    "envelope_dimension_scan": [2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20],
+    "envelope_construction": "left_singular_vectors_of_concatenated_ten_local_bottom_two_normalized_gram_eigenspaces",
+    "selection": "minimum_dimension_with_all_local_maximum_principal_angles_le_threshold"
+  },
+  "acceptance": {
+    "coverage_principal_angle_max_degrees": 15.0,
+    "maximum_allowed_fixed_envelope_dimension": 2,
+    "if_required_dimension_exceeds_limit": "eliminate_current_23_function_periodic_expansion_and_return_to_four_route_architecture_competition"
+  },
+  "execution": {
+    "analysis_root": "analysis/s2/g2_al_null_envelope_r1_20260812",
+    "external_state_root": "/home/shenwei01/.local/state/m_ofdft/s2_g2_al_null_envelope_r1_20260812",
+    "python": "/home/shenwei01/.local/venvs/m_ofdft-dftpy-2.2.0-py311/bin/python",
+    "hostname": "node01",
+    "logical_cpus": [36, 37, 74, 75, 112, 113, 150, 151],
+    "retry_policy": "analysis_once_no_overwrite"
+  },
+  "output_files": ["README.md", "dimension_scan.tsv", "local_coverage.tsv", "summary.json"]
+}
