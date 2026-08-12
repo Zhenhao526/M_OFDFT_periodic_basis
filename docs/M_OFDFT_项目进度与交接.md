@@ -3,7 +3,7 @@
 > 本文件是项目状态的唯一人工入口。任何人接手前先读本文件，再读项目书和当前阶段 README。  
 > 状态词仅使用：`not_started`、`in_progress`、`blocked`、`accepted`、`rejected`、`paused`。  
 > 更新时间：2026-08-12 12:35 CST
-> 文档版本：V4.9
+> 文档版本：V5.0
 
 ## 0. 十分钟上手摘要
 
@@ -17,8 +17,8 @@
 | 最近可用提交 | 规模/几何 R3 实现 `c6202428`；预注册 `da16a237`；证据 `472b6c35`；主线合并 `c001cfde` |
 | 最近通过的数值 smoke | `S1-RUNTIME-SMOKE-20260805-074`：`storage_exact`，五类状态门全部 `accepted`；幂等重验返回 `accepted_committed` |
 | 最近通过的正式分析 | G1 acceptance policy R1：R3/R5 全量重放、17 行 gate、`accepted_g1_6_of_6`、新增 solver 0；证据 `d0386418` |
-| 当前阻塞 | 十矩阵联合 SVD 的 `drop1/drop2` 固定子空间均无法覆盖随几何旋转的局部坏模态：最大对齐角 `88.75°`，单点降维 Gram 仍出现负小特征值；密度、能量和伪力门全部通过 |
-| 下一项唯一动作 | 先做十个局部近零/负模态的联合包络维数诊断，前瞻冻结“达到 `≤15°` 覆盖所需的最小固定维数”；若需求超过 2 维则淘汰当前周期展开，不进入 G2c 或 S3 |
+| 当前阻塞 | 十个局部底部二维空间达到 `≤15°` 覆盖需要固定包络维数 `8`，超过登记上限 `2`；当前 23 函数周期展开已淘汰，G2 尚无可晋级架构 |
+| 下一项唯一动作 | 返回四路线架构竞赛，以新 revision 冻结不含当前 23 函数周期展开的下一候选矩阵；保持原密度/能量/连续性门，不进入 G2c 或 S3 |
 
 ### 必读文件
 
@@ -51,6 +51,7 @@
 27. S2 96³→128³ 网格加密诊断：`analysis/s2/g2_al_localized_grid_refinement_diag_r1_20260812/{README.md,summary.json,result_96.json,result_128.json}`
 28. [S2 128³/144³ 正式密网格协议](S2_G2_AL_LOCALIZED_DENSE_GRID_R1_PROTOCOL.md)、`analysis/s2/g2_al_localized_dense_grid_r1_20260812/{README.md,summary.json,grid_metrics.tsv,rank_continuity.tsv,subspace_continuity.tsv}`
 29. [S2 五几何联合 SVD 固定子空间协议](S2_G2_AL_JOINT_SVD_R1_PROTOCOL.md)、`analysis/s2/g2_al_joint_svd_r1_20260812/{README.md,summary.json,candidate_metrics.tsv,grid_metrics.tsv,rank_continuity.tsv,discarded_mode_alignment.tsv}`
+30. [S2 局部坏模态联合包络协议](S2_G2_AL_NULL_ENVELOPE_R1_PROTOCOL.md)、`analysis/s2/g2_al_null_envelope_r1_20260812/{README.md,summary.json,dimension_scan.tsv,local_coverage.tsv}`
 
 ### 最近可运行命令
 
@@ -300,7 +301,9 @@ python3 -m unittest -q tests.unit.test_s1_g1_thermodynamic_label_audit_r4_genera
 - 联合 SVD R1 以实现 `74cc6e0a`、预注册 `473437f1`、证据 `f0dcdf27` 完成，0 新 solver。十个 Gram（128³/144³ × 五几何）使用一次共同列缩放和一次平均谱分解，登记 `drop1/drop2` 两个固定变换，禁止逐几何重选。
 - 两个候选的密度 L2 为 `0.4546%–0.4778%`、固定 WT 总误差为 `6.886–7.257 meV/atom`；最大候选/新增伪力分别为 `2.8734e-4/4.6599e-4 eV/Å`，所有密度、能量、电子数和伪力门通过。
 - 两候选均因相同四门被拒绝：`full_reduced_rank/condition/retained_margin/discarded_mode_alignment`。最坏局部 Gram 的底部特征值为 `-1.4888e-4`，局部坏模态对固定丢弃空间最大主角 `88.7546°`；删除 1–2 维不足以形成几何无关的良态子空间。
-- 当前唯一动作：不放宽谱或主角门；先计算十个局部坏模态联合包络的最小覆盖维数。若 `≤2` 才允许新固定子空间 revision；若 `>2`，淘汰当前 23 函数周期展开并返回四路线架构竞赛。
+- 联合包络 R1 冻结十个局部底部二维空间，拼接后以左奇异向量形成嵌套固定包络。`d=2/6/7/8` 的最大覆盖主角分别为 `88.4935°/21.4643°/17.1298°/4.0070°`，最小合格维数为 `8`；联合包络数值秩为 20。
+- 因 `8>2`，当前 23 函数周期展开按预注册规则正式淘汰。历史密度、能量与伪力通过仍作为诊断保留，但不再支持该架构晋级。
+- 当前唯一动作：返回四路线架构竞赛，以新 revision 冻结下一候选矩阵；不放宽 `15°` 门，不继续为已淘汰展开增加删除维数，不进入 G2c/S3。
 
 ## 4. 闸门决策记录
 
@@ -332,6 +335,7 @@ python3 -m unittest -q tests.unit.test_s1_g1_thermodynamic_label_audit_r4_genera
 | 2026-08-11 | G2a/G2b periodic-tiling scale/geometry R3 | `accepted` | Codex | 23 函数固定；原胞几何 7/7、32/108 原子平铺 14/14；密度 L2 P95 `0.573791%`、WT P95 `4.035124 meV/atom`；0 solver | `analysis/s2/g2_al_scale_geometry_r3_20260811/`；`472b6c35` | 仅关闭周期平铺规模/几何子门；G2 overall 保持 in_progress，转入局域 108 原子/eggbox/秩连续性 |
 | 2026-08-11 | G2a/G2b localized 108-atom R1/R2 | `rejected` | Codex | R1 solver 收敛但单原子 parser 假阴性；R2 零重算恢复。密度/算子/eggbox 能量通过；总秩最低 `2171/2173`，伪力 `0.008360315>0.002 eV/Å` | `analysis/s2/g2_al_localized_analysis_r2_20260811/`；R1 closure `66ca1d76`；R2 evidence `aeacc5a6` | 固定 23 函数候选不适用于当前局域大胞门；G2 overall 继续 in_progress，新 revision 修正冗余/导数连续性 |
 | 2026-08-12 | G2a/G2b joint-SVD fixed subspace R1 | `rejected`（证据有效） | Codex | 十 Gram 联合拟合；drop1/drop2 固定变换；密度/能量/伪力全过，但两者均在满秩、条件数、谱裕量和坏模态对齐四门失败 | `analysis/s2/g2_al_joint_svd_r1_20260812/`；`f0dcdf27` | 删除 1–2 维不足；先诊断联合坏模态包络维数，G2 overall 继续 in_progress |
+| 2026-08-12 | G2a/G2b local-null-envelope R1 | `accepted_diagnostic / architecture_eliminated` | Codex | 十个底部二维空间联合 SVD；维数扫描2–20；`≤15°` 最小包络维数为8，超过允许的2 | `analysis/s2/g2_al_null_envelope_r1_20260812/`；`4f889030` | 当前23函数周期展开淘汰；返回四路线架构竞赛，G2 overall继续in_progress |
 
 ## 5. 实验台账
 
@@ -434,6 +438,7 @@ python3 -m unittest -q tests.unit.test_s1_g1_thermodynamic_label_audit_r4_genera
 | S2 局域 108 总秩 / 条件数 / retained margin | 最低 `2171/2173` / 最大 `3.7980e7` / 最低 `263.30` | `2173` / `<1e8` / `≥100` | 同上 | 秩拒绝；其余通过 |
 | S2 联合 SVD drop1/drop2 密度 L2 / WT 总误差 | `0.4546%–0.4778%` / `6.886–7.257 meV/atom` | `<2%` / `≤10` | joint-SVD R1 `f0dcdf27` | 全通过 |
 | S2 联合 SVD drop1/drop2 伪力 / 坏模态对齐 | 候选最大 `2.8734e-4 eV/Å` / 最大主角 `88.7546°` | `≤0.004` / `≤15°` | 同上 | 伪力通过；固定子空间拒绝 |
+| S2 局部坏模态固定包络最小维数 | `8`（`d=7:17.1298°`; `d=8:4.0070°`） | `≤2` 且最大主角 `≤15°` | null-envelope R1 `4f889030` | 超限；当前23函数周期展开淘汰 |
 | 自洽成功率 | — | >95% | — | 未测 |
 | 力有限差分最大偏差 | — | <1e-3 eV/Å | — | 未测 |
 | 应力有限差分最大偏差 | — | <0.05 GPa | — | 未测 |
@@ -534,18 +539,19 @@ python3 -m unittest -q tests.unit.test_s1_g1_thermodynamic_label_audit_r4_genera
 | 2026-08-12 | D-056 | 将旧伪力失败分类为 96³ 分析网格混叠主导，但不事后改写 R2 | 128³/16 相位下参考/候选/新增最大伪力为 `7.18e-6/2.61e-6/6.28e-6 eV/Å`；较 96³ 分别下降约 403/3472/980 倍 | 直接放宽旧门，或把事后诊断当成正式验收 | 新 revision 前瞻冻结更密网格；秩失败继续独立处置 |
 | 2026-08-12 | D-057 | 接受 128³/144³ 伪力门通过，但依近零子空间不连续拒绝当前 23 函数周期展开 | 伪力/能量/密度均过；秩跨度 2 超过 1，相邻主角 `89.08° > 15°`，跨网格 `69.78° > 5°` | 放宽主角/谱裕量门，或仅依伪力通过推进 G2c | 保留有效负证据；下一候选用联合SVD去冗余后复验 |
 | 2026-08-12 | D-058 | 拒绝用联合平均谱删除 1–2 维来接受当前周期展开 | drop1/drop2 虽保持精度与伪力，但局部降维 Gram 仍非正定/不满秩，坏模态相对固定丢弃空间旋转 `88.7546°` | 再放宽条件数/主角门，或在每个几何分别删除模态 | 先冻结局部坏模态联合包络的最小覆盖维数；需求超过 2 维即淘汰该展开 |
+| 2026-08-12 | D-059 | 淘汰当前 23 函数周期展开并返回四路线架构竞赛 | 十个局部底部二维空间需 8 维固定包络才能将最大主角压到 `≤15°`，远超允许的 2 维；`d=7` 仍为 `17.1298°` | 放宽主角门、允许逐几何子空间或继续扩大该架构的删除维数 | 保留全部有效负证据；下一 revision 重新选择架构候选，G2c/S3 继续关闭 |
 
 ## 9. 最近可用状态
 
 此节必须始终指向一个可运行、可复现的状态；若暂无则明确写“无”。
 
-- 最近可用状态：S2 joint-SVD worktree `/home/shenwei01/wt_s2_g2_joint_svd_r1_20260812` evidence=`f0dcdf27`；正式分析为 `evidence_valid_scientific_gate_rejected`，0 新 solver。
+- 最近可用状态：S2 null-envelope worktree `/home/shenwei01/wt_s2_g2_null_envelope_r1_20260812` evidence=`4f889030`；诊断 accepted、架构淘汰，0 新 solver。
 - 对应环境：`environment/` 的 ABACUS v3.11.0-beta.5 CPU + OpenMPI 5.0.10 + LibXC 7.0.0；独立 OF 环境为 `/home/shenwei01/.local/venvs/m_ofdft-dftpy-2.2.0-py311`，身份见锁文件。
 - 已通过测试：此前 S2 架构/Al1/收敛/规模证据保持有效；密网格 R1 为 5/5 单测、预注册 validator 和 committed 全量重放通过，5 个输出逐字节重建。科学状态为 rejected，证据状态为 accepted。
 - 已知失败/暂停：局域 R1 solver 成功后被旧单原子 cube parser 假拒绝；R2 只读恢复后的满秩与伪力失败仍为历史权威结论。后续 128³ 诊断已将伪力问题定位到旧分析网格，但秩 2171–2172/2173 尚未闭合。所有旧 state/ID 禁止重跑。
 - 恢复方法：在登记 R2 worktree 用冻结 DFTpy Python 运行 `PYTHONPATH=scripts .../python -s -B scripts/validate_s2_g2_al_localized_analysis_r2.py --require-committed`；验证器应 exit 0 并报告 `evidence_valid_scientific_gate_rejected`。
 - 同步方法：node01 对 `codex/r4-execution` 相对 GitHub 已知基线创建并验证增量 bundle，经跳板机传至本机；三端 SHA-256 一致后 fast-forward 推送同名分支，最后以 `git ls-remote` 核验目标 SHA。
-- 当前交接点：128³/144³ 联合 SVD 已证明删除 1–2 个共同模态仍不能覆盖几何旋转的局部坏模态；精度和伪力子门保持通过。下一动作仅为联合坏模态包络维数诊断，Mg、ML、自洽优化和 G2c 尚未启动。
+- 当前交接点：十局部空间联合包络已给出最小维数8并触发淘汰规则；当前23函数周期展开停止发展。下一动作回到四路线架构竞赛冻结下一候选；Mg、ML、自洽优化和G2c尚未启动。
 
 ## 10. 交接说明
 
@@ -722,6 +728,7 @@ python3 -m unittest -q tests.unit.test_s1_g1_thermodynamic_label_audit_r4_genera
 | 2026-08-12 12:10 CST | S2 108 原子网格加密诊断 | Codex | S2 | 96³/128³ 诊断 JSON；新 solver 0 | 两网格各16相位；128³新增伪力 `6.28e-6 eV/Å`，电子数差 `1.14e-13 e` | 支持 96³ 网格混叠归因；事后诊断贡献0，下一步新revision正式复现并解决秩冗余 |
 | 2026-08-12 12:35 CST | S2 128³/144³ 密网格/子空间 pilot | Codex | S2 | implementation `6774a87c`；prereg `1786b965`；evidence `73b592fb` | 5/5测试；committed replay通过；伪力门全过；秩跨度2、相邻主角89.08°拒绝 | 有效科学拒绝；不进G2c，下一步联合SVD去冗余候选 |
 | 2026-08-12 13:55 CST | S2 五几何联合 SVD 固定子空间 pilot | Codex | S2 | implementation `74cc6e0a`；prereg `473437f1`；evidence `f0dcdf27` | 5/5测试；10 Gram；drop1/drop2；密度/能量/伪力全过；固定子空间四门拒绝 | 删除 1–2 维不足；下一步只诊断局部坏模态联合包络的最小覆盖维数 |
+| 2026-08-12 14:20 CST | S2 局部坏模态联合包络诊断 | Codex | S2 | implementation `5a438628`；prereg `eb183ea1`；evidence `4f889030` | 4/4测试；10个局部二维空间；维数2–20；最小合格维数8；0 solver | 触发架构淘汰；返回四路线竞赛，不放宽门控 |
 
 ## 11. 文档变更记录
 
@@ -767,3 +774,4 @@ python3 -m unittest -q tests.unit.test_s1_g1_thermodynamic_label_audit_r4_genera
 | 2026-08-12 | V4.7 | Codex | 记录 96³→128³周期傅里叶网格加密诊断：16相位对照将参考/候选/新增伪力降至 `10^-6 eV/Å`级，支持旧伪力失败由 96³ 网格混叠主导；保留历史R2拒绝和秩门未闭合状态 |
 | 2026-08-12 | V4.8 | Codex | 预注册并执行 128³/144³ 独立重拟合、五几何 Gram 谱和近零子空间主角 pilot；确认伪力/能量/密度通过，但因秩跨度、谱裕量和主角不连续保留有效科学拒绝 |
 | 2026-08-12 | V4.9 | Codex | 记录十 Gram 联合 SVD 的 drop1/drop2 固定子空间复验：精度与伪力全过，但两候选均因局部非正定/不满秩、条件数、谱裕量和最大 `88.7546°` 坏模态对齐失败而拒绝；下一步冻结联合坏模态包络维数诊断 |
+| 2026-08-12 | V5.0 | Codex | 记录十个局部底部二维空间的联合包络维数扫描：`d=8` 才满足 `≤15°`，超过允许的2维；正式淘汰当前23函数周期展开并将唯一下一动作切回四路线架构竞赛 |
