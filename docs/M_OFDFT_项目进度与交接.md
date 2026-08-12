@@ -2,8 +2,8 @@
 
 > 本文件是项目状态的唯一人工入口。任何人接手前先读本文件，再读项目书和当前阶段 README。  
 > 状态词仅使用：`not_started`、`in_progress`、`blocked`、`accepted`、`rejected`、`paused`。  
-> 更新时间：2026-08-12 19:05 CST
-> 文档版本：V5.8
+> 更新时间：2026-08-12 19:15 CST
+> 文档版本：V5.9
 
 ## 0. 十分钟上手摘要
 
@@ -14,11 +14,11 @@
 | 当前闸门 | G3；R1 pilot 29/29 operational accepted；R2 按用户授权把同 WT 能量差门从严格 `<10` 修订为严格 `<20 meV/atom`，13/13 coefficient 点通过；G3 overall 仍等待多结构与 Mg 覆盖 |
 | 当前负责人 | 远端账户 `shenwei01`；本轮执行与记录：Codex |
 | 当前工作分支 | `codex/s3-energy-policy-r2`；下一批 solver 仅允许来自新多结构 revision 的精确预注册提交 |
-| 最近可用提交 | S3 energy acceptance policy R2：implementation `b7d751f6`；prereg `b6798230`；evidence `3f2322c5` |
+| 最近可用提交 | S3 energy policy R2 evidence `3f2322c5`；Al 20结构矩阵 implementation `db9409ad`、prereg `f979447b` |
 | 最近通过的数值 smoke | `S1-RUNTIME-SMOKE-20260805-074`：`storage_exact`，五类状态门全部 `accepted`；幂等重验返回 `accepted_committed` |
 | 最近通过的正式分析 | G1 acceptance policy R1：R3/R5 全量重放、17 行 gate、`accepted_g1_6_of_6`、新增 solver 0；证据 `d0386418` |
 | 当前阻塞 | 单原子 pilot 已通过，但尚未证明跨体积、剪切/应变和多结构的收敛成功率；Mg 的表示与自洽覆盖也未开始。G2c 无时间/内存收益的工程拒绝不变 |
-| 下一项唯一动作 | 新 revision 预注册并执行 Al 20 结构 × 三初值的系数自洽扩展，并为每个结构建立同设置完整网格 WT 数值参考；旧29点只读且不重试 |
+| 下一项唯一动作 | 基于已预注册矩阵 `f979447b` 实现并审计 80 点正式执行 revision；通过前不得启动 solver，旧29点只读且不重试 |
 
 ### 必读文件
 
@@ -354,6 +354,7 @@ python3 -m unittest -q tests.unit.test_s1_g1_thermodynamic_label_audit_r4_genera
 | 2026-08-12 | G2c performance R1 | `rejected`（证据有效） | Codex | 18/18；32/108/256共同精度全过；表示压缩约794–800x；时间加速`1.039x/0.802x/0.974x`，内存改善约`0.9997x/0.9993x/0.9996x`，三档性能门全失败 | `analysis/s2/g2c_performance_r1_20260812/`；`2a27822b` | 历史处置为不启动S3；D-064后仍禁止加速声明，但不再阻塞固定WT正确性pilot |
 | 2026-08-12 | S3 Al V100 fixed-WT coefficient pilot R1 | `accepted`（执行证据）/`in_progress`（KSDFT科学验收） | Codex | 29/29、failed/missing/skipped/retried=0；网格、Ne、非负、系数梯度、三初值、同WT密度和压力平台画像完整；约16.64–16.74 meV/atom仅作同WT子空间截断诊断；部分full-grid Euler超门仅作参考收敛诊断 | `analysis/s3/g3_wt_coefficient_pilot_r1_20260812/`；`25b2109c` | 不回写R1/V5.6；G3保持open，新revision以KSDFT密度、锚定相对能量和压力为硬参考 |
 | 2026-08-12 | S3 Al V100 energy acceptance policy R2 | `accepted`（Al单原子pilot限定） | Codex | 用户将同WT能量差门从严格`<10`修订为严格`<20 meV/atom`；13/13 coefficient点通过，最大`16.7390996 meV/atom`；其余系数路线门不变，0 solver | `analysis/s3/g3_energy_acceptance_policy_r2_20260812/`；`3f2322c5` | 接受Al单原子V100系数自洽pilot；G3 overall保持open，下一步Al 20结构×三初值扩展 |
+| 2026-08-12 | S3 Al 20结构候选矩阵 R1 | `preregistered`（尚未授权执行） | Codex | 20几何；每结构1个full-grid WT参考+3个coefficient初值；80个新ID `101–180`；能量门`<20 meV/atom`，其余系数门不变 | `config/S3_g3_al_multistructure_matrix_r1.json`；`f979447b` | 下一步实现runner/证据链/validator并独立审计；当前0 solver、无state |
 
 ## 5. 实验台账
 
@@ -766,6 +767,7 @@ python3 -m unittest -q tests.unit.test_s1_g1_thermodynamic_label_audit_r4_genera
 | 2026-08-12 14:55 CST | S2 G2c 32/108/256 性能对照 | Codex | S2 | implementation `bb23411b`；prereg `0ba305fd`；evidence `2a27822b` | 18/18；精度与约794–800x表示压缩通过；时间/峰值内存三档均未过性能门；0 solver | 有效性能拒绝；当时不启动S3，后由D-064授权固定WT正确性pilot但不改变性能结论 |
 | 2026-08-12 17:15 CST | S3 Al V100 fixed-WT coefficient pilot R1 | Codex | S3 | implementation `dbefd2c1`；prereg `b0d596db`；evidence `25b2109c` | 29/29 operational accepted；committed validator通过；R1原分析按相对full-grid WT能量门给出rejected；无retry | D-066后只承认其执行/同WT数值诊断；KSDFT科学验收未完成，下一步新revision补匹配KSDFT参考 |
 | 2026-08-12 19:05 CST | S3 Al V100 energy acceptance policy R2 | Codex | S3 | implementation `b7d751f6`；prereg `b6798230`；evidence `3f2322c5` | 13/13 coefficient点在严格`<20 meV/atom`门下通过；最大`16.7390996`；0 solver；committed validator accepted | 仅接受Al单原子V100 pilot；下一步新revision执行Al 20结构×三初值扩展 |
+| 2026-08-12 19:15 CST | S3 Al 20结构矩阵预注册 | Codex | S3 | implementation `db9409ad`；prereg `f979447b` | 20结构/80点；4/4测试；矩阵validator accepted；formal执行明确false；0 solver | 唯一下一动作是实现并审计80点执行revision，不得从矩阵提交直接启动 |
 
 ## 11. 文档变更记录
 
@@ -820,3 +822,4 @@ python3 -m unittest -q tests.unit.test_s1_g1_thermodynamic_label_audit_r4_genera
 | 2026-08-12 | V5.6 | Codex | 记录S3 fixed-WT R1的29点完整结果：operational闭合、证据有效但科学拒绝；保留G2密度表示接受与G2c性能拒绝，G3因约16.7 meV/atom能量差和部分full-grid Euler超门继续开放 |
 | 2026-08-12 | V5.7 | Codex | 修正S3参考分层：保留V5.6和R1全部历史证据，但撤销“相对完整网格WT即可作KSDFT科学淘汰”的当前政策解释；KSDFT改为密度、锚定相对能量和压力的科学主参考，完整网格WT降为同泛函数值与求解收敛诊断；G3保持in_progress并转入新revision |
 | 2026-08-12 | V5.8 | Codex | 按用户最新授权撤回尚未预注册/执行的KSDFT对照草案，直接把Al单原子系数路线同WT能量差门从`<10`修订为`<20 meV/atom`；0 solver重放13/13通过，接受Al V100 pilot但保持G3/S4开放，下一步转Al 20结构×三初值扩展 |
+| 2026-08-12 | V5.9 | Codex | 冻结并预注册Al 20结构扩展矩阵：7体积、四方/正交/剪切共13个非体积几何，每结构1个full-grid WT参考+3个系数初值，合计80个新ID；矩阵本身不授权执行，下一步转runner与证据链实现 |
