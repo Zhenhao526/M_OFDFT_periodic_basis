@@ -1,0 +1,63 @@
+{
+  "schema_version": 1,
+  "protocol_revision": "S2-G2-AL-JOINT-SVD-20260812-R1",
+  "status": "implementation_pending_preregistration",
+  "base_commit": "5e21d779fb9c79d08ad81ef2cf095731f2d93736",
+  "implementation_commit": "__FREEZE_IMPLEMENTATION_COMMIT__",
+  "new_solver_run_count": 0,
+  "source": {
+    "dense_grid_evidence_commit": "73b592fb32f18a75b59dd3d6f703438832c3c1b5",
+    "dense_grid_config_path": "config/S2_g2_al_localized_dense_grid_r1.json",
+    "dense_grid_config_sha256": "8c78e9a09272149ca005baceb8564bcc12ff22e9413595ff8c02073aeaaba129",
+    "dense_grid_analyzer_path": "scripts/analyze_s2_g2_al_localized_dense_grid_r1.py",
+    "dense_grid_analyzer_sha256": "b243096053bd47ab96e1dd39a476dcedb90cb6fdd063f39a3056c80bca872b4f",
+    "dense_grid_summary_path": "analysis/s2/g2_al_localized_dense_grid_r1_20260812/summary.json",
+    "dense_grid_summary_sha256": "391b938c06d7ec767453cdd8d339829c2ca09f731f4614344ce25c775f66a3ff"
+  },
+  "analysis": {
+    "target_grids": [128, 144],
+    "rank_displacements_angstrom": [-0.05, -0.025, 0.0, 0.025, 0.05],
+    "candidate_dropped_dimensions": [1, 2],
+    "candidate_selection": "minimum_dropped_dimension_passing_all_gates",
+    "joint_svd_gram_count": 10,
+    "joint_scaling": "sqrt_mean_diagonal_over_all_ten_grams",
+    "joint_operator": "arithmetic_mean_of_ten_common_scaled_grams",
+    "fixed_transform": "T_equals_common_D_inverse_times_retained_joint_eigenvectors",
+    "rank_relative_cutoffs": [1e-8, 1e-9, 1e-10],
+    "production_rank_relative_cutoff": 1e-10,
+    "phase_count": 16,
+    "discarded_mode_alignment_dimension_matches_drop_count": true
+  },
+  "acceptance": {
+    "effective_condition_number_strict_lt": 1e8,
+    "minimum_retained_eigenvalue_over_cutoff_min": 100.0,
+    "discarded_mode_principal_angle_max_degrees": 15.0,
+    "localized_density_relative_l2_strict_lt": 0.02,
+    "component_energy_abs_error_max_mev_per_atom": 10.0,
+    "combined_energy_abs_error_max_mev_per_atom": 10.0,
+    "fixed_kedf_total_energy_error_max_mev_per_atom": 10.0,
+    "electron_relative_error_strict_lt": 1e-10,
+    "eggbox_energy_peak_to_peak_max_mev_per_atom": 1.0,
+    "reference_pseudoforce_max_ev_per_angstrom": 0.002,
+    "projection_excess_pseudoforce_max_ev_per_angstrom": 0.002,
+    "selected_pseudoforce_max_ev_per_angstrom": 0.004,
+    "cross_grid_pseudoforce_change_max_ev_per_angstrom": 0.0005,
+    "cross_grid_energy_peak_to_peak_change_max_mev_per_atom": 0.1
+  },
+  "execution": {
+    "analysis_root": "analysis/s2/g2_al_joint_svd_r1_20260812",
+    "external_state_root": "/home/shenwei01/.local/state/m_ofdft/s2_g2_al_joint_svd_r1_20260812",
+    "python": "/home/shenwei01/.local/venvs/m_ofdft-dftpy-2.2.0-py311/bin/python",
+    "hostname": "node01",
+    "logical_cpus": [36, 37, 74, 75, 112, 113, 150, 151],
+    "retry_policy": "analysis_once_no_overwrite"
+  },
+  "output_files": [
+    "README.md",
+    "candidate_metrics.tsv",
+    "grid_metrics.tsv",
+    "rank_continuity.tsv",
+    "discarded_mode_alignment.tsv",
+    "summary.json"
+  ]
+}
