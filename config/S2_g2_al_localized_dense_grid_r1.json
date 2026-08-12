@@ -1,9 +1,9 @@
 {
   "schema_version": 1,
   "protocol_revision": "S2-G2-AL-LOCALIZED-DENSE-GRID-20260812-R1",
-  "status": "implementation_pending_preregistration",
+  "status": "preregistered_no_execution",
   "base_commit": "85b0a3da4b60094757264540342b2517c85436bc",
-  "implementation_commit": "__FREEZE_IMPLEMENTATION_COMMIT__",
+  "implementation_commit": "6774a87ca5befb8e9f8237d60f5e89edaccb6ee3",
   "supersedes_preregistration_commit_before_execution": "05ac59d207f019b3ad5a186f3805c3ef142e4bfc",
   "new_solver_run_count": 0,
   "source": {
