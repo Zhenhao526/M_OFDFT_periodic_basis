@@ -1,0 +1,179 @@
+{
+  "elapsed_seconds": 104.77343606948853,
+  "phase_count": 16,
+  "projection_excess_energy_peak_to_peak_mev_per_atom": 0.257277962431246,
+  "projection_excess_pseudoforce_max_ev_per_angstrom": 0.006151999574204249,
+  "reference_density_minimum": 0.0017605783087709106,
+  "reference_energy_peak_to_peak_mev_per_atom": 0.11708123532727654,
+  "reference_pseudoforce_max_ev_per_angstrom": 0.002892818539918102,
+  "resampled_integrals_electron": {
+    "reference_96": 324.0000000001347,
+    "selected_96": 324.00000000013466
+  },
+  "resampling": "periodic_Fourier_resample_each_axis_scipy_signal_resample",
+  "rows": [
+    {
+      "functional_stdout_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "phase_fraction": 0.0,
+      "projection_excess_pseudoforce_ev_per_angstrom": 9.325907242123549e-06,
+      "reference_pseudoforce_ev_per_angstrom": 1.6146097296385403e-05,
+      "reference_total_ev_per_atom": 6.834300016814855,
+      "selected_pseudoforce_ev_per_angstrom": 2.5472004538508955e-05,
+      "selected_total_ev_per_atom": 6.840041821874551
+    },
+    {
+      "functional_stdout_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "phase_fraction": 0.0625,
+      "projection_excess_pseudoforce_ev_per_angstrom": 0.0023774279222500204,
+      "reference_pseudoforce_ev_per_angstrom": 0.0010512900401574447,
+      "reference_total_ev_per_atom": 6.8342960173718215,
+      "selected_pseudoforce_ev_per_angstrom": 0.003428717962407465,
+      "selected_total_ev_per_atom": 6.840027638264859
+    },
+    {
+      "functional_stdout_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "phase_fraction": 0.125,
+      "projection_excess_pseudoforce_ev_per_angstrom": 0.004245762047093625,
+      "reference_pseudoforce_ev_per_angstrom": 0.002082825624658905,
+      "reference_total_ev_per_atom": 6.834283385077884,
+      "selected_pseudoforce_ev_per_angstrom": 0.00632858767175253,
+      "selected_total_ev_per_atom": 6.839987578484887
+    },
+    {
+      "functional_stdout_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "phase_fraction": 0.1875,
+      "projection_excess_pseudoforce_ev_per_angstrom": 0.005537495509221425,
+      "reference_pseudoforce_ev_per_angstrom": 0.002762492861942497,
+      "reference_total_ev_per_atom": 6.834263066419542,
+      "selected_pseudoforce_ev_per_angstrom": 0.008299988371163922,
+      "selected_total_ev_per_atom": 6.839927518030164
+    },
+    {
+      "functional_stdout_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "phase_fraction": 0.25,
+      "projection_excess_pseudoforce_ev_per_angstrom": 0.006151091957216444,
+      "reference_pseudoforce_ev_per_angstrom": 0.002892818539918102,
+      "reference_total_ev_per_atom": 6.83423968157751,
+      "selected_pseudoforce_ev_per_angstrom": 0.009043910497134546,
+      "selected_total_ev_per_atom": 6.839856270075051
+    },
+    {
+      "functional_stdout_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "phase_fraction": 0.3125,
+      "projection_excess_pseudoforce_ev_per_angstrom": 0.005846760574055787,
+      "reference_pseudoforce_ev_per_angstrom": 0.00257388090304471,
+      "reference_total_ev_per_atom": 6.834217301126214,
+      "selected_pseudoforce_ev_per_angstrom": 0.008420641477100496,
+      "selected_total_ev_per_atom": 6.839784440539814
+    },
+    {
+      "functional_stdout_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "phase_fraction": 0.375,
+      "projection_excess_pseudoforce_ev_per_angstrom": 0.004570032476674149,
+      "reference_pseudoforce_ev_per_angstrom": 0.0019152738710578332,
+      "reference_total_ev_per_atom": 6.834198961977268,
+      "selected_pseudoforce_ev_per_angstrom": 0.006485306347731983,
+      "selected_total_ev_per_atom": 6.8397230528953745
+    },
+    {
+      "functional_stdout_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "phase_fraction": 0.4375,
+      "projection_excess_pseudoforce_ev_per_angstrom": 0.002500824229879937,
+      "reference_pseudoforce_ev_per_angstrom": 0.0010130266221604334,
+      "reference_total_ev_per_atom": 6.834187000895038,
+      "selected_pseudoforce_ev_per_angstrom": 0.0035138508520403708,
+      "selected_total_ev_per_atom": 6.83968184096669
+    },
+    {
+      "functional_stdout_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "phase_fraction": 0.5,
+      "projection_excess_pseudoforce_ev_per_angstrom": 8.672766647195298e-06,
+      "reference_pseudoforce_ev_per_angstrom": 1.726702806971735e-05,
+      "reference_total_ev_per_atom": 6.834182935579528,
+      "selected_pseudoforce_ev_per_angstrom": 2.593979471691265e-05,
+      "selected_total_ev_per_atom": 6.839667462676792
+    },
+    {
+      "functional_stdout_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "phase_fraction": 0.5625,
+      "projection_excess_pseudoforce_ev_per_angstrom": 0.002516370732520521,
+      "reference_pseudoforce_ev_per_angstrom": 0.0010451050430552956,
+      "reference_total_ev_per_atom": 6.834187274064818,
+      "selected_pseudoforce_ev_per_angstrom": 0.003561475775575817,
+      "selected_total_ev_per_atom": 6.8396822513423485
+    },
+    {
+      "functional_stdout_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "phase_fraction": 0.625,
+      "projection_excess_pseudoforce_ev_per_angstrom": 0.004580838342326587,
+      "reference_pseudoforce_ev_per_angstrom": 0.0019402673248043634,
+      "reference_total_ev_per_atom": 6.834199469467912,
+      "selected_pseudoforce_ev_per_angstrom": 0.00652110566713095,
+      "selected_total_ev_per_atom": 6.839723806336548
+    },
+    {
+      "functional_stdout_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "phase_fraction": 0.6875,
+      "projection_excess_pseudoforce_ev_per_angstrom": 0.005852333215393207,
+      "reference_pseudoforce_ev_per_angstrom": 0.0025871246371872952,
+      "reference_total_ev_per_atom": 6.834217969700243,
+      "selected_pseudoforce_ev_per_angstrom": 0.008439457852580502,
+      "selected_total_ev_per_atom": 6.8397854172718935
+    },
+    {
+      "functional_stdout_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "phase_fraction": 0.75,
+      "projection_excess_pseudoforce_ev_per_angstrom": 0.006151999574204249,
+      "reference_pseudoforce_ev_per_angstrom": 0.0028914491171147445,
+      "reference_total_ev_per_atom": 6.834240398588166,
+      "selected_pseudoforce_ev_per_angstrom": 0.009043448691318994,
+      "selected_total_ev_per_atom": 6.839857321197165
+    },
+    {
+      "functional_stdout_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "phase_fraction": 0.8125,
+      "projection_excess_pseudoforce_ev_per_angstrom": 0.005532793593857907,
+      "reference_pseudoforce_ev_per_angstrom": 0.002747718973478763,
+      "reference_total_ev_per_atom": 6.834263713328874,
+      "selected_pseudoforce_ev_per_angstrom": 0.00828051256733667,
+      "selected_total_ev_per_atom": 6.839928487456331
+    },
+    {
+      "functional_stdout_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "phase_fraction": 0.875,
+      "projection_excess_pseudoforce_ev_per_angstrom": 0.00423470170504831,
+      "reference_pseudoforce_ev_per_angstrom": 0.0020580806629424005,
+      "reference_total_ev_per_atom": 6.834283868361008,
+      "selected_pseudoforce_ev_per_angstrom": 0.00629278236799071,
+      "selected_total_ev_per_atom": 6.839988321493698
+    },
+    {
+      "functional_stdout_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "phase_fraction": 0.9375,
+      "projection_excess_pseudoforce_ev_per_angstrom": 0.0023610106936355346,
+      "reference_pseudoforce_ev_per_angstrom": 0.0010207417735837315,
+      "reference_total_ev_per_atom": 6.8342962728081265,
+      "selected_pseudoforce_ev_per_angstrom": 0.003381752467219266,
+      "selected_total_ev_per_atom": 6.840028041239931
+    }
+  ],
+  "schema_version": 1,
+  "selected_density_minimum": 0.002594570350041007,
+  "selected_energy_peak_to_peak_mev_per_atom": 0.37435919775852255,
+  "selected_pseudoforce_max_ev_per_angstrom": 0.009043910497134546,
+  "source_grid": [
+    96,
+    96,
+    96
+  ],
+  "source_integrals_electron": {
+    "reference_96": 324.00000000013483,
+    "selected_96": 324.00000000013466
+  },
+  "status": "diagnostic_grid_refinement_complete",
+  "target_grid": [
+    96,
+    96,
+    96
+  ]
+}

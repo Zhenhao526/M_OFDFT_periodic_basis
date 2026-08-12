@@ -1,0 +1,48 @@
+{
+  "schema_version": 1,
+  "status": "diagnostic_grid_refinement_supports_analysis_grid_aliasing_explanation",
+  "scientific_gate_accepted": false,
+  "formal_acceptance_contribution": 0,
+  "new_solver_run_count": 0,
+  "candidate_id": "r08_eta100_complementary",
+  "atom_count": 108,
+  "source_experiment_id": "S2-20260811-001",
+  "source_evidence_commit": "aeacc5a65e134c448f2360f1844eea41bfc08c0d",
+  "diagnostic_script_sha256": "be14f49ff345a0884a1bf1ad4709adfbe4a059363aef6562748ab9edaf0386bb",
+  "source_grid": [96, 96, 96],
+  "target_grid": [128, 128, 128],
+  "phase_count": 16,
+  "method": "periodic Fourier resampling followed by identical DFTpy operator replay",
+  "result_sha256": {
+    "grid_96": "83bdeda8dbade6c2d78156f5cc6abeb9310407740b2f70a85faeaa2374d3eaa5",
+    "grid_128": "d5e76f820f552efa200fd6960072086692e9a3f6e30ce629ccf69c6a6ba6962a"
+  },
+  "grid_96": {
+    "reference_energy_peak_to_peak_mev_per_atom": 0.11708123532727654,
+    "selected_energy_peak_to_peak_mev_per_atom": 0.37435919775852255,
+    "projection_excess_energy_peak_to_peak_mev_per_atom": 0.257277962431246,
+    "reference_pseudoforce_max_ev_per_angstrom": 0.002892818539918102,
+    "selected_pseudoforce_max_ev_per_angstrom": 0.009043910497134546,
+    "projection_excess_pseudoforce_max_ev_per_angstrom": 0.006151999574204249
+  },
+  "grid_128": {
+    "reference_energy_peak_to_peak_mev_per_atom": 0.00024278867627458567,
+    "selected_energy_peak_to_peak_mev_per_atom": 0.00007676377133947199,
+    "projection_excess_energy_peak_to_peak_mev_per_atom": 0.000169462472499049,
+    "reference_pseudoforce_max_ev_per_angstrom": 0.000007175936473898941,
+    "selected_pseudoforce_max_ev_per_angstrom": 0.000002605181848925249,
+    "projection_excess_pseudoforce_max_ev_per_angstrom": 0.000006277848632614422
+  },
+  "electron_conservation": {
+    "reference_before": 324.00000000013483,
+    "reference_after": 324.0000000001347,
+    "selected_before": 324.00000000013466,
+    "selected_after": 324.00000000013466
+  },
+  "interpretation": {
+    "pseudoforce_failure_dominated_by_96_grid_discretization": true,
+    "rank_failure_resolved": false,
+    "historical_r2_rewritten": false,
+    "requires_prospective_preregistered_revision": true
+  }
+}
