@@ -1,0 +1,127 @@
+{
+  "accuracy_and_compression_accepted": true,
+  "candidate_id": "r08_eta100_complementary",
+  "evidence_valid": true,
+  "new_electronic_structure_solver_run_count": 0,
+  "next_action": "record_G2_reproducible_performance_negative_and_do_not_start_S3",
+  "performance_accepted": false,
+  "protocol_revision": "S2-G2C-PERFORMANCE-20260812-R1",
+  "raw_case_count": 18,
+  "s3_authorized": false,
+  "schema_version": 1,
+  "size_count": 3,
+  "size_metrics": [
+    {
+      "accuracy_gates": {
+        "combined": true,
+        "component": true,
+        "density": true,
+        "electron": true,
+        "fixed_wt": true
+      },
+      "atom_count": 32,
+      "candidate_median_peak_rss_kib": 193164,
+      "candidate_median_wall_seconds": 6.243040556,
+      "coefficient_fraction": 0.001259765625,
+      "combined_error_mev_per_atom": 0.07960428054638868,
+      "compression_passed": true,
+      "density_relative_l2": 0.0056479565519833115,
+      "electron_number_relative_error": 4.3091456329117744e-13,
+      "energy_errors_mev_per_atom": {
+        "combined_hartree_external_xc": 0.0796042805468744,
+        "external": 0.19017266774490338,
+        "fixed_kedf": 3.7409348987367252,
+        "hartree": -0.060116481082547746,
+        "total_with_fixed_wt": 3.8205391792835997,
+        "xc": -0.05045190611596695
+      },
+      "generic_coefficient_count": 645,
+      "grid": [
+        80,
+        80,
+        80
+      ],
+      "grid_degree_count": 512000,
+      "peak_memory_improvement": 0.9997307986995506,
+      "performance_passed": false,
+      "pw_median_peak_rss_kib": 193112,
+      "pw_median_wall_seconds": 6.483851902,
+      "time_speedup": 1.0385727665614093
+    },
+    {
+      "accuracy_gates": {
+        "combined": true,
+        "component": true,
+        "density": true,
+        "electron": true,
+        "fixed_wt": true
+      },
+      "atom_count": 108,
+      "candidate_median_peak_rss_kib": 362068,
+      "candidate_median_wall_seconds": 7.841489568,
+      "coefficient_fraction": 0.0012575231481481482,
+      "combined_error_mev_per_atom": 0.07960428054680863,
+      "compression_passed": true,
+      "density_relative_l2": 0.0056479565519833115,
+      "electron_number_relative_error": 4.293081665197445e-13,
+      "energy_errors_mev_per_atom": {
+        "combined_hartree_external_xc": 0.07960428054595334,
+        "external": 0.19017266774733765,
+        "fixed_kedf": 3.7409348987433044,
+        "hartree": -0.060116481081535694,
+        "total_with_fixed_wt": 3.820539179289258,
+        "xc": -0.050451906118993334
+      },
+      "generic_coefficient_count": 2173,
+      "grid": [
+        120,
+        120,
+        120
+      ],
+      "grid_degree_count": 1728000,
+      "peak_memory_improvement": 0.9993260934410111,
+      "performance_passed": false,
+      "pw_median_peak_rss_kib": 361824,
+      "pw_median_wall_seconds": 6.291384522,
+      "time_speedup": 0.8023200780211763
+    },
+    {
+      "accuracy_gates": {
+        "combined": true,
+        "component": true,
+        "density": true,
+        "electron": true,
+        "fixed_wt": true
+      },
+      "atom_count": 256,
+      "candidate_median_peak_rss_kib": 697464,
+      "candidate_median_wall_seconds": 11.651826415,
+      "coefficient_fraction": 0.001249755859375,
+      "combined_error_mev_per_atom": 0.07960428054404334,
+      "compression_passed": true,
+      "density_relative_l2": 0.0056479565519833115,
+      "electron_number_relative_error": 4.3061850381794403e-13,
+      "energy_errors_mev_per_atom": {
+        "combined_hartree_external_xc": 0.07960428054509805,
+        "external": 0.1901726677484561,
+        "fixed_kedf": 3.7409348987331725,
+        "hartree": -0.06011648108489309,
+        "total_with_fixed_wt": 3.8205391792782706,
+        "xc": -0.05045190611951966
+      },
+      "generic_coefficient_count": 5119,
+      "grid": [
+        160,
+        160,
+        160
+      ],
+      "grid_degree_count": 4096000,
+      "peak_memory_improvement": 0.9996386910292144,
+      "performance_passed": false,
+      "pw_median_peak_rss_kib": 697212,
+      "pw_median_wall_seconds": 11.345872192,
+      "time_speedup": 0.9737419515101831
+    }
+  ],
+  "status": "evidence_valid_g2c_performance_rejected"
+}
