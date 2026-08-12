@@ -32,4 +32,6 @@ class T(unittest.TestCase):
  def test_07_fixed_basis_all_geometries(self):
   for row in self.cfg["formal_cases"][::4]:
    basis=c.build_basis(self.cfg,c.cell_for_row(ROOT,self.cfg,row),(40,40,40));self.assertEqual(basis["tangent"].shape,(64000,22));self.assertGreater(float(basis["raw_gram_eigenvalues"][0]),0.0)
+ def test_08_worker_array_shape_interface(self):
+  row=self.cfg["formal_cases"][-4];basis=c.build_basis(self.cfg,c.cell_for_row(ROOT,self.cfg,row),np.zeros((40,40,40)));self.assertEqual(tuple(basis["counts"]),(40,40,40))
 if __name__=="__main__":unittest.main()

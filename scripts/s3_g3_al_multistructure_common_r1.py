@@ -81,7 +81,7 @@ def cell_for_row(root,c,row):
 def build_basis(c,cell,shape):
  import numpy as np
  import s2_g2_al1_pilot_common_r1 as pilot
- counts=np.asarray(shape,dtype=int);frac=pilot.fractional_grid(counts);volume=float(abs(np.linalg.det(cell)));dv=volume/int(np.prod(counts));r2=pilot.minimum_image_r2(frac,cell)
+ counts=np.asarray(shape.shape if hasattr(shape,"shape") and len(shape.shape)==3 else shape,dtype=int);require(counts.shape==(3,) and np.all(counts>0),"grid shape differs");frac=pilot.fractional_grid(counts);volume=float(abs(np.linalg.det(cell)));dv=volume/int(np.prod(counts));r2=pilot.minimum_image_r2(frac,cell)
  atomic=[]
  for alpha in c["basis"]["alpha_bohr_minus2"]:
   f=np.exp(-float(alpha)*r2);f/=float(f.sum(dtype=np.float64)*dv);atomic.append(f)
