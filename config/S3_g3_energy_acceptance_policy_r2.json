@@ -1,0 +1,37 @@
+{
+  "schema_version": 1,
+  "protocol_revision": "S3-G3-ENERGY-ACCEPTANCE-POLICY-20260812-R2",
+  "status": "implementation_pending_preregistration",
+  "implementation_commit": "__FREEZE_IMPLEMENTATION_COMMIT__",
+  "base_commit": "f8ca6cd330d0ff8f492518c327442da71413e2da",
+  "source": {
+    "evidence_commit": "25b2109cea0d89d00a8775534a95e78239543954",
+    "summary_path": "analysis/s3/g3_wt_coefficient_pilot_r1_20260812/summary.json",
+    "summary_sha256": "dcac8e05145a66b1c70d114fe9ecba84a867c469a0a3ae752cea03f1ad4b1a08",
+    "runs_path": "analysis/s3/g3_wt_coefficient_pilot_r1_20260812/runs.json",
+    "runs_sha256": "f57be3647287e50154f8910a9b25473316a8d7bb9414b4cdcecb65cb36ef892c",
+    "old_status": "evidence_valid_s3_al_v100_fixed_WT_coefficient_pilot_rejected",
+    "old_energy_limit_mev_per_atom": 10.0
+  },
+  "policy_revision": {
+    "new_energy_limit_mev_per_atom_strictly_less_than": 20.0,
+    "all_other_coefficient_route_gates_unchanged": true,
+    "full_grid_euler_gate_role": "diagnostic_only_not_in_coefficient_route_acceptance",
+    "historical_evidence_rewritten": false,
+    "new_solver_run_count": 0
+  },
+  "scope": {
+    "accepted_scope": "Al_one_atom_V100_fixed_WT_23_function_coefficient_route_pilot",
+    "g3_overall_closed": false,
+    "s4_authorized": false,
+    "g2c_performance_rejection_preserved": true,
+    "ksdft_reference_required_by_this_revision": false,
+    "mg_enabled": false,
+    "ml_enabled": false
+  },
+  "execution": {
+    "analysis_root": "analysis/s3/g3_energy_acceptance_policy_r2_20260812",
+    "new_solver_run_count": 0
+  },
+  "output_files": ["README.md", "gates.tsv", "summary.json"]
+}
