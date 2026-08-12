@@ -1,0 +1,162 @@
+{
+  "diagnostics": [
+    {
+      "affects_acceptance": false,
+      "gate_id": "rank_floor",
+      "historical_passed": true,
+      "role": "diagnostic_only"
+    },
+    {
+      "affects_acceptance": false,
+      "gate_id": "rank_deficiency",
+      "historical_passed": true,
+      "role": "diagnostic_only"
+    },
+    {
+      "affects_acceptance": false,
+      "gate_id": "rank_path_span",
+      "historical_passed": false,
+      "role": "diagnostic_only"
+    },
+    {
+      "affects_acceptance": false,
+      "gate_id": "condition",
+      "historical_passed": false,
+      "role": "diagnostic_only"
+    },
+    {
+      "affects_acceptance": false,
+      "gate_id": "retained_margin",
+      "historical_passed": false,
+      "role": "diagnostic_only"
+    },
+    {
+      "affects_acceptance": false,
+      "gate_id": "adjacent_subspace",
+      "historical_passed": false,
+      "role": "diagnostic_only"
+    },
+    {
+      "affects_acceptance": false,
+      "gate_id": "cross_grid_subspace",
+      "historical_passed": false,
+      "role": "diagnostic_only"
+    }
+  ],
+  "hard_gates": [
+    {
+      "gate_id": "density",
+      "limit": 0.02,
+      "observed": 0.004679408902751928,
+      "passed": true,
+      "role": "hard"
+    },
+    {
+      "gate_id": "electron_number",
+      "limit": 1e-10,
+      "observed": 4.159745250585673e-13,
+      "passed": true,
+      "role": "hard"
+    },
+    {
+      "gate_id": "component_energies",
+      "limit": 10.0,
+      "observed": 1.3005521134619744,
+      "passed": true,
+      "role": "hard"
+    },
+    {
+      "gate_id": "combined_energy",
+      "limit": 10.0,
+      "observed": 1.2609812456166427,
+      "passed": true,
+      "role": "hard"
+    },
+    {
+      "gate_id": "fixed_wt_total",
+      "limit": 10.0,
+      "observed": 5.685753405621789,
+      "passed": true,
+      "role": "hard"
+    },
+    {
+      "gate_id": "eggbox_energy",
+      "limit": 1.0,
+      "observed": 0.004269454545458018,
+      "passed": true,
+      "role": "hard"
+    },
+    {
+      "gate_id": "reference_pseudoforce",
+      "limit": 0.002,
+      "observed": 0.00017904307217407787,
+      "passed": true,
+      "role": "hard"
+    },
+    {
+      "gate_id": "projection_excess_pseudoforce",
+      "limit": 0.002,
+      "observed": 0.00033178460434549515,
+      "passed": true,
+      "role": "hard"
+    },
+    {
+      "gate_id": "selected_pseudoforce",
+      "limit": 0.004,
+      "observed": 0.0001529524609193725,
+      "passed": true,
+      "role": "hard"
+    },
+    {
+      "gate_id": "cross_grid_pseudoforce",
+      "limit": 0.0005,
+      "observed": 0.0003247474950890575,
+      "passed": true,
+      "role": "hard"
+    },
+    {
+      "gate_id": "cross_grid_energy",
+      "limit": 0.1,
+      "observed": 0.00832304785269855,
+      "passed": true,
+      "role": "hard"
+    }
+  ],
+  "historical_evidence": {
+    "dense_grid": "73b592fb32f18a75b59dd3d6f703438832c3c1b5",
+    "joint_svd": "f0dcdf27636bcdfdfb0ed4f824cdf2dc33aa3f31",
+    "null_envelope": "4f8890306db07b421af6842bad25a0adcf8fb8b6"
+  },
+  "policy": {
+    "diagnostic_failures_do_not_affect_density_expansion_acceptance": true,
+    "diagnostic_only_ids": [
+      "rank_floor",
+      "rank_deficiency",
+      "rank_path_span",
+      "condition",
+      "retained_margin",
+      "adjacent_subspace",
+      "cross_grid_subspace"
+    ],
+    "does_not_claim_unique_or_well_conditioned_coefficients": true,
+    "does_not_close_g2c_performance": true,
+    "does_not_start_s3": true,
+    "hard_gate_ids": [
+      "density",
+      "electron_number",
+      "component_energies",
+      "combined_energy",
+      "fixed_wt_total",
+      "eggbox_energy",
+      "reference_pseudoforce",
+      "projection_excess_pseudoforce",
+      "selected_pseudoforce",
+      "cross_grid_pseudoforce",
+      "cross_grid_energy"
+    ],
+    "historical_rejections_are_immutable": true,
+    "mg_not_in_scope": true
+  },
+  "protocol_revision": "S2-G2-DENSITY-EXPANSION-ACCEPTANCE-POLICY-20260812-R1",
+  "schema_version": 1
+}

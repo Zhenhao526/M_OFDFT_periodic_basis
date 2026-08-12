@@ -1,0 +1,12 @@
+gate_id	role	observed	limit	passed
+density	hard	0.004679408902751928	0.02	True
+electron_number	hard	4.159745250585673e-13	1e-10	True
+component_energies	hard	1.3005521134619744	10.0	True
+combined_energy	hard	1.2609812456166427	10.0	True
+fixed_wt_total	hard	5.685753405621789	10.0	True
+eggbox_energy	hard	0.004269454545458018	1.0	True
+reference_pseudoforce	hard	0.00017904307217407787	0.002	True
+projection_excess_pseudoforce	hard	0.00033178460434549515	0.002	True
+selected_pseudoforce	hard	0.0001529524609193725	0.004	True
+cross_grid_pseudoforce	hard	0.0003247474950890575	0.0005	True
+cross_grid_energy	hard	0.00832304785269855	0.1	True

@@ -1,0 +1,25 @@
+{
+  "basis_function_count_per_atom": 23,
+  "candidate_id": "r08_eta100_complementary",
+  "diagnostic_gate_count": 7,
+  "evidence_valid": true,
+  "g2c_performance_closed": false,
+  "hard_gate_count": 11,
+  "hard_gate_passed_count": 11,
+  "historical_dense_grid_status": "evidence_valid_scientific_gate_rejected",
+  "historical_failed_gates": [
+    "adjacent_subspace",
+    "condition",
+    "cross_grid_subspace",
+    "rank_path_span",
+    "retained_margin"
+  ],
+  "new_solver_run_count": 0,
+  "next_action": "preregister_G2c_compression_and_performance_for_the_accepted_23_function_density_expansion",
+  "protocol_revision": "S2-G2-DENSITY-EXPANSION-ACCEPTANCE-POLICY-20260812-R1",
+  "rank_and_angle_role": "diagnostic_only",
+  "s3_started": false,
+  "schema_version": 1,
+  "scientific_gate_accepted": true,
+  "status": "accepted_density_expansion_candidate"
+}
