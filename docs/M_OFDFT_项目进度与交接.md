@@ -2,8 +2,8 @@
 
 > 本文件是项目状态的唯一人工入口。任何人接手前先读本文件，再读项目书和当前阶段 README。  
 > 状态词仅使用：`not_started`、`in_progress`、`blocked`、`accepted`、`rejected`、`paused`。  
-> 更新时间：2026-08-12 12:10 CST
-> 文档版本：V4.7
+> 更新时间：2026-08-12 12:35 CST
+> 文档版本：V4.8
 
 ## 0. 十分钟上手摘要
 
@@ -17,8 +17,8 @@
 | 最近可用提交 | 规模/几何 R3 实现 `c6202428`；预注册 `da16a237`；证据 `472b6c35`；主线合并 `c001cfde` |
 | 最近通过的数值 smoke | `S1-RUNTIME-SMOKE-20260805-074`：`storage_exact`，五类状态门全部 `accepted`；幂等重验返回 `accepted_committed` |
 | 最近通过的正式分析 | G1 acceptance policy R1：R3/R5 全量重放、17 行 gate、`accepted_g1_6_of_6`、新增 solver 0；证据 `d0386418` |
-| 当前阻塞 | 128³/16 相位网格诊断已将候选新增伪力降至 `6.28e-6 eV/Å`，说明旧伪力超门主要是 96³ 离散化；仍未闭合的科学阻塞是几何路径总秩 `2171–2172/2173` |
-| 下一项唯一动作 | 预注册新 revision：固定 128³ 或更密的实空间网格口径，并将满代数秩门改为可证明连续的有效子空间/冗余模态门；不进入 G2c 或 S3 |
+| 当前阻塞 | 128³/144³ 正式 pilot 证明伪力与能量门均通过，但总秩随几何在 `2171–2173`间切换，底部二维近零子空间相邻主角高达 `89.08°`，有效子空间不连续 |
+| 下一项唯一动作 | 新候选 revision 删除/合并已定位的 1–2 个冗余径向组合，用全路径联合 SVD 冻结固定子空间后重做 128³/144³ 秩连续性；不进入 G2c 或 S3 |
 
 ### 必读文件
 
@@ -49,6 +49,7 @@
 25. [S2 局域 108 原子 R1 协议](S2_G2_AL_LOCALIZED_EGGBOX_RANK_R1_PROTOCOL.md) 与 parser failure closure：`analysis/s2/g2_al_localized_eggbox_rank_r1_20260811/operational_failure_closure.json`
 26. [S2 局域 108 原子 analysis-only R2 协议](S2_G2_AL_LOCALIZED_ANALYSIS_R2_PROTOCOL.md)、`analysis/s2/g2_al_localized_analysis_r2_20260811/{README.md,summary.json,rank_continuity.tsv,eggbox_metrics.tsv}`
 27. S2 96³→128³ 网格加密诊断：`analysis/s2/g2_al_localized_grid_refinement_diag_r1_20260812/{README.md,summary.json,result_96.json,result_128.json}`
+28. [S2 128³/144³ 正式密网格协议](S2_G2_AL_LOCALIZED_DENSE_GRID_R1_PROTOCOL.md)、`analysis/s2/g2_al_localized_dense_grid_r1_20260812/{README.md,summary.json,grid_metrics.tsv,rank_continuity.tsv,subspace_continuity.tsv}`
 
 ### 最近可运行命令
 
@@ -292,7 +293,10 @@ python3 -m unittest -q tests.unit.test_s1_g1_thermodynamic_label_audit_r4_genera
 - Analysis-only R2 严格重放 R1 的 38 个 state 文件（33,441,717 B）后完成科学分析。密度 L2 `0.467935%`、三算子合计误差 `1.188731 meV/atom`、固定 WT 总误差 `5.741805 meV/atom`、eggbox 能量峰峰值 `0.374359 meV/atom` 均通过。
 - 固定 23 函数候选仍被科学拒绝：五点总秩为 `2171–2172`，低于登记的 2173；最大 eggbox 伪力为 `0.008360315 eV/Å`，超过 `0.002 eV/Å`。G2 overall 保持未通过。
 - 2026-08-12 进行了不新增 solver 的网格加密诊断：同一参考/投影密度在 96³ 的 16 相位对照复现参考/候选/新增伪力 `0.002893/0.009044/0.006152 eV/Å`；周期傅里叶重采样到 128³ 后降至 `7.18e-6/2.61e-6/6.28e-6 eV/Å`，电子数保持到 `1.14e-13 e`。这支持“旧伪力失败由 96³ 分析网格混叠主导”，但本轮为事后诊断，对正式验收贡献为 0。
-- 当前唯一动作：新 revision 前瞻性冻结 128³+网格，并用近零模态/主角连续性重写秩门；通过前不进入 G2c 或 S3。
+- 密网格 R1 以实现 `6774a87c`、预注册 `1786b965`、证据 `73b592fb` 完成，committed validator 逐字节重建通过；新 solver 0。首个预注册 `05ac59d2` 因登记 CPU 被外部 ABACUS 作业占用而在执行前废止，未建 state/输出。
+- 128³ 与 144³ 的密度 L2 约 `0.46793%`、固定 WT 总误差约 `5.685 meV/atom`；候选最大伪力为 `1.15e-5/1.53e-4 eV/Å`，新增伪力 `7.04e-6/3.32e-4 eV/Å`，全部通过原门。
+- 有效子空间门拒绝：128³/144³ 路径秩均为 `2171–2173`；128³ 平衡点保留谱仅高于截断 `1.0966×`、条件数 `9.12e9`；相邻几何底部二维子空间最大主角 `89.08°`，跨网格最大 `69.78°`。
+- 当前唯一动作：不放宽主角门；删除/合并 1–2 个冗余径向组合，以全路径联合 SVD 得到几何无关的固定投影子空间后新 revision 复验。
 
 ## 4. 闸门决策记录
 
@@ -521,18 +525,19 @@ python3 -m unittest -q tests.unit.test_s1_g1_thermodynamic_label_audit_r4_genera
 | 2026-08-11 | D-054 | 接受固定 23 函数候选的周期平铺规模/几何 pilot，但不把它外推为局域大胞或完整 G2 通过 | 7/7 原胞几何与 14/14 规模案例通过；32/108 冻结低 G 集、电子数、逐原子算子和系数规模稳定 | 在每个变形上重新选 G，或把完美平铺冒充局域 108 原子参考 | 固定 G 集保持不变；G2 overall 继续 in_progress，下一闸门为局域参考、eggbox/伪力和秩连续性 |
 | 2026-08-11 | D-055 | 接受局域 108 原子独立参考和 R2 有效负证据，拒绝把固定 23 函数候选推进 G2c | 真实 KS-NL 参考收敛；密度与算子门通过，但五点总秩仅 2171–2172 且最大伪力 0.008360315 eV/Å 超门 | 放宽秩/伪力门、删除 R1 parser 失败，或凭 eggbox 能量通过宣称连续性通过 | R1 state/closure 与 R2 evidence 永久只读；新 revision 优先消除径向冗余并改善平移导数，不进入 G2c/S3 |
 | 2026-08-12 | D-056 | 将旧伪力失败分类为 96³ 分析网格混叠主导，但不事后改写 R2 | 128³/16 相位下参考/候选/新增最大伪力为 `7.18e-6/2.61e-6/6.28e-6 eV/Å`；较 96³ 分别下降约 403/3472/980 倍 | 直接放宽旧门，或把事后诊断当成正式验收 | 新 revision 前瞻冻结更密网格；秩失败继续独立处置 |
+| 2026-08-12 | D-057 | 接受 128³/144³ 伪力门通过，但依近零子空间不连续拒绝当前 23 函数周期展开 | 伪力/能量/密度均过；秩跨度 2 超过 1，相邻主角 `89.08° > 15°`，跨网格 `69.78° > 5°` | 放宽主角/谱裕量门，或仅依伪力通过推进 G2c | 保留有效负证据；下一候选用联合SVD去冗余后复验 |
 
 ## 9. 最近可用状态
 
 此节必须始终指向一个可运行、可复现的状态；若暂无则明确写“无”。
 
-- 最近可用状态：S2 局域 analysis R2 worktree `/home/shenwei01/wt_s2_g2_al_localized_analysis_r2_final2_20260811` clean@`aeacc5a6`；其 committed validator 应返回有效科学拒绝。
+- 最近可用状态：S2 密网格 worktree `/home/shenwei01/wt_s2_g2_dense_grid_r1_replacement_20260812` clean@`73b592fb`；其 committed validator 返回 `accepted_committed_evidence` + `evidence_valid_scientific_gate_rejected`。
 - 对应环境：`environment/` 的 ABACUS v3.11.0-beta.5 CPU + OpenMPI 5.0.10 + LibXC 7.0.0；独立 OF 环境为 `/home/shenwei01/.local/venvs/m_ofdft-dftpy-2.2.0-py311`，身份见锁文件。
-- 已通过测试：此前 S2 架构/Al1/收敛/规模证据保持有效；局域 R2 为 5/5 parser/recovery 回归，108 原子 raw 完整重放，11 个输出逐字重建。科学状态为 rejected，不改写为 accepted。
+- 已通过测试：此前 S2 架构/Al1/收敛/规模证据保持有效；密网格 R1 为 5/5 单测、预注册 validator 和 committed 全量重放通过，5 个输出逐字节重建。科学状态为 rejected，证据状态为 accepted。
 - 已知失败/暂停：局域 R1 solver 成功后被旧单原子 cube parser 假拒绝；R2 只读恢复后的满秩与伪力失败仍为历史权威结论。后续 128³ 诊断已将伪力问题定位到旧分析网格，但秩 2171–2172/2173 尚未闭合。所有旧 state/ID 禁止重跑。
 - 恢复方法：在登记 R2 worktree 用冻结 DFTpy Python 运行 `PYTHONPATH=scripts .../python -s -B scripts/validate_s2_g2_al_localized_analysis_r2.py --require-committed`；验证器应 exit 0 并报告 `evidence_valid_scientific_gate_rejected`。
 - 同步方法：node01 对 `codex/r4-execution` 相对 GitHub 已知基线创建并验证增量 bundle，经跳板机传至本机；三端 SHA-256 一致后 fast-forward 推送同名分支，最后以 `git ls-remote` 核验目标 SHA。
-- 当前交接点：固定 23 函数候选的 128³ 事后诊断已排除“候选本身导数不连续”作为旧伪力超门的主要解释；下一动作是新 revision 以 128³+正式复现，并处理 1–2 个近冗余模态的连续性。Mg、ML、自洽优化和 G2c 尚未启动。
+- 当前交接点：128³/144³ 正式复现已完成，密网格分析口径下的伪力子门关闭，但当前 23 函数周期展开的近零子空间不连续。下一动作是联合 SVD 删除/合并 1–2 个冗余组合并冻结固定子空间。Mg、ML、自洽优化和 G2c 尚未启动。
 
 ## 10. 交接说明
 
@@ -707,6 +712,7 @@ python3 -m unittest -q tests.unit.test_s1_g1_thermodynamic_label_audit_r4_genera
 | 2026-08-11 19:18 CST | S2 固定 23 函数规模/几何 pilot | Codex | S2 | 实现 `c6202428`；预注册 `da16a237`；证据 `472b6c35`；主线 `c001cfde` | 8/8 回归；7/7 原胞几何；32/108 共 14/14；committed validator accepted；0 solver | 周期平铺子门 accepted；下一动作局域 108 原子参考与 eggbox/秩连续性 |
 | 2026-08-11 20:12 CST | S2 局域 108 原子 eggbox/秩 pilot | Codex | S2 | R1 prereg `28883776`；failure closure `66ca1d76`；R2 evidence `aeacc5a6` | KS 34 iter/324e/96³；R2 5/5；密度/算子/eggbox 能量通过；秩最低 2171、伪力 0.008360315 拒绝 | 有效科学拒绝；G2 overall 不通过，下一动作新 revision 修正冗余与导数连续性 |
 | 2026-08-12 12:10 CST | S2 108 原子网格加密诊断 | Codex | S2 | 96³/128³ 诊断 JSON；新 solver 0 | 两网格各16相位；128³新增伪力 `6.28e-6 eV/Å`，电子数差 `1.14e-13 e` | 支持 96³ 网格混叠归因；事后诊断贡献0，下一步新revision正式复现并解决秩冗余 |
+| 2026-08-12 12:35 CST | S2 128³/144³ 密网格/子空间 pilot | Codex | S2 | implementation `6774a87c`；prereg `1786b965`；evidence `73b592fb` | 5/5测试；committed replay通过；伪力门全过；秩跨度2、相邻主角89.08°拒绝 | 有效科学拒绝；不进G2c，下一步联合SVD去冗余候选 |
 
 ## 11. 文档变更记录
 
@@ -750,3 +756,4 @@ python3 -m unittest -q tests.unit.test_s1_g1_thermodynamic_label_audit_r4_genera
 | 2026-08-11 | V4.5 | Codex | 固定 23 函数候选，记录 7/7 原胞几何与 32/108 原子 14/14 周期平铺规模 pilot；关闭周期平铺规模/几何子门，但保留局域参考、eggbox/伪力、完整大胞 Gram 和 G2 overall 为未关闭 |
 | 2026-08-11 | V4.6 | Codex | 建立真实局域扰动 108 原子 KS-NL 参考；保留 R1 单原子 cube parser 假阴性，以 analysis-only R2 完成秩/eggbox/伪力重放；记录固定 23 函数候选因总秩 2171–2172 与伪力超门而被有效科学拒绝 |
 | 2026-08-12 | V4.7 | Codex | 记录 96³→128³周期傅里叶网格加密诊断：16相位对照将参考/候选/新增伪力降至 `10^-6 eV/Å`级，支持旧伪力失败由 96³ 网格混叠主导；保留历史R2拒绝和秩门未闭合状态 |
+| 2026-08-12 | V4.8 | Codex | 预注册并执行 128³/144³ 独立重拟合、五几何 Gram 谱和近零子空间主角 pilot；确认伪力/能量/密度通过，但因秩跨度、谱裕量和主角不连续保留有效科学拒绝 |
