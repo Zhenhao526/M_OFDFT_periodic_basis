@@ -1,9 +1,9 @@
 {
   "schema_version": 1,
   "protocol_revision": "S2-G2-AL-JOINT-SVD-20260812-R1",
-  "status": "implementation_pending_preregistration",
+  "status": "preregistered_no_execution",
   "base_commit": "5e21d779fb9c79d08ad81ef2cf095731f2d93736",
-  "implementation_commit": "__FREEZE_IMPLEMENTATION_COMMIT__",
+  "implementation_commit": "74cc6e0ab39d72ca62cf70a9e295d5074647af08",
   "new_solver_run_count": 0,
   "source": {
     "dense_grid_evidence_commit": "73b592fb32f18a75b59dd3d6f703438832c3c1b5",
