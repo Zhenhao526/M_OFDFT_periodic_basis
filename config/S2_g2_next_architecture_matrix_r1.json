@@ -1,0 +1,93 @@
+{
+  "schema_version": 1,
+  "protocol_revision": "S2-G2-NEXT-ARCHITECTURE-MATRIX-20260812-R1",
+  "status": "implementation_pending_preregistration",
+  "base_commit": "483699e0752cab16d7d565646ee2563f7250207c",
+  "implementation_commit": "__FREEZE_IMPLEMENTATION_COMMIT__",
+  "new_solver_run_count": 0,
+  "source": {
+    "architecture_config_path": "config/S2_g2_architecture_candidates_r1.json",
+    "architecture_config_sha256": "c2714f193a4ed31732cb652ab7ebbcfacec848b90766e19fd32cd3353c7b8f00",
+    "al1_pilot_summary_path": "analysis/s2/g2_al1_projection_operator_pilot_r1_20260811/summary.json",
+    "al1_pilot_summary_sha256": "bc1241bb209ceca21682816dee0af2e142c8d1714524c7f03d7d8c1cc81cab1b",
+    "basis_convergence_summary_path": "analysis/s2/g2_al1_basis_convergence_r2_20260811/summary.json",
+    "basis_convergence_summary_sha256": "acc5a3aebefbb3452af7a9431b2d8f5e3c2608a89f07373f82e8b6300e879623",
+    "null_envelope_summary_path": "analysis/s2/g2_al_null_envelope_r1_20260812/summary.json",
+    "null_envelope_summary_sha256": "d727a3a4de7fa736b47b777e8b8a544480501fca528c7ccb6a706bdffe86f419"
+  },
+  "scope": {
+    "material": "Al",
+    "atom_count": 108,
+    "reference_role": "existing_independent_localized_KS_NL_reference_read_only",
+    "target_grids": [128, 144],
+    "localized_displacements_angstrom": [-0.05, -0.025, 0.0, 0.025, 0.05],
+    "eggbox_phase_count": 16,
+    "g2c_enabled": false,
+    "s3_enabled": false,
+    "mg_enabled": false
+  },
+  "matrix": {
+    "manifest_path": "config/S2_g2_next_architecture_matrix_r1.tsv",
+    "row_count": 8,
+    "reference_count": 1,
+    "compressed_candidate_count": 7,
+    "route_count": 4,
+    "candidate_order": [
+      "pw_fft_reference",
+      "r08_atomic_fft",
+      "r10_atomic_fft",
+      "r04_eta160_explicit",
+      "r06_eta200_explicit",
+      "r10_eta130_complementary",
+      "r04_eta160_complementary",
+      "r06_eta200_complementary"
+    ],
+    "selection_rule": "all_original_G2a_G2b_gates_then_smallest_projected_108_basis_count_then_lowest_condition_number_then_lexical_id",
+    "atomic_fft_reentry_requires_new_al1_screen": true,
+    "historically_accepted_low_g_candidates_reuse_al1_evidence": true
+  },
+  "eliminated": {
+    "candidate_ids": ["r08_eta100_explicit", "r08_eta100_complementary"],
+    "reason": "identical_23_function_span_requires_fixed_null_envelope_dimension_8_greater_than_allowed_2",
+    "may_reenter_under_different_gauge": false,
+    "gate_relaxation_allowed": false
+  },
+  "stages": [
+    {
+      "stage_id": "A_atomic_fft_al1_reentry",
+      "candidate_ids": ["r08_atomic_fft", "r10_atomic_fft"],
+      "purpose": "new_one_atom_density_operator_and_condition_screen",
+      "promotion": "all_original_one_atom_gates"
+    },
+    {
+      "stage_id": "B_localized_108_dense_geometry",
+      "candidate_ids": ["pw_fft_reference", "r08_atomic_fft", "r10_atomic_fft", "r04_eta160_explicit", "r06_eta200_explicit", "r10_eta130_complementary", "r04_eta160_complementary", "r06_eta200_complementary"],
+      "purpose": "five_geometry_rank_continuity_and_128_144_density_energy_eggbox_pseudoforce",
+      "promotion": "all_original_G2a_G2b_gates"
+    }
+  ],
+  "acceptance": {
+    "electron_number_relative_error_strict_lt": 1e-10,
+    "equilibrium_density_relative_l2_strict_lt": 0.01,
+    "perturbed_density_relative_l2_strict_lt": 0.02,
+    "component_energy_abs_error_max_mev_per_atom": 10.0,
+    "combined_energy_abs_error_max_mev_per_atom": 10.0,
+    "fixed_kedf_total_energy_error_max_mev_per_atom": 10.0,
+    "effective_condition_number_strict_lt": 1e8,
+    "minimum_retained_eigenvalue_over_cutoff_min": 100.0,
+    "fixed_subspace_principal_angle_max_degrees": 15.0,
+    "eggbox_energy_peak_to_peak_max_mev_per_atom": 1.0,
+    "reference_pseudoforce_max_ev_per_angstrom": 0.002,
+    "projection_excess_pseudoforce_max_ev_per_angstrom": 0.002,
+    "selected_pseudoforce_max_ev_per_angstrom": 0.004,
+    "cross_grid_pseudoforce_change_max_ev_per_angstrom": 0.0005,
+    "cross_grid_energy_peak_to_peak_change_max_mev_per_atom": 0.1
+  },
+  "execution": {
+    "formal_state_root": "/home/shenwei01/.local/state/m_ofdft/s2_g2_next_architecture_matrix_r1_20260812",
+    "analysis_root": "analysis/s2/g2_next_architecture_matrix_r1_20260812",
+    "formal_state_must_be_absent": true,
+    "analysis_root_must_be_absent": true,
+    "deliverable": "candidate_matrix_preregistration_only"
+  }
+}
