@@ -2,23 +2,23 @@
 
 > 本文件是项目状态的唯一人工入口。任何人接手前先读本文件，再读项目书和当前阶段 README。  
 > 状态词仅使用：`not_started`、`in_progress`、`blocked`、`accepted`、`rejected`、`paused`。  
-> 更新时间：2026-08-12 17:15 CST
-> 文档版本：V5.6
+> 更新时间：2026-08-12 18:10 CST
+> 文档版本：V5.7
 
 ## 0. 十分钟上手摘要
 
 | 项目 | 当前值 |
 |---|---|
-| 当前总状态 | `in_progress`（S1/G1 已验收；Al 23函数密度表示已接受；G2c性能仍 rejected；S3 Al V100 fixed-WT pilot 形成有效科学拒绝） |
+| 当前总状态 | `in_progress`（S1/G1 已验收；Al 23函数密度表示已接受；G2c性能仍 rejected；S3 R1执行证据有效，但相对完整网格WT的差异仅属数值诊断，KSDFT物理验收尚未完成） |
 | 当前阶段 | S3：固定 WT-KEDF 系数空间自洽 pilot |
-| 当前闸门 | G3；R1 pilot 29/29 operational accepted，但科学门 rejected，G3 保持开放 |
+| 当前闸门 | G3；R1 pilot 29/29 operational accepted，原“相对完整网格WT能量差”不再作为KSDFT物理淘汰门；G3等待新revision的KSDFT主参考验收 |
 | 当前负责人 | 远端账户 `shenwei01`；本轮执行与记录：Codex |
 | 当前工作分支 | `codex/s3-wt-coefficient-pilot-r1`；正式执行仅允许来自独立审计通过后的精确预注册提交 |
 | 最近可用提交 | S3 fixed-WT coefficient pilot R1：implementation `dbefd2c1`；prereg `b0d596db`；evidence `25b2109c` |
 | 最近通过的数值 smoke | `S1-RUNTIME-SMOKE-20260805-074`：`storage_exact`，五类状态门全部 `accepted`；幂等重验返回 `accepted_committed` |
 | 最近通过的正式分析 | G1 acceptance policy R1：R3/R5 全量重放、17 行 gate、`accepted_g1_6_of_6`、新增 solver 0；证据 `d0386418` |
-| 当前阻塞 | 23函数系数解相对完整网格WT参考能量差约`16.64–16.74 meV/atom`，超过`<10 meV/atom`硬门；部分full-grid点独立Euler残差亦超过`1e-6 Ha` |
-| 下一项唯一动作 | 新revision先增强/重选Al系数子空间并改进full-grid参考收敛，再以新ID重做V100 fixed-WT pilot；旧29点只读且不重试 |
+| 当前阻塞 | 缺少与S3体积/热力学口径精确匹配的KSDFT主参考。现有`16.64–16.74 meV/atom`只量化同WT泛函下的子空间截断；full-grid Euler残差只量化参考求解收敛，二者均不能替代KSDFT物理误差 |
+| 下一项唯一动作 | 新revision冻结KSDFT为科学主参考、完整网格WT为数值诊断参考；用新ID补齐匹配体积的KSDFT密度/相对能量/压力，再对23函数自洽结果验收；旧29点与V5.6只读且不重试 |
 
 ### 必读文件
 
@@ -177,7 +177,7 @@ python3 -m unittest -q tests.unit.test_s1_g1_thermodynamic_label_audit_r4_genera
 从 G2c performance R1 证据 `2a27822b` 开始；全部历史 external state 只读，不删除、不重启、不重试历史 ID：
 
 1. G1 六个子项已 6/6 accepted；复验必须使用各登记 source worktree 的 committed validator，不得改写历史 R3 0.5% rejection；
-2. S2/G2 的密度精度与表示压缩已成立，但 G2c 端到端性能三档均 rejected；这是 D-064 之前的历史处置。D-064 保留该工程拒绝，同时允许以新 revision 开展固定 WT 的系数空间正确性 pilot；
+2. S2/G2 的密度精度与表示压缩已成立，但 G2c 端到端性能三档均 rejected；这是 D-064 之前的历史处置。D-064 保留该工程拒绝，同时允许以新 revision 开展固定 WT 的系数空间正确性 pilot；R1 的完整网格 WT 对照只作同泛函数值诊断，不作为相对 KSDFT 的物理淘汰门；
 3. QE/第二 KS、Mg 硬比较、HQLPP 与 projector-only 因果若继续，必须使用新协议；它们属于外推/诊断限制，不得改写 G1 历史；
 4. S2 前保留所有 G1 state、失败 smoke 和 analysis evidence 为只读，不再消费 G1 ID。
 
@@ -188,7 +188,7 @@ python3 -m unittest -q tests.unit.test_s1_g1_thermodynamic_label_audit_r4_genera
 | S0 | 初始化与复现协议 | `accepted` | 2026-08-05 | 2026-08-05 | G0 | `docs/G0_ACCEPTANCE.md`; `analysis/s1/runtime_relocation_equivalence_20260805/` | 数值/归档恢复结论保留；登记的 namespace runtime-isolation 路径已验收，原归档本身不称 hermetic |
 | S1 | 平面波基准闭环 | `accepted` | 2026-08-05 | 2026-08-11 | G1 | 前五项证据同前；三层 R3 `73b3589`；R5 `5401943`；1% policy `d0386418` | G1 6/6；进入 S2 |
 | S2 | 混合密度基表示 | `accepted`（Al密度表示限定） | 2026-08-11 | 2026-08-12 | G2 | policy `987ca097`；G2c `2a27822b` | 表示精度/压缩接受；性能拒绝作为工程限制保留 |
-| S3 | 固定 KEDF 自洽求解 | `in_progress` | 2026-08-12 | — | G3 | R1 evidence `25b2109c` | Al V100 R1有效科学拒绝；等待新revision改进表示与参考收敛 |
+| S3 | 固定 KEDF 自洽求解 | `in_progress` | 2026-08-12 | — | G3 | R1 evidence `25b2109c` | R1执行与同WT数值诊断有效；原科学拒绝分类已由D-066修订，等待KSDFT主参考revision |
 | S4A | 固定晶胞解析力 | `not_started` | — | — | G4A | — | 等待 G3 |
 | S4B | 晶胞应力 | `not_started` | — | — | G4B | — | 等待 G4A |
 | S4C | 短时 NVE | `not_started` | — | — | G4C | — | 等待 G4A；建议等待 G4B |
@@ -352,7 +352,7 @@ python3 -m unittest -q tests.unit.test_s1_g1_thermodynamic_label_audit_r4_genera
 | 2026-08-12 | G2a atomic_fft Stage A R1 replacement | `rejected`（证据有效） | Codex | r08/r10均0新solver重放；密度L2约6.6%，WT误差419.8/495.6 meV/atom；r10条件数1.736e8；晋级0/2 | `analysis/s2/g2_atomic_fft_stage_a_r1_20260812/`；`cd9a132d` | atomic_fft不进入Stage B；下一revision只执行reference+五个历史合格低G候选 |
 | 2026-08-12 | G2a/G2b density-expansion policy R1 | `accepted`（Al限定） | Codex | 历史秩/角度拒绝不变；七项降为诊断；密度、电子数、能量、eggbox、伪力及跨网格11/11硬门通过；0 solver | `analysis/s2/g2_density_expansion_acceptance_policy_r1_20260812/`；`987ca097` | 接受23函数Al密度展开候选；转G2c性能，Mg/S3仍关闭 |
 | 2026-08-12 | G2c performance R1 | `rejected`（证据有效） | Codex | 18/18；32/108/256共同精度全过；表示压缩约794–800x；时间加速`1.039x/0.802x/0.974x`，内存改善约`0.9997x/0.9993x/0.9996x`，三档性能门全失败 | `analysis/s2/g2c_performance_r1_20260812/`；`2a27822b` | 历史处置为不启动S3；D-064后仍禁止加速声明，但不再阻塞固定WT正确性pilot |
-| 2026-08-12 | S3 Al V100 fixed-WT coefficient pilot R1 | `rejected`（证据有效） | Codex | 29/29、failed/missing/skipped/retried=0；网格、Ne、非负、系数梯度、三初值、密度L2和压力平台多数通过；全部13个系数点能量差约16.64–16.74 meV/atom，超10门；部分full-grid Euler超门 | `analysis/s3/g3_wt_coefficient_pilot_r1_20260812/`；`25b2109c` | G3保持open；旧ID不重试，新revision改进子空间与参考收敛 |
+| 2026-08-12 | S3 Al V100 fixed-WT coefficient pilot R1 | `accepted`（执行证据）/`in_progress`（KSDFT科学验收） | Codex | 29/29、failed/missing/skipped/retried=0；网格、Ne、非负、系数梯度、三初值、同WT密度和压力平台画像完整；约16.64–16.74 meV/atom仅作同WT子空间截断诊断；部分full-grid Euler超门仅作参考收敛诊断 | `analysis/s3/g3_wt_coefficient_pilot_r1_20260812/`；`25b2109c` | 不回写R1/V5.6；G3保持open，新revision以KSDFT密度、锚定相对能量和压力为硬参考 |
 
 ## 5. 实验台账
 
@@ -566,6 +566,7 @@ python3 -m unittest -q tests.unit.test_s1_g1_thermodynamic_label_audit_r4_genera
 | 2026-08-12 | D-063 | 接受 G2c 的有效负性能证据，不把约800倍系数压缩写成端到端加速 | 三档共同精度均过，但完整网格重建与公共FFT算子主导时间/内存；三档均未达到1.5x时间或2x内存门 | 只报告系数占比、放宽性能门，或用32原子约4%波动宣称加速 | G2被性能门阻塞，S3不启动；继续只能新revision实现不物化完整网格的算子原生路径 |
 | 2026-08-12 | D-064 | 将G2c性能门从S3科学前置条件降为独立工程限制，授权固定WT系数空间pilot | 用户接受23函数Al密度表示及约794–800倍表示压缩，同时要求保留G2c拒绝；S3允许每步完整网格重建和FFT | 回写G2c为通过、宣称加速，或跳过完整网格同设置参考 | 新revision/新ID/state；full-grid与coeff各三初值，含网格收敛、三体积核心矩阵和压力平台共29点；七项用户硬门；独立审计后才能执行，失败不重试 |
 | 2026-08-12 | D-065 | 接受S3 fixed-WT R1的有效科学拒绝，不放宽10 meV或Euler门 | 29点完整闭合且证据可重放；系数解稳定、密度L2约0.333%且压力平台过，但相对full-grid能量差稳定在约16.7 meV/atom，参考Euler也暴露收敛缺口 | 以密度通过替代能量门、放宽阈值、重跑旧ID，或把G2c表示压缩接受等同G3通过 | G3保持in_progress；新revision须同时改进固定子空间的变分能量与full-grid参考收敛 |
+| 2026-08-12 | D-066 | 修订G3参考分层：KSDFT是科学主参考，完整网格WT只作同泛函数值诊断 | 项目书要求数值实现误差与相对KSDFT的物理误差分层；R1的约16.7 meV/atom只说明23函数子空间未复现完整网格WT极小值，不能据此直接淘汰KSDFT密度表示候选 | 删除R1历史拒绝、把完整网格WT完全删除，或直接比较不同泛函/赝势的绝对总能 | R1/V5.6永久只读；G3改为`in_progress`而非科学rejected；新revision以匹配KSDFT密度、锚定相对能量和压力作硬门，WT能量/Euler保留为诊断 |
 
 ## 9. 最近可用状态
 
@@ -577,7 +578,7 @@ python3 -m unittest -q tests.unit.test_s1_g1_thermodynamic_label_audit_r4_genera
 - 已知失败/暂停：局域 R1 solver 成功后被旧单原子 cube parser 假拒绝；R2 只读恢复后的满秩与伪力失败仍为历史权威结论。后续 128³ 诊断已将伪力问题定位到旧分析网格，但秩 2171–2172/2173 尚未闭合。所有旧 state/ID 禁止重跑。
 - 恢复方法：在登记 R2 worktree 用冻结 DFTpy Python 运行 `PYTHONPATH=scripts .../python -s -B scripts/validate_s2_g2_al_localized_analysis_r2.py --require-committed`；验证器应 exit 0 并报告 `evidence_valid_scientific_gate_rejected`。
 - 同步方法：node01 对 `codex/r4-execution` 相对 GitHub 已知基线创建并验证增量 bundle，经跳板机传至本机；三端 SHA-256 一致后 fast-forward 推送同名分支，最后以 `git ls-remote` 核验目标 SHA。
-- 当前交接点：23函数候选仍被接受为Al密度表示，约800倍表示压缩成立；G2c性能拒绝不变。S3 R1已29/29闭合并形成有效科学拒绝：系数能量差约16.7 meV/atom超门，部分full-grid Euler残差超门；G3未关闭，Mg/ML/S4均未启动。
+- 当前交接点：23函数候选仍被接受为Al密度表示，约800倍表示压缩成立；G2c性能拒绝不变。S3 R1已29/29闭合，执行与同WT数值画像有效，但其约16.7 meV/atom和full-grid Euler残差不再被解释为相对KSDFT的科学拒绝；G3等待KSDFT主参考revision，Mg/ML/S4均未启动。
 
 ## 10. 交接说明
 
@@ -759,7 +760,7 @@ python3 -m unittest -q tests.unit.test_s1_g1_thermodynamic_label_audit_r4_genera
 | 2026-08-12 14:16 CST | S2 atomic_fft Stage A replacement | Codex | S2 | implementation `1a5eb198`；prereg `0c2feb90`；evidence `cd9a132d` | committed replay accepted；r08/r10均rejected；0 solver | atomic_fft晋级0/2；下一动作Stage B只含reference+五个历史合格低G候选 |
 | 2026-08-12 14:28 CST | S2 23函数密度展开验收policy | Codex | S2 | implementation `54451b51`；prereg `0c503eb0`；evidence `987ca097` | 历史拒绝保留；7诊断；11/11硬门；0 solver | Al密度展开候选accepted；下一动作G2c性能/压缩 |
 | 2026-08-12 14:55 CST | S2 G2c 32/108/256 性能对照 | Codex | S2 | implementation `bb23411b`；prereg `0ba305fd`；evidence `2a27822b` | 18/18；精度与约794–800x表示压缩通过；时间/峰值内存三档均未过性能门；0 solver | 有效性能拒绝；当时不启动S3，后由D-064授权固定WT正确性pilot但不改变性能结论 |
-| 2026-08-12 17:15 CST | S3 Al V100 fixed-WT coefficient pilot R1 | Codex | S3 | implementation `dbefd2c1`；prereg `b0d596db`；evidence `25b2109c` | 29/29 operational accepted；committed validator通过；科学拒绝，系数能量差约16.64–16.74 meV/atom；无retry | G3保持open；下一步仅新revision改进系数子空间与full-grid参考收敛 |
+| 2026-08-12 17:15 CST | S3 Al V100 fixed-WT coefficient pilot R1 | Codex | S3 | implementation `dbefd2c1`；prereg `b0d596db`；evidence `25b2109c` | 29/29 operational accepted；committed validator通过；R1原分析按相对full-grid WT能量门给出rejected；无retry | D-066后只承认其执行/同WT数值诊断；KSDFT科学验收未完成，下一步新revision补匹配KSDFT参考 |
 
 ## 11. 文档变更记录
 
@@ -812,3 +813,4 @@ python3 -m unittest -q tests.unit.test_s1_g1_thermodynamic_label_audit_r4_genera
 | 2026-08-12 | V5.4 | Codex | 记录G2c 32/108/256原子18点共同精度性能对照：约794–800倍表示压缩成立，但时间无稳定加速、峰值内存无下降；冻结有效负证据，阻止S3并把后续限定为新revision的算子原生压缩实现 |
 | 2026-08-12 | V5.5 | Codex | 按用户授权调整G2→S3决策：保留G2c性能拒绝和无加速结论，但接受Al 23函数密度表示并允许进入固定WT系数空间pilot；冻结每步完整网格/FFT、完整网格参考、三初值及七项硬门 |
 | 2026-08-12 | V5.6 | Codex | 记录S3 fixed-WT R1的29点完整结果：operational闭合、证据有效但科学拒绝；保留G2密度表示接受与G2c性能拒绝，G3因约16.7 meV/atom能量差和部分full-grid Euler超门继续开放 |
+| 2026-08-12 | V5.7 | Codex | 修正S3参考分层：保留V5.6和R1全部历史证据，但撤销“相对完整网格WT即可作KSDFT科学淘汰”的当前政策解释；KSDFT改为密度、锚定相对能量和压力的科学主参考，完整网格WT降为同泛函数值与求解收敛诊断；G3保持in_progress并转入新revision |
