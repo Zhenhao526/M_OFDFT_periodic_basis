@@ -1,0 +1,38 @@
+{
+  "schema_version": 1,
+  "protocol_revision": "S2-G2-DENSITY-EXPANSION-ACCEPTANCE-POLICY-20260812-R1",
+  "status": "implementation_pending_preregistration",
+  "implementation_commit": "__FREEZE_IMPLEMENTATION_COMMIT__",
+  "base_commit": "712e1dc51373ab0144b6211a087fcd085ad04d50",
+  "new_solver_run_count": 0,
+  "candidate_id": "r08_eta100_complementary",
+  "candidate_basis_function_count_per_atom": 23,
+  "target_scope": "Al_density_expansion_representation_and_operator_accuracy",
+  "source": {
+    "dense_grid_evidence_commit": "73b592fb32f18a75b59dd3d6f703438832c3c1b5",
+    "dense_grid_summary_path": "analysis/s2/g2_al_localized_dense_grid_r1_20260812/summary.json",
+    "dense_grid_summary_sha256": "391b938c06d7ec767453cdd8d339829c2ca09f731f4614344ce25c775f66a3ff",
+    "dense_grid_config_path": "config/S2_g2_al_localized_dense_grid_r1.json",
+    "dense_grid_config_sha256": "8c78e9a09272149ca005baceb8564bcc12ff22e9413595ff8c02073aeaaba129",
+    "joint_svd_evidence_commit": "f0dcdf27636bcdfdfb0ed4f824cdf2dc33aa3f31",
+    "joint_svd_summary_path": "analysis/s2/g2_al_joint_svd_r1_20260812/summary.json",
+    "joint_svd_summary_sha256": "eaec1d7e9c6a903c396521311f3e4d4255fff4f11d8b95159c6f7d77c7e34448",
+    "null_envelope_evidence_commit": "4f8890306db07b421af6842bad25a0adcf8fb8b6",
+    "null_envelope_summary_path": "analysis/s2/g2_al_null_envelope_r1_20260812/summary.json",
+    "null_envelope_summary_sha256": "d727a3a4de7fa736b47b777e8b8a544480501fca528c7ccb6a706bdffe86f419"
+  },
+  "policy": {
+    "historical_rejections_are_immutable": true,
+    "hard_gate_ids": ["density", "electron_number", "component_energies", "combined_energy", "fixed_wt_total", "eggbox_energy", "reference_pseudoforce", "projection_excess_pseudoforce", "selected_pseudoforce", "cross_grid_pseudoforce", "cross_grid_energy"],
+    "diagnostic_only_ids": ["rank_floor", "rank_deficiency", "rank_path_span", "condition", "retained_margin", "adjacent_subspace", "cross_grid_subspace"],
+    "diagnostic_failures_do_not_affect_density_expansion_acceptance": true,
+    "does_not_claim_unique_or_well_conditioned_coefficients": true,
+    "does_not_close_g2c_performance": true,
+    "does_not_start_s3": true,
+    "mg_not_in_scope": true
+  },
+  "output": {
+    "root": "analysis/s2/g2_density_expansion_acceptance_policy_r1_20260812",
+    "files": ["README.md", "gates.tsv", "policy_revision.json", "summary.json"]
+  }
+}
