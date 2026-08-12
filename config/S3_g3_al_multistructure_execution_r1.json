@@ -1,8 +1,8 @@
 {
   "schema_version": 1,
   "protocol_revision": "S3-G3-AL-MULTISTRUCTURE-EXECUTION-20260812-R1",
-  "status": "implementation_pending_preregistration",
-  "implementation_commit": "__FREEZE_IMPLEMENTATION_COMMIT__",
+  "status": "preregistered_no_execution",
+  "implementation_commit": "649877dad15a13bc558c3ba8b91b7dba2fd87c7e",
   "base_commit": "5abf8263abd17d29f016f4fec6aaea0ead3371aa",
   "matrix": {
     "commit": "f979447b596ecb30879fd72e2e1b1360be297aaf",
