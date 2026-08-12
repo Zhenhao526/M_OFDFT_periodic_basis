@@ -1,8 +1,8 @@
 {
   "schema_version": 1,
   "protocol_revision": "S2-G2-ATOMIC-FFT-STAGE-A-20260812-R1",
-  "status": "implementation_pending_preregistration",
-  "implementation_commit": "__FREEZE_IMPLEMENTATION_COMMIT__",
+  "status": "preregistered_no_execution",
+  "implementation_commit": "1a5eb198d0e30583f9c42105f725339b671af6af",
   "base_commit": "76ff25f3879d48f42d5293b1b00e092375d5ca32",
   "matrix_preregistration_commit": "5e9054e3c5d4a2d69749c3b27a9ff794dd34ee4a",
   "architecture_preregistration_commit": "cdf90874702509543fb0856f5ed8fc8c9450d230",
