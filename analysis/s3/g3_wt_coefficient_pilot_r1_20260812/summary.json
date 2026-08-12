@@ -1,0 +1,945 @@
+{
+  "all_run_scientific_statuses_accepted": false,
+  "candidate_id": "r08_eta100_complementary",
+  "coefficient_runs": [
+    {
+      "accepted": false,
+      "coefficient_minus_reference_energy_mev_per_atom": 16.63592414040238,
+      "density_relative_l2": 0.003332800183317675,
+      "electron_number_absolute_error": 0.0,
+      "experiment_id": "S3-20260812-017",
+      "gates": {
+        "accepted_steps_monotonic": true,
+        "density_l2": true,
+        "electron_number": true,
+        "energy_reference": false,
+        "gradient_finite_difference": true,
+        "minimum_density": true,
+        "negative_density": true,
+        "projected_gradient": true,
+        "variational_lower_bound": true
+      },
+      "initialization": "uniform",
+      "minimum_density_electron_per_bohr3": 0.0007637938897421918,
+      "negative_density_fraction": 0.0,
+      "projected_gradient_metric_hartree": 5.655192801354565e-07,
+      "reference_energy_difference_mev_per_atom": 16.63592414040238,
+      "reference_id": "S3-20260812-004",
+      "role": "core",
+      "volume_ratio": 0.995
+    },
+    {
+      "accepted": false,
+      "coefficient_minus_reference_energy_mev_per_atom": 16.635924139364988,
+      "density_relative_l2": 0.003332805503989003,
+      "electron_number_absolute_error": 0.0,
+      "experiment_id": "S3-20260812-018",
+      "gates": {
+        "accepted_steps_monotonic": true,
+        "density_l2": true,
+        "electron_number": true,
+        "energy_reference": false,
+        "gradient_finite_difference": true,
+        "minimum_density": true,
+        "negative_density": true,
+        "projected_gradient": true,
+        "variational_lower_bound": true
+      },
+      "initialization": "atomic_superposition_projection",
+      "minimum_density_electron_per_bohr3": 0.0007637958702423932,
+      "negative_density_fraction": 0.0,
+      "projected_gradient_metric_hartree": 2.0138120328276137e-07,
+      "reference_energy_difference_mev_per_atom": 16.635924139364988,
+      "reference_id": "S3-20260812-004",
+      "role": "core",
+      "volume_ratio": 0.995
+    },
+    {
+      "accepted": false,
+      "coefficient_minus_reference_energy_mev_per_atom": 16.63592413953552,
+      "density_relative_l2": 0.003332804635336775,
+      "electron_number_absolute_error": 0.0,
+      "experiment_id": "S3-20260812-019",
+      "gates": {
+        "accepted_steps_monotonic": true,
+        "density_l2": true,
+        "electron_number": true,
+        "energy_reference": false,
+        "gradient_finite_difference": true,
+        "minimum_density": true,
+        "negative_density": true,
+        "projected_gradient": true,
+        "variational_lower_bound": true
+      },
+      "initialization": "low_g_perturbation_projection",
+      "minimum_density_electron_per_bohr3": 0.0007637963484865735,
+      "negative_density_fraction": 0.0,
+      "projected_gradient_metric_hartree": 5.601821817592174e-07,
+      "reference_energy_difference_mev_per_atom": 16.63592413953552,
+      "reference_id": "S3-20260812-004",
+      "role": "core",
+      "volume_ratio": 0.995
+    },
+    {
+      "accepted": false,
+      "coefficient_minus_reference_energy_mev_per_atom": 16.670570121107176,
+      "density_relative_l2": 0.0033384017250685807,
+      "electron_number_absolute_error": 0.0,
+      "experiment_id": "S3-20260812-020",
+      "gates": {
+        "accepted_steps_monotonic": true,
+        "density_l2": true,
+        "electron_number": true,
+        "energy_reference": false,
+        "gradient_finite_difference": true,
+        "minimum_density": true,
+        "negative_density": true,
+        "projected_gradient": true,
+        "variational_lower_bound": true
+      },
+      "initialization": "uniform",
+      "minimum_density_electron_per_bohr3": 0.0007475059870899643,
+      "negative_density_fraction": 0.0,
+      "projected_gradient_metric_hartree": 5.165639961854475e-07,
+      "reference_energy_difference_mev_per_atom": 16.670570121107176,
+      "reference_id": "S3-20260812-007",
+      "role": "core",
+      "volume_ratio": 1.0
+    },
+    {
+      "accepted": false,
+      "coefficient_minus_reference_energy_mev_per_atom": 16.670570121277706,
+      "density_relative_l2": 0.003338401147885895,
+      "electron_number_absolute_error": 0.0,
+      "experiment_id": "S3-20260812-021",
+      "gates": {
+        "accepted_steps_monotonic": true,
+        "density_l2": true,
+        "electron_number": true,
+        "energy_reference": false,
+        "gradient_finite_difference": true,
+        "minimum_density": true,
+        "negative_density": true,
+        "projected_gradient": true,
+        "variational_lower_bound": true
+      },
+      "initialization": "atomic_superposition_projection",
+      "minimum_density_electron_per_bohr3": 0.0007475012777579462,
+      "negative_density_fraction": 0.0,
+      "projected_gradient_metric_hartree": 7.849574733395123e-07,
+      "reference_energy_difference_mev_per_atom": 16.670570121277706,
+      "reference_id": "S3-20260812-007",
+      "role": "core",
+      "volume_ratio": 1.0
+    },
+    {
+      "accepted": false,
+      "coefficient_minus_reference_energy_mev_per_atom": 16.670570120751904,
+      "density_relative_l2": 0.003338403349426908,
+      "electron_number_absolute_error": 0.0,
+      "experiment_id": "S3-20260812-022",
+      "gates": {
+        "accepted_steps_monotonic": true,
+        "density_l2": true,
+        "electron_number": true,
+        "energy_reference": false,
+        "gradient_finite_difference": true,
+        "minimum_density": true,
+        "negative_density": true,
+        "projected_gradient": true,
+        "variational_lower_bound": true
+      },
+      "initialization": "low_g_perturbation_projection",
+      "minimum_density_electron_per_bohr3": 0.0007475073170733655,
+      "negative_density_fraction": 0.0,
+      "projected_gradient_metric_hartree": 5.560205874138512e-07,
+      "reference_energy_difference_mev_per_atom": 16.670570120751904,
+      "reference_id": "S3-20260812-007",
+      "role": "core",
+      "volume_ratio": 1.0
+    },
+    {
+      "accepted": false,
+      "coefficient_minus_reference_energy_mev_per_atom": 16.704949313179895,
+      "density_relative_l2": 0.0033444709639541344,
+      "electron_number_absolute_error": 8.881784197001252e-16,
+      "experiment_id": "S3-20260812-023",
+      "gates": {
+        "accepted_steps_monotonic": true,
+        "density_l2": true,
+        "electron_number": true,
+        "energy_reference": false,
+        "gradient_finite_difference": true,
+        "minimum_density": true,
+        "negative_density": true,
+        "projected_gradient": true,
+        "variational_lower_bound": true
+      },
+      "initialization": "uniform",
+      "minimum_density_electron_per_bohr3": 0.0007315994514992506,
+      "negative_density_fraction": 0.0,
+      "projected_gradient_metric_hartree": 7.991233160408231e-07,
+      "reference_energy_difference_mev_per_atom": 16.704949313179895,
+      "reference_id": "S3-20260812-012",
+      "role": "core",
+      "volume_ratio": 1.005
+    },
+    {
+      "accepted": false,
+      "coefficient_minus_reference_energy_mev_per_atom": 16.704949314004125,
+      "density_relative_l2": 0.0033444710755029788,
+      "electron_number_absolute_error": 8.881784197001252e-16,
+      "experiment_id": "S3-20260812-024",
+      "gates": {
+        "accepted_steps_monotonic": true,
+        "density_l2": true,
+        "electron_number": true,
+        "energy_reference": false,
+        "gradient_finite_difference": true,
+        "minimum_density": true,
+        "negative_density": true,
+        "projected_gradient": true,
+        "variational_lower_bound": true
+      },
+      "initialization": "atomic_superposition_projection",
+      "minimum_density_electron_per_bohr3": 0.0007315996297787945,
+      "negative_density_fraction": 0.0,
+      "projected_gradient_metric_hartree": 8.65337090006242e-07,
+      "reference_energy_difference_mev_per_atom": 16.704949314004125,
+      "reference_id": "S3-20260812-012",
+      "role": "core",
+      "volume_ratio": 1.005
+    },
+    {
+      "accepted": false,
+      "coefficient_minus_reference_energy_mev_per_atom": 16.704949311971973,
+      "density_relative_l2": 0.0033444736549329292,
+      "electron_number_absolute_error": 8.881784197001252e-16,
+      "experiment_id": "S3-20260812-025",
+      "gates": {
+        "accepted_steps_monotonic": true,
+        "density_l2": true,
+        "electron_number": true,
+        "energy_reference": false,
+        "gradient_finite_difference": true,
+        "minimum_density": true,
+        "negative_density": true,
+        "projected_gradient": true,
+        "variational_lower_bound": true
+      },
+      "initialization": "low_g_perturbation_projection",
+      "minimum_density_electron_per_bohr3": 0.0007315991533250674,
+      "negative_density_fraction": 0.0,
+      "projected_gradient_metric_hartree": 8.386907964558729e-07,
+      "reference_energy_difference_mev_per_atom": 16.704949311971973,
+      "reference_id": "S3-20260812-012",
+      "role": "core",
+      "volume_ratio": 1.005
+    },
+    {
+      "accepted": false,
+      "coefficient_minus_reference_energy_mev_per_atom": 16.65328001594446,
+      "density_relative_l2": 0.0033354665112494335,
+      "electron_number_absolute_error": 4.440892098500626e-16,
+      "experiment_id": "S3-20260812-026",
+      "gates": {
+        "accepted_steps_monotonic": true,
+        "density_l2": true,
+        "electron_number": true,
+        "energy_reference": false,
+        "gradient_finite_difference": true,
+        "minimum_density": true,
+        "negative_density": true,
+        "projected_gradient": true,
+        "variational_lower_bound": true
+      },
+      "initialization": "uniform",
+      "minimum_density_electron_per_bohr3": 0.0007556027519965876,
+      "negative_density_fraction": 0.0,
+      "projected_gradient_metric_hartree": 4.303251986600891e-07,
+      "reference_energy_difference_mev_per_atom": 16.65328001594446,
+      "reference_id": "S3-20260812-013",
+      "role": "pressure_platform",
+      "volume_ratio": 0.9975
+    },
+    {
+      "accepted": false,
+      "coefficient_minus_reference_energy_mev_per_atom": 16.687769541874786,
+      "density_relative_l2": 0.003342345981728777,
+      "electron_number_absolute_error": 2.220446049250313e-15,
+      "experiment_id": "S3-20260812-027",
+      "gates": {
+        "accepted_steps_monotonic": true,
+        "density_l2": true,
+        "electron_number": true,
+        "energy_reference": false,
+        "gradient_finite_difference": true,
+        "minimum_density": true,
+        "negative_density": true,
+        "projected_gradient": true,
+        "variational_lower_bound": true
+      },
+      "initialization": "uniform",
+      "minimum_density_electron_per_bohr3": 0.0007395066524120524,
+      "negative_density_fraction": 0.0,
+      "projected_gradient_metric_hartree": 2.601570422242017e-07,
+      "reference_energy_difference_mev_per_atom": 16.687769541874786,
+      "reference_id": "S3-20260812-014",
+      "role": "pressure_platform",
+      "volume_ratio": 1.0025
+    },
+    {
+      "accepted": false,
+      "coefficient_minus_reference_energy_mev_per_atom": 16.601009102444664,
+      "density_relative_l2": 0.0033276559473429585,
+      "electron_number_absolute_error": 8.881784197001252e-16,
+      "experiment_id": "S3-20260812-028",
+      "gates": {
+        "accepted_steps_monotonic": true,
+        "density_l2": true,
+        "electron_number": true,
+        "energy_reference": false,
+        "gradient_finite_difference": true,
+        "minimum_density": true,
+        "negative_density": true,
+        "projected_gradient": true,
+        "variational_lower_bound": true
+      },
+      "initialization": "uniform",
+      "minimum_density_electron_per_bohr3": 0.000780480371424034,
+      "negative_density_fraction": 0.0,
+      "projected_gradient_metric_hartree": 7.427613719988704e-07,
+      "reference_energy_difference_mev_per_atom": 16.601009102444664,
+      "reference_id": "S3-20260812-015",
+      "role": "pressure_platform",
+      "volume_ratio": 0.99
+    },
+    {
+      "accepted": false,
+      "coefficient_minus_reference_energy_mev_per_atom": 16.739099638229504,
+      "density_relative_l2": 0.003350004766987903,
+      "electron_number_absolute_error": 8.881784197001252e-16,
+      "experiment_id": "S3-20260812-029",
+      "gates": {
+        "accepted_steps_monotonic": true,
+        "density_l2": true,
+        "electron_number": true,
+        "energy_reference": false,
+        "gradient_finite_difference": true,
+        "minimum_density": true,
+        "negative_density": true,
+        "projected_gradient": true,
+        "variational_lower_bound": true
+      },
+      "initialization": "uniform",
+      "minimum_density_electron_per_bohr3": 0.0007160716965410666,
+      "negative_density_fraction": 0.0,
+      "projected_gradient_metric_hartree": 7.2554939122759e-07,
+      "reference_energy_difference_mev_per_atom": 16.739099638229504,
+      "reference_id": "S3-20260812-016",
+      "role": "pressure_platform",
+      "volume_ratio": 1.01
+    }
+  ],
+  "electron_negative_density_and_stationarity_runs": [
+    {
+      "accepted": true,
+      "electron_number_absolute_error": 1.9984014443252818e-14,
+      "experiment_id": "S3-20260812-001",
+      "minimum_density_electron_per_bohr3": 0.0009696951620417364,
+      "negative_density_fraction": 0.0,
+      "stationarity_metric_hartree": 6.658834373329403e-07
+    },
+    {
+      "accepted": true,
+      "electron_number_absolute_error": 3.375077994860476e-14,
+      "experiment_id": "S3-20260812-002",
+      "minimum_density_electron_per_bohr3": 0.0009692967197136216,
+      "negative_density_fraction": 0.0,
+      "stationarity_metric_hartree": 4.454084668647981e-07
+    },
+    {
+      "accepted": true,
+      "electron_number_absolute_error": 2.842170943040401e-14,
+      "experiment_id": "S3-20260812-003",
+      "minimum_density_electron_per_bohr3": 0.0009692254979753193,
+      "negative_density_fraction": 0.0,
+      "stationarity_metric_hartree": 4.93369228103299e-07
+    },
+    {
+      "accepted": false,
+      "electron_number_absolute_error": 3.064215547965432e-14,
+      "experiment_id": "S3-20260812-004",
+      "minimum_density_electron_per_bohr3": 0.0009870677492723181,
+      "negative_density_fraction": 0.0,
+      "stationarity_metric_hartree": 1.5525347047534466e-05
+    },
+    {
+      "accepted": false,
+      "electron_number_absolute_error": 0.0,
+      "experiment_id": "S3-20260812-005",
+      "minimum_density_electron_per_bohr3": 0.000987363436607541,
+      "negative_density_fraction": 0.0,
+      "stationarity_metric_hartree": 9.983753211962427e-05
+    },
+    {
+      "accepted": false,
+      "electron_number_absolute_error": 3.9968028886505635e-15,
+      "experiment_id": "S3-20260812-006",
+      "minimum_density_electron_per_bohr3": 0.0009872642067701247,
+      "negative_density_fraction": 0.0,
+      "stationarity_metric_hartree": 3.74639879160989e-05
+    },
+    {
+      "accepted": true,
+      "electron_number_absolute_error": 2.842170943040401e-14,
+      "experiment_id": "S3-20260812-007",
+      "minimum_density_electron_per_bohr3": 0.0009692254979753193,
+      "negative_density_fraction": 0.0,
+      "stationarity_metric_hartree": 4.93369228103299e-07
+    },
+    {
+      "accepted": false,
+      "electron_number_absolute_error": 0.0,
+      "experiment_id": "S3-20260812-008",
+      "minimum_density_electron_per_bohr3": 0.0009697146616173227,
+      "negative_density_fraction": 0.0,
+      "stationarity_metric_hartree": 6.640740735282636e-05
+    },
+    {
+      "accepted": true,
+      "electron_number_absolute_error": 1.2434497875801753e-14,
+      "experiment_id": "S3-20260812-009",
+      "minimum_density_electron_per_bohr3": 0.0009692277435687425,
+      "negative_density_fraction": 0.0,
+      "stationarity_metric_hartree": 6.49473802874473e-07
+    },
+    {
+      "accepted": false,
+      "electron_number_absolute_error": 1.2878587085651816e-14,
+      "experiment_id": "S3-20260812-010",
+      "minimum_density_electron_per_bohr3": 0.000951970559815753,
+      "negative_density_fraction": 0.0,
+      "stationarity_metric_hartree": 3.4620569265962945e-05
+    },
+    {
+      "accepted": false,
+      "electron_number_absolute_error": 8.881784197001252e-16,
+      "experiment_id": "S3-20260812-011",
+      "minimum_density_electron_per_bohr3": 0.0009523259901700972,
+      "negative_density_fraction": 0.0,
+      "stationarity_metric_hartree": 5.9794368989330996e-05
+    },
+    {
+      "accepted": false,
+      "electron_number_absolute_error": 4.440892098500626e-16,
+      "experiment_id": "S3-20260812-012",
+      "minimum_density_electron_per_bohr3": 0.0009520723015066114,
+      "negative_density_fraction": 0.0,
+      "stationarity_metric_hartree": 2.263585590175521e-05
+    },
+    {
+      "accepted": false,
+      "electron_number_absolute_error": 7.993605777301127e-15,
+      "experiment_id": "S3-20260812-013",
+      "minimum_density_electron_per_bohr3": 0.0009780822049457881,
+      "negative_density_fraction": 0.0,
+      "stationarity_metric_hartree": 5.289369180653684e-06
+    },
+    {
+      "accepted": false,
+      "electron_number_absolute_error": 1.4210854715202004e-14,
+      "experiment_id": "S3-20260812-014",
+      "minimum_density_electron_per_bohr3": 0.0009606717653472218,
+      "negative_density_fraction": 0.0,
+      "stationarity_metric_hartree": 2.9764157020929945e-05
+    },
+    {
+      "accepted": false,
+      "electron_number_absolute_error": 1.4210854715202004e-14,
+      "experiment_id": "S3-20260812-015",
+      "minimum_density_electron_per_bohr3": 0.0010053170561336135,
+      "negative_density_fraction": 0.0,
+      "stationarity_metric_hartree": 3.738516064027633e-05
+    },
+    {
+      "accepted": false,
+      "electron_number_absolute_error": 1.4210854715202004e-14,
+      "experiment_id": "S3-20260812-016",
+      "minimum_density_electron_per_bohr3": 0.0009348656874538533,
+      "negative_density_fraction": 0.0,
+      "stationarity_metric_hartree": 3.547126763121053e-05
+    },
+    {
+      "accepted": true,
+      "electron_number_absolute_error": 0.0,
+      "experiment_id": "S3-20260812-017",
+      "minimum_density_electron_per_bohr3": 0.0007637938897421918,
+      "negative_density_fraction": 0.0,
+      "stationarity_metric_hartree": 5.655192801354565e-07
+    },
+    {
+      "accepted": true,
+      "electron_number_absolute_error": 0.0,
+      "experiment_id": "S3-20260812-018",
+      "minimum_density_electron_per_bohr3": 0.0007637958702423932,
+      "negative_density_fraction": 0.0,
+      "stationarity_metric_hartree": 2.0138120328276137e-07
+    },
+    {
+      "accepted": true,
+      "electron_number_absolute_error": 0.0,
+      "experiment_id": "S3-20260812-019",
+      "minimum_density_electron_per_bohr3": 0.0007637963484865735,
+      "negative_density_fraction": 0.0,
+      "stationarity_metric_hartree": 5.601821817592174e-07
+    },
+    {
+      "accepted": true,
+      "electron_number_absolute_error": 0.0,
+      "experiment_id": "S3-20260812-020",
+      "minimum_density_electron_per_bohr3": 0.0007475059870899643,
+      "negative_density_fraction": 0.0,
+      "stationarity_metric_hartree": 5.165639961854475e-07
+    },
+    {
+      "accepted": true,
+      "electron_number_absolute_error": 0.0,
+      "experiment_id": "S3-20260812-021",
+      "minimum_density_electron_per_bohr3": 0.0007475012777579462,
+      "negative_density_fraction": 0.0,
+      "stationarity_metric_hartree": 7.849574733395123e-07
+    },
+    {
+      "accepted": true,
+      "electron_number_absolute_error": 0.0,
+      "experiment_id": "S3-20260812-022",
+      "minimum_density_electron_per_bohr3": 0.0007475073170733655,
+      "negative_density_fraction": 0.0,
+      "stationarity_metric_hartree": 5.560205874138512e-07
+    },
+    {
+      "accepted": true,
+      "electron_number_absolute_error": 8.881784197001252e-16,
+      "experiment_id": "S3-20260812-023",
+      "minimum_density_electron_per_bohr3": 0.0007315994514992506,
+      "negative_density_fraction": 0.0,
+      "stationarity_metric_hartree": 7.991233160408231e-07
+    },
+    {
+      "accepted": true,
+      "electron_number_absolute_error": 8.881784197001252e-16,
+      "experiment_id": "S3-20260812-024",
+      "minimum_density_electron_per_bohr3": 0.0007315996297787945,
+      "negative_density_fraction": 0.0,
+      "stationarity_metric_hartree": 8.65337090006242e-07
+    },
+    {
+      "accepted": true,
+      "electron_number_absolute_error": 8.881784197001252e-16,
+      "experiment_id": "S3-20260812-025",
+      "minimum_density_electron_per_bohr3": 0.0007315991533250674,
+      "negative_density_fraction": 0.0,
+      "stationarity_metric_hartree": 8.386907964558729e-07
+    },
+    {
+      "accepted": true,
+      "electron_number_absolute_error": 4.440892098500626e-16,
+      "experiment_id": "S3-20260812-026",
+      "minimum_density_electron_per_bohr3": 0.0007556027519965876,
+      "negative_density_fraction": 0.0,
+      "stationarity_metric_hartree": 4.303251986600891e-07
+    },
+    {
+      "accepted": true,
+      "electron_number_absolute_error": 2.220446049250313e-15,
+      "experiment_id": "S3-20260812-027",
+      "minimum_density_electron_per_bohr3": 0.0007395066524120524,
+      "negative_density_fraction": 0.0,
+      "stationarity_metric_hartree": 2.601570422242017e-07
+    },
+    {
+      "accepted": true,
+      "electron_number_absolute_error": 8.881784197001252e-16,
+      "experiment_id": "S3-20260812-028",
+      "minimum_density_electron_per_bohr3": 0.000780480371424034,
+      "negative_density_fraction": 0.0,
+      "stationarity_metric_hartree": 7.427613719988704e-07
+    },
+    {
+      "accepted": true,
+      "electron_number_absolute_error": 8.881784197001252e-16,
+      "experiment_id": "S3-20260812-029",
+      "minimum_density_electron_per_bohr3": 0.0007160716965410666,
+      "negative_density_fraction": 0.0,
+      "stationarity_metric_hartree": 7.2554939122759e-07
+    }
+  ],
+  "evidence_valid": true,
+  "failed_missing_skipped_retried": 0,
+  "finite_difference_pressure_rows": [
+    {
+      "accepted": true,
+      "coefficient_pressure_gpa": 130.77915436562853,
+      "full_grid_pressure_gpa": 130.845700479392,
+      "pressure_difference_gpa": 0.0665461137634793,
+      "volume_delta": 0.0025
+    },
+    {
+      "accepted": true,
+      "coefficient_pressure_gpa": 130.78024425842617,
+      "full_grid_pressure_gpa": 130.84682136349215,
+      "pressure_difference_gpa": 0.06657710506598846,
+      "volume_delta": 0.005
+    },
+    {
+      "accepted": true,
+      "coefficient_pressure_gpa": 130.78460380844572,
+      "full_grid_pressure_gpa": 130.85121380277002,
+      "pressure_difference_gpa": 0.06660999432429549,
+      "volume_delta": 0.01
+    }
+  ],
+  "formal_case_count": 29,
+  "g2c_performance_status_preserved": "evidence_valid_g2c_performance_rejected",
+  "g3_overall_closed": false,
+  "grid_convergence": {
+    "accepted": true,
+    "energy_32_to_40_mev_per_atom": 0.00973198736176073,
+    "grid24_energy_ev_per_atom": -116.24202596704579,
+    "grid24_pressure_gpa": 130.84699363234998,
+    "pressure_32_to_40_gpa": 0.0017051191876760186
+  },
+  "initial_density_route_pairs": [
+    {
+      "accepted": true,
+      "coefficient_id": "S3-20260812-017",
+      "initialization": "uniform",
+      "reference_id": "S3-20260812-004",
+      "sha256_equal": true,
+      "volume_ratio": 0.995
+    },
+    {
+      "accepted": true,
+      "coefficient_id": "S3-20260812-018",
+      "initialization": "atomic_superposition_projection",
+      "reference_id": "S3-20260812-005",
+      "sha256_equal": true,
+      "volume_ratio": 0.995
+    },
+    {
+      "accepted": true,
+      "coefficient_id": "S3-20260812-019",
+      "initialization": "low_g_perturbation_projection",
+      "reference_id": "S3-20260812-006",
+      "sha256_equal": true,
+      "volume_ratio": 0.995
+    },
+    {
+      "accepted": false,
+      "coefficient_id": "S3-20260812-020",
+      "initialization": "uniform",
+      "reference_id": "S3-20260812-001",
+      "sha256_equal": false,
+      "volume_ratio": 1.0
+    },
+    {
+      "accepted": true,
+      "coefficient_id": "S3-20260812-021",
+      "initialization": "atomic_superposition_projection",
+      "reference_id": "S3-20260812-008",
+      "sha256_equal": true,
+      "volume_ratio": 1.0
+    },
+    {
+      "accepted": true,
+      "coefficient_id": "S3-20260812-022",
+      "initialization": "low_g_perturbation_projection",
+      "reference_id": "S3-20260812-009",
+      "sha256_equal": true,
+      "volume_ratio": 1.0
+    },
+    {
+      "accepted": true,
+      "coefficient_id": "S3-20260812-023",
+      "initialization": "uniform",
+      "reference_id": "S3-20260812-010",
+      "sha256_equal": true,
+      "volume_ratio": 1.005
+    },
+    {
+      "accepted": true,
+      "coefficient_id": "S3-20260812-024",
+      "initialization": "atomic_superposition_projection",
+      "reference_id": "S3-20260812-011",
+      "sha256_equal": true,
+      "volume_ratio": 1.005
+    },
+    {
+      "accepted": true,
+      "coefficient_id": "S3-20260812-025",
+      "initialization": "low_g_perturbation_projection",
+      "reference_id": "S3-20260812-012",
+      "sha256_equal": true,
+      "volume_ratio": 1.005
+    },
+    {
+      "accepted": true,
+      "coefficient_id": "S3-20260812-026",
+      "initialization": "uniform",
+      "reference_id": "S3-20260812-013",
+      "sha256_equal": true,
+      "volume_ratio": 0.9975
+    },
+    {
+      "accepted": true,
+      "coefficient_id": "S3-20260812-027",
+      "initialization": "uniform",
+      "reference_id": "S3-20260812-014",
+      "sha256_equal": true,
+      "volume_ratio": 1.0025
+    },
+    {
+      "accepted": true,
+      "coefficient_id": "S3-20260812-028",
+      "initialization": "uniform",
+      "reference_id": "S3-20260812-015",
+      "sha256_equal": true,
+      "volume_ratio": 0.99
+    },
+    {
+      "accepted": true,
+      "coefficient_id": "S3-20260812-029",
+      "initialization": "uniform",
+      "reference_id": "S3-20260812-016",
+      "sha256_equal": true,
+      "volume_ratio": 1.01
+    }
+  ],
+  "next_action": "record_pilot_rejection_and_keep_G3_open",
+  "performance_acceleration_claimed": false,
+  "pressure_delta_platform": [
+    {
+      "accepted": true,
+      "max_pairwise_difference_gpa": 0.005513323378011137,
+      "route": "full_grid_WT_reference"
+    },
+    {
+      "accepted": true,
+      "max_pairwise_difference_gpa": 0.005449442817194949,
+      "route": "coefficient_23_function"
+    }
+  ],
+  "protocol_revision": "S3-G3-WT-COEFFICIENT-PILOT-20260812-R1",
+  "s4_authorized": false,
+  "schema_version": 1,
+  "scientific_gate_accepted": false,
+  "selected_full_grid_reference_ids": {
+    "0.995": "S3-20260812-004",
+    "1.0": "S3-20260812-007",
+    "1.005": "S3-20260812-012"
+  },
+  "status": "evidence_valid_s3_al_v100_fixed_WT_coefficient_pilot_rejected",
+  "three_initialization_final_density_l2": [
+    {
+      "pairwise_final_density_relative_l2": [
+        {
+          "ids": [
+            "S3-20260812-004",
+            "S3-20260812-005"
+          ],
+          "value": 3.8714366215445897e-05
+        },
+        {
+          "ids": [
+            "S3-20260812-004",
+            "S3-20260812-006"
+          ],
+          "value": 1.5357441890375527e-05
+        },
+        {
+          "ids": [
+            "S3-20260812-005",
+            "S3-20260812-006"
+          ],
+          "value": 2.379782895085313e-05
+        }
+      ],
+      "route": "full_grid_WT_reference",
+      "volume_ratio": 0.995
+    },
+    {
+      "pairwise_final_density_relative_l2": [
+        {
+          "ids": [
+            "S3-20260812-007",
+            "S3-20260812-008"
+          ],
+          "value": 4.674409029442075e-05
+        },
+        {
+          "ids": [
+            "S3-20260812-007",
+            "S3-20260812-009"
+          ],
+          "value": 7.754375660763938e-08
+        },
+        {
+          "ids": [
+            "S3-20260812-008",
+            "S3-20260812-009"
+          ],
+          "value": 4.6695835305796245e-05
+        }
+      ],
+      "route": "full_grid_WT_reference",
+      "volume_ratio": 1.0
+    },
+    {
+      "pairwise_final_density_relative_l2": [
+        {
+          "ids": [
+            "S3-20260812-010",
+            "S3-20260812-011"
+          ],
+          "value": 2.4249403093518102e-05
+        },
+        {
+          "ids": [
+            "S3-20260812-010",
+            "S3-20260812-012"
+          ],
+          "value": 8.804433924719177e-06
+        },
+        {
+          "ids": [
+            "S3-20260812-011",
+            "S3-20260812-012"
+          ],
+          "value": 3.274880390885799e-05
+        }
+      ],
+      "route": "full_grid_WT_reference",
+      "volume_ratio": 1.005
+    },
+    {
+      "pairwise_final_density_relative_l2": [
+        {
+          "ids": [
+            "S3-20260812-017",
+            "S3-20260812-018"
+          ],
+          "value": 2.785241737684635e-08
+        },
+        {
+          "ids": [
+            "S3-20260812-017",
+            "S3-20260812-019"
+          ],
+          "value": 3.309853731442313e-08
+        },
+        {
+          "ids": [
+            "S3-20260812-018",
+            "S3-20260812-019"
+          ],
+          "value": 1.3340425984001094e-08
+        }
+      ],
+      "route": "coefficient_23_function",
+      "volume_ratio": 0.995
+    },
+    {
+      "pairwise_final_density_relative_l2": [
+        {
+          "ids": [
+            "S3-20260812-020",
+            "S3-20260812-021"
+          ],
+          "value": 2.6704305335972518e-08
+        },
+        {
+          "ids": [
+            "S3-20260812-020",
+            "S3-20260812-022"
+          ],
+          "value": 2.4874349348155896e-08
+        },
+        {
+          "ids": [
+            "S3-20260812-021",
+            "S3-20260812-022"
+          ],
+          "value": 1.994434852204767e-08
+        }
+      ],
+      "route": "coefficient_23_function",
+      "volume_ratio": 1.0
+    },
+    {
+      "pairwise_final_density_relative_l2": [
+        {
+          "ids": [
+            "S3-20260812-023",
+            "S3-20260812-024"
+          ],
+          "value": 1.6331038478257807e-07
+        },
+        {
+          "ids": [
+            "S3-20260812-023",
+            "S3-20260812-025"
+          ],
+          "value": 5.039398853457598e-08
+        },
+        {
+          "ids": [
+            "S3-20260812-024",
+            "S3-20260812-025"
+          ],
+          "value": 1.7318185283090384e-07
+        }
+      ],
+      "route": "coefficient_23_function",
+      "volume_ratio": 1.005
+    }
+  ],
+  "three_initialization_spreads": [
+    {
+      "accepted": true,
+      "energy_spread_mev_per_atom": 0.000187407863450062,
+      "route": "full_grid_WT_reference",
+      "volume_ratio": 0.995
+    },
+    {
+      "accepted": true,
+      "energy_spread_mev_per_atom": 0.00016350124099062668,
+      "route": "full_grid_WT_reference",
+      "volume_ratio": 1.0
+    },
+    {
+      "accepted": true,
+      "energy_spread_mev_per_atom": 0.00010760878410565056,
+      "route": "full_grid_WT_reference",
+      "volume_ratio": 1.005
+    },
+    {
+      "accepted": true,
+      "energy_spread_mev_per_atom": 1.0373923942097463e-09,
+      "route": "coefficient_23_function",
+      "volume_ratio": 0.995
+    },
+    {
+      "accepted": true,
+      "energy_spread_mev_per_atom": 5.258016244624741e-10,
+      "route": "coefficient_23_function",
+      "volume_ratio": 1.0
+    },
+    {
+      "accepted": true,
+      "energy_spread_mev_per_atom": 2.0321522242738865e-09,
+      "route": "coefficient_23_function",
+      "volume_ratio": 1.005
+    }
+  ]
+}
