@@ -1,8 +1,8 @@
 {
   "schema_version": 1,
   "protocol_revision": "S2-G2C-PERFORMANCE-20260812-R1",
-  "status": "implementation_pending_preregistration",
-  "implementation_commit": "__FREEZE_IMPLEMENTATION_COMMIT__",
+  "status": "preregistered_no_execution",
+  "implementation_commit": "bb23411b70bd608fe407f7838363bde97a5dad07",
   "base_commit": "aba35630037c623cc636225afc4083ae70cdbfac",
   "candidate_id": "r08_eta100_complementary",
   "candidate_execution_gauge": "equivalent_explicit_23_function_density_decode",
