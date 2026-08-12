@@ -2,8 +2,8 @@
 
 > 本文件是项目状态的唯一人工入口。任何人接手前先读本文件，再读项目书和当前阶段 README。  
 > 状态词仅使用：`not_started`、`in_progress`、`blocked`、`accepted`、`rejected`、`paused`。  
-> 更新时间：2026-08-12 12:35 CST
-> 文档版本：V5.1
+> 更新时间：2026-08-12 14:16 CST
+> 文档版本：V5.2
 
 ## 0. 十分钟上手摘要
 
@@ -14,11 +14,11 @@
 | 当前闸门 | G2a/G2b；先验证表示/算子正确性、规范唯一性和几何连续性 |
 | 当前负责人 | 远端账户 `shenwei01`；本轮执行与记录：Codex |
 | 当前工作分支 | `codex/r4-execution`；所有实现和计算均在远端服务器完成 |
-| 最近可用提交 | 规模/几何 R3 实现 `c6202428`；预注册 `da16a237`；证据 `472b6c35`；主线合并 `c001cfde` |
+| 最近可用提交 | atomic_fft Stage A replacement：实现 `1a5eb198`；预注册 `0c2feb90`；证据 `cd9a132d` |
 | 最近通过的数值 smoke | `S1-RUNTIME-SMOKE-20260805-074`：`storage_exact`，五类状态门全部 `accepted`；幂等重验返回 `accepted_committed` |
 | 最近通过的正式分析 | G1 acceptance policy R1：R3/R5 全量重放、17 行 gate、`accepted_g1_6_of_6`、新增 solver 0；证据 `d0386418` |
-| 当前阻塞 | 下一候选矩阵已预注册，但 `atomic_fft` 的 `r08/r10` 新径向档尚未完成单原子重入筛选；其余五个低 G 候选尚未进入局域 108 原子密网格门 |
-| 下一项唯一动作 | 执行 Stage A：`r08_atomic_fft/r10_atomic_fft` 单原子原门控重入筛选；通过者方可进入已冻结的 108 原子 128³/144³ Stage B，不进入 G2c 或 S3 |
+| 当前阻塞 | Stage A 已完成且两个 `atomic_fft` 新径向档均被原门控拒绝；Stage B 尚未对 PW/FFT 参考与五个历史合格低 G 候选执行局域 108 原子密网格对照 |
+| 下一项唯一动作 | 新 revision 冻结并执行 Stage B 六行矩阵：PW/FFT 参考 + 五个历史合格低 G 候选；使用现有局域 108 原子参考、五几何、128³/144³ 与 16 相位，不带入两个失败的 `atomic_fft` 候选，不进入 G2c 或 S3 |
 
 ### 必读文件
 
@@ -307,7 +307,8 @@ python3 -m unittest -q tests.unit.test_s1_g1_thermodynamic_label_audit_r4_genera
 - 下一矩阵 R1 已冻结 8 行：PW/FFT 参考 1 行；`atomic_fft` 的 `r08/r10` 两行；explicit 的 `r04_eta160/r06_eta200` 两行；complementary 的 `r10_eta130/r04_eta160/r06_eta200` 三行。
 - `r08_eta100_explicit/complementary` 因张成空间相同而随 23 函数空间一并淘汰，禁止通过更换规范重新进入。`r10_eta130_explicit` 因历史条件数门失败未登记。
 - Stage A 仅筛选两个新 `atomic_fft` 径向档；Stage B 才使用 108 原子独立参考、五几何、128³/144³ 和 16 相位。所有原密度、能量、秩、条件数、谱裕量、`15°`、eggbox 与伪力门保持不变。
-- 当前唯一动作：执行 Stage A 单原子重入筛选；G2c/S3/Mg 继续关闭。
+- Stage A replacement 已以 0 新 solver 重放冻结单原子密度。`r08_atomic_fft` 的密度 L2 为 `6.64203%`、三算子合计误差 `78.4241 meV/atom`、WT 误差 `419.793 meV/atom`；`r10_atomic_fft` 的密度 L2 为 `6.61133%`、条件数 `1.73647e8`、三算子合计误差 `73.5114 meV/atom`、WT 误差 `495.576 meV/atom`。两者均未通过全部原门，Stage B 晋级数为 0。
+- 当前唯一动作：新 revision 执行 Stage B 的 PW/FFT 参考和五个历史合格低 G 候选；`atomic_fft` 本轮不进入局域 108 原子矩阵，G2c/S3/Mg 继续关闭。
 
 ## 4. 闸门决策记录
 
@@ -341,6 +342,7 @@ python3 -m unittest -q tests.unit.test_s1_g1_thermodynamic_label_audit_r4_genera
 | 2026-08-12 | G2a/G2b joint-SVD fixed subspace R1 | `rejected`（证据有效） | Codex | 十 Gram 联合拟合；drop1/drop2 固定变换；密度/能量/伪力全过，但两者均在满秩、条件数、谱裕量和坏模态对齐四门失败 | `analysis/s2/g2_al_joint_svd_r1_20260812/`；`f0dcdf27` | 删除 1–2 维不足；先诊断联合坏模态包络维数，G2 overall 继续 in_progress |
 | 2026-08-12 | G2a/G2b local-null-envelope R1 | `accepted_diagnostic / architecture_eliminated` | Codex | 十个底部二维空间联合 SVD；维数扫描2–20；`≤15°` 最小包络维数为8，超过允许的2 | `analysis/s2/g2_al_null_envelope_r1_20260812/`；`4f889030` | 当前23函数周期展开淘汰；返回四路线架构竞赛，G2 overall继续in_progress |
 | 2026-08-12 | G2 next architecture matrix R1 | `preregistered` | Codex | 四路线8行：1 reference + 7 compressed；淘汰空间禁止换规范重入；Stage A/B顺序与原门全部冻结 | `config/S2_g2_next_architecture_matrix_r1.{json,tsv}`；`5e9054e3` | 下一动作仅执行atomic_fft r08/r10单原子Stage A；0 solver |
+| 2026-08-12 | G2a atomic_fft Stage A R1 replacement | `rejected`（证据有效） | Codex | r08/r10均0新solver重放；密度L2约6.6%，WT误差419.8/495.6 meV/atom；r10条件数1.736e8；晋级0/2 | `analysis/s2/g2_atomic_fft_stage_a_r1_20260812/`；`cd9a132d` | atomic_fft不进入Stage B；下一revision只执行reference+五个历史合格低G候选 |
 
 ## 5. 实验台账
 
@@ -546,18 +548,19 @@ python3 -m unittest -q tests.unit.test_s1_g1_thermodynamic_label_audit_r4_genera
 | 2026-08-12 | D-058 | 拒绝用联合平均谱删除 1–2 维来接受当前周期展开 | drop1/drop2 虽保持精度与伪力，但局部降维 Gram 仍非正定/不满秩，坏模态相对固定丢弃空间旋转 `88.7546°` | 再放宽条件数/主角门，或在每个几何分别删除模态 | 先冻结局部坏模态联合包络的最小覆盖维数；需求超过 2 维即淘汰该展开 |
 | 2026-08-12 | D-059 | 淘汰当前 23 函数周期展开并返回四路线架构竞赛 | 十个局部底部二维空间需 8 维固定包络才能将最大主角压到 `≤15°`，远超允许的 2 维；`d=7` 仍为 `17.1298°` | 放宽主角门、允许逐几何子空间或继续扩大该架构的删除维数 | 保留全部有效负证据；下一 revision 重新选择架构候选，G2c/S3 继续关闭 |
 | 2026-08-12 | D-060 | 冻结四路线下一候选矩阵并分 Stage A/B 执行 | 原 6 函数 atomic_fft 仅代表低阶档，需以 r08/r10 判定路线；五个低 G 候选已有单原子 accepted 证据；已淘汰 r08_eta100 空间不得换规范重入 | 直接把所有候选投入昂贵108原子扫描，或再次选择 r08_eta100 explicit | 先执行atomic_fft单原子Stage A；仅通过者连同五个历史合格低G候选进入Stage B |
+| 2026-08-12 | D-061 | 接受 atomic_fft Stage A 的有效负结果，不把 r08/r10 带入 Stage B | 增加径向函数未解决纯原子表示的单原子密度/算子误差；r10还触发条件数与非负性门；0/2 晋级 | 放宽1%密度或10 meV算子门，或因函数更多而跳过Stage A | 原门不变；Stage B矩阵缩为PW/FFT参考加五个历史合格低G候选，G2 overall仍in_progress |
 
 ## 9. 最近可用状态
 
 此节必须始终指向一个可运行、可复现的状态；若暂无则明确写“无”。
 
-- 最近可用状态：S2 next-matrix worktree `/home/shenwei01/wt_s2_g2_next_architecture_matrix_r1_20260812` prereg=`5e9054e3`；4/4测试与validator accepted，formal state/analysis absent，0 solver。
+- 最近可用状态：S2 atomic_fft Stage A replacement worktree `/home/shenwei01/wt_s2_g2_atomic_fft_stage_a_r1_replacement_20260812`，implementation=`1a5eb198`、prereg=`0c2feb90`、evidence=`cd9a132d`；committed validator accepted，0 solver。
 - 对应环境：`environment/` 的 ABACUS v3.11.0-beta.5 CPU + OpenMPI 5.0.10 + LibXC 7.0.0；独立 OF 环境为 `/home/shenwei01/.local/venvs/m_ofdft-dftpy-2.2.0-py311`，身份见锁文件。
 - 已通过测试：此前 S2 架构/Al1/收敛/规模证据保持有效；密网格 R1 为 5/5 单测、预注册 validator 和 committed 全量重放通过，5 个输出逐字节重建。科学状态为 rejected，证据状态为 accepted。
 - 已知失败/暂停：局域 R1 solver 成功后被旧单原子 cube parser 假拒绝；R2 只读恢复后的满秩与伪力失败仍为历史权威结论。后续 128³ 诊断已将伪力问题定位到旧分析网格，但秩 2171–2172/2173 尚未闭合。所有旧 state/ID 禁止重跑。
 - 恢复方法：在登记 R2 worktree 用冻结 DFTpy Python 运行 `PYTHONPATH=scripts .../python -s -B scripts/validate_s2_g2_al_localized_analysis_r2.py --require-committed`；验证器应 exit 0 并报告 `evidence_valid_scientific_gate_rejected`。
 - 同步方法：node01 对 `codex/r4-execution` 相对 GitHub 已知基线创建并验证增量 bundle，经跳板机传至本机；三端 SHA-256 一致后 fast-forward 推送同名分支，最后以 `git ls-remote` 核验目标 SHA。
-- 当前交接点：下一四路线矩阵已冻结，23函数空间及其explicit等价规范均排除。下一动作是atomic_fft r08/r10单原子Stage A；Mg、ML、自洽优化和G2c尚未启动。
+- 当前交接点：下一四路线矩阵已冻结，23函数空间及其explicit等价规范均排除；atomic_fft r08/r10 Stage A 也已0/2拒绝。下一动作是新revision执行PW/FFT参考和五个历史合格低G候选的局域108原子Stage B；Mg、ML、自洽优化和G2c尚未启动。
 
 ## 10. 交接说明
 
@@ -736,6 +739,7 @@ python3 -m unittest -q tests.unit.test_s1_g1_thermodynamic_label_audit_r4_genera
 | 2026-08-12 13:55 CST | S2 五几何联合 SVD 固定子空间 pilot | Codex | S2 | implementation `74cc6e0a`；prereg `473437f1`；evidence `f0dcdf27` | 5/5测试；10 Gram；drop1/drop2；密度/能量/伪力全过；固定子空间四门拒绝 | 删除 1–2 维不足；下一步只诊断局部坏模态联合包络的最小覆盖维数 |
 | 2026-08-12 14:20 CST | S2 局部坏模态联合包络诊断 | Codex | S2 | implementation `5a438628`；prereg `eb183ea1`；evidence `4f889030` | 4/4测试；10个局部二维空间；维数2–20；最小合格维数8；0 solver | 触发架构淘汰；返回四路线竞赛，不放宽门控 |
 | 2026-08-12 14:42 CST | S2 下一架构候选矩阵预注册 | Codex | S2 | implementation `1f1fbe1a`；prereg `5e9054e3` | 4/4测试；8行/4路线；7压缩候选；淘汰空间无重入；0 solver | 矩阵冻结；下一动作atomic_fft r08/r10单原子Stage A |
+| 2026-08-12 14:16 CST | S2 atomic_fft Stage A replacement | Codex | S2 | implementation `1a5eb198`；prereg `0c2feb90`；evidence `cd9a132d` | committed replay accepted；r08/r10均rejected；0 solver | atomic_fft晋级0/2；下一动作Stage B只含reference+五个历史合格低G候选 |
 
 ## 11. 文档变更记录
 
@@ -783,3 +787,4 @@ python3 -m unittest -q tests.unit.test_s1_g1_thermodynamic_label_audit_r4_genera
 | 2026-08-12 | V4.9 | Codex | 记录十 Gram 联合 SVD 的 drop1/drop2 固定子空间复验：精度与伪力全过，但两候选均因局部非正定/不满秩、条件数、谱裕量和最大 `88.7546°` 坏模态对齐失败而拒绝；下一步冻结联合坏模态包络维数诊断 |
 | 2026-08-12 | V5.0 | Codex | 记录十个局部底部二维空间的联合包络维数扫描：`d=8` 才满足 `≤15°`，超过允许的2维；正式淘汰当前23函数周期展开并将唯一下一动作切回四路线架构竞赛 |
 | 2026-08-12 | V5.1 | Codex | 冻结返回四路线后的8行下一候选矩阵：新增atomic_fft r08/r10重入档，保留五个历史单原子合格低G候选，禁止淘汰的r08_eta100空间换规范重入；下一动作切为Stage A |
+| 2026-08-12 | V5.2 | Codex | 执行atomic_fft Stage A：r08/r10在原单原子门下均被有效拒绝、0候选晋级；保留0 solver committed证据，将下一动作切为不含atomic_fft的六行局域108原子Stage B |
