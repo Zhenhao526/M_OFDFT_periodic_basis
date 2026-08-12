@@ -1,8 +1,8 @@
 {
   "schema_version": 1,
   "protocol_revision": "S3-G3-WT-COEFFICIENT-PILOT-20260812-R1",
-  "status": "implementation_pending_preregistration",
-  "implementation_commit": "__FREEZE_IMPLEMENTATION_COMMIT__",
+  "status": "preregistered_no_execution",
+  "implementation_commit": "64f6745efaa27e13e3004a3c0bbb725ee76cfe77",
   "base_commit": "f7c16db69adb49438702ee5bfad25a8a56709f3e",
   "scope": {
     "stage": "S3",
