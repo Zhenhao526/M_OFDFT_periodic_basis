@@ -1,0 +1,100 @@
+{
+  "atom_count": 108,
+  "candidate_id": "r08_eta100_complementary",
+  "cross_grid_subspace_angle_maximum_degrees": 69.77814038703532,
+  "evidence_valid": true,
+  "failed_gates": [
+    "adjacent_subspace",
+    "condition",
+    "cross_grid_subspace",
+    "rank_path_span",
+    "retained_margin"
+  ],
+  "g2_overall_accepted": false,
+  "gates": {
+    "adjacent_subspace": false,
+    "combined_energy": true,
+    "component_energies": true,
+    "condition": false,
+    "cross_grid_energy": true,
+    "cross_grid_pseudoforce": true,
+    "cross_grid_subspace": false,
+    "density": true,
+    "eggbox_energy": true,
+    "electron_number": true,
+    "fixed_wt_total": true,
+    "projection_excess_pseudoforce": true,
+    "rank_deficiency": true,
+    "rank_floor": true,
+    "rank_path_span": false,
+    "reference_pseudoforce": true,
+    "retained_margin": false,
+    "selected_pseudoforce": true
+  },
+  "grid_metrics": [
+    {
+      "adjacent_subspace_angle_maximum_degrees": 89.08008701252491,
+      "component_energy_errors_mev_per_atom": {
+        "combined_hartree_external_xc": 1.2581388454346207,
+        "external": 1.2982706396234822,
+        "fixed_kedf": 4.426592145452762,
+        "hartree": -0.030831965689130197,
+        "total_with_fixed_wt": 5.684730990887382,
+        "xc": -0.009299828501820297
+      },
+      "condition_maximum": 9118722278.18303,
+      "density_relative_l2": 0.004679305915268718,
+      "grid": 128,
+      "projection_excess_energy_peak_to_peak_mev_per_atom": 0.00016726165519287406,
+      "projection_excess_pseudoforce_max_ev_per_angstrom": 7.03710925643764e-06,
+      "rank_deficiency_maximum": 2,
+      "rank_maximum": 2173,
+      "rank_minimum": 2171,
+      "reference_electrons": 324.0000000001347,
+      "reference_energy_peak_to_peak_mev_per_atom": 0.00024278867627458567,
+      "reference_pseudoforce_max_ev_per_angstrom": 7.175936473898941e-06,
+      "retained_margin_minimum": 1.096644869196803,
+      "selected_density_minimum": 0.002835295453160634,
+      "selected_electrons": 324.0000000001348,
+      "selected_energy_peak_to_peak_mev_per_atom": 0.00032297092467103994,
+      "selected_pseudoforce_max_ev_per_angstrom": 1.148031731761276e-05
+    },
+    {
+      "adjacent_subspace_angle_maximum_degrees": 88.17504462106568,
+      "component_energy_errors_mev_per_atom": {
+        "combined_hartree_external_xc": 1.2609812456166427,
+        "external": 1.3005521134619744,
+        "fixed_kedf": 4.424772160005146,
+        "hartree": -0.030717395181596358,
+        "total_with_fixed_wt": 5.685753405621789,
+        "xc": -0.008853472662748472
+      },
+      "condition_maximum": 6211375.048453721,
+      "density_relative_l2": 0.004679408902751928,
+      "grid": 144,
+      "projection_excess_energy_peak_to_peak_mev_per_atom": 0.008490309507891425,
+      "projection_excess_pseudoforce_max_ev_per_angstrom": 0.00033178460434549515,
+      "rank_deficiency_maximum": 2,
+      "rank_maximum": 2173,
+      "rank_minimum": 2171,
+      "reference_electrons": 324.0000000001347,
+      "reference_energy_peak_to_peak_mev_per_atom": 0.004220854962433407,
+      "reference_pseudoforce_max_ev_per_angstrom": 0.00017904307217407787,
+      "retained_margin_minimum": 1609.9494752759183,
+      "selected_density_minimum": 0.0028242959926792007,
+      "selected_electrons": 324.00000000013466,
+      "selected_energy_peak_to_peak_mev_per_atom": 0.004269454545458018,
+      "selected_pseudoforce_max_ev_per_angstrom": 0.0001529524609193725
+    }
+  ],
+  "new_solver_run_count": 0,
+  "phase_count": 16,
+  "protocol_revision": "S2-G2-AL-LOCALIZED-DENSE-GRID-20260812-R1",
+  "schema_version": 1,
+  "scientific_gate_accepted": false,
+  "status": "evidence_valid_scientific_gate_rejected",
+  "target_grids": [
+    128,
+    144
+  ]
+}
