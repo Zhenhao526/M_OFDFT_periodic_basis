@@ -1,9 +1,9 @@
 {
   "schema_version": 1,
   "protocol_revision": "S2-G2-AL-NULL-ENVELOPE-20260812-R1",
-  "status": "implementation_pending_preregistration",
+  "status": "preregistered_no_execution",
   "base_commit": "3c85d239c3f13c0df3ae7120e2436fa8ee2c1d32",
-  "implementation_commit": "__FREEZE_IMPLEMENTATION_COMMIT__",
+  "implementation_commit": "5a4386281089df1eb81a96d05d6d03203e1ec95e",
   "new_solver_run_count": 0,
   "source": {
     "joint_svd_evidence_commit": "f0dcdf27636bcdfdfb0ed4f824cdf2dc33aa3f31",
