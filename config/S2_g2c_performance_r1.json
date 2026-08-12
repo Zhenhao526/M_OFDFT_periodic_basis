@@ -1,0 +1,59 @@
+{
+  "schema_version": 1,
+  "protocol_revision": "S2-G2C-PERFORMANCE-20260812-R1",
+  "status": "implementation_pending_preregistration",
+  "implementation_commit": "__FREEZE_IMPLEMENTATION_COMMIT__",
+  "base_commit": "aba35630037c623cc636225afc4083ae70cdbfac",
+  "candidate_id": "r08_eta100_complementary",
+  "candidate_execution_gauge": "equivalent_explicit_23_function_density_decode",
+  "source": {
+    "policy_evidence_commit": "987ca09709e2e6b330d6ee4ee1a218938a9286e3",
+    "policy_summary_path": "analysis/s2/g2_density_expansion_acceptance_policy_r1_20260812/summary.json",
+    "policy_summary_sha256": "7c3063d3402bf443d62ea447af75c8db31337e714afafbccc3d1a1cf177fc21d",
+    "basis_evidence_commit": "b6985a16f073f7ccf0ce4f53572e91ca9165db5a",
+    "basis_spectrum_path": "analysis/s2/g2_al1_basis_convergence_r2_20260811/basis_spectrum.json",
+    "basis_spectrum_sha256": "e7bbd9d3e1ef2895aae887ed372537e910086d8c99a4567a3d1bf89e18c0d6cf",
+    "scale_config_path": "config/S2_g2_al_scale_geometry_r3.json",
+    "scale_config_sha256": "2d6942a8aa22caa315888ad162ba53d1af3401d5b919b4ddc7e82aa902dd49c9"
+  },
+  "runtime_python": "/home/shenwei01/.local/venvs/m_ofdft-dftpy-2.2.0-py311/bin/python",
+  "benchmark": {
+    "atom_counts": [32, 108, 256],
+    "conventional_repeats": [2, 3, 4],
+    "grid_points_per_conventional_axis": 40,
+    "grid_counts": [[80, 80, 80], [120, 120, 120], [160, 160, 160]],
+    "routes": ["pw_fft_reference", "candidate_23_function"],
+    "measured_repeats": 3,
+    "thread_count": 1,
+    "execution_hostname": "node01",
+    "reserved_logical_cpu": 74,
+    "reserved_smt_domain": [74, 150],
+    "timed_boundary": "density_representation_decode_through_Hartree_local_pseudo_PBE_XC_fixed_WT_energies",
+    "common_source_preparation_excluded_from_route_wall": true,
+    "cold_independent_process_per_repeat": true,
+    "peak_memory_metric": "Linux_ru_maxrss_process_peak_KiB",
+    "perfect_periodic_cells_only": true
+  },
+  "accuracy": {
+    "density_relative_l2_strict_lt": 0.01,
+    "component_energy_abs_error_max_mev_per_atom": 10.0,
+    "combined_energy_abs_error_max_mev_per_atom": 10.0,
+    "fixed_wt_total_energy_error_max_mev_per_atom": 10.0,
+    "electron_number_relative_error_strict_lt": 1e-10
+  },
+  "performance": {
+    "effective_coefficient_fraction_max": 0.3,
+    "time_speedup_min": 1.5,
+    "peak_memory_improvement_min": 2.0,
+    "other_metric_degradation_max_fraction": 0.2,
+    "aggregation": "median_of_three_cold_processes_per_route_and_size",
+    "overall_requires_each_size": true
+  },
+  "execution": {
+    "state_root": "/home/shenwei01/.local/state/m_ofdft/s2_g2c_performance_r1_20260812",
+    "analysis_root": "analysis/s2/g2c_performance_r1_20260812",
+    "new_electronic_structure_solver_run_count": 0,
+    "case_count": 18
+  },
+  "output_files": ["README.md", "raw_runs.json", "size_metrics.tsv", "summary.json"]
+}

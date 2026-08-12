@@ -1,0 +1,9 @@
+# S2/G2c performance R1
+
+This revision benchmarks the accepted Al 23-function density expansion against the PW/FFT grid-density reference at common accuracy for 32, 108 and 256 atom perfect periodic cells.
+
+The conventional-cell FFT density is fixed at 40 points per axis and tiled to 80^3, 120^3 and 160^3. Each route runs in a separate cold, single-threaded process on node01, pinned to logical CPU 74; its SMT sibling domain is frozen as [74,150]. Each size/route pair has three formal repeats. A fail-closed process-affinity scan is required before the state is created and again before every case, so another ABACUS/PW/DFTpy/G2c workload intersecting the reserved SMT domain invalidates execution instead of silently contaminating timing. The route wall clock begins at density representation decode and ends after Hartree, exact registered local pseudopotential, PBE XC and fixed WT energies. Common source verification and reference-block preparation occur before the timed boundary. Process peak RSS is recorded independently.
+
+The PW route tiles the registered grid-density block. The candidate route evaluates the 23-function explicit gauge that is exactly density-equivalent to the accepted complementary gauge, tiles the result, then uses the same grid/operator path. This comparison therefore measures representation-decode overhead plus the common FFT operator work. It does not claim localized/defect performance.
+
+Accuracy gates remain electron <1e-10, density L2 <1%, component/combined/fixed-WT errors <=10 meV/atom. Coefficient fraction must be <30%. Performance passes per size only if median time improves by at least 1.5x or median peak RSS by at least 2x, while the other metric degrades by no more than 20%. Representation compression alone is not a performance pass. Either an accepted or an evidence-valid rejected performance result closes this measurement revision; S3 remains closed until the result is recorded.
