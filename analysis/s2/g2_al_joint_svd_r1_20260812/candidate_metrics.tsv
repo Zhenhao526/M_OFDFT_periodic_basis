@@ -1,0 +1,3 @@
+candidate_id	dropped_dimension	retained_atomic_dimension	fixed_transform_sha256	scientific_gate_accepted	failed_gates	joint_bottom_eigenvalues
+joint_svd_drop1	1	863	fc497472708992b3fd263e58d9f09703f3f56da31c2f368f71fbdfcd06523fa4	False	["condition","discarded_mode_alignment","full_reduced_rank","retained_margin"]	[2.1182216689338777e-06,2.7797710039118322e-06,2.791282330934862e-06,7.756901519802007e-06]
+joint_svd_drop2	2	862	ec1bd37d4d162d01a502f110e6fe687056a073cf9cc0520136cdb79651594b69	False	["condition","discarded_mode_alignment","full_reduced_rank","retained_margin"]	[2.1182216689338777e-06,2.7797710039118322e-06,2.791282330934862e-06,7.756901519802007e-06]

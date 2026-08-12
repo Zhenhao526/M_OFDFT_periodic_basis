@@ -1,0 +1,93 @@
+{
+  "atom_count": 108,
+  "candidate_selection": "minimum_dropped_dimension_passing_all_gates",
+  "candidates": [
+    {
+      "candidate_id": "joint_svd_drop1",
+      "dropped_dimension": 1,
+      "failed_gates": [
+        "condition",
+        "discarded_mode_alignment",
+        "full_reduced_rank",
+        "retained_margin"
+      ],
+      "fixed_transform_sha256": "fc497472708992b3fd263e58d9f09703f3f56da31c2f368f71fbdfcd06523fa4",
+      "gates": {
+        "combined_energy": true,
+        "component_energies": true,
+        "condition": false,
+        "cross_grid_energy": true,
+        "cross_grid_pseudoforce": true,
+        "density": true,
+        "discarded_mode_alignment": false,
+        "eggbox_energy": true,
+        "electron_number": true,
+        "fixed_wt_total": true,
+        "full_reduced_rank": false,
+        "projection_excess_pseudoforce": true,
+        "reference_pseudoforce": true,
+        "retained_margin": false,
+        "selected_pseudoforce": true
+      },
+      "joint_bottom_eigenvalues": [
+        2.1182216689338777e-06,
+        2.7797710039118322e-06,
+        2.791282330934862e-06,
+        7.756901519802007e-06
+      ],
+      "retained_atomic_dimension": 863,
+      "scientific_gate_accepted": false
+    },
+    {
+      "candidate_id": "joint_svd_drop2",
+      "dropped_dimension": 2,
+      "failed_gates": [
+        "condition",
+        "discarded_mode_alignment",
+        "full_reduced_rank",
+        "retained_margin"
+      ],
+      "fixed_transform_sha256": "ec1bd37d4d162d01a502f110e6fe687056a073cf9cc0520136cdb79651594b69",
+      "gates": {
+        "combined_energy": true,
+        "component_energies": true,
+        "condition": false,
+        "cross_grid_energy": true,
+        "cross_grid_pseudoforce": true,
+        "density": true,
+        "discarded_mode_alignment": false,
+        "eggbox_energy": true,
+        "electron_number": true,
+        "fixed_wt_total": true,
+        "full_reduced_rank": false,
+        "projection_excess_pseudoforce": true,
+        "reference_pseudoforce": true,
+        "retained_margin": false,
+        "selected_pseudoforce": true
+      },
+      "joint_bottom_eigenvalues": [
+        2.1182216689338777e-06,
+        2.7797710039118322e-06,
+        2.791282330934862e-06,
+        7.756901519802007e-06
+      ],
+      "retained_atomic_dimension": 862,
+      "scientific_gate_accepted": false
+    }
+  ],
+  "evidence_valid": true,
+  "g2_overall_accepted": false,
+  "geometry_count": 5,
+  "joint_gram_count": 10,
+  "new_solver_run_count": 0,
+  "protocol_revision": "S2-G2-AL-JOINT-SVD-20260812-R1",
+  "schema_version": 1,
+  "scientific_gate_accepted": false,
+  "selected_candidate_id": null,
+  "source_candidate_id": "r08_eta100_complementary",
+  "status": "evidence_valid_scientific_gate_rejected",
+  "target_grids": [
+    128,
+    144
+  ]
+}
