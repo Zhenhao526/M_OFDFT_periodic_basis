@@ -1,0 +1,131 @@
+{
+  "accepted_candidate_count": 0,
+  "candidate_count": 2,
+  "evidence_valid": true,
+  "gate": "G2a_atomic_fft_stage_A_reentry",
+  "metrics": [
+    {
+      "alpha_bohr_minus2": [
+        0.075,
+        0.15,
+        0.3,
+        0.6,
+        1.2,
+        2.4,
+        4.8,
+        9.6
+      ],
+      "basis_count": 8,
+      "candidate_id": "r08_atomic_fft",
+      "combined_hartree_external_xc_error_mev_per_atom": 78.42409764506158,
+      "density_max": 0.03031822565224107,
+      "density_min": 0.0032852256457997497,
+      "density_relative_l2": 0.06642028402973592,
+      "density_sha256_float64_le": "5eb3a62858ebc96247106957be1e537489fc6841aeb187d109b7c74c75edbd47",
+      "effective_condition_number": 712500.4142236044,
+      "effective_rank": 8,
+      "electron_count": 2.999999999999545,
+      "electron_number_relative_error": 1.5173048003210474e-13,
+      "energies_ev_per_atom": {
+        "external": 6.347539572654877,
+        "fixed_kedf": 22.720068188307565,
+        "hartree": 0.06366954509973557,
+        "xc": -21.763594823033152
+      },
+      "errors_mev_per_atom": {
+        "external": 95.88761558545045,
+        "fixed_kedf": 419.79257822714897,
+        "hartree": -34.9370598422641,
+        "xc": 17.473541901875222
+      },
+      "failed_gates": [
+        "density_l2",
+        "hartree",
+        "external",
+        "xc",
+        "combined_hartree_external_xc",
+        "fixed_kedf"
+      ],
+      "gates": {
+        "combined_hartree_external_xc": false,
+        "condition_number": true,
+        "density_l2": false,
+        "electron_number": true,
+        "external": false,
+        "fixed_kedf": false,
+        "hartree": false,
+        "nonnegative_density": true,
+        "xc": false
+      },
+      "radial_id": "r08",
+      "status": "rejected_stage_A"
+    },
+    {
+      "alpha_bohr_minus2": [
+        0.0375,
+        0.075,
+        0.15,
+        0.3,
+        0.6,
+        1.2,
+        2.4,
+        4.8,
+        9.6,
+        19.2
+      ],
+      "basis_count": 10,
+      "candidate_id": "r10_atomic_fft",
+      "combined_hartree_external_xc_error_mev_per_atom": 73.51138985642558,
+      "density_max": 0.030470759293624753,
+      "density_min": -4.313602741881292e-05,
+      "density_relative_l2": 0.06611330307370929,
+      "density_sha256_float64_le": "a6ee3f88dbcc626fa7f8dc0cb7906c494ed6ff2d35fa77cdc0596207adccea02",
+      "effective_condition_number": 173647039.36635867,
+      "effective_rank": 10,
+      "electron_count": 3.00000000000124,
+      "electron_number_relative_error": 4.132990246337916e-13,
+      "energies_ev_per_atom": {
+        "external": 6.343713931997777,
+        "fixed_kedf": 22.795851313744393,
+        "hartree": 0.06398878778763993,
+        "xc": -21.765001132852593
+      },
+      "errors_mev_per_atom": {
+        "external": 92.06197492835066,
+        "fixed_kedf": 495.5757036639774,
+        "hartree": -34.61781715435974,
+        "xc": 16.067232082434657
+      },
+      "failed_gates": [
+        "density_l2",
+        "nonnegative_density",
+        "condition_number",
+        "hartree",
+        "external",
+        "xc",
+        "combined_hartree_external_xc",
+        "fixed_kedf"
+      ],
+      "gates": {
+        "combined_hartree_external_xc": false,
+        "condition_number": false,
+        "density_l2": false,
+        "electron_number": true,
+        "external": false,
+        "fixed_kedf": false,
+        "hartree": false,
+        "nonnegative_density": false,
+        "xc": false
+      },
+      "radial_id": "r10",
+      "status": "rejected_stage_A"
+    }
+  ],
+  "new_solver_run_count": 0,
+  "next_action": "execute_frozen_stage_B_with_promoted_atomic_fft_and_five_historical_low_g_candidates",
+  "promoted_to_stage_B": [],
+  "protocol_revision": "S2-G2-ATOMIC-FFT-STAGE-A-20260812-R1",
+  "schema_version": 1,
+  "stage": "S2",
+  "status": "evidence_valid_no_atomic_fft_stage_A_candidate"
+}
