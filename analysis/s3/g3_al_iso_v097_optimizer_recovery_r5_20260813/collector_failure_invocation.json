@@ -1,0 +1,32 @@
+{
+  "schema_version": 1,
+  "status": "execution_accepted_analyzer_render_false_negative",
+  "runner_commit": "6548c0fc1e7abfe0c44d75be17c19e90e210d2d4",
+  "command": [
+    "/home/shenwei01/.local/venvs/m_ofdft-dftpy-2.2.0-py311/bin/python",
+    "-s",
+    "-B",
+    "scripts/collect_s3_g3_al_iso_v097_optimizer_recovery_r5.py"
+  ],
+  "cwd": "/home/shenwei01/wt_s3_g3_al_iso_v097_optimizer_recovery_r5_20260813",
+  "environment": {
+    "HOME": "/home/shenwei01",
+    "PATH": "/usr/bin:/bin",
+    "OMP_NUM_THREADS": "1",
+    "MKL_NUM_THREADS": "1",
+    "OPENBLAS_NUM_THREADS": "1",
+    "PYTHONPATH": "scripts"
+  },
+  "stdout_sha256": "9f8aa654e71aaecb8cf9e7bb007f6cf36111f9b3b58cc374f7a2b2b9465de897",
+  "stdout_size_bytes": 931,
+  "stderr_sha256": "fdc7a47fe7e6534e295fefd16c4b914c6e2b1bd679f376150b9c1faa96951ad3",
+  "stderr_size_bytes": 4254,
+  "exception": "KeyError: 'structure_id'",
+  "analysis_root_absent_after_failure": true,
+  "terminal_sha256": "edb784e2b79a67181e0d3a4a042a4dffd1e990ea86199ec0860f9a8c6b19c6b4",
+  "attempted": 4,
+  "accepted": 4,
+  "failed": 0,
+  "retried": 0,
+  "new_solver_run_count": 0
+}

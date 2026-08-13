@@ -1,0 +1,43 @@
+{
+  "schema_version": 1,
+  "protocol_revision": "S3-G3-AL-ISO-V097-OPTIMIZER-RECOVERY-20260813-R5",
+  "status": "analysis_false_negative_closed_no_solver_retry",
+  "preregistration_commit": "6548c0fc1e7abfe0c44d75be17c19e90e210d2d4",
+  "implementation_commit": "af90279bc0dde80a412d20bdf47daa7ac151b102",
+  "terminal_sha256": "edb784e2b79a67181e0d3a4a042a4dffd1e990ea86199ec0860f9a8c6b19c6b4",
+  "session_sha256": "a846f20a275b6838056a7f62b0ee87cfb3d8bc4b1e44b5436580e662f20541e7",
+  "state_file_count": 42,
+  "state_total_bytes": 2398602,
+  "state_inventory_sha256": "4e2982b337dabd389ae37c4fb6d62505927dc79065121605c855ebc4053e89dd",
+  "operational_denominator": {
+    "attempted": 4,
+    "accepted": 4,
+    "failed": 0,
+    "missing": 0,
+    "skipped": 0,
+    "retried": 0,
+    "runner_return_code": 0,
+    "experiment_ids": [
+      "S3-20260813-391",
+      "S3-20260813-392",
+      "S3-20260813-393",
+      "S3-20260813-394"
+    ]
+  },
+  "analysis_output_absent": true,
+  "failure": {
+    "exception": "KeyError",
+    "missing_key": "structure_id",
+    "location": "s3_g3_al_iso_v097_optimizer_recovery_common_r5.render",
+    "cause": "gates.tsv requested structure_id from coefficient_rows although the fixed structure_id exists only at summary top level",
+    "raw_replay_completed_before_failure": true,
+    "scientific_summarize_completed_before_failure": true,
+    "second_false_negative_found": false
+  },
+  "disposition": {
+    "r5_state_immutable": true,
+    "r5_ids_must_not_be_retried": true,
+    "new_solver_run_count": 0,
+    "required_next_revision": "analysis_only_r6_fixed_structure_id_serialization"
+  }
+}
