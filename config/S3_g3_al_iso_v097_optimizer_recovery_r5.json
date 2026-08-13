@@ -79,7 +79,7 @@
       "volume_ratio": 1.0
     }
   ],
-  "implementation_commit": "__FREEZE_IMPLEMENTATION_COMMIT__",
+  "implementation_commit": "af90279bc0dde80a412d20bdf47daa7ac151b102",
   "output_files": [
     "README.md",
     "runs.json",
@@ -132,5 +132,5 @@
     "summary_sha256": "aef2b60d84babdad5e02d0e108228addfcad2276fe19c1f74edae3c32fcc6274",
     "terminal_sha256": "449482dae5b9843ffa839180a3c55de7add35b6f0f114141575f2dadf3383239"
   },
-  "status": "implementation_pending_preregistration"
+  "status": "preregistered_no_execution"
 }
