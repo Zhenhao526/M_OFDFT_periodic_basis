@@ -1,0 +1,51 @@
+{
+  "schema_version": 1,
+  "protocol_revision": "S3-G3-AL-MULTISTRUCTURE-EXECUTION-20260812-R2",
+  "status": "operational_failure_closed_no_retry",
+  "preregistration_commit": "df1815e8c59b4e9577b986c5abf76ba98147e4cc",
+  "state_root": "/home/shenwei01/.local/state/m_ofdft/s3_g3_al_multistructure_execution_r2_20260812",
+  "state_inventory": {
+    "file_count": 263,
+    "total_bytes": 18907066,
+    "relative_inventory_digest_sha256": "398f2a3132a272c90e3f9a8de3e4762c4c6e1863720256cb683359b02364ebaf",
+    "terminal_sha256": "2b96200e94604872b22b64a93385bcf69687bbb7e01b3e182107ac4cd9641fc9",
+    "failure_sha256": "dfeb87589bf2246f1643cbb07c8ca7d37d976d6b526cc2e29951cbf616e6f936",
+    "session_sha256": "1521f386d018fcb703a8a0be36ed591e3eb43ed774859fc3210e5a0cfd2ed2e5"
+  },
+  "denominator": {
+    "registered": 80,
+    "attempted": 29,
+    "accepted_prefix": 28,
+    "failed": 1,
+    "missing": 0,
+    "skipped": 51,
+    "retried": 0,
+    "failed_experiment_id": "S3-20260812-229",
+    "unattempted_first": "S3-20260812-230",
+    "unattempted_last": "S3-20260812-280"
+  },
+  "failure_classification": {
+    "worker_return_code": 0,
+    "runner_return_code": 70,
+    "worker_result_status": "completed_scientific_rejected",
+    "worker_density_sha256": "5808c8a90c44678a9fd7746bd61bd8263e8ea01132f0ff0afc08ba4383d63e9c",
+    "worker_result_was_not_formally_accepted": true,
+    "cause": "runner_post_worker_replay_rejected_geometry_dependent_low_G_set",
+    "reproduction_exception": "ValueError: low-G set differs",
+    "collector_false_negative": "collector incorrectly required failed worker return code to equal runner terminal return code when worker succeeded and runner post-processing failed"
+  },
+  "accepted_prefix_replay": {
+    "count": 28,
+    "raw_density_energy_gradient_and_envelope_replay_passed": true,
+    "collector_failure_envelope_failed_after_prefix_replay": true,
+    "collector_exception": "ValueError: failure return differs"
+  },
+  "disposition": {
+    "r2_state_is_immutable": true,
+    "r2_ids_must_not_be_retried": true,
+    "scientific_gate_not_decidable_from_partial_denominator": true,
+    "g3_overall_closed": false,
+    "s4_authorized": false,
+    "next_action": "new_revision_new_ids_new_state_with_geometry_consistent_replay_and_post_worker_failure_envelope"
+  }
+}
