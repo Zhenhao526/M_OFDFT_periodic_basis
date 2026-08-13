@@ -1,0 +1,126 @@
+{
+  "base_commit": "b4176a27f96fbad1a0812403e8a2b170d24c1543",
+  "execution": {
+    "analysis_root": "analysis/s3/g3_al_iso_v097_optimizer_recovery_r4_20260813",
+    "child_environment": {
+      "HOME": "/home/shenwei01",
+      "MKL_NUM_THREADS": "1",
+      "OMP_NUM_THREADS": "1",
+      "OPENBLAS_NUM_THREADS": "1",
+      "PATH": "/usr/bin:/bin",
+      "PYTHONDONTWRITEBYTECODE": "1",
+      "PYTHONNOUSERSITE": "1"
+    },
+    "execution_worktree_root": "/home/shenwei01/wt_s3_g3_al_iso_v097_optimizer_recovery_r4_20260813",
+    "formal_case_count": 4,
+    "new_electronic_structure_solver_run_count": 4,
+    "no_retry": true,
+    "state_root": "/home/shenwei01/.local/state/m_ofdft/s3_g3_al_iso_v097_optimizer_recovery_r4_20260813"
+  },
+  "formal_cases": [
+    {
+      "experiment_id": "S3-20260813-381",
+      "geometry_kind": "isotropic_volume",
+      "geometry_parameter": 0.97,
+      "grid": [
+        40,
+        40,
+        40
+      ],
+      "initialization": "uniform",
+      "role": "iso_v097_recovery",
+      "route": "full_grid_WT_reference",
+      "structure_id": "iso_v097",
+      "volume_ratio": 1.0
+    },
+    {
+      "experiment_id": "S3-20260813-382",
+      "geometry_kind": "isotropic_volume",
+      "geometry_parameter": 0.97,
+      "grid": [
+        40,
+        40,
+        40
+      ],
+      "initialization": "uniform",
+      "role": "iso_v097_recovery",
+      "route": "coefficient_23_function",
+      "structure_id": "iso_v097",
+      "volume_ratio": 1.0
+    },
+    {
+      "experiment_id": "S3-20260813-383",
+      "geometry_kind": "isotropic_volume",
+      "geometry_parameter": 0.97,
+      "grid": [
+        40,
+        40,
+        40
+      ],
+      "initialization": "atomic_superposition_projection",
+      "role": "iso_v097_recovery",
+      "route": "coefficient_23_function",
+      "structure_id": "iso_v097",
+      "volume_ratio": 1.0
+    },
+    {
+      "experiment_id": "S3-20260813-384",
+      "geometry_kind": "isotropic_volume",
+      "geometry_parameter": 0.97,
+      "grid": [
+        40,
+        40,
+        40
+      ],
+      "initialization": "low_g_perturbation_projection",
+      "role": "iso_v097_recovery",
+      "route": "coefficient_23_function",
+      "structure_id": "iso_v097",
+      "volume_ratio": 1.0
+    }
+  ],
+  "implementation_commit": "__FREEZE_IMPLEMENTATION_COMMIT__",
+  "output_files": [
+    "README.md",
+    "runs.json",
+    "gates.tsv",
+    "summary.json"
+  ],
+  "protocol_revision": "S3-G3-AL-ISO-V097-OPTIMIZER-RECOVERY-20260813-R4",
+  "recovery_policy": {
+    "active_density_threshold": 1e-08,
+    "algorithm": "feasible_trust_radius_Armijo_BFGS_with_active_boundary_projection",
+    "continuation_or_initial_substitution_forbidden": true,
+    "max_iterations": 600,
+    "registered_initial_density_sha256": {
+      "atomic_superposition_projection": "6c81a5cb131b7aa2aad5d27dbd452547254460729376511889772803a27ea3e2",
+      "low_g_perturbation_projection": "ae00e78b01887905f4c1368e833ac77458fd0849bd4b4221c5586fc1862ac886",
+      "uniform": "ecb9a5c341dd8a61f9a6e6a8290a1838e919b6c6afde890e83000208056fe29a"
+    },
+    "registered_uniform_density_preserved": true,
+    "same_algorithm_for_all_three_initializations": true,
+    "stagnation_energy_hartree": 1e-12,
+    "stagnation_window": 5,
+    "trust_radius_grow": 1.5,
+    "trust_radius_initial": 0.05,
+    "trust_radius_max": 0.2,
+    "trust_radius_min": 1e-06,
+    "trust_radius_shrink": 0.25
+  },
+  "schema_version": 1,
+  "source_evidence": {
+    "accepted_structure_count": 19,
+    "commit": "b4176a27f96fbad1a0812403e8a2b170d24c1543",
+    "config_path": "config/S3_g3_al_multistructure_execution_r3.json",
+    "config_sha256": "d2085635de41219f665d6a36e285497d11a40041eef29fd2ba4276b63f51bb15",
+    "disposition": "evidence_valid_s3_al_twenty_structure_coefficient_subgate_rejected",
+    "failed_structure_id": "iso_v097",
+    "failed_uniform_id": "S3-20260813-310",
+    "runs_path": "analysis/s3/g3_al_multistructure_execution_r3_20260813/runs.json",
+    "runs_sha256": "0db6b34d8d0f2e6052a8f68d5a11d6acd70a7c1224b9c15a0505de9968c619cb",
+    "summary_path": "analysis/s3/g3_al_multistructure_execution_r3_20260813/summary.json",
+    "summary_sha256": "aef2b60d84babdad5e02d0e108228addfcad2276fe19c1f74edae3c32fcc6274",
+    "terminal_sha256": "449482dae5b9843ffa839180a3c55de7add35b6f0f114141575f2dadf3383239"
+  },
+  "status": "implementation_pending_preregistration"
+}
