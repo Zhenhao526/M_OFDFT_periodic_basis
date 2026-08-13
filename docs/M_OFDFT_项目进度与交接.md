@@ -2,23 +2,23 @@
 
 > 本文件是项目状态的唯一人工入口。任何人接手前先读本文件，再读项目书和当前阶段 README。  
 > 状态词仅使用：`not_started`、`in_progress`、`blocked`、`accepted`、`rejected`、`paused`。  
-> 更新时间：2026-08-12 19:15 CST
-> 文档版本：V5.9
+> 更新时间：2026-08-13 12:45 CST
+> 文档版本：V6.0
 
 ## 0. 十分钟上手摘要
 
 | 项目 | 当前值 |
 |---|---|
-| 当前总状态 | `in_progress`（S1/G1 已验收；Al 23函数密度表示和 Al 单原子 V100 系数自洽 pilot 已接受；G2c性能仍 rejected；完整 G3 仍缺多结构和 Mg 覆盖） |
+| 当前总状态 | `in_progress`（S1/G1 已验收；Al 23函数密度表示、单原子 V100 和 20 结构系数子门均已接受；G2c性能仍 rejected；完整 G3 仍缺 Mg 覆盖） |
 | 当前阶段 | S3：固定 WT-KEDF 系数空间自洽 pilot |
-| 当前闸门 | G3；R1 pilot 29/29 operational accepted；R2 按用户授权把同 WT 能量差门从严格 `<10` 修订为严格 `<20 meV/atom`，13/13 coefficient 点通过；G3 overall 仍等待多结构与 Mg 覆盖 |
+| 当前闸门 | G3；Al 20结构 R3 有效拒绝仅来自 `iso_v097` uniform 优化停滞；R5 新算法以相同初值/基组/门槛修复，R6 零 solver 全量重放后接受 Al 20结构系数子门；G3 overall 仍等待 Mg 覆盖 |
 | 当前负责人 | 远端账户 `shenwei01`；本轮执行与记录：Codex |
-| 当前工作分支 | `codex/s3-energy-policy-r2`；下一批 solver 仅允许来自新多结构 revision 的精确预注册提交 |
-| 最近可用提交 | S3 energy policy R2 evidence `3f2322c5`；Al 20结构矩阵 implementation `db9409ad`、prereg `f979447b` |
+| 当前工作分支 | `codex/s3-iso-v097-optimizer-recovery-analysis-r6-evidence`；下一批 solver 仅允许来自新的 Mg 表示/20结构 revision 的精确预注册提交 |
+| 最近可用提交 | Al 20结构 R3 evidence `b4176a27`；iso_v097 R5 prereg `6548c0fc`、terminal `edb784e2…`；analysis-only R6 evidence `08e5486a` |
 | 最近通过的数值 smoke | `S1-RUNTIME-SMOKE-20260805-074`：`storage_exact`，五类状态门全部 `accepted`；幂等重验返回 `accepted_committed` |
 | 最近通过的正式分析 | G1 acceptance policy R1：R3/R5 全量重放、17 行 gate、`accepted_g1_6_of_6`、新增 solver 0；证据 `d0386418` |
-| 当前阻塞 | 单原子 pilot 已通过，但尚未证明跨体积、剪切/应变和多结构的收敛成功率；Mg 的表示与自洽覆盖也未开始。G2c 无时间/内存收益的工程拒绝不变 |
-| 下一项唯一动作 | 基于已预注册矩阵 `f979447b` 实现并审计 80 点正式执行 revision；通过前不得启动 solver，旧29点只读且不重试 |
+| 当前阻塞 | Al 20结构系数子门已通过；Mg 的23函数表示适用性、对应参考与20结构自洽覆盖尚未建立。G2c 无时间/内存收益的工程拒绝不变 |
+| 下一项唯一动作 | 新 revision 先冻结并验证 Mg 表示与参考，再预注册 Mg 20结构系数自洽矩阵；独立审计前不得启动 solver |
 
 ### 必读文件
 
@@ -174,12 +174,12 @@ python3 -m unittest -q tests.unit.test_s1_g1_thermodynamic_label_audit_r4_genera
 
 ### 下次开始位置
 
-从 G2c performance R1 证据 `2a27822b` 开始；全部历史 external state 只读，不删除、不重启、不重试历史 ID：
+从 Al20 acceptance R6 evidence `08e5486a` 开始；全部历史 external state 只读，不删除、不重启、不重试历史 ID：
 
 1. G1 六个子项已 6/6 accepted；复验必须使用各登记 source worktree 的 committed validator，不得改写历史 R3 0.5% rejection；
-2. S2/G2 的密度精度与表示压缩已成立，但 G2c 端到端性能三档均 rejected；D-064 保留该工程拒绝并允许固定 WT 系数空间正确性验证。R2 进一步按用户授权把单原子 pilot 的同 WT 能量差门从 `<10` 修订为 `<20 meV/atom`，13/13 coefficient 点通过；
+2. S2/G2 的密度精度与表示压缩已成立，但 G2c 端到端性能三档均 rejected；D-064 保留该工程拒绝。Al 20结构系数子门已由R3的19结构证据与R5/R6的`iso_v097`恢复组合接受；这不等于完整G3或任何加速结论；
 3. QE/第二 KS、Mg 硬比较、HQLPP 与 projector-only 因果若继续，必须使用新协议；它们属于外推/诊断限制，不得改写 G1 历史；
-4. S2 前保留所有 G1 state、失败 smoke 和 analysis evidence 为只读，不再消费 G1 ID。
+4. 下一solver动作只能是新revision的Mg表示/参考/20结构覆盖；必须先实现、测试、预注册和独立审计，且不得复用或重试Al历史ID。
 
 ## 2. 阶段总览
 
@@ -188,7 +188,7 @@ python3 -m unittest -q tests.unit.test_s1_g1_thermodynamic_label_audit_r4_genera
 | S0 | 初始化与复现协议 | `accepted` | 2026-08-05 | 2026-08-05 | G0 | `docs/G0_ACCEPTANCE.md`; `analysis/s1/runtime_relocation_equivalence_20260805/` | 数值/归档恢复结论保留；登记的 namespace runtime-isolation 路径已验收，原归档本身不称 hermetic |
 | S1 | 平面波基准闭环 | `accepted` | 2026-08-05 | 2026-08-11 | G1 | 前五项证据同前；三层 R3 `73b3589`；R5 `5401943`；1% policy `d0386418` | G1 6/6；进入 S2 |
 | S2 | 混合密度基表示 | `accepted`（Al密度表示限定） | 2026-08-11 | 2026-08-12 | G2 | policy `987ca097`；G2c `2a27822b` | 表示精度/压缩接受；性能拒绝作为工程限制保留 |
-| S3 | 固定 KEDF 自洽求解 | `in_progress` | 2026-08-12 | — | G3 | R1 evidence `25b2109c`；R2 policy `3f2322c5` | Al 单原子 V100 pilot accepted；下一步扩展 Al 20 结构 × 三初值，G3 overall 尚未关闭 |
+| S3 | 固定 KEDF 自洽求解 | `in_progress` | 2026-08-12 | — | G3 | R1 evidence `25b2109c`；R2 policy `3f2322c5`；Al20 R3 `b4176a27`；iso_v097 R6 `08e5486a` | Al 20结构系数子门 accepted；下一步 Mg 表示与20结构 revision，G3 overall 尚未关闭 |
 | S4A | 固定晶胞解析力 | `not_started` | — | — | G4A | — | 等待 G3 |
 | S4B | 晶胞应力 | `not_started` | — | — | G4B | — | 等待 G4A |
 | S4C | 短时 NVE | `not_started` | — | — | G4C | — | 等待 G4A；建议等待 G4B |
@@ -570,6 +570,7 @@ python3 -m unittest -q tests.unit.test_s1_g1_thermodynamic_label_audit_r4_genera
 | 2026-08-12 | D-065 | 接受S3 fixed-WT R1的有效科学拒绝，不放宽10 meV或Euler门 | 29点完整闭合且证据可重放；系数解稳定、密度L2约0.333%且压力平台过，但相对full-grid能量差稳定在约16.7 meV/atom，参考Euler也暴露收敛缺口 | 以密度通过替代能量门、放宽阈值、重跑旧ID，或把G2c表示压缩接受等同G3通过 | G3保持in_progress；新revision须同时改进固定子空间的变分能量与full-grid参考收敛 |
 | 2026-08-12 | D-066 | 修订G3参考分层：KSDFT是科学主参考，完整网格WT只作同泛函数值诊断 | 项目书要求数值实现误差与相对KSDFT的物理误差分层；R1的约16.7 meV/atom只说明23函数子空间未复现完整网格WT极小值，不能据此直接淘汰KSDFT密度表示候选 | 删除R1历史拒绝、把完整网格WT完全删除，或直接比较不同泛函/赝势的绝对总能 | R1/V5.6永久只读；G3改为`in_progress`而非科学rejected；新revision以匹配KSDFT密度、锚定相对能量和压力作硬门，WT能量/Euler保留为诊断 |
 | 2026-08-12 | D-067 | 将Al单原子系数路线的同WT能量差门从严格`<10`修订为严格`<20 meV/atom`并继续S3 | 用户明确要求直接放宽原能量门；R1的13个系数点为`16.6010–16.7391 meV/atom`，其余系数路线密度、电子数、非负、梯度、三初值、压力和变分门均通过 | 回写R1/V5.6、放宽其他门、把单原子结果写成G3 overall或S4授权 | analysis-only R2以0 solver接受Al单原子V100 pilot；完整网格Euler超门保留诊断，G2c拒绝不变；下一步多结构扩展 |
+| 2026-08-13 | D-068 | 接受 Al 20结构系数子门，保持完整 G3 开放并转入 Mg | R3 的19结构/57系数点全部通过，唯一 `iso_v097` uniform 因旧BFGS边界停滞；R5在相同初值、23函数、40³与全部阈值下用冻结trust-region恢复，三初值均收敛到同一盆地；R6零solver完整重放接受 | 删除R3拒绝、只重跑一个初值、放宽20 meV或spread门、把Al子门写成完整G3 | R3/R4/R5历史与state永久只读；Al20子门accepted，G2c性能拒绝保留，G3/S4状态不变；下一步新revision验证Mg表示并执行Mg 20结构 |
 
 > D-066 后曾形成 KSDFT 对照 implementation `d631dfc2`，但尚未预注册、未创建 state、未分配正式执行贡献，也未启动 solver；用户随后以 D-067 改变路线，因此该草案状态固定为 `superseded_before_preregistration_and_execution`、贡献 0。
 
@@ -768,6 +769,7 @@ python3 -m unittest -q tests.unit.test_s1_g1_thermodynamic_label_audit_r4_genera
 | 2026-08-12 17:15 CST | S3 Al V100 fixed-WT coefficient pilot R1 | Codex | S3 | implementation `dbefd2c1`；prereg `b0d596db`；evidence `25b2109c` | 29/29 operational accepted；committed validator通过；R1原分析按相对full-grid WT能量门给出rejected；无retry | D-066后只承认其执行/同WT数值诊断；KSDFT科学验收未完成，下一步新revision补匹配KSDFT参考 |
 | 2026-08-12 19:05 CST | S3 Al V100 energy acceptance policy R2 | Codex | S3 | implementation `b7d751f6`；prereg `b6798230`；evidence `3f2322c5` | 13/13 coefficient点在严格`<20 meV/atom`门下通过；最大`16.7390996`；0 solver；committed validator accepted | 仅接受Al单原子V100 pilot；下一步新revision执行Al 20结构×三初值扩展 |
 | 2026-08-12 19:15 CST | S3 Al 20结构矩阵预注册 | Codex | S3 | implementation `db9409ad`；prereg `f979447b` | 20结构/80点；4/4测试；矩阵validator accepted；formal执行明确false；0 solver | 唯一下一动作是实现并审计80点执行revision，不得从矩阵提交直接启动 |
+| 2026-08-13 12:45 CST | S3 Al 20结构执行与 iso_v097 恢复 | Codex | S3 | R3 evidence `b4176a27`；R4 closure `631b6f67`；R5 prereg `6548c0fc`；R6 evidence `08e5486a` | R3 80/80 operational；19/20结构通过。R5 4/4、三coeff ΔE均16.458916 meV、L2约0.3303%、spread 1.12e-9 meV；R6 committed validator accepted，0 solver | Al 20结构系数子门accepted；G3仍open、S4未授权；下一动作Mg表示与20结构新revision |
 
 ## 11. 文档变更记录
 
@@ -823,3 +825,4 @@ python3 -m unittest -q tests.unit.test_s1_g1_thermodynamic_label_audit_r4_genera
 | 2026-08-12 | V5.7 | Codex | 修正S3参考分层：保留V5.6和R1全部历史证据，但撤销“相对完整网格WT即可作KSDFT科学淘汰”的当前政策解释；KSDFT改为密度、锚定相对能量和压力的科学主参考，完整网格WT降为同泛函数值与求解收敛诊断；G3保持in_progress并转入新revision |
 | 2026-08-12 | V5.8 | Codex | 按用户最新授权撤回尚未预注册/执行的KSDFT对照草案，直接把Al单原子系数路线同WT能量差门从`<10`修订为`<20 meV/atom`；0 solver重放13/13通过，接受Al V100 pilot但保持G3/S4开放，下一步转Al 20结构×三初值扩展 |
 | 2026-08-12 | V5.9 | Codex | 冻结并预注册Al 20结构扩展矩阵：7体积、四方/正交/剪切共13个非体积几何，每结构1个full-grid WT参考+3个系数初值，合计80个新ID；矩阵本身不授权执行，下一步转runner与证据链实现 |
+| 2026-08-13 | V6.0 | Codex | 记录Al 20结构80点执行、`iso_v097`单结构优化器恢复和analysis-only R6闭包：保留R3有效拒绝与R4/R5分析假阴性，最终接受Al 20结构系数子门；G2c拒绝、G3 open、S4未授权均不变，下一步转Mg表示与20结构revision |
