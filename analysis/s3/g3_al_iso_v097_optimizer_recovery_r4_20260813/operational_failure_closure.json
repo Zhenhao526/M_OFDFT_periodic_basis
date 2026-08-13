@@ -1,0 +1,43 @@
+{
+  "schema_version": 1,
+  "status": "operational_failure_closed_no_retry",
+  "protocol_revision": "S3-G3-AL-ISO-V097-OPTIMIZER-RECOVERY-20260813-R4",
+  "runner_commit": "eb3dea758ad97538e7a3d0a7f0aae04b74f1d17b",
+  "state_root": "/home/shenwei01/.local/state/m_ofdft/s3_g3_al_iso_v097_optimizer_recovery_r4_20260813",
+  "state_inventory": {
+    "file_count": 22,
+    "size_bytes": 1091458,
+    "session_sha256": "86401c8a7c04687b7b784f53ab9107e6d0a7cdf0c1e14757d812faf50568e7b6",
+    "terminal_sha256": "415518157edfbeb25e8afc0f80c47f1a0b2016b1422fa71ac7e581fc627ce630",
+    "failure_sha256": "08f4c9292de10da0e5c1e2e56151c2091a2b43576c4a6871262c272882884a67"
+  },
+  "denominator": {
+    "formal_case_count": 4,
+    "attempted": 2,
+    "accepted_prefix": 1,
+    "failed": 1,
+    "unattempted": 2,
+    "retried": 0,
+    "accepted_id": "S3-20260813-381",
+    "failed_experiment_id": "S3-20260813-382",
+    "unattempted_ids": ["S3-20260813-383", "S3-20260813-384"],
+    "worker_return_code": 0,
+    "runner_return_code": 70
+  },
+  "classification": {
+    "kind": "post_worker_replay_false_negative",
+    "worker_scientific_result_preserved": true,
+    "worker_uniform_initial_sha256": "ecb9a5c341dd8a61f9a6e6a8290a1838e919b6c6afde890e83000208056fe29a",
+    "worker_uniform_status": "accepted",
+    "worker_uniform_energy_ev_per_atom": -115.80990066554858,
+    "worker_uniform_projected_gradient_hartree": 2.1663545773527174e-07,
+    "root_cause": "nested recovery replay called cell_for_row while legacy source-cell monkeypatch already exposed the target cell, so isotropic 0.97 was applied twice",
+    "direct_replay_without_nested_geometry_transform": "accepted",
+    "scientific_solver_failure": false
+  },
+  "disposition": {
+    "no_retry_enforced": true,
+    "old_state_is_read_only": true,
+    "new_revision_and_new_ids_required": true
+  }
+}
