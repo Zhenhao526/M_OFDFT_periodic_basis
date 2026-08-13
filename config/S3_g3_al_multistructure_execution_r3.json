@@ -1,0 +1,64 @@
+{
+  "schema_version": 1,
+  "protocol_revision": "S3-G3-AL-MULTISTRUCTURE-EXECUTION-20260813-R3",
+  "status": "implementation_pending_preregistration",
+  "implementation_commit": "__FREEZE_IMPLEMENTATION_COMMIT__",
+  "base_commit": "46f6505ff4602ee6153b11645d5a41bcb5a9a2d5",
+  "r2_operational_failure": {
+    "closure_commit": "46f6505ff4602ee6153b11645d5a41bcb5a9a2d5",
+    "closure_path": "analysis/s3/g3_al_multistructure_execution_r2_20260812/operational_failure_closure.json",
+    "closure_sha256": "9107896f83cc68fbf4a910be6f5d425abd734c6804adf9712cd2d217a445c6b1",
+    "terminal_sha256": "2b96200e94604872b22b64a93385bcf69687bbb7e01b3e182107ac4cd9641fc9",
+    "failure_sha256": "dfeb87589bf2246f1643cbb07c8ca7d37d976d6b526cc2e29951cbf616e6f936",
+    "accepted_prefix_count": 28,
+    "failed_experiment_id": "S3-20260812-229",
+    "disposition": "operational_failure_closed_no_retry"
+  },
+  "r1_operational_failure": {
+    "evidence_commit": "21fb0db1aae023f6c53b0e7dd2b9205c51b85223",
+    "summary_path": "analysis/s3/g3_al_multistructure_execution_r1_20260812/summary.json",
+    "summary_sha256": "0916dae0fa42912751cc7294a66f47595fe24006f07c82aa50971d1797125b96",
+    "terminal_sha256": "a5be1e6935e828fbb7678939e963cbffbcfb26eb3c4bb165bb87ee2deec8784b",
+    "failure_sha256": "03da310f0b9bf7094a20c4ca62b13a16ac54838d89fea75d4a26249db7e3c4a9",
+    "disposition": "evidence_valid_operational_failure_no_retry",
+    "accepted_prefix_count": 13,
+    "failed_experiment_id": "S3-20260812-114",
+    "failure_reason": "monitor_shell_false_positive_collision"
+  },
+  "matrix": {
+    "commit": "f979447b596ecb30879fd72e2e1b1360be297aaf",
+    "path": "config/S3_g3_al_multistructure_matrix_r1.json",
+    "sha256": "66d36fca5f814374e8ecd83f3b589b8c42c2e405d441b695bfff6fd86b0df2b2"
+  },
+  "r1_scientific_source": {
+    "preregistration_commit": "b0d596dbe22d5a66b0eb13721860444c12bb77c3",
+    "config_path": "config/S3_g3_wt_coefficient_pilot_r1.json",
+    "config_sha256": "1502418cdaf65c34d05c18b117125f9964d81f11d632deca0ab8817fe3c06069"
+  },
+  "policy": {
+    "commit": "3f2322c5d91486abf2e8a6894ec9033c9d7087bf",
+    "summary_path": "analysis/s3/g3_energy_acceptance_policy_r2_20260812/summary.json",
+    "summary_sha256": "179e2d57901d6deea841c0c48a7207678d2722fbda0ccc8ddd9030dbae0c2b9e",
+    "energy_difference_abs_strict_lt_mev_per_atom": 20.0,
+    "full_grid_euler_gate_role": "diagnostic_only",
+    "all_other_coefficient_route_gates_unchanged": true
+  },
+  "execution": {
+    "execution_worktree_root": "/home/shenwei01/wt_s3_g3_al_multistructure_execution_r3_20260813",
+    "state_root": "/home/shenwei01/.local/state/m_ofdft/s3_g3_al_multistructure_execution_r3_20260813",
+    "analysis_root": "analysis/s3/g3_al_multistructure_execution_r3_20260813",
+    "formal_case_count": 80,
+    "no_retry": true,
+    "new_electronic_structure_solver_run_count": 80,
+    "child_environment": {
+      "HOME": "/home/shenwei01",
+      "PATH": "/usr/bin:/bin",
+      "OMP_NUM_THREADS": "1",
+      "MKL_NUM_THREADS": "1",
+      "OPENBLAS_NUM_THREADS": "1",
+      "PYTHONDONTWRITEBYTECODE": "1",
+      "PYTHONNOUSERSITE": "1"
+    }
+  },
+  "output_files": ["README.md", "runs.json", "gates.tsv", "summary.json"]
+}
