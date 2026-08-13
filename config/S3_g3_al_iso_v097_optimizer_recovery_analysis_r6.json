@@ -1,8 +1,8 @@
 {
   "schema_version": 1,
   "protocol_revision": "S3-G3-AL-ISO-V097-OPTIMIZER-RECOVERY-ANALYSIS-20260813-R6",
-  "status": "implementation_pending_preregistration",
-  "implementation_commit": "__FREEZE_IMPLEMENTATION_COMMIT__",
+  "status": "preregistered_no_execution",
+  "implementation_commit": "b5e5643e3435b2b3b6f0ec544981c86ca4a6fe6a",
   "base_closure_commit": "631b6f6750b8f960f8f916fb962ba771ceef54a7",
   "r5_preregistration_commit": "6548c0fc1e7abfe0c44d75be17c19e90e210d2d4",
   "r5_implementation_commit": "af90279bc0dde80a412d20bdf47daa7ac151b102",
