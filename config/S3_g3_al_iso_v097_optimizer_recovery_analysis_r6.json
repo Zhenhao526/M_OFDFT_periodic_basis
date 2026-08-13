@@ -1,0 +1,22 @@
+{
+  "schema_version": 1,
+  "protocol_revision": "S3-G3-AL-ISO-V097-OPTIMIZER-RECOVERY-ANALYSIS-20260813-R6",
+  "status": "implementation_pending_preregistration",
+  "implementation_commit": "__FREEZE_IMPLEMENTATION_COMMIT__",
+  "base_closure_commit": "631b6f6750b8f960f8f916fb962ba771ceef54a7",
+  "r5_preregistration_commit": "6548c0fc1e7abfe0c44d75be17c19e90e210d2d4",
+  "r5_implementation_commit": "af90279bc0dde80a412d20bdf47daa7ac151b102",
+  "r5_closure_path": "analysis/s3/g3_al_iso_v097_optimizer_recovery_r5_20260813/analysis_false_negative_closure.json",
+  "r5_closure_sha256": "41433b664240c0228d76aada7be4dc8a9bd370a7d70dc48f8a45e919950ad1b6",
+  "r5_invocation_path": "analysis/s3/g3_al_iso_v097_optimizer_recovery_r5_20260813/collector_failure_invocation.json",
+  "r5_invocation_sha256": "afb7507f3e0ee2e09a3e66d354d387da80ad06093387b129748de061f956a8f1",
+  "r5_terminal_sha256": "edb784e2b79a67181e0d3a4a042a4dffd1e990ea86199ec0860f9a8c6b19c6b4",
+  "r5_session_sha256": "a846f20a275b6838056a7f62b0ee87cfb3d8bc4b1e44b5436580e662f20541e7",
+  "r5_state_file_count": 42,
+  "r5_state_total_bytes": 2398602,
+  "r5_state_inventory_sha256": "4e2982b337dabd389ae37c4fb6d62505927dc79065121605c855ebc4053e89dd",
+  "fixed_structure_id": "iso_v097",
+  "new_solver_run_count": 0,
+  "analysis_root": "analysis/s3/g3_al_iso_v097_optimizer_recovery_analysis_r6_20260813",
+  "output_files": ["README.md", "runs.json", "gates.tsv", "summary.json"]
+}
