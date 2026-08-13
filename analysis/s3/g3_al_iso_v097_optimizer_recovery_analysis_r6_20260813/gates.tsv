@@ -1,0 +1,4 @@
+experiment_id	structure_id	initialization	reference_energy_difference_mev_per_atom	density_relative_l2	three_initialization_energy_spread_mev_per_atom	accepted
+S3-20260813-392	iso_v097	uniform	16.45891637895147	0.0033033092202424275	1.1226575225009583e-09	True
+S3-20260813-393	iso_v097	atomic_superposition_projection	16.45891638007413	0.0033033021986855313	1.1226575225009583e-09	True
+S3-20260813-394	iso_v097	low_g_perturbation_projection	16.458916378979893	0.00330330762707919	1.1226575225009583e-09	True
